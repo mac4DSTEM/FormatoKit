@@ -27,7 +27,7 @@ MUTANTS = [
     (7, "int16 read as uint16", DM, "case 1: return .int16", "case 1: return .uint16", PINS),
     (8, "beam energy not divided by 1000", DM, "value: .number(volts / 1e3),", "value: .number(volts),", PINS),
     (9, "Velox single frame not squeezed", EMD, "let stacked = frames > 1", "let stacked = frames >= 1", PINS),
-    (10, "Velox scale_y converted to the file's unit, not x's", EMD, "convertUnits(size.height, from: unit, to: x.units)", "convertUnits(size.height, from: unit, to: unit)", PINS),
+    (10, "Velox scale_y converted to the file's unit, not x's", EMD, "convertUnits(height, from: unit, to: x.units)", "convertUnits(height, from: unit, to: unit)", PINS),
     (11, "to_compact floor -> round", UNITS, "l.rounded(.down)", "l.rounded()", "UnitsTests|PinsTests"),
     (12, "the factor not halved", UNITS, "let half = Double(factor) / 2", "let half = Double(factor)", "UnitsTests|PinsTests"),
     (13, "row stride off by one", ARRAY, "strides[k] = strides[k + 1] * shape[k + 1]", "strides[k] = strides[k + 1] * (shape[k + 1] + 1)", "ArrayTests|PinsTests"),
