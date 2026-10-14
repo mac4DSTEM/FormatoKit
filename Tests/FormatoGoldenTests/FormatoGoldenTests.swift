@@ -8,7 +8,7 @@
 //  scenario's first part, verbatim; no tolerance anywhere.
 //
 
-import XCTest
+import Testing
 import Foundation
 import FormatoEMD
 
@@ -144,16 +144,16 @@ enum FormatoGolden {
     }
 }
 
-final class FormatoGoldenTests: XCTestCase {
+@Suite(.serialized) struct FormatoGoldenTests {
     /// Recomputes the reader's part of "velox-tiny" and compares it with SpectroKit's 175 lines, byte for byte, reporting
     /// the first differing line. Mutation: one count of the event store changed - red at its line.
-    func testVeloxReaderOutputsAreByteIdenticalToSpectroKitsBaseline() throws {
+    @Test func testVeloxReaderOutputsAreByteIdenticalToSpectroKitsBaseline() throws {
         let text = try FormatoGolden.veloxTinyReader()
         let recorded = try String(contentsOf: FormatoGolden.fixtures.appendingPathComponent("velox-tiny-reader.txt"), encoding: .utf8)
-        XCTAssertEqual(recorded.split(separator: "\n").count, 175, "the fixture is SpectroKit's 175 reader lines")
+        #expect(recorded.split(separator: "\n").count == 175, "the fixture is SpectroKit's 175 reader lines")
         if text == recorded { return }
         let a = text.split(separator: "\n", omittingEmptySubsequences: false), b = recorded.split(separator: "\n", omittingEmptySubsequences: false)
         let i = (0..<min(a.count, b.count)).first { a[$0] != b[$0] } ?? min(a.count, b.count)
-        XCTFail("velox-tiny moved at line \(i + 1): now \(i < a.count ? String(a[i]) : "<end>") | baseline \(i < b.count ? String(b[i]) : "<end>")")
+        Issue.record("velox-tiny moved at line \(i + 1): now \(i < a.count ? String(a[i]) : "<end>") | baseline \(i < b.count ? String(b[i]) : "<end>")")
     }
 }

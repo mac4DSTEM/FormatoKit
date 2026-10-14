@@ -12,14 +12,16 @@ moved=(
   Tests/SpectroCoreTests/VeloxMetadataBoundTests.swift Tests/SpectroKitTests/VeloxMetadataFieldsTests.swift
   Tests/SpectroKitTests/HDF5ExitBarrierTests.swift
 )
-names() {   # reads Swift source on stdin, prints Class.test per test method
+names() {   # reads Swift source on stdin, prints Class.test per test method (XCTest `class X: XCTestCase` or Swift Testing `@Test func testX` in a top-level struct/class/actor)
   /usr/bin/python3 -I -c '
 import re, sys
 cls = None
 for line in sys.stdin:
-    m = re.match(r"\s*(?:@\w+\s+)*(?:final\s+)?class\s+(\w+)\s*:\s*XCTestCase", line)
+    m = re.match(r"\s*(?:@\w+(?:\([^)]*\))?\s+)*(?:final\s+)?class\s+(\w+)\s*:\s*XCTestCase", line)
     if m: cls = m.group(1)
-    t = re.match(r"\s*(?:@\w+\s+)*func\s+(test\w*)\s*\(", line)
+    m = re.match(r"(?:@\w+(?:\([^)]*\))?\s+)*(?:final\s+)?(?:class|struct|actor)\s+(\w+)", line) or re.match(r"\s+@Suite(?:\([^)]*\))?\s+(?:final\s+)?(?:class|struct|actor)\s+(\w+)", line)   # Swift Testing suite: top level, or an indented @Suite (nested in an extension of a serialized parent)
+    if m: cls = m.group(1)
+    t = re.match(r"\s*(?:@\w+(?:\([^)]*\))?\s+)*func\s+(test\w*)\s*\(", line)
     if t and cls: print(cls + "." + t.group(1))
 '
 }

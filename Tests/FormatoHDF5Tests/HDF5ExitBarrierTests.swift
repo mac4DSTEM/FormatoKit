@@ -64,11 +64,11 @@
 //  Each of the six tests is red under two or more of these.
 //
 
-import XCTest
+import Testing
 import FormatoHDF5
 import Foundation
 
-final class HDF5ExitBarrierTests: XCTestCase {
+@Suite(.serialized) final class HDF5ExitBarrierTests {
     /// The one stderr line the barrier writes before `_exit(70)` (HDF5Types.swift, `exitBarrier()`), newline included.
     private static let barrierLine =
         "FormatoKit: HDF5Serial's quit barrier passed its bound with the HDF5 lock still held; "
@@ -135,7 +135,7 @@ final class HDF5ExitBarrierTests: XCTestCase {
             let message = "FormatoHDF5ExitProbe is not next to the test bundle (looked at \(url.path)). "
                 + "FormatoHDF5Tests depends on that executable target (Package.swift): run through "
                 + "tools/test.sh / `swift test`, which builds it."
-            XCTFail(message)
+            Issue.record(Comment(rawValue: message))
             throw NSError(domain: "HDF5ExitBarrierTests", code: 1, userInfo: [NSLocalizedDescriptionKey: message])
         }
         return url
@@ -178,12 +178,12 @@ final class HDF5ExitBarrierTests: XCTestCase {
                 kill(process.processIdentifier, SIGKILL)
                 _ = exited.wait(timeout: .now() + 5)
             }
-            XCTFail("FormatoHDF5ExitProbe \(mode) did not exit within \(deadline) s (terminated by the test)")
+            Issue.record("FormatoHDF5ExitProbe \(mode) did not exit within \(deadline) s (terminated by the test)")
         }
         if drained.wait(timeout: .now() + 5) == .timedOut {
             stdout.fileHandleForReading.readabilityHandler = nil
             stderr.fileHandleForReading.readabilityHandler = nil
-            XCTFail("FormatoHDF5ExitProbe \(mode): its pipes did not reach EOF")
+            Issue.record("FormatoHDF5ExitProbe \(mode): its pipes did not reach EOF")
         }
         let seen = capture.snapshot()
         let (markers, calledExitAt) = Self.splitStamp(seen.out)
@@ -198,53 +198,49 @@ final class HDF5ExitBarrierTests: XCTestCase {
     }
 
     private func assertNoBarrierLine(
-        _ outcome: Outcome, _ mode: String, file: StaticString = #filePath, line: UInt = #line
+        _ outcome: Outcome, _ mode: String, fileID: String = #fileID, filePath: String = #filePath, line: Int = #line, column: Int = #column
     ) {
-        XCTAssertFalse(
-            outcome.stderr.contains("quit barrier"),
-            "\(mode): the barrier fired when it should not have: \(outcome.stderr)", file: file, line: line)
-        XCTAssertEqual(
-            outcome.stderr, "", "\(mode): nothing is written to stderr on a clean exit", file: file, line: line)
+        #expect(!outcome.stderr.contains("quit barrier"), "\(mode): the barrier fired when it should not have: \(outcome.stderr)", sourceLocation: SourceLocation(fileID: fileID, filePath: filePath, line: line, column: column))
+        #expect(outcome.stderr == "", "\(mode): nothing is written to stderr on a clean exit", sourceLocation: SourceLocation(fileID: fileID, filePath: filePath, line: line, column: column))
     }
 
     // MARK: The five scenarios
 
     /// Nobody holds the lock: the barrier takes it at once, and `exit(0)` goes on to the handlers registered before it.
-    func testExitWithTheLockFreeEndsCleanlyAndHDF5TeardownRuns() throws {
+    @Test func testExitWithTheLockFreeEndsCleanlyAndHDF5TeardownRuns() throws {
         let run = try runProbe("free", deadline: 20)
         guard !run.timedOut else { return }
-        XCTAssertEqual(run.reason, .exit, "ended by exit(), not a signal")
-        XCTAssertEqual(run.status, 0)
-        XCTAssertEqual(run.markers, Self.calling + Self.teardown, "the teardown handler ran after exit() was called")
+        #expect(run.reason == .exit, "ended by exit(), not a signal")
+        #expect(run.status == 0)
+        #expect(run.markers == Self.calling + Self.teardown, "the teardown handler ran after exit() was called")
         assertNoBarrierLine(run, "free")
     }
 
     /// The thread that calls `exit` already holds the lock: the lock is recursive, so the barrier goes straight
     /// through. The bound is 2 s here (the default 10 s would make a failure slow): a non-recursive lock waits it out
     /// and leaves with status 70.
-    func testExitOnTheThreadThatHoldsTheLockGoesStraightThrough() throws {
+    @Test func testExitOnTheThreadThatHoldsTheLockGoesStraightThrough() throws {
         let run = try runProbe("held-by-caller", bound: 2, deadline: 20)
         guard !run.timedOut else { return }
-        XCTAssertEqual(run.reason, .exit)
-        XCTAssertEqual(run.status, 0)
-        XCTAssertEqual(run.markers, Self.calling + Self.teardown)
+        #expect(run.reason == .exit)
+        #expect(run.status == 0)
+        #expect(run.markers == Self.calling + Self.teardown)
         assertNoBarrierLine(run, "held-by-caller")
     }
 
     /// Another thread is inside a locked operation (0.4 s) when `exit` is called: the barrier waits for it, and only
     /// then does the teardown run. This is what the barrier is for; "released" must come first in the child's stdout.
-    func testExitWaitsForTheOperationInFlightBeforeTheTeardown() throws {
+    @Test func testExitWaitsForTheOperationInFlightBeforeTheTeardown() throws {
         let run = try runProbe("held-briefly", bound: 5, deadline: 20)
         guard !run.timedOut else { return }
-        XCTAssertEqual(run.reason, .exit)
-        XCTAssertEqual(run.status, 0, "the lock came back inside the bound: a normal exit, not _exit(70)")
+        #expect(run.reason == .exit)
+        #expect(run.status == 0, "the lock came back inside the bound: a normal exit, not _exit(70)")
         let released = offset(of: "released\n", in: run.markers)
         let teardown = offset(of: Self.teardown, in: run.markers)
-        XCTAssertNotNil(released, "the holder finished and wrote \"released\": \(run.stdout.debugDescription)")
-        XCTAssertNotNil(teardown, "the teardown ran: \(run.stdout.debugDescription)")
+        #expect(released != nil, "the holder finished and wrote \"released\": \(run.stdout.debugDescription)")
+        #expect(teardown != nil, "the teardown ran: \(run.stdout.debugDescription)")
         if let released, let teardown {
-            XCTAssertLessThan(
-                released, teardown, "the barrier waited for the operation in flight: \(run.stdout.debugDescription)")
+            #expect(released < teardown, "the barrier waited for the operation in flight: \(run.stdout.debugDescription)")
         }
         assertNoBarrierLine(run, "held-briefly")
     }
@@ -252,24 +248,23 @@ final class HDF5ExitBarrierTests: XCTestCase {
     /// A thread that never lets go: the barrier gives up at the bound, writes its one line and `_exit(70)`s, so the
     /// handlers registered before it (HDF5's shutdown) do not run. The wait is the bound, neither shorter nor
     /// open-ended.
-    func testExitWithAStuckHolderLeavesAtTheBoundWithStatus70AndSkipsTheTeardown() throws {
+    @Test func testExitWithAStuckHolderLeavesAtTheBoundWithStatus70AndSkipsTheTeardown() throws {
         let bound = 0.5
         let run = try runProbe("stuck", bound: bound, deadline: bound + 10)
         guard !run.timedOut else { return }
-        XCTAssertEqual(run.reason, .exit, "_exit(70) is an exit, not a signal")
-        XCTAssertEqual(run.status, 70, "EX_SOFTWARE")
-        XCTAssertEqual(run.stderr, Self.barrierLine, "exactly the barrier's one line")
-        XCTAssertFalse(
-            run.stdout.contains("teardown-ran"),
-            "_exit skipped the handlers registered before the barrier (HDF5's shutdown): "
-                + "\(run.stdout.debugDescription)")
-        XCTAssertEqual(run.markers, Self.calling)
+        #expect(run.reason == .exit, "_exit(70) is an exit, not a signal")
+        #expect(run.status == 70, "EX_SOFTWARE")
+        #expect(run.stderr == Self.barrierLine, "exactly the barrier's one line")
+        #expect(!run.stdout.contains("teardown-ran"), Comment(rawValue: "_exit skipped the handlers registered before the barrier (HDF5's shutdown): "
+                + "\(run.stdout.debugDescription)"))
+        #expect(run.markers == Self.calling)
         guard let seconds = run.secondsInExit else {
-            return XCTFail("the child's calling-exit stamp or its end was not seen: \(run.stdout.debugDescription)")
+            Issue.record("the child's calling-exit stamp or its end was not seen: \(run.stdout.debugDescription)")
+            return
         }
         // 0.05 s: the barrier's Date is on the wall clock, the stamps are on the uptime clock.
-        XCTAssertGreaterThanOrEqual(seconds, bound - 0.05, "the barrier waited the bound (\(bound) s) before giving up")
-        XCTAssertLessThan(seconds, bound + 5, "and did not wait much longer than the bound")
+        #expect(seconds >= bound - 0.05, "the barrier waited the bound (\(bound) s) before giving up")
+        #expect(seconds < bound + 5, "and did not wait much longer than the bound")
     }
 
     // MARK: The real loader
@@ -283,26 +278,25 @@ final class HDF5ExitBarrierTests: XCTestCase {
     /// probe opens velox-tiny.emd through the public API and installs nothing itself; HDF5 calls a callback of the
     /// probe's as its `H5_term_library` starts, and the lock must be held then. A loader that installed the barrier
     /// before `H5open` would register it before HDF5's handler, so it would run after the teardown: "lock-free".
-    func testTheVeloxLoaderInstallsTheBarrierAfterHDF5sOwnTeardownHandler() throws {
+    @Test func testTheVeloxLoaderInstallsTheBarrierAfterHDF5sOwnTeardownHandler() throws {
         guard ProcessInfo.processInfo.environment["MAC4DSTEM_HDF5_PATH"] != nil else {
-            return XCTFail("MAC4DSTEM_HDF5_PATH is not set: run through tools/test.sh, which sets it for the probe too")
+            Issue.record("MAC4DSTEM_HDF5_PATH is not set: run through tools/test.sh, which sets it for the probe too")
+            return
         }
         let run = try runProbe("velox-order", arguments: [Self.veloxTiny.path], deadline: 30)
         guard !run.timedOut else { return }
-        XCTAssertEqual(run.reason, .exit)
-        XCTAssertEqual(run.status, 0, "stdout \(run.stdout.debugDescription), stderr \(run.stderr.debugDescription)")
-        XCTAssertEqual(
-            run.markers, "opened\nlock-free-before-exit\n" + Self.calling + "h5-teardown lock-held\n",
-            "the file opened, the lock was free before exit, and HDF5's teardown found it held")
+        #expect(run.reason == .exit)
+        #expect(run.status == 0, "stdout \(run.stdout.debugDescription), stderr \(run.stderr.debugDescription)")
+        #expect(run.markers == "opened\nlock-free-before-exit\n" + Self.calling + "h5-teardown lock-held\n", "the file opened, the lock was free before exit, and HDF5's teardown found it held")
         assertNoBarrierLine(run, "velox-order")
     }
 
     /// Without `setExitBarrierBound` the bound a host gets is 10 s.
-    func testTheDefaultBoundIsTenSeconds() throws {
+    @Test func testTheDefaultBoundIsTenSeconds() throws {
         let run = try runProbe("print-bound", deadline: 20)
         guard !run.timedOut else { return }
-        XCTAssertEqual(run.status, 0)
-        XCTAssertEqual(run.stdout, "10.0\n" + Self.teardown, "the bound, then the ordinary exit")
+        #expect(run.status == 0)
+        #expect(run.stdout == "10.0\n" + Self.teardown, "the bound, then the ordinary exit")
         assertNoBarrierLine(run, "print-bound")
     }
 }

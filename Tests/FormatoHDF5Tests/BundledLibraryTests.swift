@@ -6,25 +6,26 @@
 //  Mutation 16 (the shipped candidate removed from the lookup) - red.
 //
 
-import XCTest
+import Testing
+import Foundation
 import Darwin
 import FormatoHDF5
 import FormatoEMD
 
-final class BundledLibraryTests: XCTestCase {
-    func testTheShippedLibraryIsFoundAndLoads() throws {
-        let path = try XCTUnwrap(FormatoHDF5Library.bundledLibraryPath, "the FormatoKit_FormatoHDF5 bundle is not next to the tests")
-        XCTAssertTrue(path.hasSuffix("hdf5/libhdf5.dylib"), path)
-        let handle = try XCTUnwrap(dlopen(path, RTLD_NOW | RTLD_LOCAL), String(cString: dlerror()))
-        XCTAssertNotNil(dlsym(handle, "H5open"))
-        XCTAssertNotNil(dlsym(handle, "H5Dread"))
+@Suite(.serialized) struct BundledLibraryTests {
+    @Test func testTheShippedLibraryIsFoundAndLoads() throws {
+        let path = try #require(FormatoHDF5Library.bundledLibraryPath, "the FormatoKit_FormatoHDF5 bundle is not next to the tests")
+        #expect(path.hasSuffix("hdf5/libhdf5.dylib"), "\(path)")
+        let handle = try #require(dlopen(path, RTLD_NOW | RTLD_LOCAL), "\(String(cString: dlerror()))")
+        #expect(dlsym(handle, "H5open") != nil)
+        #expect(dlsym(handle, "H5Dread") != nil)
     }
 
-    func testTheReaderLooksForTheShippedLibraryAfterTheHostsAndBeforeTheBareName() throws {
+    @Test func testTheReaderLooksForTheShippedLibraryAfterTheHostsAndBeforeTheBareName() throws {
         let candidates = VeloxHDF5Library.defaultCandidates()
-        let shipped = try XCTUnwrap(FormatoHDF5Library.bundledLibraryPath)
-        let i = try XCTUnwrap(candidates.firstIndex(of: shipped), "the shipped libhdf5 is not a candidate: \(candidates)")
-        XCTAssertEqual(candidates.last, "libhdf5.dylib")
-        XCTAssertEqual(i, candidates.count - 2, "the shipped copy comes right before the bare name")
+        let shipped = try #require(FormatoHDF5Library.bundledLibraryPath)
+        let i = try #require(candidates.firstIndex(of: shipped), "the shipped libhdf5 is not a candidate: \(candidates)")
+        #expect(candidates.last == "libhdf5.dylib")
+        #expect(i == candidates.count - 2, "the shipped copy comes right before the bare name")
     }
 }
