@@ -22,6 +22,8 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
     let stripByteCounts: [Int]
     let rowsPerStrip: Int
     let bigEndian: Bool
+    let photometric: Int64
+    let extraSamples: [Int64]
     /// Bytes of one row, all samples.
     var rowBytes: Int { width * samples * bytesPerSample }
     var pageBytes: Int { rowBytes * height }
@@ -43,7 +45,15 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
         guard let b = bits.first, bits.allSatisfy({ $0 == b }), let f = formats.first, formats.allSatisfy({ $0 == f }) else {
             throw TIFFError.unsupportedLayout("The page mixes sample sizes or formats.")
         }
-        let photometric = int(262, 1) ?? 1
+        // RosettaSciIO logs `op["PhotometricInterpretation"]` and raises without it; tifffile reads FillOrder 2 bit-reversed and
+        // undoes a predictor; ImageDepth makes a volume page. Refused rather than ported (Gate B F8, F12).
+        guard let photometric = int(262) else { throw TIFFError.unsupportedLayout("The page has no PhotometricInterpretation.") }
+        if let fill = int(266), fill != 1 { throw TIFFError.unsupportedLayout("The page sets FillOrder \(fill).") }
+        if let predictor = int(317), predictor != 1 { throw TIFFError.unsupportedLayout("The page sets Predictor \(predictor).") }
+        if let depth = int(32997), depth != 1 { throw TIFFError.unsupportedLayout("The page sets ImageDepth \(depth) (an SGI volume).") }
+        guard (samples == 1 && [0, 1, 3].contains(photometric)) || (samples > 1 && photometric == 2) else {
+            throw TIFFError.unsupportedLayout("The page holds \(samples) sample(s) with PhotometricInterpretation \(photometric).")
+        }
         let type: FormatoDataType
         switch (samples, photometric, f, b) {
         case (1, _, 1, 8): type = .uint8
@@ -66,9 +76,16 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
             throw TIFFError.unsupportedLayout("The page has no strips.")
         }
         let rps = Int(min(int(278, 0xFFFF_FFFF) ?? 0xFFFF_FFFF, h))
+        // Sizes without overflow (Gate B F9): a row and a page must be addressable.
+        let (rowBytes, o1) = Int(w).multipliedReportingOverflow(by: samples * (Int(b) / 8))
+        let (pageBytes, o2) = rowBytes.multipliedReportingOverflow(by: Int(h))
+        guard !o1, !o2, pageBytes <= fileSize else { throw TIFFError.truncated("The page claims more bytes than the file holds.") }
+        // tifffile treats a strip offset of 0 as a missing strip (Gate B F11): refused.
+        guard !offsets.contains(0) else { throw TIFFError.unsupportedLayout("A strip offset of the page is 0 (a missing strip).") }
         let layout = TIFFPageLayout(width: Int(w), height: Int(h), dataType: type, samples: samples, bytesPerSample: Int(b) / 8,
                                     stripOffsets: offsets.map(Int.init), stripByteCounts: counts.map(Int.init),
-                                    rowsPerStrip: max(rps, 1), bigEndian: bigEndian)
+                                    rowsPerStrip: max(rps, 1), bigEndian: bigEndian, photometric: photometric,
+                                    extraSamples: dir[338]?.integers ?? [])
         // Every row must lie inside its strip and the strip inside the file.
         let strips = (layout.height + layout.rowsPerStrip - 1) / layout.rowsPerStrip
         guard strips <= offsets.count else { throw TIFFError.truncated("The page has fewer strips than rows need.") }
@@ -114,7 +131,19 @@ public nonisolated struct TIFFSeries: Sendable {
     public let axes: String
     public let shape: [Int]
     public let dataType: FormatoDataType
-    let images: [TIFFImageSource]
+    /// The real pages, or (an ImageJ virtual stack) one page whose `virtualCount` images follow its data contiguously:
+    /// computed per image, never one record per image (Gate B F15).
+    let pages: [TIFFPageLayout]
+    let virtualCount: Int?
+
+    init(axes: String, shape: [Int], dataType: FormatoDataType, pages: [TIFFPageLayout], virtualCount: Int? = nil) {
+        self.axes = axes; self.shape = shape; self.dataType = dataType; self.pages = pages; self.virtualCount = virtualCount
+    }
+
+    func source(_ i: Int) -> TIFFImageSource {
+        if virtualCount != nil { return TIFFImageSource(layout: pages[0], shift: i * pages[0].pageBytes) }
+        return TIFFImageSource(layout: pages[i], shift: 0)
+    }
 }
 
 public nonisolated struct TIFFSignals: Sendable {
@@ -149,7 +178,7 @@ public nonisolated struct TIFFSignals: Sendable {
         guard let d = page[270]?.text, d.hasPrefix("ImageJ=") || d.hasPrefix("SCIFIO=") else { return nil }
         // `imagej_description_metadata`: key=value lines; int, float, bool ("true"/"false" exactly, any case), else string.
         var out: [String: FormatoPythonValue] = [:]
-        for line in d.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }) {
+        for line in TIFFFile.splitLines(d) {
             guard let eq = line.firstIndex(of: "=") else { continue }
             let key = line[..<eq].trimmingCharacters(in: .whitespaces)
             let val = line[line.index(after: eq)...].trimmingCharacters(in: .whitespaces)
@@ -169,6 +198,14 @@ public nonisolated struct TIFFSignals: Sendable {
         let pageAxes = layout0.samples > 1 ? "YXS" : "YX"
         let pageShape = layout0.samples > 1 ? [layout0.height, layout0.width, layout0.samples] : [layout0.height, layout0.width]
 
+        // tifffile's shaped (its own JSON description) and OME series come before ImageJ and the generic rule; not ported
+        // (Gate B F1).
+        if let d = first[270]?.text {
+            if (d.hasPrefix("{") && d.contains("\"shape\"")) || d.hasPrefix("shape=(") {
+                throw FormatoReadError.unsupported("The file carries tifffile's shaped description; its series rule is not ported.")
+            }
+            if d.contains("<OME") { throw FormatoReadError.unsupported("The file is an OME-TIFF; its series rule is not ported.") }
+        }
         if let meta = imageJDescription(first), let s = try imageJSeries(file, meta, layout0, pageAxes, pageShape) {
             return [s]
         }
@@ -176,37 +213,53 @@ public nonisolated struct TIFFSignals: Sendable {
         // Uniform or generic: pages with the same shape and type form one series, in first-seen order.
         var groups: [(key: String, pages: [TIFFPageLayout])] = []
         for l in layouts {
-            let key = "\(l.width)x\(l.height)x\(l.samples) \(l.dataType)"
+            let key = "\(l.width)x\(l.height)x\(l.samples) \(l.dataType) rps \(l.rowsPerStrip) photometric \(l.photometric) extra \(l.extraSamples)"
             if let i = groups.firstIndex(where: { $0.key == key }) { groups[i].pages.append(l) } else { groups.append((key, [l])) }
+        }
+        // tifffile splits pages by more than shape and type, and merges reduced-size pages into pyramids: a file whose pages
+        // fall in more than one group is refused rather than guessed (Gate B F2-F4).
+        guard groups.count == 1 else {
+            throw FormatoReadError.unsupported("The file's pages form \(groups.count) groups; several series are not ported.")
         }
         return groups.map { g in
             let n = g.pages.count, l = g.pages[0]
             let axes = (n > 1 ? "I" : "") + (l.samples > 1 ? "YXS" : "YX")
             let shape: [Int] = (n > 1 ? [n] : [Int]()) + (l.samples > 1 ? [l.height, l.width, l.samples] : [l.height, l.width])
-            return TIFFSeries(axes: axes, shape: shape, dataType: l.dataType,
-                              images: g.pages.map { TIFFImageSource(layout: $0, shift: 0) })
+            return TIFFSeries(axes: axes, shape: shape, dataType: l.dataType, pages: g.pages)
         }
     }
 
-    /// tifffile's `series_imagej` for the files in scope; nil where it returns None (then the generic rule applies).
+    /// tifffile's `series_imagej` for the files in scope; nil where it returns None (then the generic rule applies). A
+    /// description whose counts are not integers, a count overflow, pages that disagree with the first, or images that
+    /// neither the pages nor a contiguous block after the first page hold, are refused (Gate B F5, F6, F9).
     static func imageJSeries(_ file: TIFFFile, _ meta: [String: FormatoPythonValue], _ page: TIFFPageLayout,
                              _ pageAxes: String, _ pageShape: [Int]) throws -> TIFFSeries? {
-        func int(_ k: String) -> Int? {
-            switch meta[k] { case .int(let i)?: return Int(i); case nil: return 1; default: return nil }
+        func int(_ k: String) throws -> Int {
+            switch meta[k] {
+            case nil: return 1
+            case .int(let i)?: guard let v = Int(exactly: i) else { fallthrough }; return v
+            default: throw FormatoReadError.unsupported("The ImageJ description's '\(k)' is not an integer this reader takes.")
+            }
         }
-        guard var frames = int("frames"), var slices = int("slices"), var channels = int("channels"), var images = int("images"),
-              images >= 1, frames >= 1, slices >= 1, channels >= 1 else { return nil }
-        _ = frames; _ = slices
+        let frames = try int("frames"), slices = try int("slices")
+        var channels = try int("channels"), images = try int("images")
+        guard images >= 1, frames >= 1, slices >= 1, channels >= 1 else { return nil }
+        func mul(_ a: Int, _ b: Int) throws -> Int {
+            let (r, o) = a.multipliedReportingOverflow(by: b)
+            guard !o else { throw FormatoReadError.unsupported("The ImageJ description's counts overflow.") }
+            return r
+        }
         if channels == 1 {
-            images = frames * slices
-        } else if images == frames * slices && page.samples == channels {
+            images = try mul(frames, slices)
+        } else if images == (try mul(frames, slices)) && page.samples == channels {
             channels = 1
         } else {
-            images = frames * slices * channels
+            images = try mul(try mul(frames, slices), channels)
         }
         let pages = file.directories.count
         if images == 1 && pages > 1 { images = pages }
-        guard page.stripOffsets[0] + images * page.pageBytes <= file.data.count else { return nil }
+        let nbytes = try mul(images, page.pageBytes)
+        guard page.stripOffsets[0] <= file.data.count - nbytes else { return nil }   // "metadata invalid or corrupted": None
         let order: String
         switch meta["order"] { case .string(let s)?: order = s.lowercased(); default: order = "czt" }
         var axes: [Character], shape: [Int]
@@ -218,24 +271,30 @@ public nonisolated struct TIFFSignals: Sendable {
         case "tzc": axes = ["C", "Z", "T"]; shape = [channels, slices, frames]
         default: axes = ["T", "Z", "C"]; shape = [frames, slices, channels]
         }
-        let remain = images / shape.reduce(1, *)
+        let remain = images / (try mul(try mul(shape[0], shape[1]), shape[2]))
         if remain > 1 { axes.insert("I", at: 0); shape.insert(remain, at: 0) }
         axes += Array(pageAxes); shape += pageShape
         // tifffile's squeeze: length-1 axes go, Y and X stay.
         var sq: [(Character, Int)] = []
         for (a, n) in zip(axes, shape) where n > 1 || a == "Y" || a == "X" { sq.append((a, n)) }
-        // Images: the pages, or (a virtual hyperstack) images contiguous after the first page's data.
-        let sources: [TIFFImageSource]
-        if pages >= images {
-            sources = try file.directories.prefix(images).map {
-                TIFFImageSource(layout: try TIFFPageLayout.of($0, bigEndian: file.bigEndian, fileSize: file.data.count), shift: 0)
-            }
-        } else {
+        // tifffile: virtual when there is one page, or when page 0's data ends before page 1 starts.
+        let layouts: [TIFFPageLayout]
+        var virtual: Int?
+        if pages == 1 || page.stripOffsets[0] + nbytes <= file.directories[1].offset {
             let contiguous = zip(page.stripOffsets, page.stripOffsets.dropFirst()).allSatisfy { $1 - $0 == page.rowsPerStrip * page.rowBytes }
-            guard contiguous else { return nil }
-            sources = (0..<images).map { TIFFImageSource(layout: page, shift: $0 * page.pageBytes) }
+            guard contiguous else { throw FormatoReadError.unsupported("An ImageJ virtual stack whose first page's strips are not contiguous.") }
+            layouts = [page]; virtual = images
+        } else {
+            guard pages >= images else { throw FormatoReadError.unsupported("The ImageJ description counts \(images) images over \(pages) pages.") }
+            layouts = try file.directories.prefix(images).map {
+                let l = try TIFFPageLayout.of($0, bigEndian: file.bigEndian, fileSize: file.data.count)
+                guard l.width == page.width, l.height == page.height, l.dataType == page.dataType else {
+                    throw FormatoReadError.unsupported("A page of the ImageJ stack differs from the first.")
+                }
+                return l
+            }
         }
-        return TIFFSeries(axes: String(sq.map(\.0)), shape: sq.map(\.1), dataType: page.dataType, images: sources)
+        return TIFFSeries(axes: String(sq.map(\.0)), shape: sq.map(\.1), dataType: page.dataType, pages: layouts, virtualCount: virtual)
     }
 
     // MARK: Signals
@@ -319,6 +378,10 @@ public nonisolated struct TIFFSignals: Sendable {
                 guard let v = fei[section]?[key] else { throw TIFFError.unsupportedLayout("KeyError") }
                 return v
             }
+            func divide(_ a: Double, _ b: Double) throws -> Double {
+                guard b != 0 else { throw TIFFError.unsupportedLayout("ZeroDivisionError") }   // Python float division (Gate B F7)
+                return a / b
+            }
             func float(_ v: FormatoPythonValue) throws -> Double {
                 guard let d = v.asFloat else { throw TIFFError.unsupportedLayout("ValueError") }   // not caught by RosettaSciIO
                 return d
@@ -329,8 +392,8 @@ public nonisolated struct TIFFSignals: Sendable {
                 u.x = "m"; u.y = "m"
             } catch TIFFError.unsupportedLayout("KeyError") {
                 do {
-                    s.x = try float(try value("IRBeam", "HFW")) / float(try value("Image", "ResolutionX"))
-                    s.y = try float(try value("IRBeam", "VFW")) / float(try value("Image", "ResolutionY"))
+                    s.x = try divide(try float(try value("IRBeam", "HFW")), try float(try value("Image", "ResolutionX")))
+                    s.y = try divide(try float(try value("IRBeam", "VFW")), try float(try value("Image", "ResolutionY")))
                     u.x = "m"; u.y = "m"
                 } catch TIFFError.unsupportedLayout("KeyError") {
                     // "Could not determine pixel size": uncalibrated, with whatever was assigned before the KeyError.
@@ -368,6 +431,8 @@ public nonisolated struct TIFFSignals: Sendable {
     static func resolutionScales(_ page: TIFFDirectory) throws -> (Double, Double) {
         guard case .rationals(let y)? = page[283]?.value, let yr = y.first,
               case .rationals(let x)? = page[282]?.value, let xr = x.first else { throw TIFFError.unsupportedLayout("no resolution") }
+        // Python's int / int raises ZeroDivisionError on a zero numerator (Gate B F7).
+        guard yr.numerator != 0, xr.numerator != 0 else { throw TIFFError.unsupportedLayout("ZeroDivisionError") }
         return (Double(yr.denominator) / Double(yr.numerator), Double(xr.denominator) / Double(xr.numerator))
     }
 
@@ -395,7 +460,7 @@ public nonisolated struct TIFFSignals: Sendable {
             guard let tag = page[code] else { continue }
             var section: String?
             var parsed: [String: [String: FormatoPythonValue]] = [:]
-            for raw in TIFFFile.bytes2str(tag.raw).split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }) {
+            for raw in TIFFFile.splitLines(TIFFFile.bytes2str(tag.raw)) {
                 let line = raw.trimmingCharacters(in: .whitespaces)
                 if line.hasPrefix("[") {
                     let name = String(line.dropFirst().dropLast())
@@ -442,19 +507,22 @@ public nonisolated struct TIFFSignals: Sendable {
     /// `datetime.strptime(value, "%Y:%m:%d %H:%M:%S")`, else `"%Y/%m/%d %H:%M"`; the ISO date and time strings, or nil
     /// when neither matches (RosettaSciIO then records no date).
     static func dateTime(_ s: String, slashAllowed: Bool = true) -> (String, String)? {
+        // Python's `_strptime` patterns (ASCII digits here; Python's `\d` also takes other decimal digits, a registered
+        // deviation): %Y four digits, %m 1-12, %d 1-31 (also " 5"), %H, %M, %S; whitespace in the format is `\s+`.
+        let Y = "([0-9]{4})", m = "(1[0-2]|0[1-9]|[1-9])", d = "(3[01]|[12][0-9]|0[1-9]|[1-9]| [1-9])"
+        let H = "(2[0-3]|[0-1][0-9]|[0-9])", M = "([0-5][0-9]|[0-9])", S = "(6[0-1]|[0-5][0-9]|[0-9])"
         func parse(_ pattern: String, _ hasSeconds: Bool) -> (String, String)? {
-            guard let re = try? NSRegularExpression(pattern: pattern),
-                  let m = re.firstMatch(in: s, range: NSRange(s.startIndex..., in: s)), m.range == NSRange(s.startIndex..., in: s) else { return nil }
-            let g = (1..<m.numberOfRanges).map { Int(s[Range(m.range(at: $0), in: s)!])! }
-            let (y, mo, d, h, mi) = (g[0], g[1], g[2], g[3], g[4]), sec = hasSeconds ? g[5] : 0
-            var comps = DateComponents(); comps.year = y; comps.month = mo; comps.day = d
+            guard let re = try? NSRegularExpression(pattern: "^" + pattern + "$"),
+                  let match = re.firstMatch(in: s, range: NSRange(s.startIndex..., in: s)) else { return nil }
+            let g = (1..<match.numberOfRanges).map { Int(s[Range(match.range(at: $0), in: s)!].trimmingCharacters(in: .whitespaces)) ?? -1 }
+            let (y, mo, day, h, mi) = (g[0], g[1], g[2], g[3], g[4]), sec = hasSeconds ? g[5] : 0
             let cal = Calendar(identifier: .gregorian)
-            guard (1...12).contains(mo), d >= 1, let range = cal.range(of: .day, in: .month, for: cal.date(from: DateComponents(year: y, month: mo))!),
-                  range.contains(d), (0...23).contains(h), (0...59).contains(mi), (0...61).contains(sec), sec <= 59 else { return nil }
-            return (String(format: "%04d-%02d-%02d", y, mo, d), String(format: "%02d:%02d:%02d", h, mi, sec))
+            guard y >= 1, sec <= 59, let first = cal.date(from: DateComponents(year: y, month: mo)),
+                  let days = cal.range(of: .day, in: .month, for: first), days.contains(day) else { return nil }   // datetime() raises
+            return (String(format: "%04d-%02d-%02d", y, mo, day), String(format: "%02d:%02d:%02d", h, mi, sec))
         }
-        if let r = parse(#"^(\d{4}):(\d{1,2}):(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$"#, true) { return r }
-        return slashAllowed ? parse(#"^(\d{4})/(\d{1,2})/(\d{1,2}) (\d{1,2}):(\d{1,2})$"#, false) : nil
+        if let r = parse("\(Y):\(m):\(d)\\s+\(H):\(M):\(S)", true) { return r }
+        return slashAllowed ? parse("\(Y)/\(m)/\(d)\\s+\(H):\(M)", false) : nil
     }
 
     /// RosettaSciIO's `mapping_fei`, applied as HyperSpy applies a mapping (the value at the path, through the function;
@@ -494,14 +562,20 @@ public nonisolated struct TIFFSignals: Sendable {
     /// "YYYY-MM-DD".
     static func feiDate(_ s: String) -> String? {
         let t = s.trimmingCharacters(in: .whitespaces)
-        let us = t.split(separator: "/").compactMap { Int($0) }
-        if us.count == 3, t.split(separator: "/").count == 3, (1...12).contains(us[0]), (1...31).contains(us[1]), us[2] >= 1000 {
-            return String(format: "%04d-%02d-%02d", us[2], us[0], us[1])
+        func fields(_ sep: Character) -> [Int]? {
+            let parts = t.split(separator: sep, omittingEmptySubsequences: false)
+            guard parts.count == 3, parts.allSatisfy({ !$0.isEmpty && $0.allSatisfy { $0.isASCII && $0.isNumber } }) else { return nil }
+            return parts.map { Int($0)! }
         }
-        let iso = t.split(separator: "-").compactMap { Int($0) }
-        if iso.count == 3, t.split(separator: "-").count == 3, iso[0] >= 1000, (1...12).contains(iso[1]), (1...31).contains(iso[2]) {
-            return String(format: "%04d-%02d-%02d", iso[0], iso[1], iso[2])
+        // dateutil raises on a date the calendar does not hold (Gate B F10).
+        func valid(_ y: Int, _ m: Int, _ d: Int) -> String? {
+            let cal = Calendar(identifier: .gregorian)
+            guard y >= 1000, (1...12).contains(m), let first = cal.date(from: DateComponents(year: y, month: m)),
+                  let days = cal.range(of: .day, in: .month, for: first), days.contains(d) else { return nil }
+            return String(format: "%04d-%02d-%02d", y, m, d)
         }
+        if let us = fields("/") { return valid(us[2], us[0], us[1]) }
+        if let iso = fields("-") { return valid(iso[0], iso[1], iso[2]) }
         return nil
     }
 
@@ -510,8 +584,10 @@ public nonisolated struct TIFFSignals: Sendable {
         var t = s.trimmingCharacters(in: .whitespaces).uppercased()
         var pm: Bool?
         if t.hasSuffix(" AM") || t.hasSuffix(" PM") { pm = t.hasSuffix("PM"); t = String(t.dropLast(3)).trimmingCharacters(in: .whitespaces) }
-        let parts = t.split(separator: ":").map(String.init)
-        guard parts.count == 2 || parts.count == 3, let h0 = Int(parts[0]), let mi = Int(parts[1]) else { return nil }
+        let parts = t.split(separator: ":", omittingEmptySubsequences: false).map(String.init)
+        guard parts.count == 2 || parts.count == 3,
+              parts.allSatisfy({ !$0.isEmpty && $0.allSatisfy { $0.isASCII && $0.isNumber } }),
+              let h0 = Int(parts[0]), let mi = Int(parts[1]) else { return nil }
         let sec = parts.count == 3 ? Int(parts[2]) : 0
         guard let sec, (0...59).contains(mi), (0...59).contains(sec) else { return nil }
         var h = h0
@@ -527,7 +603,7 @@ public nonisolated struct TIFFSignals: Sendable {
 extension FormatoPythonValue {
     /// The number an int or float holds (ImageJ's `spacing`); nil for a bool or string.
     var numberValue: Double? {
-        switch self { case .int(let i): return Double(i); case .float(let d): return d; default: return nil }
+        switch self { case .int(let i): return Double(i); case .float(let d): return d; case .bool(let b): return b ? 1 : 0; default: return nil }
     }
 }
 
@@ -569,7 +645,7 @@ public nonisolated struct TIFFSeriesArray: FormatoLazyArray {
             }
         }
         for image in images {
-            let src = series.images[image]
+            let src = series.source(image)
             for y in y0..<(y0 + ny) where nx > 0 {
                 var row = Data(count: nx * el)
                 let at = src.layout.rowOffset(y) + src.shift + x0 * el

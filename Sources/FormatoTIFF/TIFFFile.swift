@@ -113,7 +113,7 @@ public nonisolated struct TIFFFile: Sendable {
         case 43:
             guard data.count >= 16, try reader.u16(4, name) == 8, try reader.u16(6, name) == 0 else { throw TIFFError.notTIFF(name) }
             bigTIFF = true
-            first = Int(try reader.u64(8, name))
+            first = try reader.int64(8, name)
         default:
             throw TIFFError.notTIFF(name)
         }
@@ -130,7 +130,7 @@ public nonisolated struct TIFFFile: Sendable {
 
     private static func readDirectory(at offset: Int, reader: ByteReader, bigTIFF: Bool, name: String) throws
         -> (TIFFDirectory, Int) {
-        let count = bigTIFF ? Int(try reader.u64(offset, name)) : Int(try reader.u16(offset, name))
+        let count = bigTIFF ? try reader.int64(offset, name) : Int(try reader.u16(offset, name))
         let entrySize = bigTIFF ? 20 : 12
         let start = offset + (bigTIFF ? 8 : 2)
         guard count >= 0, count < 1 << 20 else { throw TIFFError.truncated(name) }
@@ -139,20 +139,20 @@ public nonisolated struct TIFFFile: Sendable {
         for i in 0..<count {
             let e = start + i * entrySize
             let code = Int(try reader.u16(e, name)), type = Int(try reader.u16(e + 2, name))
-            let n = bigTIFF ? Int(try reader.u64(e + 4, name)) : Int(try reader.u32(e + 4, name))
+            let n = bigTIFF ? try reader.int64(e + 4, name) : Int(try reader.u32(e + 4, name))
             let fieldOffset = e + (bigTIFF ? 12 : 8)
             let inline = bigTIFF ? 8 : 4
             let size = typeSizes[type] ?? 1
             let (bytes, overflow) = n.multipliedReportingOverflow(by: size)
             guard !overflow, n >= 0 else { throw TIFFError.truncated(name) }
             let valueOffset = bytes <= inline ? fieldOffset
-                : (bigTIFF ? Int(try reader.u64(fieldOffset, name)) : Int(try reader.u32(fieldOffset, name)))
+                : (bigTIFF ? try reader.int64(fieldOffset, name) : Int(try reader.u32(fieldOffset, name)))
             let raw = try reader.slice(valueOffset, bytes, name)
             tags.append(TIFFTag(code: code, type: type, count: n, valueOffset: valueOffset, raw: raw,
                                 value: decode(raw, type: type, count: n, bigEndian: reader.bigEndian)))
         }
         let nextAt = start + count * entrySize
-        let next = bigTIFF ? Int(try reader.u64(nextAt, name)) : Int(try reader.u32(nextAt, name))
+        let next = bigTIFF ? try reader.int64(nextAt, name) : Int(try reader.u32(nextAt, name))
         return (TIFFDirectory(offset: offset, tags: tags), next)
     }
 
@@ -190,7 +190,18 @@ public nonisolated struct TIFFFile: Sendable {
     /// `bytes2str` (used for INI text): up to the first NUL, UTF-8 or else cp1252, not stripped.
     static func bytes2str(_ raw: Data) -> String {
         let bytes = [UInt8](raw.prefix { $0 != 0 })
-        return String(bytes: bytes, encoding: .utf8) ?? String(bytes: bytes, encoding: .windowsCP1252) ?? ""
+        // Python's UTF-8 decode keeps a byte-order mark as U+FEFF, which Foundation drops: kept here (Gate B F15).
+        let bom = bytes.starts(with: [0xEF, 0xBB, 0xBF])
+        guard let s = String(bytes: bytes, encoding: .utf8) else { return String(bytes: bytes, encoding: .windowsCP1252) ?? "" }
+        return bom && !s.hasPrefix("\u{FEFF}") ? "\u{FEFF}" + s : s
+    }
+
+    /// Python's `str.splitlines()`: "\r\n", "\r", "\n", "\u{0B}", "\u{0C}", "\u{1C}"-"\u{1E}", "\u{85}", U+2028, U+2029
+    /// each end a line (Gate B F15).
+    static func splitLines(_ s: String) -> [Substring] {
+        s.split(omittingEmptySubsequences: false, whereSeparator: { c in
+            c.isNewline || c == "\u{1C}" || c == "\u{1D}" || c == "\u{1E}" || c == "\u{0B}" || c == "\u{0C}"
+        })
     }
 }
 
@@ -219,6 +230,11 @@ nonisolated struct ByteReader {
         return bigEndian ? UInt64(bigEndian: v) : UInt64(littleEndian: v)
     }
     func u16(_ o: Int, _ name: String) throws -> UInt16 { try check(o, 2, name); return u16u(o) }
+    /// A BigTIFF count or offset as Int; one at or beyond 2^63 cannot address this file and is refused (Gate B F9).
+    func int64(_ o: Int, _ name: String) throws -> Int {
+        guard let v = Int(exactly: try u64(o, name)) else { throw TIFFError.truncated(name) }
+        return v
+    }
     func u32(_ o: Int, _ name: String) throws -> UInt32 { try check(o, 4, name); return u32u(o) }
     func u64(_ o: Int, _ name: String) throws -> UInt64 { try check(o, 8, name); return u64u(o) }
 }

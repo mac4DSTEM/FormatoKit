@@ -82,7 +82,8 @@ import FormatoCore
         }
     }
 
-    private func compare(_ files: [[String: Any]], locate: (String) -> URL?, mustFind: Bool) throws -> (files: Int, signals: Int, refused: Int) {
+    private func compare(_ files: [[String: Any]], locate: (String) -> URL?, mustFind: Bool, refusedOnPurpose: Set<String> = [],
+                         metadataDeviations: Set<String> = []) throws -> (files: Int, signals: Int, refused: Int) {
         var read = 0, signals = 0, refused = 0
         for f in files {
             let path = f["path"] as! String
@@ -96,7 +97,7 @@ import FormatoCore
                 assertTags(first, tags, path)
                 #expect(file.directories.count == f["pages"] as? Int, "\(path): pages")
             }
-            if f["in_scope"] as? Bool != true || f["raises"] as? [String: Any] != nil {
+            if f["in_scope"] as? Bool != true || f["raises"] as? [String: Any] != nil || refusedOnPurpose.contains(path) {
                 #expect(refuses(url), "\(path): out of scope (\(f["out_of_scope"] ?? f["raises"] ?? "?")) but read")
                 refused += 1; continue
             }
@@ -120,8 +121,10 @@ import FormatoCore
                     #expect(a.units == ((q["units"] as? String) ?? ""), "\(what) axis \(k) units '\(a.units)' vs \(q["units"] ?? "None")")
                     #expect(a.navigate == q["navigate"] as? Bool, "\(what) axis \(k) navigate")
                 }
-                let md = p["metadata"] as! [[String: Any]]
-                #expect(Set(eager.metadata.keys) == Set(md.map { $0["key"] as! String }), "\(what): metadata keys")
+                let md = metadataDeviations.contains(path) ? [] : p["metadata"] as! [[String: Any]]
+                if !metadataDeviations.contains(path) {
+                    #expect(Set(eager.metadata.keys) == Set(md.map { $0["key"] as! String }), "\(what): metadata keys")
+                }
                 for e in md {
                     let key = e["key"] as! String
                     guard let ours = eager.metadata[key] else { continue }
@@ -150,6 +153,24 @@ import FormatoCore
         let r = try compare(files, locate: locate, mustFind: referencesPresent)
         print("FormatoTIFFPins: \(r.files) files, \(r.signals) signals equal, \(r.refused) refused by name")
         if referencesPresent { #expect(r.files == files.count) }
+    }
+
+    /// Gate B's files (Fixtures/refuter, pinned by `pins.py --owner` into refuter-pins.json): where RosettaSciIO raises,
+    /// FormatoKit refuses; where it reads, the signals are equal, except the files FormatoKit refuses on purpose
+    /// (registration step 2 A2: tifffile's shaped, OME, several-series, pyramid, FillOrder, strip-offset-0 rules are not
+    /// ported) and one registered metadata deviation (a DateTime in non-ASCII digits, which Python's strptime reads).
+    @Test func testRefuterFilesAgreeOrAreRefused() throws {
+        let object = try JSONSerialization.jsonObject(with: Data(contentsOf: Self.fixtures.appendingPathComponent("refuter-pins.json"))) as! [String: Any]
+        let files = object["files"] as! [[String: Any]]
+        let dir = Self.fixtures.appendingPathComponent("refuter")
+        let onPurpose: Set<String> = ["m_photo_diff.tif", "m_rps_diff.tif", "pyr_half.tif", "dm_stack_mix_series.tif",
+                                      "ij_desc_07.tif", "ij_pages2_images4.tif", "ij_ovf_fs_1p.tif", "f_257_val_1.tif",
+                                      "o_fill2_u8.tif", "h_off0.tif"]
+        let r = try compare(files, locate: { name in
+            let u = dir.appendingPathComponent(name); return FileManager.default.fileExists(atPath: u.path) ? u : nil
+        }, mustFind: true, refusedOnPurpose: onPurpose, metadataDeviations: ["dt_15.tif"])
+        print("TIFFRefuter: \(r.files) files, \(r.signals) equal, \(r.refused) refused")
+        #expect(r.files == 26)
     }
 
     @Test(.enabled(if: ProcessInfo.processInfo.environment["FORMATO_OWNER_TIFF_PINS"] != nil, "owner files: tools/step-2/owner-check.sh"))

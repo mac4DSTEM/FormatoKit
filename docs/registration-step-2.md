@@ -166,3 +166,29 @@ Hamamatsu branches, force-read resolution, pages as a list, the Velox XML and TI
    tags 65450-65452: RosettaSciIO gives them uncalibrated height and width axes and no date.
 Result: 45 files; 31 series bit-identical (data, shape, element type, every axis field, metadata with source) and their
 page-0 tags equal to tifffile's; 14 refused by name (11 out of scope, 3 RosettaSciIO raises on); lazy slabs equal on all.
+
+**A2 (2026-10-15, 01:50, Gate B).** One refuter (Sonnet) on the frozen commit `700ede0`, with about 15 500 generated TIFFs
+(tifffile's writer and hand-written), every public TIFF and the owner's six. What it found and what was done:
+- **Narrowed scope, refused by name** (rules of tifffile not ported in step 2): its *shaped* and *OME* series (F1); files
+  whose pages fall in more than one group (tifffile's page hash and its pyramid merging, F2-F4; the grouping key now also
+  holds RowsPerStrip, Photometric and ExtraSamples); FillOrder 2 (F8); a Predictor; ImageDepth; a strip offset of 0 (F11);
+  a missing PhotometricInterpretation, and photometric values other than 0, 1, 3 for one sample or 2 for three or four
+  (F12). §1.1 already refused YCbCr; the code now does.
+- **Crashes fixed** (F9): BigTIFF counts and offsets at or beyond 2^63 are refused, page sizes are overflow-checked,
+  ImageJ counts are overflow-checked, DateTime digits are ASCII, and every page of an ImageJ stack is checked against the
+  first.
+- **Ported exactly** (F5-F7, F10, F12, F15): tifffile's virtual-stack condition (one page, or page 0's data ending before
+  page 1); an ImageJ count that is not an integer is refused (tifffile would carry a float through); a zero resolution or
+  a zero FEI ResolutionX raises in Python (ZeroDivisionError) and gives RosettaSciIO's default axes, as here now; Python's
+  `_strptime` patterns (whitespace as `\s+`, year at least 1, a day the calendar holds) and dateutil's refusal of
+  impossible FEI dates; ImageJ `spacing=true` is 1 (a Python bool is an int); a UTF-8 BOM is kept as U+FEFF and Python's
+  `splitlines` breaks (\x0b, \x0c, \x1c-\x1e) are breaks; an ImageJ virtual stack is computed per image instead of one
+  record per image (20 million images took 2 GB).
+- **Registered deviations**: DM unit and quantity tags stored as BYTE are decoded text here where RosettaSciIO keeps the
+  bytes object (F13); LONG8 and IFD8 tag values at or beyond 2^63 show as negative Int64 (F14; never an offset, which is
+  refused); non-ASCII decimal digits, which Python's `int()` and `strptime` accept, are not numbers here (F15, F9's
+  DateTime case). `pins.py` now records a mapping function that raises (dateutil) as RosettaSciIO raising.
+- Regression: 26 of the refuter's files committed under `Tests/FormatoTIFFTests/Fixtures/refuter/` with RosettaSciIO's
+  readings (`refuter-pins.json`); red on `ebc3e9d`'s code (three issues, then a crash), green on the fix. Held: every public
+  and owner TIFF, 10 dtypes in both byte orders and BigTIFF, odd strips, colour, palettes read as stored, ImageJ and FEI
+  and DM variants, ASCII with NULs and cp1252, unknown tag types, every lazy slab, 16 000 truncations and field extremes.

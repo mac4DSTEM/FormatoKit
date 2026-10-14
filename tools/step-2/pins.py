@@ -387,6 +387,15 @@ def file_record(path, label, set_name, R, container=None):
         return rec
     if rec["tifffile_raises"] is None and len(signals) != len(series_info):
         raise AssertionError(f"{label}: rsciio returned {len(signals)} signals for {len(series_info)} tifffile series")
+    # HyperSpy applies the returned mapping when it builds the signal; a mapping function that raises (dateutil on a date
+    # the calendar does not hold) makes the load raise: recorded as RosettaSciIO raising, where "mapping".
+    for d in signals:
+        try:
+            metadata_entries(d)
+        except Exception as e:
+            rec["raises"] = dict(exception_record(e, path, path.parent), where="mapping")
+            rec["series"] = []
+            return rec
     for i, d in enumerate(signals):
         data = np.asarray(d["data"])
         info = series_info[i] if i < len(series_info) else {"axes": None, "kind": None}
