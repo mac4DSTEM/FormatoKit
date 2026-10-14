@@ -70,11 +70,13 @@ def main():
         try:
             r = subprocess.run(["swift", "test", "-c", "release", "--filter", flt], cwd=copy, env=env, capture_output=True, text=True)
             out = r.stdout + r.stderr
-            failed = r.returncode != 0 and (" error: -[" in out or "failed (" in out)
+            # XCTest prints " error: -[Suite test] : ..."; Swift Testing prints "✘ Test ... recorded an issue ...".
+            failed = r.returncode != 0 and (" error: -[" in out or "failed (" in out or "✘ Test" in out)
             built = "error: Build failed" not in out and "error: emit-module" not in out
             if failed and built:
                 red += 1
-                first = next((l for l in out.splitlines() if " error: -[" in l), "").split(" error: ")[-1][:150]
+                first = next((l for l in out.splitlines() if " error: -[" in l or ("✘ Test" in l and "recorded an issue" in l)), "")
+                first = first.split(" error: ")[-1].replace("✘ ", "")[:150]
                 print(f"  {n:2d} red       {what}: {first}", flush=True)
             else:
                 print(f"  {n:2d} SURVIVED  {what} (exit {r.returncode}{'' if built else ', build failed'})", flush=True)

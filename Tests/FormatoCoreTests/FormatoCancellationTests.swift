@@ -1,15 +1,15 @@
-import XCTest
+import Testing
 import FormatoCore
 
 /// The renamed cancellation contract (registration §1.1): `check` throws exactly when the closure answers true.
-final class FormatoCancellationTests: XCTestCase {
-    func testCheckThrowsOnlyWhenCancelled() throws {
-        XCTAssertNoThrow(try FormatoCancellation.check({ false }))
-        XCTAssertThrowsError(try FormatoCancellation.check({ true })) { XCTAssertEqual($0 as? FormatoCancelled, FormatoCancelled()) }
+@Suite struct FormatoCancellationTests {
+    @Test func testCheckThrowsOnlyWhenCancelled() throws {
+        #expect(throws: Never.self) { try FormatoCancellation.check({ false }) }
+        #expect(throws: FormatoCancelled()) { try FormatoCancellation.check({ true }) }
     }
 
-    func testDisplayFileNameIsTheLastComponent() {
-        XCTAssertEqual(formatoDisplayFileName("/a/b/c.dm4"), "c.dm4")
-        XCTAssertEqual(formatoDisplayFileName(""), "")
+    @Test func testDisplayFileNameIsTheLastComponent() {
+        #expect(formatoDisplayFileName("/a/b/c.dm4") == "c.dm4")
+        #expect(formatoDisplayFileName("") == "")
     }
 }

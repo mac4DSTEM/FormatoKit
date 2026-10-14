@@ -5,10 +5,11 @@
 //  `start` ignored (14) - red.
 //
 
-import XCTest
+import Foundation
+import Testing
 import FormatoCore
 
-final class ArrayTests: XCTestCase {
+@Suite struct ArrayTests {
     private func iota(_ shape: [Int], _ type: FormatoDataType = .int16) throws -> FormatoArray {
         let n = try FormatoArray.elementCount(shape)
         var d = Data()
@@ -23,7 +24,7 @@ final class ArrayTests: XCTestCase {
         return a.doubles()[flat]
     }
 
-    func testSlabMatchesIndexByIndexCut() throws {
+    @Test func testSlabMatchesIndexByIndexCut() throws {
         let a = try iota([4, 5, 6])
         var seed: UInt64 = 0x9E3779B97F4A7C15
         func next(_ n: Int) -> Int { seed = seed &* 6364136223846793005 &+ 1442695040888963407; return Int(seed >> 33) % n }
@@ -31,19 +32,19 @@ final class ArrayTests: XCTestCase {
             let start = a.shape.map { next($0 + 1) }
             let count = zip(start, a.shape).map { s, n in next(n - s + 1) }
             let s = try a.slab(start: start, count: count)
-            XCTAssertEqual(s.shape, count)
+            #expect(s.shape == count)
             let got = s.doubles()
             var k = 0
             for i in 0..<count[0] { for j in 0..<count[1] { for l in 0..<count[2] {
-                XCTAssertEqual(got[k], value(a, [start[0] + i, start[1] + j, start[2] + l])); k += 1
+                #expect(got[k] == value(a, [start[0] + i, start[1] + j, start[2] + l])); k += 1
             } } }
-            XCTAssertEqual(k, got.count)
+            #expect(k == got.count)
         }
-        XCTAssertThrowsError(try a.slab(start: [0, 0, 5], count: [1, 1, 2]))
-        XCTAssertThrowsError(try a.slab(start: [0, 0], count: [1, 1]))
+        #expect(throws: FormatoArrayError.self) { try a.slab(start: [0, 0, 5], count: [1, 1, 2]) }
+        #expect(throws: FormatoArrayError.self) { try a.slab(start: [0, 0], count: [1, 1]) }
     }
 
-    func testFileArrayEqualsEagerOnSeededSlabs() throws {
+    @Test func testFileArrayEqualsEagerOnSeededSlabs() throws {
         let a = try iota([3, 4, 5])
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("formato-array-\(UUID().uuidString).bin")
         var file = Data(repeating: 0xAB, count: 37)            // a header the array must skip
@@ -51,21 +52,21 @@ final class ArrayTests: XCTestCase {
         try file.write(to: url)
         defer { try? FileManager.default.removeItem(at: url) }
         let lazy = FormatoFileArray(path: url.path, offset: 37, dataType: .int16, shape: [3, 4, 5])
-        XCTAssertEqual(try lazy.readAll(), a)
+        #expect(try lazy.readAll() == a)
         var seed: UInt64 = 12345
         func next(_ n: Int) -> Int { seed = seed &* 6364136223846793005 &+ 1442695040888963407; return Int(seed >> 33) % n }
         for _ in 0..<200 {
             let start = a.shape.map { next($0 + 1) }
             let count = zip(start, a.shape).map { s, n in next(n - s + 1) }
-            XCTAssertEqual(try lazy.read(start: start, count: count), try a.slab(start: start, count: count), "\(start) \(count)")
+            #expect(try lazy.read(start: start, count: count) == a.slab(start: start, count: count), "\(start) \(count)")
         }
         let short = FormatoFileArray(path: url.path, offset: 60, dataType: .int16, shape: [3, 4, 5])
-        XCTAssertThrowsError(try short.readAll()) { XCTAssertEqual($0 as? FormatoReadError, .truncated(url.lastPathComponent)) }
+        #expect(throws: FormatoReadError.truncated(url.lastPathComponent)) { try short.readAll() }
     }
 
-    func testByteCountAndShapeAreChecked() {
-        XCTAssertThrowsError(try FormatoArray(dataType: .float32, shape: [2, 2], bytes: Data(count: 15)))
-        XCTAssertThrowsError(try FormatoArray(dataType: .float32, shape: [-1], bytes: Data()))
-        XCTAssertNoThrow(try FormatoArray(dataType: .float64, shape: [0, 3], bytes: Data()))
+    @Test func testByteCountAndShapeAreChecked() {
+        #expect(throws: FormatoArrayError.byteCountMismatch(expected: 16, got: 15)) { try FormatoArray(dataType: .float32, shape: [2, 2], bytes: Data(count: 15)) }
+        #expect(throws: FormatoArrayError.invalidShape([-1])) { try FormatoArray(dataType: .float32, shape: [-1], bytes: Data()) }
+        #expect(throws: Never.self) { try FormatoArray(dataType: .float64, shape: [0, 3], bytes: Data()) }
     }
 }
