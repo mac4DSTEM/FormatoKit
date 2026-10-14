@@ -75,7 +75,7 @@ public nonisolated enum FormatoUnits {
 
     /// RosettaSciIO Velox's `_convert_scale_units(value, units, factor)`, its `factor` exactly as RosettaSciIO passes it
     /// (an axis size, or twice a frame count): returns the compacted value and Pint's short form of the compact unit.
-    /// nil when `units` is not handled.
+    /// nil when `units` is not handled, and where Pint raises (the value times the factor under- or overflows in the base unit).
     public static func convertScaleUnits(_ value: Double, units: String, factor: Int) -> (value: Double, units: String)? {
         guard let unit = parse(units) else { return nil }
         let half = Double(factor) / 2                       // `factor /= 2`
@@ -87,6 +87,9 @@ public nonisolated enum FormatoUnits {
         // `_get_compact_base`: the quantity in the unprefixed base, and the power of its one unit.
         let base = Unit(prefixIndex: unprefixed, base: unit.base, power: unit.power)
         let magnitude = scaled * self.factor(unit, base)
+        // Pint takes `math.log10` of this magnitude and `math.floor` of the result: a magnitude that under- or overflowed to
+        // 0 or infinity raises there (ValueError, OverflowError). Not converted (Gate B F1).
+        guard magnitude != 0, magnitude.isFinite else { return nil }
         let l = log10(abs(magnitude)) / Double(unit.power) / 3
         let power = Int(unit.power > 0 ? l.rounded(.down) : l.rounded(.up)) * 3
         // `_pick_compact_unit`: bisect_left over the prefix powers, the last one past the end.

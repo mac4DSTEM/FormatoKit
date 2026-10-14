@@ -612,7 +612,7 @@ def run_default(work):
     return dump(out), dump_records(units), files, skipped
 
 
-def run_owner(paths, work):
+def run_owner(paths, work, set_name="owner"):
     import h5py
     import json as json_
     import numpy as np
@@ -630,15 +630,15 @@ def run_owner(paths, work):
             continue
         try:
             if kind == "dm":
-                files.append(dm_file(p, p.name, "owner", R, np))
+                files.append(dm_file(p, p.name, set_name, R, np))
             else:
                 fmt = is_velox(p, h5py, json_)
                 if fmt != "Velox":
                     skipped.append({"path": p.name, "version_format": fmt})
                     continue
-                files.append(velox_file(p, p.name, "owner", R, np, h5py))
+                files.append(velox_file(p, p.name, set_name, R, np, h5py))
         except AssertionError as e:
-            files.append({"set": "owner", "path": p.name, "format": "dm" if kind == "dm" else "velox",
+            files.append({"set": set_name, "path": p.name, "format": "dm" if kind == "dm" else "velox",
                           "sha256": sha256_file(p), "bytes": p.stat().st_size, "raises": None, "signals": [],
                           "oracle_check_failed": str(e).replace(str(p), p.name)})
     out = header(np, h5py, pint, "owner")
@@ -665,6 +665,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--owner", nargs="+", metavar="FILE")
     ap.add_argument("--out", metavar="PATH")
+    ap.add_argument("--set", default="owner", help="the set name recorded for --owner files (e.g. refuter)")
     ap.add_argument("--work", metavar="DIR", help="existing directory for the unzipped public zips (default: system temp)")
     a = ap.parse_args()
     if bool(a.owner) != bool(a.out):
@@ -673,8 +674,8 @@ def main():
     if not work.is_dir():
         die(f"--work {work} is not a directory")
     if a.owner:
-        first = run_owner(a.owner, work)
-        second = run_owner(a.owner, work)
+        first = run_owner(a.owner, work, a.set)
+        second = run_owner(a.owner, work, a.set)
         if first[0] != second[0]:
             die("two readings differ: not byte-reproducible")
         Path(a.out).write_text(first[0], encoding="utf-8")

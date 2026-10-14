@@ -1,0 +1,344 @@
+{
+ "files": [
+  {
+   "bytes": 196872,
+   "format": "velox",
+   "path": "p_stack_offset_no_x.emd",
+   "raises": {
+    "message": "'x'",
+    "type": "KeyError"
+   },
+   "set": "refuter",
+   "sha256": "5342153e45ea411aaff523ab6057aa462af2d1fd0c1a10ef9cf5e1fbf9e1b253",
+   "signals": []
+  },
+  {
+   "bytes": 196872,
+   "format": "velox",
+   "path": "p_stack_offset_nonnum_x.emd",
+   "raises": {
+    "message": "could not convert string to float: 'abc'",
+    "type": "ValueError"
+   },
+   "set": "refuter",
+   "sha256": "a2fc4fa120d5c670a6884fd65becd4ff94d5f4a1622aeeb89e8f65e6ca670300",
+   "signals": []
+  },
+  {
+   "bytes": 196872,
+   "format": "velox",
+   "path": "p_stack_pixelsize_no_width.emd",
+   "raises": {
+    "message": "'width'",
+    "type": "KeyError"
+   },
+   "set": "refuter",
+   "sha256": "f7f904469e9c70d2312c717df84d1acc87e4711fe7405d5ad7476ca400bb4f80",
+   "signals": []
+  },
+  {
+   "bytes": 196872,
+   "format": "velox",
+   "path": "s_frametime_str.emd",
+   "raises": {
+    "message": "could not convert string to float: 'abc'",
+    "type": "ValueError"
+   },
+   "set": "refuter",
+   "sha256": "f1228ef6423600a96d28b14c7816278f5791083c1a158892ecc116fbeb3968d3",
+   "signals": []
+  },
+  {
+   "bytes": 196872,
+   "format": "velox",
+   "path": "s_scan_missing.emd",
+   "raises": {
+    "message": "'Scan'",
+    "type": "KeyError"
+   },
+   "set": "refuter",
+   "sha256": "b6c5c2c097dd161530325ffced8216c6957adf0ad42a440a8132ba9aba6c3666",
+   "signals": []
+  },
+  {
+   "bytes": 196872,
+   "format": "velox",
+   "path": "t_trap_overflow.emd",
+   "raises": {
+    "message": "cannot convert float infinity to integer",
+    "type": "OverflowError"
+   },
+   "set": "refuter",
+   "sha256": "b09bfd827dbc02a797528e04f5f6038b4a6cd125cc6b60e8c49f109c41761a0b",
+   "signals": []
+  },
+  {
+   "bytes": 196872,
+   "format": "velox",
+   "path": "t_trap_subnormal.emd",
+   "raises": {
+    "message": "expected a positive input, got 0.0",
+    "type": "ValueError"
+   },
+   "set": "refuter",
+   "sha256": "fed5a70706d045235186a18a7b99f716f2ea9e4cc65c48169ddf1ffa9871da8d",
+   "signals": []
+  },
+  {
+   "bytes": 196872,
+   "format": "velox",
+   "path": "u_stack_pixelsize_missing.emd",
+   "raises": null,
+   "set": "refuter",
+   "sha256": "20ce50654e1c63085e3742ff3587521fbac118b0b7b3b1afc6c346e66e0b9bb7",
+   "signals": [
+    {
+     "axes": [
+      {
+       "name": "Time",
+       "navigate": true,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 0.8,
+       "scale_bits": "3fe999999999999a",
+       "size": 2,
+       "units": "s"
+      },
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": -1.6738064777826e-08,
+       "offset_bits": "be51f8ec992f6e9d",
+       "scale": 1.0,
+       "scale_bits": "3ff0000000000000",
+       "size": 3,
+       "units": "m"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": -1.6738064777826e-08,
+       "offset_bits": "be51f8ec992f6e9d",
+       "scale": 1.0,
+       "scale_bits": "3ff0000000000000",
+       "size": 3,
+       "units": "m"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "405c5cae97cb598bb6e0872448918044462a5282dcf5d08f4a8878c92df07432",
+     "data_sha256": "caadd55d5ad0cb4411bbcf6e03fe5087d272621a0651820a7b584acae23c22a6",
+     "dtype": "int16",
+     "dtype_str": "<i2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "Ceta"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "u_stack_pixelsize_missing.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 300.0,
+       "value_bits": "4072c00000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3,
+      3
+     ],
+     "signal_type": "",
+     "title": "Ceta",
+     "velox_image_id": "26f60320a61d4f66a73efd8cde34ffa9"
+    }
+   ],
+   "spectrum_stream_not_read": false
+  },
+  {
+   "bytes": 196872,
+   "format": "velox",
+   "path": "u_stack_pixelsize_nonnum.emd",
+   "raises": {
+    "message": "could not convert string to float: 'abc'",
+    "type": "ValueError"
+   },
+   "set": "refuter",
+   "sha256": "e65daaff9eafc9d5bfebfb1160f1e6e386e1737cf72a25ec98b075edd1040530",
+   "signals": []
+  },
+  {
+   "bytes": 196872,
+   "format": "velox",
+   "path": "u_stack_unit_nm.emd",
+   "raises": null,
+   "set": "refuter",
+   "sha256": "893f6b988bf23231629cd54d942198b8f2a6782c7abfe3dbcf40660c79aab6bf",
+   "signals": [
+    {
+     "axes": [
+      {
+       "name": "Time",
+       "navigate": true,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 0.8,
+       "scale_bits": "3fe999999999999a",
+       "size": 2,
+       "units": "s"
+      },
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": -16738.064777826003,
+       "offset_bits": "c0d058842551e50c",
+       "scale": 8.172883192297853,
+       "scale_bits": "402058842551e50c",
+       "size": 3,
+       "units": "zm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": -16738.064777826003,
+       "offset_bits": "c0d058842551e50c",
+       "scale": 8.172883192297855,
+       "scale_bits": "402058842551e50d",
+       "size": 3,
+       "units": "zm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "405c5cae97cb598bb6e0872448918044462a5282dcf5d08f4a8878c92df07432",
+     "data_sha256": "caadd55d5ad0cb4411bbcf6e03fe5087d272621a0651820a7b584acae23c22a6",
+     "dtype": "int16",
+     "dtype_str": "<i2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "Ceta"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "u_stack_unit_nm.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 300.0,
+       "value_bits": "4072c00000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3,
+      3
+     ],
+     "signal_type": "",
+     "title": "Ceta",
+     "velox_image_id": "26f60320a61d4f66a73efd8cde34ffa9"
+    }
+   ],
+   "spectrum_stream_not_read": false
+  },
+  {
+   "bytes": 196872,
+   "format": "velox",
+   "path": "u_stack_unit_px.emd",
+   "raises": null,
+   "set": "refuter",
+   "sha256": "1f10480d0845db0719f1d1a4668b11879c6b6bfc6a27b1c9837f05839c42bee3",
+   "signals": [
+    {
+     "axes": [
+      {
+       "name": "Time",
+       "navigate": true,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 0.8,
+       "scale_bits": "3fe999999999999a",
+       "size": 2,
+       "units": "s"
+      },
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": -16738.064777826,
+       "offset_bits": "c0d058842551e50b",
+       "scale": 8.172883192297851,
+       "scale_bits": "402058842551e50b",
+       "size": 3,
+       "units": "ppx"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": -16738.064777826,
+       "offset_bits": "c0d058842551e50b",
+       "scale": 8.172883192297851,
+       "scale_bits": "402058842551e50b",
+       "size": 3,
+       "units": "ppx"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "405c5cae97cb598bb6e0872448918044462a5282dcf5d08f4a8878c92df07432",
+     "data_sha256": "caadd55d5ad0cb4411bbcf6e03fe5087d272621a0651820a7b584acae23c22a6",
+     "dtype": "int16",
+     "dtype_str": "<i2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "Ceta"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "u_stack_unit_px.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 300.0,
+       "value_bits": "4072c00000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3,
+      3
+     ],
+     "signal_type": "",
+     "title": "Ceta",
+     "velox_image_id": "26f60320a61d4f66a73efd8cde34ffa9"
+    }
+   ],
+   "spectrum_stream_not_read": false
+  }
+ ],
+ "generator": "tools/step-1/pins.py",
+ "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.digitalmicrograph.file_reader; rsciio.emd.file_reader, select_type='images')",
+ "set": "owner",
+ "skipped": [],
+ "versions": {
+  "h5py": "3.16.0",
+  "numpy": "2.5.4",
+  "pint": "0.26.1",
+  "python": "3.14.7"
+ }
+}

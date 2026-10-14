@@ -64,12 +64,21 @@ instruments and techniques, out of scope until someone asks.
   returns the file reader's dictionary, as RosettaSciIO's `file_reader` does.
 - **DM EDS axis names:** RosettaSciIO names an EDS energy axis "x" (its `("EDS", "EDX")` test never matches its own "EDS_TEM");
   FormatoKit does the same on purpose (amendment A4.2). A fix belongs upstream first.
-- **DM big-endian files** are not detected; none exists in the public set.
+- **DM big-endian files** are refused by name (the Gate B refuter generated some); none exists in the public set.
+- **Malformed DM files RosettaSciIO raises on** and FormatoKit reads with defaults: a calibration without `Units`, no
+  `Calibrations`, no `ImageTags`, a `source` group without `Tags at creation`; and more calibration groups than dimensions
+  (RosettaSciIO takes the last n, FormatoKit the first n); empty or array-only `spim` / `spim.eels` / `Monarc Spectrometer`
+  groups; tag names holding "."; strings over 4 KiB (registration A5). The moved DM walk does not expose these; a later
+  registered change of it can.
 - **Velox images: stored dtype.** FormatoKit reads Float32 (exact for 8- and 16-bit integers and float32; every public and
   owner image is one of those). RosettaSciIO keeps the stored type.
 - **Velox titles:** RosettaSciIO names an image from the `Operations` group (element maps, DPC, FFT, the camera's display
   name); FormatoKit uses `BinaryResult.Detector` (26 of the 42 public images and 7 of the owner's 11 differ).
 - **Velox compound images** (FFT, DPC) are refused; RosettaSciIO returns them complex.
+- **Units outside FormatoUnits** (m and s with SI prefixes, their inverses, dimensionless) refuse the image: Pint also
+  reads "px", "Å", "nanometre" and more (registration A5, F7).
+- **Float64 Velox values just above Float32's largest value** become infinity (HDF5's conversion) where NumPy's `astype`
+  gives the largest Float32; the stored-dtype read of step 2 removes the difference.
 - **Velox spectrum images as signals** (`select_type="spectrum_image"`, frame sums, rebinning, `SI_dtype`, the sparse
   output): the moved reader decodes the stream; the signal adapter and its pins are step 2.
 - **Velox metadata mapping:** step 1 maps the file name and the beam energy; RosettaSciIO also maps the camera length,

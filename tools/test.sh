@@ -9,7 +9,8 @@
 # image for H5atclose by that path (RTLD_NOLOAD). The consumer check proves the shipped copy is found with it unset (gate H1).
 #
 # Warnings: the build must have none, with ONE named exception: in release, Swift Build reports "not stripping binary
-# because it is signed" for each of the three shipped dylibs it copies (they are ad-hoc signed and must stay byte-identical
+# because it is signed" for each of the three shipped dylibs it copies (named by their source path, or, on a fresh build,
+# by their place in the built FormatoKit_FormatoHDF5.bundle; Gate B F6) (they are ad-hoc signed and must stay byte-identical
 # to mac4DSTEM's vendored files). Exactly those three lines are allowed; any other warning fails the gate.
 #
 # Stamp: a full run (no arguments) that passes, on a tree whose Sources/, Tests/, Package.swift and Package.resolved are
@@ -38,7 +39,7 @@ swift test -c release "$@" 2>&1 | tee $log
 rc=${pipestatus[1]}
 set -e
 (( rc == 0 )) || { print -u2 "tools/test.sh: swift test failed (exit $rc)"; exit $rc }
-other=$(grep "warning:" $log | grep -vE "warning: not stripping binary because it is signed: .*/Sources/FormatoHDF5/Resources/hdf5/(libhdf5\.dylib|libsz\.2\.dylib|libaec\.0\.dylib)" || true)
+other=$(grep "warning:" $log | grep -vE "warning: not stripping binary because it is signed: .*(/Sources/FormatoHDF5/Resources/hdf5|/FormatoKit_FormatoHDF5\.bundle/Contents/Resources/hdf5)/(libhdf5\.dylib|libsz\.2\.dylib|libaec\.0\.dylib)" || true)
 if [[ -n $other ]]; then print -u2 "tools/test.sh: green, but the build warned:"; print -u2 -r -- "$other"; exit 1; fi
 if (( $# > 0 )); then
   print -u2 "tools/test.sh: green, but arguments were given (not a full run): no stamp"

@@ -298,3 +298,37 @@ name, found by gate P1; none moves a number the earlier sections registered:
    compared for Velox until step 2 ports the `Operations` rule.
 Result: 128 public files, 106 signals equal bit for bit (data, shape, every axis field, signal type, DM title, metadata
 with its source), 47 refused by name (complex, bool, RGB), lazy slabs equal the eager arrays on every one.
+
+**A5 (2026-10-15, 01:40, Gate B).** One refuter (Sonnet) on the frozen commit `3391460`, with 168 generated DM3/DM4 files,
+about 100 modified copies of the public Velox files, a 619 000-value units sweep, the owner's files and a fresh package
+outside FormatoKit. Its findings, and what was done:
+- **F1 (fixed).** `FormatoUnits.convertScaleUnits` trapped (`Int(log10(0))`) where the value times the factor under- or
+  overflows in the base unit; Pint raises there. It now returns nil, and the Velox adapter refuses the image.
+- **F2, Velox half (fixed).** RosettaSciIO raises when a stack's `Scan` group, a `PixelSize` width or height, or an
+  `Offset` x or y is missing; FormatoKit read them with defaults. **F3 (fixed).** A value the file states that `float()`
+  refuses (`PixelSize` "abc", `Scan.FrameTime` "abc", `Offset` "abc") became 1.0, the detector's exposure, or 0. The
+  adapter now reads the image's metadata JSON itself (column 0, as RosettaSciIO's `_parse_metadata`) and applies
+  RosettaSciIO's indexing and `float()` rules: a default only where the key is absent and RosettaSciIO uses `.get`, a
+  refusal wherever RosettaSciIO raises. The beam energy follows the same rule.
+  Regression: 11 of the refuter's files, committed under `Tests/FormatoCoreTests/Fixtures/refuter/` with RosettaSciIO's
+  reading pinned (`refuter-pins.json`, `pins.py --set refuter`): 8 raise in RosettaSciIO and are refused, 2 read equal,
+  1 is the deviation below. Red on `3391460`'s code, green on the fix.
+- **F6 (fixed).** On a fresh build, Swift Build names the three dylibs by their place in the built bundle; the gate's
+  allowed-warning pattern now matches that path too.
+- **F7 (registered deviation; §3.1 corrected).** A units string outside `FormatoUnits` is refused, not passed through:
+  §3.1 said "passed through". Pint reads some that FormatoKit refuses ("px", which Pint compacts to "ppx"; "Å";
+  "nanometre"); the Velox image is refused with its unit named. `docs/parity.md` lists it.
+- **Registered deviations (the moved DM walk cannot see them; changing it is a registered change of the moved reader, not
+  step 1's):** F2's DM half (a calibration without a `Units` tag, no `Calibrations` group, no `ImageTags`, a `source`
+  group without `Tags at creation`: RosettaSciIO raises, FormatoKit reads with the documented defaults); F4 (more
+  calibration groups than dimensions: RosettaSciIO takes the last n, FormatoKit the first n); F5 (a `spim`,
+  `spim.eels` or `Monarc Spectrometer` group that is empty or holds only arrays: RosettaSciIO sees the group, FormatoKit
+  does not); F8 (tag names holding "." are stripped by RosettaSciIO and kept by the walk; an `Illumination Mode` over
+  4 KiB is dropped by the walk; a NaN origin gives a NaN offset with the other sign bit; a float64 Velox value between
+  Float32's largest value and the rounding midpoint becomes infinity through HDF5's conversion where NumPy gives the
+  largest Float32, the moved reader's documented deviation; a `FormatoFileArray` reads the path at read time, so a file
+  replaced in place is read as it is then). None occurs in the public or the owner's files.
+- Held: every other generated DM file (all dtypes, 1 to 4 dimensions, size-0 and size-1 dimensions, every calibration
+  type, truncation at nine cut points), the owner's 17 smaller files, 60+ slab shapes per file against NumPy slices, the
+  shipped libhdf5 from a fresh package in Debug and Release with the variable unset (and a clean `libraryUnavailable`
+  without the bundle), and the move's diff (registered changes only).

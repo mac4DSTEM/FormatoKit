@@ -110,7 +110,33 @@ import FormatoEMD
         print("OwnerPins: \(read) files, \(signals) signals equal, \(refused) refused by name")
     }
 
-    private func compare(_ files: [[String: Any]], locate: (String) -> URL?, mustFind: Bool) throws -> (Int, Int, Int) {
+    /// Whether FormatoKit refuses the file: listing it throws, or building one of its signals does.
+    private func refuses(_ url: URL, format: String) -> Bool {
+        if format == "dm" {
+            guard let dm = try? DMFile(path: url.path) else { return true }
+            return dm.objects.contains { (try? dm.signal(index: $0.index)) == nil }
+        }
+        guard let velox = try? VeloxImageSignals(path: url.path) else { return true }
+        return velox.images.contains { (try? velox.signal($0)) == nil }
+    }
+
+    /// Gate B's files (Fixtures/refuter, tools/step-1/pins.py --set refuter): built by the refuter from RosettaSciIO's public
+    /// fei_example_tem_stack.emd with one metadata value changed each. Where RosettaSciIO raises, FormatoKit must refuse
+    /// (F1-F3); where it reads, the signals must be equal; `u_stack_unit_px.emd` (Pint's "px") is refused on purpose
+    /// (registration A5: units outside FormatoUnits are refused, not guessed).
+    @Test func testRefuterFilesAgreeOrAreRefused() throws {
+        let files = try #require(try loadJSON("refuter-pins.json")["files"] as? [[String: Any]])
+        let dir = TestPaths.fixtures.appendingPathComponent("refuter")
+        let (read, signals, refused) = try compare(files, locate: { name in
+            let u = dir.appendingPathComponent(name); return FileManager.default.fileExists(atPath: u.path) ? u : nil
+        }, mustFind: true, refusedOnPurpose: ["u_stack_unit_px.emd"])
+        #expect(read == 11)
+        #expect(refused == 9, "8 files RosettaSciIO raises on and the px one")
+        #expect(signals == 2)
+    }
+
+    private func compare(_ files: [[String: Any]], locate: (String) -> URL?, mustFind: Bool,
+                         refusedOnPurpose: Set<String> = []) throws -> (Int, Int, Int) {
         var read = 0, signals = 0, refused = 0, titleDifferences: [String] = []
         for f in files {
             let path = f["path"] as! String
@@ -119,9 +145,13 @@ import FormatoEMD
                 continue
             }
             #expect(sha(try Data(contentsOf: url)) == f["sha256"] as? String, "\(path): not the pinned file")
-            #expect(f["raises"] as? [String: Any] == nil, "\(path): RosettaSciIO raised; no such file is pinned at step 1")
-            let pinned = f["signals"] as! [[String: Any]]
             read += 1
+            if f["raises"] as? [String: Any] != nil || refusedOnPurpose.contains(path) {
+                // P1: a file RosettaSciIO raises on is refused by FormatoKit too: the file, or at least one of its signals.
+                #expect(refuses(url, format: f["format"] as! String), "\(path): RosettaSciIO raises (\(f["raises"] ?? "a registered refusal")), FormatoKit read it")
+                refused += 1; continue
+            }
+            let pinned = f["signals"] as! [[String: Any]]
             if f["format"] as? String == "dm" {
                 let dm = try DMFile(path: url.path)
                 #expect(Set(dm.objects.map(\.index)) == Set(pinned.map { $0["dm_index"] as! Int }), "\(path): object set")
