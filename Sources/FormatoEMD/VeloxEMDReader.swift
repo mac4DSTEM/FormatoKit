@@ -680,7 +680,7 @@ package nonisolated enum VeloxHDF5Library {
 /// this work may not change, and it lacks the unsigned native types a uint16 stream
 /// needs. Every entry runs under `HDF5Serial` (HDF5Types.swift): the lock is taken inside each `VeloxFile` member that
 /// calls the library, so it is held for one call (at most one block read), never across a whole logical operation.
-private nonisolated struct VeloxHDF5: @unchecked Sendable {
+nonisolated struct VeloxHDF5: @unchecked Sendable {
     typealias H5open = @convention(c) () -> herr_t
     typealias H5EsetAuto2 = @convention(c) (hid_t, UnsafeMutableRawPointer?, UnsafeMutableRawPointer?) -> herr_t
     typealias H5Fopen = @convention(c) (UnsafePointer<CChar>?, UInt32, hid_t) -> hid_t
@@ -762,7 +762,7 @@ private nonisolated struct VeloxHDF5: @unchecked Sendable {
 /// is recursive, so a short entry point may still wrap several calls in one `run`); a long operation holds nothing between
 /// calls, and the lock is held for one call at most, `readSlab` (one block) being the longest. The handles are plain ids:
 /// the lock guards calls, not handles, so a dataset stays open between blocks.
-private nonisolated final class VeloxFile {
+nonisolated final class VeloxFile {
     let h5: VeloxHDF5
     let file: hid_t
 

@@ -19,6 +19,19 @@ cd "${0:A:h}/.."
 export MAC4DSTEM_HDF5_PATH=${MAC4DSTEM_HDF5_PATH:-$PWD/Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib}
 print -u2 "tools/test.sh: libhdf5 = $MAC4DSTEM_HDF5_PATH"
 mkdir -p .build
+# The public RosettaSciIO zips the pins read (registration §2): each checked against the pinned clone's registry.txt, then
+# unzipped into its own fresh folder under .build/rsciio-unzipped. Without References/ the pins test runs on the committed
+# copy only.
+refs=References/rosettasciio-049e7d70/rsciio/tests
+if [[ -d $refs/data ]]; then
+  rm -rf .build/rsciio-unzipped; mkdir -p .build/rsciio-unzipped/emd
+  for zip in fei_emd_files.zip velox_EELS_EDS.zip velox_emd_v11_elementSelection.zip velox_emd_version11.zip; do
+    want=$(sed -n "s|^'emd/$zip' \([0-9a-f]\{64\}\)\$|\1|p" $refs/registry.txt)
+    have=$(shasum -a 256 $refs/data/emd/$zip | cut -d' ' -f1)
+    [[ -n $want && $have == $want ]] || { print -u2 "tools/test.sh: $zip is not the registry's ($have vs $want)"; exit 1 }
+    mkdir .build/rsciio-unzipped/emd/$zip && unzip -q $refs/data/emd/$zip -d .build/rsciio-unzipped/emd/$zip
+  done
+fi
 log=.build/test.log
 set +e
 swift test -c release "$@" 2>&1 | tee $log

@@ -283,3 +283,17 @@ dylib; `tools/test.sh` allows exactly those three lines and fails on any other w
 0.5 "s", not 500 ms. The test states 0.5 "s". Every one of the pinned records (the public files' calls, the sweep, the
 planted cases) was bit-identical to RosettaSciIO on the first run; the two failures were the hand-written literals (this
 one, and a µm to nm conversion that is Pint's factor, one unit in the last place from 1000).
+
+**A4 (2026-10-15, 00:55, the first runs of the pins test).** Three RosettaSciIO behaviours the adapters now follow or
+name, found by gate P1; none moves a number the earlier sections registered:
+1. *Thumbnails.* `DM4Experiment.list` keeps the thumbnail objects (role `.thumbnail`); `DMFile` drops exactly those the root
+   `Thumbnails.N.ImageIndex` list names, which is RosettaSciIO's rule (`get_image_dictionaries`), not the RGBA fallback.
+2. *EDS axis names.* RosettaSciIO names the energy axis "Energy" when `signal_type in ("EDS", "EDX")`, but its own
+   `signal_type` for an EDS object is "EDS_TEM", so the branch never fires and the axis is named "x". Ported as it is
+   (this is a port of the reference's behaviour; a correction belongs upstream); `docs/parity.md` names it.
+3. *Velox titles.* RosettaSciIO's title is the `Operations` group's name for the image (element maps, DPC, FFT, the
+   camera's display name), which the moved reader does not read. At step 1 `FormatoEMD`'s title is
+   `BinaryResult.Detector`; 26 of the 42 public images differ (listed by the test); title and `General.title` are not
+   compared for Velox until step 2 ports the `Operations` rule.
+Result: 128 public files, 106 signals equal bit for bit (data, shape, every axis field, signal type, DM title, metadata
+with its source), 47 refused by name (complex, bool, RGB), lazy slabs equal the eager arrays on every one.
