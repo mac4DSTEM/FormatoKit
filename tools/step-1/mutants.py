@@ -3,7 +3,9 @@
 (`git archive`, never the working tree), the tests that should catch it run (`swift test -c release --filter ...`), and the
 mutant must turn at least one test red. The copy keeps one warm .build across mutants.
 
-    mutants.py [--commit REV] [--only N,...]
+    mutants.py [--commit REV] [--only N,...] [--step 1|2]
+
+`--step 2` runs docs/registration-step-2.md §6's mutants (FormatoTIFF) instead of step 1's.
 
 Prints one line per mutant (`red` / `SURVIVED` / `does not apply`) and `mutants: N of M red`; exit 0 only if every one is red.
 """
@@ -36,10 +38,33 @@ MUTANTS = [
     (16, "the shipped libhdf5 removed from the lookup", READER, "            FormatoHDF5Library.bundledLibraryPath,\n", "", "BundledLibraryTests"),
 ]
 
+TIFF = "Sources/FormatoTIFF/TIFFSignals.swift"
+TFILE = "Sources/FormatoTIFF/TIFFFile.swift"
+CORE_PY = "Sources/FormatoCore/FormatoPython.swift"
+T = "FormatoTIFFPinsTests|PlantedTIFFTests|TIFFRulesTests"
+MUTANTS_STEP2 = [
+    (1, "big-endian samples not swapped", TIFF, "guard bigEndian, bytesPerSample > 1 else { return }", "guard false, bytesPerSample > 1 else { return }", T),
+    (2, "RowsPerStrip default 1 instead of the height", TIFF, "int(278, 0xFFFF_FFFF) ?? 0xFFFF_FFFF", "int(278, 1) ?? 1", T),
+    (3, "the last strip's short row count ignored", TIFF, "let rows = min(layout.rowsPerStrip, layout.height - s * layout.rowsPerStrip)", "let rows = layout.rowsPerStrip", T),
+    (4, "ASCII trailing NULs kept", TFILE, "while bytes.last == 0 { bytes.removeLast() }", "", T),
+    (5, "RATIONAL denominator dropped", TFILE, "TIFFRational(numerator: Int64(r.u32u($0 * 8)), denominator: Int64(r.u32u($0 * 8 + 4)))", "TIFFRational(numerator: Int64(r.u32u($0 * 8)), denominator: 1)", T),
+    (6, "the height/width cross-over undone", TIFF, 'case "height": scales[i] = s.x; offsets[i] = o.x; units[i] = u.x', 'case "height": scales[i] = s.y; offsets[i] = o.y; units[i] = u.y', T),
+    (7, "ImageJ micron as um", TIFF, 'u.x = "µm"; u.y = "µm"', 'u.x = "um"; u.y = "um"', T),
+    (8, "FEI IRBeam x divided by ResolutionY", TIFF, 's.x = try float(try value("IRBeam", "HFW")) / float(try value("Image", "ResolutionX"))', 's.x = try float(try value("IRBeam", "HFW")) / float(try value("Image", "ResolutionY"))', T),
+    (9, "DM 65009 assigned to x", TIFF, "if let v = page[65009] { s.y = try dmNumber(v) }", "if let v = page[65009] { s.x = try dmNumber(v) }", T),
+    (10, "astype tries float before int", CORE_PY, "    if let i = formatoPythonInt(s) { return .int(i) }\n    if let d = formatoPythonFloat(s) { return .float(d) }", "    if let d = formatoPythonFloat(s) { return .float(d) }\n    if let i = formatoPythonInt(s) { return .int(i) }", T),
+    (11, "ImageJ axes Z before T", TIFF, 'default: axes = ["T", "Z", "C"]; shape = [frames, slices, channels]', 'default: axes = ["Z", "T", "C"]; shape = [frames, slices, channels]', T),
+    (12, "RGB element read with the wrong size", TIFF, "case (3, 2, 1, 8): type = .rgb8", "case (3, 2, 1, 8): type = .rgba8", T),
+    (13, "a tiled page read as strips", TIFF, "if dir[322] != nil || dir[324] != nil {", "if false {", T),
+    (14, "FEI beam energy times 1e3", TIFF, 'scaled(1e-3), rule: "rsciio mapping_fei: float(x) * 1e-3"', 'scaled(1e3), rule: "rsciio mapping_fei: float(x) * 1e-3"', T),
+    (15, "lazy slab column offset off by one", TIFF, "let at = src.layout.rowOffset(y) + src.shift + x0 * el", "let at = src.layout.rowOffset(y) + src.shift + (x0 + 1) * el", T),
+]
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--commit", default="HEAD")
     ap.add_argument("--only")
+    ap.add_argument("--step", default="1", choices=["1", "2"])
     a = ap.parse_args()
     only = {int(x) for x in a.only.split(",")} if a.only else None
     work = Path(os.environ.get("MUTANTS_WORK") or tempfile.mkdtemp(prefix="formato-mutants-"))
@@ -57,8 +82,12 @@ def main():
     subprocess.run(["zsh", "-c", "set -e; d=.build/rsciio-unzipped/emd; rm -rf .build/rsciio-unzipped; mkdir -p $d; "
                     "for z in fei_emd_files.zip velox_EELS_EDS.zip velox_emd_v11_elementSelection.zip velox_emd_version11.zip; do "
                     "mkdir $d/$z; unzip -q References/rosettasciio-049e7d70/rsciio/tests/data/emd/$z -d $d/$z; done"], cwd=copy, check=True)
+    # The public TIFFs the step-2 pins read, unpacked by tools/test.sh: linked, so a mutant's red is never "not found".
+    tiffs = copy / ".build/rsciio-tiff"
+    if not tiffs.exists() and (ROOT / ".build/rsciio-tiff").exists():
+        tiffs.symlink_to(ROOT / ".build/rsciio-tiff")
     red = total = 0
-    for n, what, path, old, new, flt in MUTANTS:
+    for n, what, path, old, new, flt in (MUTANTS_STEP2 if a.step == "2" else MUTANTS):
         if only and n not in only:
             continue
         total += 1
