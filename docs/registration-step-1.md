@@ -271,7 +271,8 @@ found by `tools/step-1/pins.py` (110 DM files with 111 signals, 18 Velox files w
 
 **A2 (2026-10-15, 00:30, the switch dry run, gate M4).** The access list of §1.1 is measured: a scratch copy of SpectroKit
 0.3.0 without the four moved files, depending on FormatoKit by path, compiles its three library targets and its staying test
-targets once 41 declarations of the moved files are public (`git diff 4a860dd -- Sources` shows each; listed in
+targets once 51 declarations of the moved files are public (`git diff 4a860dd -- Sources` shows each, 53 changed lines with the two
+private types made internal for the Velox adapter; the commit message of `528032b` says 41, a miscount; listed in
 `docs/consumers-0.0.1.md`). The quit-barrier probe, which moved, opens Velox through `VeloxEMDReader.readSpectrumImage`
 instead of SpectroKit's `SpectrumImageOpener.open`, which made the same call and stays in SpectroKit. The renaming sed
 also renamed one test method (`testEveryLongCallThrowsSpectroCancelled`); `names.sh` caught it and the name is restored:
