@@ -1,0 +1,175 @@
+# SpectroGolden velox-tiny
+readSpectrumImage.eventStore.geometry.ny = 3
+readSpectrumImage.eventStore.geometry.nx = 2
+readSpectrumImage.eventStore.geometry.channels = 8
+readSpectrumImage.eventStore.rowOffsets: n 7 sum-bits 18 fnv fcdcf59371f79905
+readSpectrumImage.eventStore.channelIndex: n 7 sum-bits 16 fnv 6ed62bc54269dc83
+readSpectrumImage.eventStore.counts: n 7 sum-bits b fnv c2388bbd67cb0f66
+readSpectrumImage.eventStore.frameRange = 0..<2
+readSpectrumImage.eventStore.completeFrames = 2
+readSpectrumImage.eventStore.partialFramePixels = 0
+readSpectrumImage.eventStore.outOfRangeValues = 0
+readSpectrumImage.eventStore.streamsAgreeOnCoverage = true
+readSpectrumImage.scanImage.ny = 3
+readSpectrumImage.scanImage.nx = 2
+readSpectrumImage.scanImage.sum: n 6 sum-bits e7 fnv 124952b9087f79c0
+readSpectrumImage.scanImage.framesSummed = 2
+readSpectrumImage.scanImage.framesInFile = 2
+readSpectrumImage.scanImage.detectorName = "HAADF"
+readSpectrumImage.metadata.detectors: array 5
+readSpectrumImage.metadata.detectors[0].index = 0
+readSpectrumImage.metadata.detectors[0].name = "HAADF"
+readSpectrumImage.metadata.detectors[0].type = "ScanningDetector"
+readSpectrumImage.metadata.detectors[0].enabled = true
+readSpectrumImage.metadata.detectors[0].inserted = nil
+readSpectrumImage.metadata.detectors[0].azimuthRadians = nil
+readSpectrumImage.metadata.detectors[0].elevationRadians = nil
+readSpectrumImage.metadata.detectors[0].solidAngleSteradians = nil
+readSpectrumImage.metadata.detectors[0].dispersionEV = nil
+readSpectrumImage.metadata.detectors[0].offsetEnergyEV = nil
+readSpectrumImage.metadata.detectors[0].realTimeColumn0 = nil
+readSpectrumImage.metadata.detectors[0].liveTimeColumn0 = nil
+readSpectrumImage.metadata.detectors[0].exposureTimeSeconds = nil
+readSpectrumImage.metadata.detectors[1].index = 1
+readSpectrumImage.metadata.detectors[1].name = "SuperXG21"
+readSpectrumImage.metadata.detectors[1].type = "AnalyticalDetector"
+readSpectrumImage.metadata.detectors[1].enabled = true
+readSpectrumImage.metadata.detectors[1].inserted = true
+readSpectrumImage.metadata.detectors[1].azimuthRadians = 3fe921fb54442d18 0.78539816339744828
+readSpectrumImage.metadata.detectors[1].elevationRadians = 3fd41b2f7b98a7ac 0.31415926999999999
+readSpectrumImage.metadata.detectors[1].solidAngleSteradians = 3fcccccccccccccd 0.22500000000000001
+readSpectrumImage.metadata.detectors[1].dispersionEV = 4024000000000000 10
+readSpectrumImage.metadata.detectors[1].offsetEnergyEV = c06f400000000000 -250
+readSpectrumImage.metadata.detectors[1].realTimeColumn0 = 3fe0000000000000 0.5
+readSpectrumImage.metadata.detectors[1].liveTimeColumn0 = 3fd999999999999a 0.40000000000000002
+readSpectrumImage.metadata.detectors[1].exposureTimeSeconds = nil
+readSpectrumImage.metadata.detectors[2].index = 2
+readSpectrumImage.metadata.detectors[2].name = "SuperXG22"
+readSpectrumImage.metadata.detectors[2].type = "AnalyticalDetector"
+readSpectrumImage.metadata.detectors[2].enabled = true
+readSpectrumImage.metadata.detectors[2].inserted = true
+readSpectrumImage.metadata.detectors[2].azimuthRadians = 4002d97c7f3321d2 2.3561944901923448
+readSpectrumImage.metadata.detectors[2].elevationRadians = 3fe0c152454731ee 0.52359880000000003
+readSpectrumImage.metadata.detectors[2].solidAngleSteradians = 3fcccccccccccccd 0.22500000000000001
+readSpectrumImage.metadata.detectors[2].dispersionEV = 4034000000000000 20
+readSpectrumImage.metadata.detectors[2].offsetEnergyEV = c06f400000000000 -250
+readSpectrumImage.metadata.detectors[2].realTimeColumn0 = 3fe0000000000000 0.5
+readSpectrumImage.metadata.detectors[2].liveTimeColumn0 = 3fd999999999999a 0.40000000000000002
+readSpectrumImage.metadata.detectors[2].exposureTimeSeconds = nil
+readSpectrumImage.metadata.detectors[3].index = 3
+readSpectrumImage.metadata.detectors[3].name = "SuperXG23"
+readSpectrumImage.metadata.detectors[3].type = "AnalyticalDetector"
+readSpectrumImage.metadata.detectors[3].enabled = true
+readSpectrumImage.metadata.detectors[3].inserted = true
+readSpectrumImage.metadata.detectors[3].azimuthRadians = 400f6a7a2955385e 3.9269908169872414
+readSpectrumImage.metadata.detectors[3].elevationRadians = 3fd999999999999a 0.40000000000000002
+readSpectrumImage.metadata.detectors[3].solidAngleSteradians = 3fcccccccccccccd 0.22500000000000001
+readSpectrumImage.metadata.detectors[3].dispersionEV = 4024000000000000 10
+readSpectrumImage.metadata.detectors[3].offsetEnergyEV = c06f400000000000 -250
+readSpectrumImage.metadata.detectors[3].realTimeColumn0 = 3fe0000000000000 0.5
+readSpectrumImage.metadata.detectors[3].liveTimeColumn0 = 3fd999999999999a 0.40000000000000002
+readSpectrumImage.metadata.detectors[3].exposureTimeSeconds = nil
+readSpectrumImage.metadata.detectors[4].index = 4
+readSpectrumImage.metadata.detectors[4].name = "SuperXG24"
+readSpectrumImage.metadata.detectors[4].type = "AnalyticalDetector"
+readSpectrumImage.metadata.detectors[4].enabled = false
+readSpectrumImage.metadata.detectors[4].inserted = true
+readSpectrumImage.metadata.detectors[4].azimuthRadians = 4015fdbbe9bba775 5.497787143782138
+readSpectrumImage.metadata.detectors[4].elevationRadians = 3fe3333333333333 0.59999999999999998
+readSpectrumImage.metadata.detectors[4].solidAngleSteradians = 3fcccccccccccccd 0.22500000000000001
+readSpectrumImage.metadata.detectors[4].dispersionEV = 4024000000000000 10
+readSpectrumImage.metadata.detectors[4].offsetEnergyEV = c06f400000000000 -250
+readSpectrumImage.metadata.detectors[4].realTimeColumn0 = 3fe0000000000000 0.5
+readSpectrumImage.metadata.detectors[4].liveTimeColumn0 = 3fd999999999999a 0.40000000000000002
+readSpectrumImage.metadata.detectors[4].exposureTimeSeconds = nil
+readSpectrumImage.metadata.binaryResultDetector = "SuperXG21"
+readSpectrumImage.metadata.binaryResultDetectorIndex = 8
+readSpectrumImage.metadata.energyAxis.offsetKeV = bfd0000000000000 -0.25
+readSpectrumImage.metadata.energyAxis.scaleKeV = 3f847ae147ae147b 0.01
+readSpectrumImage.metadata.scanSizeWidth = 4
+readSpectrumImage.metadata.scanSizeHeight = 6
+readSpectrumImage.metadata.scanArea.left = 3fd0000000000000 0.25
+readSpectrumImage.metadata.scanArea.top = 0000000000000000 0
+readSpectrumImage.metadata.scanArea.right = 3fe8000000000000 0.75
+readSpectrumImage.metadata.scanArea.bottom = 3fe0000000000000 0.5
+readSpectrumImage.metadata.scanRotationRadians = bfe0000000000000 -0.5
+readSpectrumImage.metadata.dwellTimeSeconds = 3f50624dd2f1a9fc 0.001
+readSpectrumImage.metadata.frameTimeSeconds = 3f789374bc6a7efa 0.0060000000000000001
+readSpectrumImage.metadata.accelerationVoltageVolts = 41086a0000000000 200000
+readSpectrumImage.metadata.screenCurrentAmperes = 3e19c511dc3a41df 1.5e-09
+readSpectrumImage.metadata.stageAlphaRadians = bfd2d916872b020c -0.29449999999999998
+readSpectrumImage.metadata.stageBetaRadians = 3f847ae147ae147b 0.01
+readSpectrumImage.metadata.stagePositionMeters.x = 3ee4f8b588e368f1 1.0000000000000001e-05
+readSpectrumImage.metadata.stagePositionMeters.y = 3ef4f8b588e368f1 2.0000000000000002e-05
+readSpectrumImage.metadata.stagePositionMeters.z = 3eff75104d551d69 3.0000000000000001e-05
+readSpectrumImage.metadata.holderType = "FEI Double Tilt"
+readSpectrumImage.metadata.pixelSizeMeters.width = 3e112e0be826d695 1.0000000000000001e-09
+readSpectrumImage.metadata.pixelSizeMeters.height = 3e112e0be826d695 1.0000000000000001e-09
+readSpectrumImage.metadata.pixelUnit = "m"
+readSpectrumImage.metadata.pixelUnitY = nil
+readSpectrumImage.metadata.offset.x = 0000000000000000 0
+readSpectrumImage.metadata.offset.y = 0000000000000000 0
+readSpectrumImage.metadata.instrumentModel = "Talos"
+readSpectrumImage.metadata.acquisitionStartUnixTime = 41da798899800000 1776689766
+readSpectrumImage.metadata.scanTransformation.a11 = 3ff0000000000000 1
+readSpectrumImage.metadata.scanTransformation.a12 = 0000000000000000 0
+readSpectrumImage.metadata.scanTransformation.a13 = 0000000000000000 0
+readSpectrumImage.metadata.scanTransformation.a21 = 0000000000000000 0
+readSpectrumImage.metadata.scanTransformation.a22 = 3ff0000000000000 1
+readSpectrumImage.metadata.scanTransformation.a23 = 8000000000000000 -0
+readSpectrumImage.metadata.nominalMagnification = nil
+readSpectrumImage.metadata.stemMagnification = nil
+readSpectrumImage.metadata.cameraLengthMeters = nil
+readSpectrumImage.metadata.operatingMode = nil
+readSpectrumImage.metadata.projectorMode = nil
+readSpectrumImage.metadata.exposureTimeSeconds = nil
+readSpectrumImage.version = "11"
+readSpectrumImage.streamCount = 2
+readSpectrumImage.settingsFrames.start = 1
+readSpectrumImage.settingsFrames.end = 2
+readSpectrumImage.streams: array 2
+readSpectrumImage.streams[0].id = "aaaa"
+readSpectrumImage.streams[0].detectorName = "SuperXG21"
+readSpectrumImage.streams[0].detectorIndex = 8
+readSpectrumImage.streams[0].segments: array 1
+readSpectrumImage.streams[0].segments[0].index = 1
+readSpectrumImage.streams[0].segments[0].name = "SuperXG21"
+readSpectrumImage.streams[0].segments[0].type = "AnalyticalDetector"
+readSpectrumImage.streams[0].segments[0].enabled = true
+readSpectrumImage.streams[0].segments[0].inserted = true
+readSpectrumImage.streams[0].segments[0].azimuthRadians = 3fe921fb54442d18 0.78539816339744828
+readSpectrumImage.streams[0].segments[0].elevationRadians = 3fd41b2f7b98a7ac 0.31415926999999999
+readSpectrumImage.streams[0].segments[0].solidAngleSteradians = 3fcccccccccccccd 0.22500000000000001
+readSpectrumImage.streams[0].segments[0].dispersionEV = 4024000000000000 10
+readSpectrumImage.streams[0].segments[0].offsetEnergyEV = c06f400000000000 -250
+readSpectrumImage.streams[0].segments[0].realTimeColumn0 = 3fe0000000000000 0.5
+readSpectrumImage.streams[0].segments[0].liveTimeColumn0 = 3fd999999999999a 0.40000000000000002
+readSpectrumImage.streams[0].segments[0].exposureTimeSeconds = nil
+readSpectrumImage.streams[1].id = "bbbb"
+readSpectrumImage.streams[1].detectorName = "SuperXG22"
+readSpectrumImage.streams[1].detectorIndex = 8
+readSpectrumImage.streams[1].segments: array 1
+readSpectrumImage.streams[1].segments[0].index = 2
+readSpectrumImage.streams[1].segments[0].name = "SuperXG22"
+readSpectrumImage.streams[1].segments[0].type = "AnalyticalDetector"
+readSpectrumImage.streams[1].segments[0].enabled = true
+readSpectrumImage.streams[1].segments[0].inserted = true
+readSpectrumImage.streams[1].segments[0].azimuthRadians = 4002d97c7f3321d2 2.3561944901923448
+readSpectrumImage.streams[1].segments[0].elevationRadians = 3fe0c152454731ee 0.52359880000000003
+readSpectrumImage.streams[1].segments[0].solidAngleSteradians = 3fcccccccccccccd 0.22500000000000001
+readSpectrumImage.streams[1].segments[0].dispersionEV = 4034000000000000 20
+readSpectrumImage.streams[1].segments[0].offsetEnergyEV = c06f400000000000 -250
+readSpectrumImage.streams[1].segments[0].realTimeColumn0 = 3fe0000000000000 0.5
+readSpectrumImage.streams[1].segments[0].liveTimeColumn0 = 3fd999999999999a 0.40000000000000002
+readSpectrumImage.streams[1].segments[0].exposureTimeSeconds = nil
+readSpectrumImage.energyCalibrationAgrees = false
+store: totalCounts 11 completeFrames 2 partialFramePixels 0 outOfRange 0
+store.summedSpectrum: n 8 sum-bits b fnv 9124099254f69426
+store.denseCounts: n 48 sum-bits b fnv 5c7c84374c07e6
+pixel 0: framesCovering 2 spectrum [0, 3, 0, 0, 0, 0, 0, 0]
+pixel 1: framesCovering 2 spectrum [0, 0, 0, 2, 0, 0, 0, 0]
+pixel 2: framesCovering 2 spectrum [0, 0, 1, 0, 0, 1, 0, 0]
+pixel 3: framesCovering 2 spectrum [0, 0, 0, 0, 1, 0, 0, 0]
+pixel 4: framesCovering 2 spectrum [0, 0, 0, 0, 0, 0, 0, 0]
+pixel 5: framesCovering 2 spectrum [1, 0, 0, 0, 0, 0, 0, 2]
+frames 1..<2: totalCounts 4 complete 1 summed [1, 1, 0, 1, 0, 1, 0, 0]

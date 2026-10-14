@@ -1,0 +1,1873 @@
+{
+  "bytes": 39525,
+  "file": "eels-planted.dm4",
+  "generator": "tools/eels-reader/truth.py",
+  "objects": [
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "data_bytes": 48,
+      "data_offset": 158,
+      "index": 1,
+      "name": "Planted survey",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 1.0,
+          "size": 3,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 1,
+          "name": "x",
+          "offset": -0.0,
+          "scale": 1.0,
+          "size": 4,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        3,
+        4
+      ],
+      "signal_type": ""
+    },
+    {
+      "beam_energy_keV": 80.0,
+      "beam_energy_key": "Acquisition_instrument.TEM.beam_energy",
+      "channels": 5,
+      "collection_angle_mrad": 33.25,
+      "convergence_angle_mrad": 17.5,
+      "counts_sha256": "ffe26eae3ec1d93a7f7547eb76aa26a1f0b31963be3f5e8f51c8ba1a0de4a7fe",
+      "data_bytes": 120,
+      "data_offset": 1627,
+      "index": 2,
+      "name": "EELS float32",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -10.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -8.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 28.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -7.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 11.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 2.75,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 31.25,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": 300.0,
+      "beam_energy_key": "Acquisition_instrument.TEM.beam_energy",
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "fe4c1916a0570b5f663697a9de8461950c33e01813d5d04bfd2334056fb16b91",
+      "data_bytes": 60,
+      "data_offset": 3753,
+      "index": 3,
+      "name": "EELS int16",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "int16",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -8000.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": -4000.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -7400.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 7400.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -6900.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 500.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": -2900.0,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 8500.0,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": 10.0,
+      "counts_sha256": "12133f9693ac3748606fc9c1dc9efe156a23438e381e3cd77c77c970ffcbbf9c",
+      "data_bytes": 60,
+      "data_offset": 5619,
+      "index": 4,
+      "name": "EELS uint16",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "uint16",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": 0.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 12000.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 1800.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 46200.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 3300.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 25500.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 15300.0,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 49500.0,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "channels": 5,
+      "collection_angle_mrad": 20.0,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "3534e28e9abd1c2f0175849321be1c3b565b4c6875c9e1dd712c1250615acbdc",
+      "data_bytes": 30,
+      "data_offset": 7450,
+      "index": 5,
+      "name": "EELS uint8",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "uint8",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": 0.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 40.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 6.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 154.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 11.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 85.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 51.0,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 165.0,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "6883cb8814299f99747972a57d30e1bbcbff87e97a88845a53bf9d4f5368a8ef",
+      "data_bytes": 30,
+      "data_offset": 9248,
+      "index": 6,
+      "name": "EELS int8",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "int8",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -83.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": -43.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -77.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 71.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -72.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 2.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": -32.0,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 82.0,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": 200.0,
+      "beam_energy_key": "Acquisition_instrument.TEM.beam_energy",
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "b80272ad84e5cf32fbee7c5a0b2178645c0421ba7fe11bf256adc212a07ccc75",
+      "data_bytes": 120,
+      "data_offset": 10912,
+      "index": 7,
+      "name": "EELS int32",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "int32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -80000000.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": -39999880.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -73999984.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 74000464.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -68999968.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 5000255.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": -28999848.0,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 85000496.0,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": 200.0,
+      "beam_energy_key": "Acquisition_instrument.TEM.beam_energy",
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "5a32509b37217d9f8e6fee2786a763f146d690bda4e24bd925eb9fe3a3b623cb",
+      "data_bytes": 120,
+      "data_offset": 12838,
+      "index": 8,
+      "name": "EELS uint32",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "uint32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": 4000000000.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 4040000000.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 4006000128.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 4154000384.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 4011000064.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 4085000192.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 4051000064.0,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 4165000448.0,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": 200.0,
+      "beam_energy_key": "Acquisition_instrument.TEM.beam_energy",
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "df2345097db95d2c929c8cff00aec76a515d839ed289a63fed52e960e868cfe3",
+      "data_bytes": 240,
+      "data_offset": 14766,
+      "index": 9,
+      "name": "EELS float64",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float64",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": 9.999999717180685e-10,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 5.714285850524902,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 0.8571428656578064,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 22.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 1.5714285373687744,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 12.142857551574707,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 7.285714149475098,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 23.571428298950195,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": 120.0,
+      "beam_energy_key": "Acquisition_instrument.TEM.beam_energy",
+      "channels": 5,
+      "collection_angle_mrad": 45.0,
+      "convergence_angle_mrad": 25.0,
+      "counts_sha256": "ffe26eae3ec1d93a7f7547eb76aa26a1f0b31963be3f5e8f51c8ba1a0de4a7fe",
+      "data_bytes": 120,
+      "data_offset": 16816,
+      "index": 10,
+      "name": "EELS stack builder",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -10.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -8.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 28.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -7.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 11.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 2.75,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 31.25,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "channels": 3,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "4b21a14bcb88faddd46093db6c6d975ab47c5c9b8f780d59ba6d40df8959e641",
+      "data_bytes": 48,
+      "data_offset": 19384,
+      "index": 11,
+      "name": "EELS one row",
+      "nx": 4,
+      "ny": 1,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 2.5,
+          "scale": 0.5,
+          "size": 3,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 2.0,
+          "size": 1,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -0.0,
+          "scale": 2.0,
+          "size": 4,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        3,
+        1,
+        4
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -10.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": -0.75,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.75,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -7.75,
+          "x": 3,
+          "y": 0
+        },
+        {
+          "c": 2,
+          "value": 10.75,
+          "x": 3,
+          "y": 0
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "ffe26eae3ec1d93a7f7547eb76aa26a1f0b31963be3f5e8f51c8ba1a0de4a7fe",
+      "data_bytes": 120,
+      "data_offset": 21072,
+      "index": 12,
+      "name": "EELS energy in nm",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "z",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -10.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -8.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 28.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -7.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 11.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 2.75,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 31.25,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "ffe26eae3ec1d93a7f7547eb76aa26a1f0b31963be3f5e8f51c8ba1a0de4a7fe",
+      "data_bytes": 120,
+      "data_offset": 22842,
+      "index": 13,
+      "name": "EELS data order swapped",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -10.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -8.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 28.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -7.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 11.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 2.75,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 31.25,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "data_bytes": 48,
+      "data_offset": 24677,
+      "index": 14,
+      "name": "EELS two dimensions",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 1.0,
+          "size": 3,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 1,
+          "name": "x",
+          "offset": -0.0,
+          "scale": 1.0,
+          "size": 4,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        3,
+        4
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "ffe26eae3ec1d93a7f7547eb76aa26a1f0b31963be3f5e8f51c8ba1a0de4a7fe",
+      "data_bytes": 120,
+      "data_offset": 26160,
+      "index": 15,
+      "name": "EELS no energy calibration",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "z",
+          "offset": -0.0,
+          "scale": 1.0,
+          "size": 5,
+          "units": ""
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -10.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -8.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 28.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -7.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 11.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 2.75,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 31.25,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "72c9ce02ea33ca9793c5975743edc30786f81a218865b45ba9a4250c1fc777f4",
+      "data_bytes": 30,
+      "data_offset": 27782,
+      "index": 16,
+      "name": "EELS unsupported type",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "bool",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": 0.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 0.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 0.0,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 1.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 1.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 1.0,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 1.0,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "data_bytes": 120,
+      "data_offset": 29470,
+      "index": 17,
+      "name": "EDS spectrum image",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "z",
+          "offset": -0.0,
+          "scale": 0.01,
+          "size": 5,
+          "units": "keV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "signal_type": ""
+    },
+    {
+      "beam_energy_keV": 100.0,
+      "beam_energy_key": "Acquisition_instrument.TEM.beam_energy",
+      "channels": 5,
+      "collection_angle_mrad": 11.0,
+      "convergence_angle_mrad": 9.0,
+      "counts_sha256": "ffe26eae3ec1d93a7f7547eb76aa26a1f0b31963be3f5e8f51c8ba1a0de4a7fe",
+      "data_bytes": 120,
+      "data_offset": 31234,
+      "index": 18,
+      "name": "Spectrum cube by signal tag",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -10.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -8.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 28.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -7.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 11.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 2.75,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 31.25,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "ffe26eae3ec1d93a7f7547eb76aa26a1f0b31963be3f5e8f51c8ba1a0de4a7fe",
+      "data_bytes": 120,
+      "data_offset": 33418,
+      "index": 19,
+      "name": "EELS energy in keV",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "z",
+          "offset": 1e-05,
+          "scale": 0.00025,
+          "size": 5,
+          "units": "keV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -10.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -8.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 28.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -7.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 11.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 2.75,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 31.25,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": null,
+      "beam_energy_key": null,
+      "channels": 5,
+      "collection_angle_mrad": null,
+      "convergence_angle_mrad": null,
+      "counts_sha256": "ffe26eae3ec1d93a7f7547eb76aa26a1f0b31963be3f5e8f51c8ba1a0de4a7fe",
+      "data_bytes": 120,
+      "data_offset": 35192,
+      "index": 20,
+      "name": "EELS stack builder, strings only",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -10.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -8.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 28.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -7.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 11.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 2.75,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 31.25,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    },
+    {
+      "beam_energy_keV": 100.0,
+      "beam_energy_key": "Acquisition_instrument.TEM.beam_energy",
+      "channels": 5,
+      "collection_angle_mrad": 6.0,
+      "convergence_angle_mrad": 5.0,
+      "counts_sha256": "ffe26eae3ec1d93a7f7547eb76aa26a1f0b31963be3f5e8f51c8ba1a0de4a7fe",
+      "data_bytes": 120,
+      "data_offset": 39397,
+      "index": 21,
+      "name": "EELS last block",
+      "nx": 3,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 10.0,
+          "scale": 0.25,
+          "size": 5,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 3.5,
+          "size": 2,
+          "units": "nm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -3.75,
+          "scale": 2.5,
+          "size": 3,
+          "units": "nm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        5,
+        2,
+        3
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": -10.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 0.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -8.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 4,
+          "value": 28.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": -7.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 2,
+          "value": 11.25,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1,
+          "value": 2.75,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 4,
+          "value": 31.25,
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    }
+  ],
+  "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.digitalmicrograph.file_reader), numpy 2.5.4",
+  "rsciio_checkout": "References/rosettasciio",
+  "sha256": "a790c478c3192fe87518ccd3187bb7008ff8c8f51637f5ab2facfe2ddb4225b2"
+}

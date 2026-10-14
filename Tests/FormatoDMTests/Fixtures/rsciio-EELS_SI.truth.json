@@ -1,0 +1,108 @@
+{
+  "bytes": 340075,
+  "file": "rsciio-EELS_SI.dm4",
+  "generator": "tools/eels-reader/truth.py",
+  "objects": [
+    {
+      "beam_energy_keV": 200.0,
+      "beam_energy_key": "Acquisition_instrument.TEM.beam_energy",
+      "channels": 2048,
+      "collection_angle_mrad": 62.0,
+      "convergence_angle_mrad": 21.0,
+      "counts_sha256": "cfb5b9db3b41233595ebc777853d095e7ac0065a77fa8a49207ee5e298e443a6",
+      "data_bytes": 32768,
+      "data_offset": 156270,
+      "index": 2,
+      "name": "EELS_SI",
+      "nx": 2,
+      "ny": 2,
+      "order": "counts[(y*nx + x)*channels + c] = rsciio_array[c, y, x] (array.transpose(1, 2, 0)), float32 little-endian",
+      "rsciio_axes": [
+        {
+          "index_in_array": 0,
+          "name": "Energy loss",
+          "offset": 300.0,
+          "scale": 1.0,
+          "size": 2048,
+          "units": "eV"
+        },
+        {
+          "index_in_array": 1,
+          "name": "y",
+          "offset": -0.0,
+          "scale": 0.0019920736085623503,
+          "size": 2,
+          "units": "µm"
+        },
+        {
+          "index_in_array": 2,
+          "name": "x",
+          "offset": -0.0,
+          "scale": 0.0019920736085623503,
+          "size": 2,
+          "units": "µm"
+        }
+      ],
+      "rsciio_dtype": "float32",
+      "rsciio_shape": [
+        2048,
+        2,
+        2
+      ],
+      "samples": [
+        {
+          "c": 0,
+          "value": 8473.005859375,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 7891.005859375,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 1,
+          "value": 8126.40234375,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 2047,
+          "value": 42.013916015625,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "c": 0,
+          "value": 7923.005859375,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 1024,
+          "value": 231.16162109375,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "c": 682,
+          "value": 534.92626953125,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "c": 2047,
+          "value": 115.013916015625,
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "signal_type": "EELS"
+    }
+  ],
+  "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.digitalmicrograph.file_reader), numpy 2.5.4",
+  "rsciio_checkout": "References/rosettasciio",
+  "sha256": "f9b8203f384cc355437594b649d4ea3a12cddeb231ebb65508a841a379fa171a"
+}

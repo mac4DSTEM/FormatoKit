@@ -1,0 +1,11 @@
+{
+  "bytes": 1900,
+  "file": "eels-refused-zero.dm4",
+  "generator": "tools/eels-reader/truth.py",
+  "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.digitalmicrograph.file_reader), numpy 2.5.4",
+  "rsciio_checkout": "References/rosettasciio",
+  "rsciio_exception": "ValueError",
+  "rsciio_message": "cannot reshape array of size 0 into shape (5,2,3)",
+  "rsciio_raises": true,
+  "sha256": "e8f11466ddfd87aaf1f0edc260571f501842ee5e6426ca45d2527131ce0e1126"
+}

@@ -1,0 +1,156 @@
+{
+  "case-a-ceta-strings": {
+    "binaryResultDetector": "BM-Ceta",
+    "nominalMagnification": 8609.428,
+    "stemMagnification": 115000.0,
+    "cameraLengthMeters": 0.125,
+    "operatingMode": "1",
+    "projectorMode": "2",
+    "exposureTimeSeconds": 0.5,
+    "detectorExposures": [
+      9.0,
+      0.5,
+      7.0
+    ]
+  },
+  "case-b-stem-like": {
+    "binaryResultDetector": "HAADF",
+    "nominalMagnification": null,
+    "stemMagnification": 225000.0,
+    "cameraLengthMeters": 0.15,
+    "operatingMode": "1",
+    "projectorMode": "1",
+    "exposureTimeSeconds": null,
+    "detectorExposures": [
+      null,
+      0.5
+    ]
+  },
+  "case-c1-json-numbers": {
+    "binaryResultDetector": "BM-Ceta",
+    "nominalMagnification": 49000.5,
+    "stemMagnification": 62500.5,
+    "cameraLengthMeters": 0.0625,
+    "operatingMode": null,
+    "projectorMode": null,
+    "exposureTimeSeconds": 0.25,
+    "detectorExposures": [
+      0.25
+    ]
+  },
+  "case-c2-unparsable": {
+    "binaryResultDetector": "BM-Ceta",
+    "nominalMagnification": null,
+    "stemMagnification": null,
+    "cameraLengthMeters": null,
+    "operatingMode": "TEM",
+    "projectorMode": null,
+    "exposureTimeSeconds": null,
+    "detectorExposures": [
+      null
+    ]
+  },
+  "case-d1-no-binary-detector": {
+    "binaryResultDetector": null,
+    "nominalMagnification": null,
+    "stemMagnification": null,
+    "cameraLengthMeters": null,
+    "operatingMode": null,
+    "projectorMode": "2",
+    "exposureTimeSeconds": null,
+    "detectorExposures": [
+      0.5
+    ]
+  },
+  "case-d2-empty-binary-detector": {
+    "binaryResultDetector": "",
+    "nominalMagnification": null,
+    "stemMagnification": null,
+    "cameraLengthMeters": null,
+    "operatingMode": null,
+    "projectorMode": null,
+    "exposureTimeSeconds": null,
+    "detectorExposures": [
+      0.75,
+      0.5
+    ]
+  },
+  "case-e-first-entry-no-exposure": {
+    "binaryResultDetector": "BM-Ceta",
+    "nominalMagnification": 100000.0,
+    "stemMagnification": 1300000.0,
+    "cameraLengthMeters": 0.15,
+    "operatingMode": "1",
+    "projectorMode": "1",
+    "exposureTimeSeconds": null,
+    "detectorExposures": [
+      null,
+      2.0
+    ]
+  },
+  "case-f-key-order": {
+    "binaryResultDetector": "BM-Ceta",
+    "nominalMagnification": 20000.0,
+    "stemMagnification": null,
+    "cameraLengthMeters": 0.5,
+    "operatingMode": "2",
+    "projectorMode": "1",
+    "exposureTimeSeconds": 0.5,
+    "detectorExposures": [
+      null,
+      0.5,
+      7.0,
+      3.0,
+      4.0,
+      5.0
+    ]
+  },
+  "case-g-zeros": {
+    "binaryResultDetector": "BM-Ceta",
+    "nominalMagnification": 0.0,
+    "stemMagnification": 0.0,
+    "cameraLengthMeters": 0.0,
+    "operatingMode": "0",
+    "projectorMode": "0",
+    "exposureTimeSeconds": 0.0,
+    "detectorExposures": [
+      0.0
+    ]
+  },
+  "case-h-stem-without-value": {
+    "binaryResultDetector": "BM-Ceta",
+    "nominalMagnification": 60000.0,
+    "stemMagnification": null,
+    "cameraLengthMeters": 0.3,
+    "operatingMode": "1",
+    "projectorMode": "1",
+    "exposureTimeSeconds": 0.1,
+    "detectorExposures": [
+      0.1
+    ]
+  },
+  "case-i-stem-bare-string": {
+    "binaryResultDetector": "BM-Ceta",
+    "nominalMagnification": 70000.0,
+    "stemMagnification": null,
+    "cameraLengthMeters": 0.4,
+    "operatingMode": "2",
+    "projectorMode": "1",
+    "exposureTimeSeconds": 0.2,
+    "detectorExposures": [
+      0.2
+    ]
+  },
+  "case-j-custom-properties-string": {
+    "binaryResultDetector": "BM-Ceta",
+    "nominalMagnification": 80000.0,
+    "stemMagnification": null,
+    "cameraLengthMeters": 0.2,
+    "operatingMode": "2",
+    "projectorMode": "2",
+    "exposureTimeSeconds": 1.25,
+    "detectorExposures": [
+      1.25
+    ]
+  }
+}
