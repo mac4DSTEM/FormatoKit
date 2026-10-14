@@ -83,11 +83,39 @@ final class PinsTests: XCTestCase {
     func testEveryPinnedSignalAgreesWithRosettaSciIO() throws {
         let files = try XCTUnwrap(try loadJSON("step-1-pins.json")["files"] as? [[String: Any]])
         let referencesPresent = FileManager.default.fileExists(atPath: TestPaths.rsciioData.path)
+        let (read, signals, refused) = try compare(files, locate: locate, mustFind: referencesPresent)
+        if referencesPresent {
+            XCTAssertEqual(read, files.count, "every pinned file read")
+            XCTAssertEqual(signals + refused, 153, "111 DM + 42 Velox signals")
+        } else if read == 0 {
+            throw XCTSkip("References/rosettasciio-049e7d70 is absent and no committed public file is pinned")
+        }
+    }
+
+    /// The owner's files (registration §2): run by tools/step-1/owner-check.sh, which writes RosettaSciIO's reading of them
+    /// with `pins.py --owner` and passes FORMATO_OWNER_PINS (that JSON) and FORMATO_OWNER_FILES (their absolute paths, one
+    /// per line). Never part of the gate: skipped without the variables.
+    func testOwnerFilesAgreeWithRosettaSciIO() throws {
+        let env = ProcessInfo.processInfo.environment
+        guard let pins = env["FORMATO_OWNER_PINS"], let list = env["FORMATO_OWNER_FILES"] else {
+            throw XCTSkip("the owner's files are checked by tools/step-1/owner-check.sh only")
+        }
+        let object = try JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: pins))) as! [String: Any]
+        let files = try XCTUnwrap(object["files"] as? [[String: Any]])
+        let paths = try String(contentsOfFile: list, encoding: .utf8).split(separator: "\n").map(String.init)
+        let byName = Dictionary(paths.map { (URL(fileURLWithPath: $0).lastPathComponent, $0) }, uniquingKeysWith: { a, _ in a })
+        XCTAssertEqual(byName.count, paths.count, "the owner's file names are unique")
+        let (read, signals, refused) = try compare(files, locate: { byName[$0].map(URL.init(fileURLWithPath:)) }, mustFind: true)
+        XCTAssertEqual(read, files.count)
+        print("OwnerPins: \(read) files, \(signals) signals equal, \(refused) refused by name")
+    }
+
+    private func compare(_ files: [[String: Any]], locate: (String) -> URL?, mustFind: Bool) throws -> (Int, Int, Int) {
         var read = 0, signals = 0, refused = 0, titleDifferences: [String] = []
         for f in files {
             let path = f["path"] as! String
             guard let url = locate(path) else {
-                if referencesPresent { XCTFail("\(path): not found (tools/test.sh unzips the public zips)") }
+                if mustFind { XCTFail("\(path): not found (tools/test.sh unzips the public zips)") }
                 continue
             }
             XCTAssertEqual(sha(try Data(contentsOf: url)), f["sha256"] as? String, "\(path): not the pinned file")
@@ -142,13 +170,8 @@ final class PinsTests: XCTestCase {
                 }
             }
         }
-        if referencesPresent {
-            XCTAssertEqual(read, files.count, "every pinned file read")
-            XCTAssertEqual(signals + refused, 153, "111 DM + 42 Velox signals")
-        } else if read == 0 {
-            throw XCTSkip("References/rosettasciio-049e7d70 is absent and no committed public file is pinned")
-        }
         print("PinsTests: \(read) files, \(signals) signals equal, \(refused) refused by name; Velox titles differing from RosettaSciIO's (A4): \(titleDifferences.count)")
         for t in titleDifferences { print("  title  \(t)") }
+        return (read, signals, refused)
     }
 }
