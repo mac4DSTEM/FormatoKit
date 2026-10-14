@@ -11,7 +11,7 @@ build on it. Swift 6 strict concurrency, headless, lazy where a file is large, o
 | `FormatoDM` | Gatan DigitalMicrograph `.dm3` / `.dm4`: listing, 2D images, EDS and EELS spectrum images, the tag tree; every object as a signal | step 1 (moved from SpectroKit 0.3.0, plus the signal adapter) |
 | `FormatoEMD` | Thermo Fisher Velox `.emd`: spectrum streams (sparse), images, metadata; images as signals. Later: NCEM / Berkeley EMD | step 1 (moved from SpectroKit 0.3.0, plus the image adapter) |
 | `FormatoHDF5` | the process-wide HDF5 lock and quit barrier, the shipped libhdf5. Later: hspy, the sidecar | step 1 (moved) |
-| `FormatoTIFF` | FEI / Thermo Fisher and TIA TIFF metadata, ImageJ, Gatan tag 65027 | empty: step 2 |
+| `FormatoTIFF` | the TIFF container with a public tag walker (any private tag as stored); FEI, Gatan DM, ImageJ and plain TIFF as signals | step 2 |
 | `FormatoMRC` | MRC / MRC2014 with FEI extended headers | empty |
 | `FormatoEMPAD` | EMPAD 4D-STEM raw data; the 4D HDF5 readers | empty |
 | `FormatoMSA` | EMSA/MAS spectra | empty |

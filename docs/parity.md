@@ -16,7 +16,7 @@ instruments and techniques, out of scope until someone asks.
 | EMD, Velox | emd | no | `FormatoEMD` | **pinned** for images as signals (step 1, Float32); the spectrum stream read and parity-checked in SpectroKit's history (moved API) | A |
 | EMD, NCEM / Berkeley | emd | yes | `FormatoEMD` | not read | B |
 | EMD, prismatic | emd | no | — | not read | C |
-| TIFF | tif, tiff | yes | `FormatoTIFF` | empty: **step 2** (FEI / Thermo Fisher and TIA tags, Gatan 65027, ImageJ), from macTEM's walker | A |
+| TIFF | tif, tiff | yes | `FormatoTIFF` | **pinned** (step 2) for FEI, Gatan DM tags, ImageJ and plain files, uncompressed strips: 31 public and planted series and the owner's 6 Ceta TIFFs bit for bit; the tag walker equal to tifffile; Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu streak, compression and tiles refused by name | A |
 | TIA | ser, emi | no | `FormatoTIFF` or its own module | not read | B |
 | MRC | mrc, ali | no | `FormatoMRC` | empty | B |
 | MRCZ | mrc, mrcz | yes | `FormatoMRC` | not read | C |
@@ -54,6 +54,14 @@ instruments and techniques, out of scope until someone asks.
 | USID | h5, hdf5 | yes | — | not read | C |
 
 ## Inside the pinned formats: what is not yet equal
+
+- **TIFF vendor branches not ported:** Zeiss SEM (`sem`), TVIPS, Olympus SIS, JEOL SightX, Hamamatsu streak (11 of the
+  public files); `force_read_resolution`; `multipage_as_list`. Each is refused by name.
+- **TIFF layouts:** compression (LZW, Deflate, JPEG, PackBits: imagecodecs in Python), tiles, planar 2, palettes applied,
+  YCbCr, bit depths other than 8/16/32/64. Refused by name.
+- **TIFF tags tifffile drops or reads elsewhere:** unknown types are kept by the walker (tifffile drops them); pointer tags
+  keep their stored field (tifffile reads the structure). The Velox XML 34683 and TIA tags are read as stored, not
+  interpreted (no RosettaSciIO rule to port).
 
 - **DM types refused by name:** complex64 and complex128 (types 3, 13), packed complex (27, 28, 5), RGB (8, 23), bool (14):
   RosettaSciIO reads them (47 of the public signals). Next DM lane.
