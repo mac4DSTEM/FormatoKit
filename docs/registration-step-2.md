@@ -146,3 +146,23 @@ Hamamatsu branches, force-read resolution, pages as a list, the Velox XML and TI
 ## 11. Amendments
 
 (none yet)
+
+**A1 (2026-10-15, 01:55, the pins and the first runs).** What tifffile and RosettaSciIO do at the pins, found by
+`tools/step-2/pins.py` (45 files: 25 public, 20 planted) and the first test runs; none moves a registered number:
+1. *ASCII values.* §3.2's "cut at the first NUL" is `bytes2str`, which only the INI parsers use. A tag's ASCII value loses
+   its trailing NULs only, decodes as UTF-8 or else cp1252, and is stripped; an embedded NUL stays. The walker does so.
+2. *`astype`* tries int, float, bool ("true"/"false" in any case), then the string: §3.3 omitted the bool.
+3. *The slash DateTime form* is tried only when the page has no ImageDescription (RosettaSciIO tries the JEOL description
+   first and gives up); a planted file pins it.
+4. *Unknown tag types.* tifffile drops a tag of a type it does not know; the walker keeps it as bytes (more, never less),
+   and the comparison of tag codes leaves those out.
+5. *Pointer tags.* For EXIF 34665, GPS 34853, Interoperability 40965 and TVIPS 37706, tifffile's `valueoffset` is the
+   structure it reads, not the stored field; the walker keeps the stored field, and the raw comparison leaves them out.
+6. *Lines.* Python's `splitlines` splits "\r\n" as one break; Swift's `\r\n` is one Character, so the INI and ImageJ parsers
+   split on `Character.isNewline` (the public FEI Helios files use "\r\n"; the planted ones "\n").
+7. *ImageJ virtual stacks.* With fewer pages than images, the images are read contiguously after page 0's data, as
+   tifffile's `series_imagej` does; a planted file pins it.
+8. *The owner's six Ceta TIFFs* are 8-bit RGB renders, one page each, with the Velox XML in tag 34683 and the resolution
+   tags 65450-65452: RosettaSciIO gives them uncalibrated height and width axes and no date.
+Result: 45 files; 31 series bit-identical (data, shape, element type, every axis field, metadata with source) and their
+page-0 tags equal to tifffile's; 14 refused by name (11 out of scope, 3 RosettaSciIO raises on); lazy slabs equal on all.

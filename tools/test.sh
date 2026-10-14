@@ -33,6 +33,19 @@ if [[ -d $refs/data ]]; then
     mkdir .build/rsciio-unzipped/emd/$zip && unzip -q $refs/data/emd/$zip -d .build/rsciio-unzipped/emd/$zip
   done
 fi
+# The public TIFF test data the step-2 pins read (registration step 2 §2): each .zip and .gz checked against registry.txt,
+# unpacked into .build/rsciio-tiff/tiff/<zip>/ (a .gz into a file of its own name, the name the pins use).
+if [[ -d $refs/data/tiff ]]; then
+  rm -rf .build/rsciio-tiff; mkdir -p .build/rsciio-tiff/tiff
+  for f in $refs/data/tiff/*.zip $refs/data/tiff/*.gz; do
+    b=${f:t}
+    want=$(sed -n "s|^'tiff/$b' \([0-9a-f]\{64\}\)\$|\1|p" $refs/registry.txt)
+    have=$(shasum -a 256 $f | cut -d' ' -f1)
+    [[ -n $want && $have == $want ]] || { print -u2 "tools/test.sh: $b is not the registry's"; exit 1 }
+    if [[ $b == *.zip ]]; then mkdir .build/rsciio-tiff/tiff/$b && unzip -q $f -d .build/rsciio-tiff/tiff/$b
+    else gunzip -c $f > .build/rsciio-tiff/tiff/$b; fi
+  done
+fi
 log=.build/test.log
 set +e
 swift test -c release "$@" 2>&1 | tee $log
