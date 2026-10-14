@@ -50,7 +50,7 @@ MUTANTS_STEP2 = [
     (5, "RATIONAL denominator dropped", TFILE, "TIFFRational(numerator: Int64(r.u32u($0 * 8)), denominator: Int64(r.u32u($0 * 8 + 4)))", "TIFFRational(numerator: Int64(r.u32u($0 * 8)), denominator: 1)", T),
     (6, "the height/width cross-over undone", TIFF, 'case "height": scales[i] = s.x; offsets[i] = o.x; units[i] = u.x', 'case "height": scales[i] = s.y; offsets[i] = o.y; units[i] = u.y', T),
     (7, "ImageJ micron as um", TIFF, 'u.x = "µm"; u.y = "µm"', 'u.x = "um"; u.y = "um"', T),
-    (8, "FEI IRBeam x divided by ResolutionY", TIFF, 's.x = try float(try value("IRBeam", "HFW")) / float(try value("Image", "ResolutionX"))', 's.x = try float(try value("IRBeam", "HFW")) / float(try value("Image", "ResolutionY"))', T),
+    (8, "FEI IRBeam x divided by ResolutionY", TIFF, 's.x = try divide(try float(try value("IRBeam", "HFW")), try float(try value("Image", "ResolutionX")))', 's.x = try divide(try float(try value("IRBeam", "HFW")), try float(try value("Image", "ResolutionY")))', T),
     (9, "DM 65009 assigned to x", TIFF, "if let v = page[65009] { s.y = try dmNumber(v) }", "if let v = page[65009] { s.x = try dmNumber(v) }", T),
     (10, "astype tries float before int", CORE_PY, "    if let i = formatoPythonInt(s) { return .int(i) }\n    if let d = formatoPythonFloat(s) { return .float(d) }", "    if let d = formatoPythonFloat(s) { return .float(d) }\n    if let i = formatoPythonInt(s) { return .int(i) }", T),
     (11, "ImageJ axes Z before T", TIFF, 'default: axes = ["T", "Z", "C"]; shape = [frames, slices, channels]', 'default: axes = ["Z", "T", "C"]; shape = [frames, slices, channels]', T),
