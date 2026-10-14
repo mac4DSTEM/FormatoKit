@@ -4,7 +4,7 @@ What is live, one table; then the hand-off and what is unverified. Rules are in 
 `docs/registration-step-1.md` (amendments A1 onward); what each consumer changes in `docs/consumers-0.0.1.md`; the format
 checklist in `docs/parity.md`.
 
-## Live (2026-10-15 early morning, the first session)
+## Live (2026-10-15 early morning: step 1, then step 2 in the same session)
 
 | Area | State | Evidence |
 |---|---|---|
@@ -23,9 +23,15 @@ checklist in `docs/parity.md`.
 | Consumer check | 27 checks through the public API, Debug, 0 warnings, `MAC4DSTEM_HDF5_PATH` unset | `tools/consumer-check/run.sh` |
 | Break-once proof | 16 of 16 planned mutants red on a copy of `db9e14a` (XCTest) and again on `59a6bef` (Swift Testing, after the Gate B fixes; mutant 10 re-aimed at the fixed line) | `tools/step-1/mutants.py` |
 | Gate B refuter | One refuter on `3391460`: F1 (a units trap), F2 and F3 (Velox defaults where RosettaSciIO raises), F6 (the gate's allow-list) fixed in `dee9e58` with 11 of its files pinned; F4, F5, F7, F8 and F2's DM half registered as named deviations | registration A5; `PinsTests.testRefuterFilesAgreeOrAreRefused` |
-| Empty modules | `FormatoTIFF`, `FormatoMRC`, `FormatoEMPAD`, `FormatoMSA`: a scope statement each | their source file |
-| Tests | Swift Testing throughout (the owner's standard, 2026-10-15): 137 tests in 17 suites, the 121 moved names among them; 0 failures, 0 warnings beyond the registered strip lines | `tools/test.sh` |
-| Gate | `tools/test.sh` green and stamped at `59a6bef` (refuses to stamp with an untracked file under Sources/Tests) | `.build/last-green` |
+| Step 2 registration | Written before code (`e566efe`); amendments A1 (the pins) and A2 (Gate B) | `docs/registration-step-2.md` |
+| `FormatoTIFF` container | `TIFFFile`: classic TIFF and BigTIFF, II and MM, every directory and tag (a public walker: the Velox XML 34683, 65027, TIA tags as stored), tifffile's value rules | `FormatoTIFFPinsTests` (every page-0 tag equal to tifffile's) |
+| `FormatoTIFF` signals (P2) | `TIFFSignals`: FEI, Gatan DM tags, ImageJ and plain TIFF as RosettaSciIO reads them; uncompressed strips; colour as one element per pixel; the other vendors, compression, tiles and tifffile's shaped / OME / several-series rules refused by name | 45 pinned files: 31 series bit-identical, 14 refused; 26 Gate B files; planted literals |
+| The owner's Ceta TIFFs | 6 files (8-bit RGB renders, uncalibrated in RosettaSciIO): 6 signals bit-identical | `tools/step-2/owner-check.sh` on `2136ffc` |
+| Step 2 break-once proof | 15 of 15 planned mutants red (mutant 2 needed a TIFF without RowsPerStrip, added) | `tools/step-1/mutants.py --step 2` |
+| Step 2 Gate B refuter | One refuter on `700ede0`, 15 500 generated TIFFs: five crashes and the series rules fixed or refused, three deviations registered | registration step 2 A2 |
+| Empty modules | `FormatoMRC`, `FormatoEMPAD`, `FormatoMSA`: a scope statement each | their source file |
+| Tests | Swift Testing throughout (the owner's standard, 2026-10-15): 152 tests in 20 suites, the 121 moved names among them; 0 failures, 0 warnings beyond the registered strip lines | `tools/test.sh` |
+| Gate | `tools/test.sh` green and stamped at `2136ffc` (refuses to stamp with an untracked file under Sources/Tests) | `.build/last-green` |
 
 Validation: none. Agreement with RosettaSciIO and recovery of planted files are what is claimed (registration §8).
 
@@ -33,16 +39,18 @@ Validation: none. Agreement with RosettaSciIO and recovery of planted files are 
 
 The suite board's `lanes/formatokit` carries the next prompt. What the next session starts from:
 
-1. **Step 2, `FormatoTIFF`**, registered before code: macTEM's FEI / Thermo Fisher and TIA metadata walker
-   (`Sources/TEMCore/Data/AcquisitionMetadata+TIFF.swift`, `TIFFImageReader.swift`, read at macTEM's pushed HEAD) ported into
-   `FormatoTIFF` as signals, against RosettaSciIO's `tiff` plugin bit for bit on its public TIFF files and the owner's six
-   Ceta TIFFs; macTEM's `tools/metadata-parity` and `tools/tiff-reader-parity` are the seeds of the pins.
-2. The Velox gaps of `docs/parity.md` that step 2 can take with it: stored-dtype images, the `Operations` title rule.
-3. The owner tags 0.0.1 after pushing; SpectroKit's session then makes the 0.4.0 switch (`docs/consumers-0.0.1.md`).
+1. **The Velox gaps of step 1** (`docs/parity.md`), registered as an amendment or step 3: stored-dtype image reads and
+   RosettaSciIO's `Operations` title rule; then Velox spectrum images as FormatoSignal.
+2. **The next format lane** in the order the owner's data needs: EMPAD and the 4D HDF5 readers from mac4DSTEM (when its
+   session is ready), then MRC and MSA; or TIFF's next branches (compression via a ported LZW/Deflate, the Zeiss SEM and
+   JEOL SightX branches) if the owner's files need them.
+3. The owner tags 0.0.1 (or 0.0.2 with FormatoTIFF) after pushing; SpectroKit's session makes the 0.4.0 switch
+   (`docs/consumers-0.0.1.md`, `docs/consumers-0.0.2.md`); macTEM can move its TIFF container onto `TIFFFile` in its lane.
 
 ## Unverified
 
 - The resource-bundled dylibs inside a signed, notarised app (the apps embed their own; the bundle's copies are ad-hoc
   signed): not tried. An owner decision on the board.
 - Big-endian DM files: none exists to test; not detected.
-- No performance work: lazy reads are positioned reads (DM) and per-frame reads (Velox), not memory-mapped.
+- No performance work: lazy reads are positioned reads (DM, TIFF) and per-frame reads (Velox), not memory-mapped.
+- TIFF: tifffile's shaped, OME and pyramid series, compression and the other vendor branches are refused, not read.
