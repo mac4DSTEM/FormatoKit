@@ -12,8 +12,8 @@
 # because it is signed" for each of the three shipped dylibs it copies (they are ad-hoc signed and must stay byte-identical
 # to mac4DSTEM's vendored files). Exactly those three lines are allowed; any other warning fails the gate.
 #
-# Stamp: a full run (no arguments) that passes, on a tree whose tracked Sources/, Tests/, Package.swift and Package.resolved
-# are clean, writes .build/last-green (HEAD sha, UTC time, libhdf5). Any argument or a dirty tree writes nothing and says why.
+# Stamp: a full run (no arguments) that passes, on a tree whose Sources/, Tests/, Package.swift and Package.resolved are
+# clean and hold no untracked file, writes .build/last-green (HEAD sha, UTC time, libhdf5). Any argument or a dirty tree writes nothing and says why.
 set -euo pipefail
 cd "${0:A:h}/.."
 export MAC4DSTEM_HDF5_PATH=${MAC4DSTEM_HDF5_PATH:-$PWD/Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib}
@@ -44,6 +44,9 @@ if (( $# > 0 )); then
   print -u2 "tools/test.sh: green, but arguments were given (not a full run): no stamp"
 elif [[ -n $(git status --porcelain --untracked-files=no -- Sources Tests Package.swift Package.resolved) ]]; then
   print -u2 "tools/test.sh: green, but Sources/Tests/Package files are not clean: no stamp"
+elif [[ -n $(git ls-files --others --exclude-standard -- Sources Tests Package.swift Package.resolved) ]]; then
+  # An untracked source or test file ran but is in no commit: the stamp would name a commit without it (CuboKit's rule).
+  print -u2 "tools/test.sh: green, but untracked files under Sources/Tests ran: no stamp"
 else
   print -r -- "commit $(git rev-parse HEAD)
 time $(date -u +%Y-%m-%dT%H:%M:%SZ)
