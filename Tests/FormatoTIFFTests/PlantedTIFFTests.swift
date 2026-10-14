@@ -2,7 +2,7 @@
 //  PlantedTIFFTests.swift
 //  Registration step 2 §4: planted TIFFs written byte by byte by tools/step-2/make_planted.py (struct only), their values
 //  stated here as literals, independent of RosettaSciIO and tifffile. Planned mutants caught here: 1 (big-endian not
-//  swapped), 2 (RowsPerStrip default), 5 (rationals), 6 (the height/width cross-over), 7 (micron), 8 (IRBeam), 9 (DM
+//  swapped), 2 (RowsPerStrip default, by a file built in the test), 5 (rationals), 6 (the height/width cross-over), 7 (micron), 8 (IRBeam), 9 (DM
 //  65009), 12 (RGB planar), 13 (tiles), 14 (beam energy).
 //
 
@@ -83,6 +83,28 @@ import FormatoCore
         #expect(fei.metadata["General.date"]?.value == .text("2026-10-14"))
         #expect(fei.metadata["General.time"]?.value == .text("23:22:33"))
         #expect(fei.metadata["Acquisition_instrument.SEM.beam_energy"]?.provenance.source == "fei_metadata.Beam.HV")
+    }
+
+    /// No RowsPerStrip tag: TIFF 6.0's default is the whole image in one strip (mutant 2, which reads one row per strip,
+    /// would refuse it). The file is built here byte by byte: 3 x 4 uint8, values 10 r + c, little-endian.
+    @Test func testRowsPerStripDefaultsToTheHeight() throws {
+        var d = Data([0x49, 0x49, 42, 0, 8, 0, 0, 0])
+        func u16(_ v: Int) { d.append(contentsOf: [UInt8(v & 0xFF), UInt8(v >> 8)]) }
+        func u32(_ v: Int) { d.append(contentsOf: (0..<4).map { UInt8((v >> (8 * $0)) & 0xFF) }) }
+        let entries: [(Int, Int, Int)] = [(256, 3, 4), (257, 3, 3), (258, 3, 8), (259, 3, 1), (262, 3, 1), (273, 4, 8 + 2 + 8 * 12 + 4), (277, 3, 1), (279, 4, 12)]
+        u16(entries.count)
+        for (code, type, value) in entries {
+            u16(code); u16(type); u32(1)
+            if type == 3 { u16(value); u16(0) } else { u32(value) }
+        }
+        u32(0)
+        d.append(contentsOf: (0..<3).flatMap { r in (0..<4).map { c in UInt8(10 * r + c) } })
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("formato-no-rps-\(UUID().uuidString).tif")
+        try d.write(to: url)
+        defer { try? FileManager.default.removeItem(at: url) }
+        let s = try TIFFSignals(path: url.path).signal(series: 0).load()
+        #expect(s.data.shape == [3, 4])
+        #expect(s.data.doubles() == [0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23])
     }
 
     @Test func testRefusalsAreNamed() {
