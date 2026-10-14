@@ -81,12 +81,12 @@ package nonisolated struct DM4SpectrumImageRect: Sendable, Equatable {
 
 /// `EDS.*` tags, each present only if the file wrote it (gms.md §2d; names are
 /// from RosettaSciIO's mapping of real GMS EDS files, unverified here).
-package nonisolated struct DM4EDSDetectorTags: Sendable, Equatable {
-    package let azimuthDegrees: Double?
-    package let elevationDegrees: Double?
-    package let solidAngle: Double?
-    package let liveTime: Double?
-    package let realTime: Double?
+public nonisolated struct DM4EDSDetectorTags: Sendable, Equatable {
+    public let azimuthDegrees: Double?
+    public let elevationDegrees: Double?
+    public let solidAngle: Double?
+    public let liveTime: Double?
+    public let realTime: Double?
     package var isEmpty: Bool {
         azimuthDegrees == nil && elevationDegrees == nil && solidAngle == nil
             && liveTime == nil && realTime == nil
@@ -118,11 +118,11 @@ public nonisolated struct DM4ImageObject: Sendable, Equatable {
     /// The object's own `ImageList.N.UniqueID` (four uint32), what a `surveyImageID` points at
     /// (falls back to the survey's `ImageTags.Survey Image.Unique Image ID`).
     package let uniqueID: [UInt32]?
-    package let eds: DM4EDSDetectorTags?
+    public let eds: DM4EDSDetectorTags?
     /// `ImageTags.Microscope Info.Voltage` as stored (volts in GMS), nil when the object carries none.
     public let voltage: Double?
     /// `ImageTags.Meta Data.Data Order Swapped` (1 on the owner's 4D cubes, meaning unknown for an SI), nil when absent.
-    package let dataOrderSwapped: Bool?
+    public let dataOrderSwapped: Bool?
     /// `ImageTags.Meta Data.Format` verbatim ("Spectrum image", "Image", "Diffraction image" as GMS writes it); not used for `role()`.
     public let metaDataFormat: String?
     /// `ImageTags.Meta Data.Signal` verbatim ("X-ray", "EELS", ...); `role()` reads its own copy, this is for consumers.
@@ -135,8 +135,8 @@ public nonisolated struct DM4ImageObject: Sendable, Equatable {
     /// so a longer UTF-16 string is absent and a longer type-18 string is cut. Added 2026-10-12.
     public let imageTagStrings: [String: String]
     /// Where the pixel blob starts in the file and how many bytes the tag declares.
-    package let dataOffset: Int
-    package let dataByteCount: Int
+    public let dataOffset: Int
+    public let dataByteCount: Int
 
     package var dataTypeName: String { DM4Experiment.dataTypeName(dataType) }
     /// Saturates at `Int.max` rather than trapping on absurd tag dimensions.
@@ -161,13 +161,13 @@ public nonisolated struct DM4Image: Sendable, Equatable {
 
 /// A decoded EDS spectrum image: counts in `(ny, nx, channels)` row-major (the layout `DenseSpectrumImage` takes),
 /// and the energy axis exactly as the file states it (units NOT converted: the caller reads `units`).
-package nonisolated struct DM4EDSSpectrumImage: Sendable, Equatable {
+public nonisolated struct DM4EDSSpectrumImage: Sendable, Equatable {
     package let object: DM4ImageObject
-    package let nx: Int
-    package let ny: Int
-    package let channels: Int
-    package let counts: [UInt32]
-    package let energyAxis: DM4Axis
+    public let nx: Int
+    public let ny: Int
+    public let channels: Int
+    public let counts: [UInt32]
+    public let energyAxis: DM4Axis
 }
 
 /// A decoded EELS spectrum image (a 3D object of role `.eels`: x, y, energy loss), read by
@@ -255,11 +255,11 @@ public nonisolated enum DM4Experiment {
 
     /// Decodes the EDS spectrum image `index` (one-based) of the file at `path`. Throws `DM4Error.cannotOpen` with the
     /// reason for everything it refuses: see `decodeEDS`.
-    package static func readEDSSpectrumImage(path: String, index: Int) throws -> DM4EDSSpectrumImage {
+    public static func readEDSSpectrumImage(path: String, index: Int) throws -> DM4EDSSpectrumImage {
         try readEDSSpectrumImage(source: try Source.file(path), index: index)
     }
 
-    package static func readEDSSpectrumImage(data: Data, index: Int) throws -> DM4EDSSpectrumImage {
+    public static func readEDSSpectrumImage(data: Data, index: Int) throws -> DM4EDSSpectrumImage {
         try readEDSSpectrumImage(source: Source.data(data), index: index)
     }
 

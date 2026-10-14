@@ -241,4 +241,45 @@ MSA (empty modules); DocC; an example executable; iPadOS. The parity list says w
 
 ## 12. Amendments
 
-(none yet)
+**A1 (2026-10-15, 00:20, after the pins were generated, before any adapter code).** What RosettaSciIO does at the pin,
+found by `tools/step-1/pins.py` (110 DM files with 111 signals, 18 Velox files with 42 image signals, none raising):
+1. *Types outside `FormatoDataType`.* 47 of the pinned signals are complex64, complex128, bool or DM RGBA, which
+   RosettaSciIO reads and §3.1 refuses. P1 for them is: FormatoKit refuses the signal by name
+   (`FormatoReadError.unsupportedDataType`) and still lists its axes as RosettaSciIO does where they can be built; the data
+   comparison is not made. Reading them is in the parity list.
+2. *Units characters.* DM files carry "µm" with U+00B5; Pint's compact form, which the Velox axes get, writes "μm" with
+   U+03BC and "1 / μm" for an inverse length. Units are compared as the exact strings each path produces; §3.1's single
+   example was wrong.
+3. *Inverse lengths are converted.* The public FFT files hand `1/m` to `_convert_scale_units`, which compacts it to
+   `1 / μm`. `FormatoUnits` therefore handles powers −1 and 1 of a prefixed base unit (m, s), Pint's `to_compact` rule
+   for a negative power (`ceil(log10|m| / power / 3) * 3`); any other unit is passed through, as before.
+4. *A missing calibration* is padded by RosettaSciIO after the listed ones in DM order (`np.append` before the reverse),
+   so it lands at the slowest end of the array order. Same as padding by DM index; stated here so the test says it.
+5. *Beam-energy provenance.* RosettaSciIO's own source path is always under `ImageList.TagGroup0` (it rebuilds the
+   tag tree per image) and, for a stack-builder file, under `source.Tags at creation`. FormatoKit's provenance names the
+   real tag path in the file (`ImageList.<index>.ImageTags...`); P1 compares the value and the key, and the source by
+   its tail (from `Microscope Info` on).
+6. *`signal_type`.* Velox images carry no `Signal.signal_type`; FormatoKit's `signalType` is `""` there and the
+   metadata has no `Signal.signal_type` entry.
+7. *The planted closed form* 1.5e-9 m over 100 pixels gives 1.4999999999999998 nm in Pint (the factor's division
+   round trip); §4's "within one unit in the last place" holds, and the exact bits are the pins'.
+8. *Velox files with a spectrum stream* make RosettaSciIO import `sparse`, which the venv does not carry; `pins.py`
+   neutralises that one check and the stream read for the duration of the call, so the image path runs unchanged
+   (`spectrum_stream_not_read: true` on those 9 files). The images RosettaSciIO returns are unaffected.
+9. *Packed complex.* `2D/test_fft_packed_complex8.dm4` returns a (5, 4) array with axes of sizes [5, 5]
+   (`axes_sizes_match_shape: false` in the pins); FormatoKit refuses the type (point 1).
+
+**A2 (2026-10-15, 00:30, the switch dry run, gate M4).** The access list of §1.1 is measured: a scratch copy of SpectroKit
+0.3.0 without the four moved files, depending on FormatoKit by path, compiles its three library targets and its staying test
+targets once 41 declarations of the moved files are public (`git diff 4a860dd -- Sources` shows each; listed in
+`docs/consumers-0.0.1.md`). The quit-barrier probe, which moved, opens Velox through `VeloxEMDReader.readSpectrumImage`
+instead of SpectroKit's `SpectrumImageOpener.open`, which made the same call and stays in SpectroKit. The renaming sed
+also renamed one test method (`testEveryLongCallThrowsSpectroCancelled`); `names.sh` caught it and the name is restored:
+test names never change. In release, Swift Build warns "not stripping binary because it is signed" once for each shipped
+dylib; `tools/test.sh` allows exactly those three lines and fails on any other warning.
+
+**A3 (2026-10-15, 00:40, the first run of the units tests).** §4's third closed form was wrong as written: 0.5 s over
+20 frames is `_convert_scale_units(0.5, "s", 40)`, which compacts 0.5 × 20 = 10 s, already compact, so the result is
+0.5 "s", not 500 ms. The test states 0.5 "s". Every one of the pinned records (the public files' calls, the sweep, the
+planted cases) was bit-identical to RosettaSciIO on the first run; the two failures were the hand-written literals (this
+one, and a µm to nm conversion that is Pint's factor, one unit in the last place from 1000).

@@ -73,18 +73,18 @@ public enum VeloxEMDError: LocalizedError {
 // MARK: - Stream geometry, event store
 
 /// The raster of one spectrum image: `ny` rows of `nx` pixels, `channels` per spectrum.
-package nonisolated struct VeloxStreamGeometry: Equatable, Sendable {
-    package let ny: Int
-    package let nx: Int
-    package let channels: Int
-    package var pixelsPerFrame: Int { ny * nx }
+public nonisolated struct VeloxStreamGeometry: Equatable, Sendable {
+    public let ny: Int
+    public let nx: Int
+    public let channels: Int
+    public var pixelsPerFrame: Int { ny * nx }
     package init(ny: Int, nx: Int, channels: Int) {
         self.ny = ny; self.nx = nx; self.channels = channels
     }
 }
 
 /// Which frames of the stream are summed.
-package nonisolated enum VeloxFrameSelection: Equatable, Sendable {
+public nonisolated enum VeloxFrameSelection: Equatable, Sendable {
     /// rsciio's default: frames `0 ..< endFramePosition` of `SpectrumImageSettings`
     /// (all frames when that is absent). DEVIATION-free by construction, and equal
     /// to "every frame" on every public file and on the owner's file.
@@ -96,49 +96,49 @@ package nonisolated enum VeloxFrameSelection: Equatable, Sendable {
 
 /// The per-pixel sparse spectrum image, frames summed: CSR over pixels (row-major,
 /// `pixel = y * nx + x`). Channels inside a pixel ascend; each channel appears once.
-package nonisolated struct VeloxEventStore: Sendable {
-    package let geometry: VeloxStreamGeometry
+public nonisolated struct VeloxEventStore: Sendable {
+    public let geometry: VeloxStreamGeometry
     /// `pixelCount + 1` offsets into `channelIndex` / `counts`.
-    package let rowOffsets: [Int]
-    package let channelIndex: [UInt16]
-    package let counts: [UInt32]
+    public let rowOffsets: [Int]
+    public let channelIndex: [UInt16]
+    public let counts: [UInt32]
     /// The frames summed, as indices into the stream.
-    package let frameRange: Range<Int>
+    public let frameRange: Range<Int>
     /// Frames whose every pixel was reached (inside `frameRange`).
-    package let completeFrames: Int
+    public let completeFrames: Int
     /// Pixels (from the first) that a further, partial frame also reached: those
     /// pixels carry `completeFrames + 1` frames of dose, the rest `completeFrames`.
     /// rsciio sums such a stopped acquisition without a flag; this reader reports it.
-    package let partialFramePixels: Int
+    public let partialFramePixels: Int
     /// Stream values >= `channels` that are not the marker: skipped and counted.
     /// DEVIATION: rsciio's jitted loop indexes past the array for them (undefined).
-    package let outOfRangeValues: Int
+    public let outOfRangeValues: Int
     /// False when the streams of a multi-detector file did not all end in the same place.
     package let streamsAgreeOnCoverage: Bool
 
     package var pixelCount: Int { geometry.pixelsPerFrame }
     /// Total counts (events) in the store: the stream's non-marker value count
     /// inside the frame range (prediction P4).
-    package var totalCounts: Int { counts.reduce(0) { $0 + Int($1) } }
+    public var totalCounts: Int { counts.reduce(0) { $0 + Int($1) } }
     package var distinctEntries: Int { channelIndex.count }
     package var storageBytes: Int {
         rowOffsets.count * MemoryLayout<Int>.stride + channelIndex.count * 2 + counts.count * 4
     }
 
     /// Frames of dose that `pixel` received.
-    package func framesCovering(pixel: Int) -> Int {
+    public func framesCovering(pixel: Int) -> Int {
         completeFrames + (pixel < partialFramePixels ? 1 : 0)
     }
 
     /// One pixel's spectrum, dense.
-    package func spectrum(pixel: Int) -> [UInt32] {
+    public func spectrum(pixel: Int) -> [UInt32] {
         var out = [UInt32](repeating: 0, count: geometry.channels)
         for k in rowOffsets[pixel]..<rowOffsets[pixel + 1] { out[Int(channelIndex[k])] = counts[k] }
         return out
     }
 
     /// The whole cube, dense, `(ny, nx, channels)` row-major. Small files only (tests, parity).
-    package func denseCounts() -> [UInt32] {
+    public func denseCounts() -> [UInt32] {
         let c = geometry.channels
         var out = [UInt32](repeating: 0, count: pixelCount * c)
         for p in 0..<pixelCount {
@@ -148,7 +148,7 @@ package nonisolated struct VeloxEventStore: Sendable {
     }
 
     /// The summed spectrum over every pixel.
-    package func summedSpectrum() -> [UInt64] {
+    public func summedSpectrum() -> [UInt64] {
         var out = [UInt64](repeating: 0, count: geometry.channels)
         for k in 0..<channelIndex.count { out[Int(channelIndex[k])] += UInt64(counts[k]) }
         return out
@@ -911,22 +911,22 @@ private nonisolated final class VeloxFile {
 // MARK: - The reader
 
 /// The HAADF (or best available scan) image on the spectrum grid, frames summed.
-package nonisolated struct VeloxScanImage: Sendable {
-    package let ny: Int
-    package let nx: Int
+public nonisolated struct VeloxScanImage: Sendable {
+    public let ny: Int
+    public let nx: Int
     /// `ny * nx` row-major, summed over `framesSummed` frames, in UInt32 so 1607 frames cannot wrap.
-    package let sum: [UInt32]
+    public let sum: [UInt32]
     package let framesSummed: Int
     /// Frames the file holds for this image.
     package let framesInFile: Int
     package let detectorName: String
 }
 
-package nonisolated struct VeloxSpectrumImage: Sendable {
-    package let eventStore: VeloxEventStore
-    package let scanImage: VeloxScanImage?
+public nonisolated struct VeloxSpectrumImage: Sendable {
+    public let eventStore: VeloxEventStore
+    public let scanImage: VeloxScanImage?
     /// Metadata of the first stream (column 0).
-    package let metadata: VeloxMetadata
+    public let metadata: VeloxMetadata
     package let version: String
     /// Streams summed (4 for a Super-X, 6 for an UltraX, 1 otherwise).
     package let streamCount: Int
@@ -935,13 +935,13 @@ package nonisolated struct VeloxSpectrumImage: Sendable {
     /// Every stream, in name order, with the detector it carries and the X-ray segments that detector name
     /// resolves to. The owner's Super-X file has ONE pre-summed stream "SuperXG1" = segments SuperXG11-14; the
     /// fei 4-detector file has one stream per segment; an UltraX file has six.
-    package let streams: [VeloxStreamInfo]
+    public let streams: [VeloxStreamInfo]
     /// False when the segments the streams resolve to do not all share dispersion and offset: the summed
     /// spectrum would then mix energy scales, and `metadata.energyAxis` (the first stream's) fits only some of it.
     package let energyCalibrationAgrees: Bool
 }
 
-package nonisolated struct VeloxStreamInfo: Sendable {
+public nonisolated struct VeloxStreamInfo: Sendable {
     /// The stream's group id under Data/SpectrumStream.
     package let id: String
     /// `BinaryResult.Detector` and `DetectorIndex` of the stream's own metadata (column 0).
@@ -949,7 +949,7 @@ package nonisolated struct VeloxStreamInfo: Sendable {
     package let detectorIndex: Int?
     /// The analytical detectors whose name CONTAINS `detectorName` (rsciio's matching rule), in file order,
     /// each with its (azimuth, elevation) pair.
-    package let segments: [VeloxDetectorInfo]
+    public let segments: [VeloxDetectorInfo]
 }
 
 /// The stored element type of an image stack, as HDF5 reports it.
@@ -987,7 +987,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
     /// `Data/SpectrumImage`. False for anything else, including an unreadable file.
     /// This is the question "can this be opened as a spectrum image?" and the app routes `.emd` files on it:
     /// a file that holds only images answers false here and true to `isVeloxFile`.
-    package static func isVeloxEMD(path: String) -> Bool {
+    public static func isVeloxEMD(path: String) -> Bool {
         HDF5Serial.run {
             guard let file = try? VeloxFile(path: path) else { return false }
             guard let version = file.readString("/Version"), parseVersion(version)?.format == "Velox" else { return false }
@@ -1035,7 +1035,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
     /// nothing is kept. `progress` is the fraction of the stream passes done (one length pass over the first stream, then a
     /// count and a scatter pass per stream; monotone, ending at 1). The HDF5 lock is taken per call inside `VeloxFile`, so
     /// another thread waits for one block read at most.
-    package func readSpectrumImage(
+    public func readSpectrumImage(
         frames: VeloxFrameSelection = .recordedDefault,
         cancelled: @Sendable () -> Bool = FormatoCancellation.task,
         progress: (@Sendable (Double) -> Void)? = nil
@@ -1501,7 +1501,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
 
     /// The element symbols out of a Velox quantification-settings JSON: its `elementSelection`, atomic numbers in the order stored.
     /// nil when the key is missing or empty (Velox keeps no list for a session that selected nothing), and for any number outside 1...103.
-    package static func elementSelection(fromSettingsJSON data: Data) -> [String]? {
+    public static func elementSelection(fromSettingsJSON data: Data) -> [String]? {
         guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let list = object["elementSelection"] as? [Any], !list.isEmpty else { return nil }
         var out: [String] = []
@@ -1516,7 +1516,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
     /// iterates) of `Operations/ImageQuantificationOperation` (EMD < 11) or `SharedProperties/EDSSpectrumQuantificationSettings`
     /// (EMD >= 11), each entry a variable-length JSON string; rsciio's `_convert_element_list`. Symbols in the order stored; nil when the
     /// file has no such group or its selection is empty. Never written back: this is what Velox's session knew, not an Auto ID result.
-    package func storedElementSelection() throws -> [String]? {
+    public func storedElementSelection() throws -> [String]? {
         try HDF5Serial.run {
             let file = try VeloxFile(path: path)
             guard let versionText = file.readString("/Version"), let version = Self.parseVersion(versionText),
