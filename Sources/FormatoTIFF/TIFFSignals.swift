@@ -149,7 +149,7 @@ public nonisolated struct TIFFSignals: Sendable {
         guard let d = page[270]?.text, d.hasPrefix("ImageJ=") || d.hasPrefix("SCIFIO=") else { return nil }
         // `imagej_description_metadata`: key=value lines; int, float, bool ("true"/"false" exactly, any case), else string.
         var out: [String: FormatoPythonValue] = [:]
-        for line in d.split(omittingEmptySubsequences: false, whereSeparator: { $0 == "\n" || $0 == "\r" }) {
+        for line in d.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }) {
             guard let eq = line.firstIndex(of: "=") else { continue }
             let key = line[..<eq].trimmingCharacters(in: .whitespaces)
             let val = line[line.index(after: eq)...].trimmingCharacters(in: .whitespaces)
@@ -395,7 +395,7 @@ public nonisolated struct TIFFSignals: Sendable {
             guard let tag = page[code] else { continue }
             var section: String?
             var parsed: [String: [String: FormatoPythonValue]] = [:]
-            for raw in TIFFFile.bytes2str(tag.raw).split(omittingEmptySubsequences: false, whereSeparator: { $0 == "\n" || $0 == "\r" }) {
+            for raw in TIFFFile.bytes2str(tag.raw).split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }) {
                 let line = raw.trimmingCharacters(in: .whitespaces)
                 if line.hasPrefix("[") {
                     let name = String(line.dropFirst().dropLast())
@@ -420,7 +420,9 @@ public nonisolated struct TIFFSignals: Sendable {
                                    provenance: p("(the file name)", "rsciio tiff: os.path.split(filename)[1]")))
         m.set(FormatoMetadataEntry(key: "Signal.signal_type", value: .text(""), units: nil,
                                    provenance: p("(constant)", "rsciio tiff: signal_type is \"\"")))
-        if let dt = page[306]?.text, let (date, time) = Self.dateTime(dt) {
+        // `%Y:%m:%d %H:%M:%S`; the slash form only when the page has no ImageDescription (RosettaSciIO tries the JEOL
+        // description first and gives up when it is not one; amendment A1).
+        if let dt = page[306]?.text, let (date, time) = Self.dateTime(dt, slashAllowed: page[270] == nil) {
             m.set(FormatoMetadataEntry(key: "General.date", value: .text(date), units: nil, provenance: p("tag 306 DateTime", "rsciio tiff: strptime, date().isoformat()")))
             m.set(FormatoMetadataEntry(key: "General.time", value: .text(time), units: nil, provenance: p("tag 306 DateTime", "rsciio tiff: strptime, time().isoformat()")))
         }
@@ -439,7 +441,7 @@ public nonisolated struct TIFFSignals: Sendable {
 
     /// `datetime.strptime(value, "%Y:%m:%d %H:%M:%S")`, else `"%Y/%m/%d %H:%M"`; the ISO date and time strings, or nil
     /// when neither matches (RosettaSciIO then records no date).
-    static func dateTime(_ s: String) -> (String, String)? {
+    static func dateTime(_ s: String, slashAllowed: Bool = true) -> (String, String)? {
         func parse(_ pattern: String, _ hasSeconds: Bool) -> (String, String)? {
             guard let re = try? NSRegularExpression(pattern: pattern),
                   let m = re.firstMatch(in: s, range: NSRange(s.startIndex..., in: s)), m.range == NSRange(s.startIndex..., in: s) else { return nil }
@@ -451,8 +453,8 @@ public nonisolated struct TIFFSignals: Sendable {
                   range.contains(d), (0...23).contains(h), (0...59).contains(mi), (0...61).contains(sec), sec <= 59 else { return nil }
             return (String(format: "%04d-%02d-%02d", y, mo, d), String(format: "%02d:%02d:%02d", h, mi, sec))
         }
-        return parse(#"^(\d{4}):(\d{1,2}):(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$"#, true)
-            ?? parse(#"^(\d{4})/(\d{1,2})/(\d{1,2}) (\d{1,2}):(\d{1,2})$"#, false)
+        if let r = parse(#"^(\d{4}):(\d{1,2}):(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$"#, true) { return r }
+        return slashAllowed ? parse(#"^(\d{4})/(\d{1,2})/(\d{1,2}) (\d{1,2}):(\d{1,2})$"#, false) : nil
     }
 
     /// RosettaSciIO's `mapping_fei`, applied as HyperSpy applies a mapping (the value at the path, through the function;
