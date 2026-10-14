@@ -1,0 +1,582 @@
+//
+//  TIFFSignals.swift
+//  Role: a TIFF file as FormatoCore signals, the way RosettaSciIO 049e7d70's `rsciio.tiff.file_reader` returns them with its
+//        defaults (docs/registration-step-2.md §1.2), over the parts of tifffile 2026.9.20 it relies on: the series (ImageJ,
+//        else uniform or generic grouping), the FEI INI tags, the ImageJ description, the Gatan DM tags. Data as stored;
+//        RGB as one element per pixel. Out of step 2, refused by name: Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX,
+//        Hamamatsu streak, compressed or tiled pages.
+//
+
+import Foundation
+import FormatoCore
+
+/// One page's pixel layout (step 2 §3.2): uncompressed strips, contiguous samples.
+public nonisolated struct TIFFPageLayout: Sendable, Equatable {
+    public let width: Int
+    public let height: Int
+    public let dataType: FormatoDataType
+    /// Samples per pixel as stored (1, 3 or 4).
+    public let samples: Int
+    let bytesPerSample: Int
+    let stripOffsets: [Int]
+    let stripByteCounts: [Int]
+    let rowsPerStrip: Int
+    let bigEndian: Bool
+    /// Bytes of one row, all samples.
+    var rowBytes: Int { width * samples * bytesPerSample }
+    var pageBytes: Int { rowBytes * height }
+
+    /// The layout of `dir`, or the reason it is refused.
+    public static func of(_ dir: TIFFDirectory, bigEndian: Bool, fileSize: Int) throws -> TIFFPageLayout {
+        func int(_ code: Int, _ fallback: Int64? = nil) -> Int64? { dir[code]?.integer ?? fallback }
+        guard let w = int(256), let h = int(257), w > 0, h > 0, w < 1 << 31, h < 1 << 31 else {
+            throw TIFFError.unsupportedLayout("The page has no image width or height.")
+        }
+        let compression = int(259, 1) ?? 1
+        guard compression == 1 else { throw TIFFError.unsupportedLayout("The page is compressed (Compression \(compression)); only uncompressed TIFF is read.") }
+        if dir[322] != nil || dir[324] != nil { throw TIFFError.unsupportedLayout("The page is tiled; only strips are read.") }
+        let samples = Int(int(277, 1) ?? 1)
+        let planar = int(284, 1) ?? 1
+        guard planar == 1 || samples == 1 else { throw TIFFError.unsupportedLayout("The page stores its samples in separate planes (PlanarConfiguration 2).") }
+        let bits = dir[258]?.integers ?? [1]
+        let formats = dir[339]?.integers ?? [1]
+        guard let b = bits.first, bits.allSatisfy({ $0 == b }), let f = formats.first, formats.allSatisfy({ $0 == f }) else {
+            throw TIFFError.unsupportedLayout("The page mixes sample sizes or formats.")
+        }
+        let photometric = int(262, 1) ?? 1
+        let type: FormatoDataType
+        switch (samples, photometric, f, b) {
+        case (1, _, 1, 8): type = .uint8
+        case (1, _, 1, 16): type = .uint16
+        case (1, _, 1, 32): type = .uint32
+        case (1, _, 1, 64): type = .uint64
+        case (1, _, 2, 8): type = .int8
+        case (1, _, 2, 16): type = .int16
+        case (1, _, 2, 32): type = .int32
+        case (1, _, 2, 64): type = .int64
+        case (1, _, 3, 32): type = .float32
+        case (1, _, 3, 64): type = .float64
+        case (3, 2, 1, 8): type = .rgb8
+        case (4, 2, 1, 8): type = .rgba8
+        case (3, 2, 1, 16): type = .rgb16
+        case (4, 2, 1, 16): type = .rgba16
+        default: throw TIFFError.unsupportedLayout("The page holds \(samples) sample(s) of \(b) bits, format \(f), photometric \(photometric), which this reader does not read.")
+        }
+        guard let offsets = dir[273]?.integers, let counts = dir[279]?.integers, offsets.count == counts.count, !offsets.isEmpty else {
+            throw TIFFError.unsupportedLayout("The page has no strips.")
+        }
+        let rps = Int(min(int(278, 0xFFFF_FFFF) ?? 0xFFFF_FFFF, h))
+        let layout = TIFFPageLayout(width: Int(w), height: Int(h), dataType: type, samples: samples, bytesPerSample: Int(b) / 8,
+                                    stripOffsets: offsets.map(Int.init), stripByteCounts: counts.map(Int.init),
+                                    rowsPerStrip: max(rps, 1), bigEndian: bigEndian)
+        // Every row must lie inside its strip and the strip inside the file.
+        let strips = (layout.height + layout.rowsPerStrip - 1) / layout.rowsPerStrip
+        guard strips <= offsets.count else { throw TIFFError.truncated("The page has fewer strips than rows need.") }
+        for s in 0..<strips {
+            let rows = min(layout.rowsPerStrip, layout.height - s * layout.rowsPerStrip)
+            let need = rows * layout.rowBytes
+            guard layout.stripByteCounts[s] >= need, layout.stripOffsets[s] >= 0, layout.stripOffsets[s] <= fileSize - need else {
+                throw TIFFError.truncated("A strip of the page lies outside the file or is shorter than its rows.")
+            }
+        }
+        return layout
+    }
+
+    /// The file offset of row `y`.
+    func rowOffset(_ y: Int) -> Int {
+        stripOffsets[y / rowsPerStrip] + (y % rowsPerStrip) * rowBytes
+    }
+
+    /// Converts stored bytes of whole elements to little-endian in place.
+    func toLittleEndian(_ data: inout Data) {
+        guard bigEndian, bytesPerSample > 1 else { return }
+        data.withUnsafeMutableBytes { p in
+            var i = 0
+            while i + bytesPerSample <= p.count {
+                for k in 0..<(bytesPerSample / 2) { p.swapAt(i + k, i + bytesPerSample - 1 - k) }
+                i += bytesPerSample
+            }
+        }
+    }
+}
+
+/// One image source of a series: a page, or, for an ImageJ file whose images follow the first page contiguously, a
+/// virtual page `index` of it.
+nonisolated struct TIFFImageSource: Sendable {
+    let layout: TIFFPageLayout
+    /// Added to every row offset (a virtual ImageJ image: index × page bytes).
+    let shift: Int
+}
+
+/// A series as tifffile builds it (the subset in scope): its axes codes and the images it reads, in order.
+public nonisolated struct TIFFSeries: Sendable {
+    /// tifffile's axes codes after its squeeze ("YX", "IYX", "ZYX", "YXS", ...).
+    public let axes: String
+    public let shape: [Int]
+    public let dataType: FormatoDataType
+    let images: [TIFFImageSource]
+}
+
+public nonisolated struct TIFFSignals: Sendable {
+    public let file: TIFFFile
+    public let series: [TIFFSeries]
+
+    public init(path: String) throws {
+        let file = try TIFFFile(path: path)
+        guard let first = file.directories.first else { throw TIFFError.notTIFF(formatoDisplayFileName(path)) }
+        self.file = file
+        if let refusal = Self.outOfScope(first) {
+            throw FormatoReadError.unsupported("\(formatoDisplayFileName(path)) is a \(refusal) TIFF, whose reading is not ported yet (registration step 2 §1.2).")
+        }
+        series = try Self.buildSeries(file)
+    }
+
+    /// The RosettaSciIO branch a file belongs to that step 2 does not port, or nil.
+    static func outOfScope(_ page: TIFFDirectory) -> String? {
+        if page[34680] != nil || page[34682] != nil { return nil }            // FEI comes first in RosettaSciIO's order
+        if page[34118] != nil { return "Zeiss SEM" }
+        if page[37706] != nil { return "TVIPS" }
+        if page[33560] != nil || page[33471] != nil { return "Olympus SIS" }
+        if page[271]?.text == "JEOL Ltd." { return "JEOL SightX" }
+        if let artist = page[315]?.text, artist.hasPrefix("Copyright Hamamatsu"),
+           let software = page[305]?.text, software.hasPrefix("HPD-TA") { return "Hamamatsu streak" }
+        return nil
+    }
+
+    // MARK: Series
+
+    static func imageJDescription(_ page: TIFFDirectory) -> [String: FormatoPythonValue]? {
+        guard let d = page[270]?.text, d.hasPrefix("ImageJ=") || d.hasPrefix("SCIFIO=") else { return nil }
+        // `imagej_description_metadata`: key=value lines; int, float, bool ("true"/"false" exactly, any case), else string.
+        var out: [String: FormatoPythonValue] = [:]
+        for line in d.split(omittingEmptySubsequences: false, whereSeparator: { $0 == "\n" || $0 == "\r" }) {
+            guard let eq = line.firstIndex(of: "=") else { continue }
+            let key = line[..<eq].trimmingCharacters(in: .whitespaces)
+            let val = line[line.index(after: eq)...].trimmingCharacters(in: .whitespaces)
+            if let i = formatoPythonInt(val) { out[key] = .int(i) }
+            else if let f = formatoPythonFloat(val) { out[key] = .float(f) }
+            else if val.lowercased() == "true" { out[key] = .bool(true) }
+            else if val.lowercased() == "false" { out[key] = .bool(false) }
+            else { out[key] = .string(val) }
+        }
+        return out["ImageJ"] != nil || out["SCIFIO"] != nil ? out : nil
+    }
+
+    static func buildSeries(_ file: TIFFFile) throws -> [TIFFSeries] {
+        let size = file.data.count
+        let first = file.directories[0]
+        let layout0 = try TIFFPageLayout.of(first, bigEndian: file.bigEndian, fileSize: size)
+        let pageAxes = layout0.samples > 1 ? "YXS" : "YX"
+        let pageShape = layout0.samples > 1 ? [layout0.height, layout0.width, layout0.samples] : [layout0.height, layout0.width]
+
+        if let meta = imageJDescription(first), let s = try imageJSeries(file, meta, layout0, pageAxes, pageShape) {
+            return [s]
+        }
+        let layouts = try file.directories.map { try TIFFPageLayout.of($0, bigEndian: file.bigEndian, fileSize: size) }
+        // Uniform or generic: pages with the same shape and type form one series, in first-seen order.
+        var groups: [(key: String, pages: [TIFFPageLayout])] = []
+        for l in layouts {
+            let key = "\(l.width)x\(l.height)x\(l.samples) \(l.dataType)"
+            if let i = groups.firstIndex(where: { $0.key == key }) { groups[i].pages.append(l) } else { groups.append((key, [l])) }
+        }
+        return groups.map { g in
+            let n = g.pages.count, l = g.pages[0]
+            let axes = (n > 1 ? "I" : "") + (l.samples > 1 ? "YXS" : "YX")
+            let shape: [Int] = (n > 1 ? [n] : [Int]()) + (l.samples > 1 ? [l.height, l.width, l.samples] : [l.height, l.width])
+            return TIFFSeries(axes: axes, shape: shape, dataType: l.dataType,
+                              images: g.pages.map { TIFFImageSource(layout: $0, shift: 0) })
+        }
+    }
+
+    /// tifffile's `series_imagej` for the files in scope; nil where it returns None (then the generic rule applies).
+    static func imageJSeries(_ file: TIFFFile, _ meta: [String: FormatoPythonValue], _ page: TIFFPageLayout,
+                             _ pageAxes: String, _ pageShape: [Int]) throws -> TIFFSeries? {
+        func int(_ k: String) -> Int? {
+            switch meta[k] { case .int(let i)?: return Int(i); case nil: return 1; default: return nil }
+        }
+        guard var frames = int("frames"), var slices = int("slices"), var channels = int("channels"), var images = int("images"),
+              images >= 1, frames >= 1, slices >= 1, channels >= 1 else { return nil }
+        _ = frames; _ = slices
+        if channels == 1 {
+            images = frames * slices
+        } else if images == frames * slices && page.samples == channels {
+            channels = 1
+        } else {
+            images = frames * slices * channels
+        }
+        let pages = file.directories.count
+        if images == 1 && pages > 1 { images = pages }
+        guard page.stripOffsets[0] + images * page.pageBytes <= file.data.count else { return nil }
+        let order: String
+        switch meta["order"] { case .string(let s)?: order = s.lowercased(); default: order = "czt" }
+        var axes: [Character], shape: [Int]
+        switch order {
+        case "ctz": axes = ["Z", "T", "C"]; shape = [slices, frames, channels]
+        case "zct": axes = ["T", "C", "Z"]; shape = [frames, channels, slices]
+        case "ztc": axes = ["C", "T", "Z"]; shape = [channels, frames, slices]
+        case "tcz": axes = ["Z", "C", "T"]; shape = [slices, channels, frames]
+        case "tzc": axes = ["C", "Z", "T"]; shape = [channels, slices, frames]
+        default: axes = ["T", "Z", "C"]; shape = [frames, slices, channels]
+        }
+        let remain = images / shape.reduce(1, *)
+        if remain > 1 { axes.insert("I", at: 0); shape.insert(remain, at: 0) }
+        axes += Array(pageAxes); shape += pageShape
+        // tifffile's squeeze: length-1 axes go, Y and X stay.
+        var sq: [(Character, Int)] = []
+        for (a, n) in zip(axes, shape) where n > 1 || a == "Y" || a == "X" { sq.append((a, n)) }
+        // Images: the pages, or (a virtual hyperstack) images contiguous after the first page's data.
+        let sources: [TIFFImageSource]
+        if pages >= images {
+            sources = try file.directories.prefix(images).map {
+                TIFFImageSource(layout: try TIFFPageLayout.of($0, bigEndian: file.bigEndian, fileSize: file.data.count), shift: 0)
+            }
+        } else {
+            let contiguous = zip(page.stripOffsets, page.stripOffsets.dropFirst()).allSatisfy { $1 - $0 == page.rowsPerStrip * page.rowBytes }
+            guard contiguous else { return nil }
+            sources = (0..<images).map { TIFFImageSource(layout: page, shift: $0 * page.pageBytes) }
+        }
+        return TIFFSeries(axes: String(sq.map(\.0)), shape: sq.map(\.1), dataType: page.dataType, images: sources)
+    }
+
+    // MARK: Signals
+
+    /// The lazy signal of series `index`: RosettaSciIO's axes and metadata for it.
+    public func signal(series index: Int) throws -> FormatoLazySignal {
+        guard series.indices.contains(index) else { throw FormatoReadError.unsupported("No series \(index).") }
+        let s = series[index]
+        let page = file.directories[0]
+        let name = formatoDisplayFileName(file.path)
+        // RosettaSciIO drops the sample axis of an RGB page (a structured element per pixel).
+        let isRGB = s.dataType.components > 1
+        let codes = Array(isRGB ? String(s.axes.dropLast()) : s.axes)
+        let shape = isRGB ? Array(s.shape.dropLast()) : s.shape
+        let names = codes.map(Self.axisName)
+        let axes: [FormatoAxis]
+        do { axes = try Self.axes(page: page, shape: shape, names: names) } catch {
+            // `_read_tiff`: any exception while parsing the scale gives the default dictionaries.
+            axes = Self.dictionaries(shape: shape, names: names, scales: nil, offsets: nil, units: nil)
+        }
+        let metadata = try Self.metadata(page: page, file: name)
+        return FormatoLazySignal(title: "", signalType: "", axes: axes, metadata: metadata,
+                                 array: TIFFSeriesArray(path: file.path, series: s, shape: shape))
+    }
+
+    /// RosettaSciIO's `axes_label_codes` (the names it gives tifffile's axis codes).
+    static func axisName(_ c: Character) -> String {
+        switch c {
+        case "X": return "width"
+        case "Y": return "height"
+        case "S": return "sample"
+        case "P": return "plane"
+        case "I": return "image series"
+        case "Z": return "depth"
+        case "C": return "color|em-wavelength|channel"
+        case "E": return "ex-wavelength|lambda"
+        case "T": return "time"
+        case "R": return "region|tile"
+        case "A": return "angle"
+        case "F": return "phase"
+        case "H": return "lifetime"
+        case "L": return "exposure"
+        case "V": return "event"
+        default: return "None"
+        }
+    }
+
+    typealias Triple = (x: Double, y: Double, z: Double)
+    typealias Units = (x: String?, y: String?, z: String?)
+
+    /// `_build_axes_dictionaries`: navigate all but the last two; units None stored as "".
+    static func dictionaries(shape: [Int], names: [String], scales: [Double]?, offsets: [Double]?, units: [String?]?) -> [FormatoAxis] {
+        shape.indices.map { i in
+            FormatoAxis(name: names[i], size: shape[i], scale: scales?[i] ?? 1.0, offset: offsets?[i] ?? 0.0,
+                        units: (units?[i] ?? nil) ?? "", navigate: i < shape.count - 2)
+        }
+    }
+
+    /// `_order_axes_by_name`, its cross-over included: "height" takes the x entries, "width" the y entries.
+    static func ordered(_ names: [String], _ s: Triple, _ o: Triple, _ u: Units) -> ([Double], [Double], [String?]) {
+        var scales = [Double](repeating: 1.0, count: names.count), offsets = [Double](repeating: 0.0, count: names.count)
+        var units = [String?](repeating: nil, count: names.count)
+        for (i, n) in names.enumerated() {
+            switch n {
+            case "height": scales[i] = s.x; offsets[i] = o.x; units[i] = u.x
+            case "width": scales[i] = s.y; offsets[i] = o.y; units[i] = u.y
+            case "depth", "image series", "time": scales[i] = s.z; offsets[i] = o.z; units[i] = u.z
+            default: break
+            }
+        }
+        return (scales, offsets, units)
+    }
+
+    /// `_parse_scale_unit` for the branches in scope (FEI; the default with DM and ImageJ). Throws where RosettaSciIO's
+    /// code raises (then the caller uses the default dictionaries, as `_read_tiff` does).
+    static func axes(page: TIFFDirectory, shape: [Int], names: [String]) throws -> [FormatoAxis] {
+        var s: Triple = (1, 1, 1), o: Triple = (0, 0, 0), u: Units = (nil, nil, nil)
+        if page[34680] != nil || page[34682] != nil {
+            let fei = feiMetadata(page)
+            func value(_ section: String, _ key: String) throws -> FormatoPythonValue {
+                guard let v = fei[section]?[key] else { throw TIFFError.unsupportedLayout("KeyError") }
+                return v
+            }
+            func float(_ v: FormatoPythonValue) throws -> Double {
+                guard let d = v.asFloat else { throw TIFFError.unsupportedLayout("ValueError") }   // not caught by RosettaSciIO
+                return d
+            }
+            do {
+                s.x = try float(try value("Scan", "PixelWidth"))
+                s.y = try float(try value("Scan", "PixelHeight"))
+                u.x = "m"; u.y = "m"
+            } catch TIFFError.unsupportedLayout("KeyError") {
+                do {
+                    s.x = try float(try value("IRBeam", "HFW")) / float(try value("Image", "ResolutionX"))
+                    s.y = try float(try value("IRBeam", "VFW")) / float(try value("Image", "ResolutionY"))
+                    u.x = "m"; u.y = "m"
+                } catch TIFFError.unsupportedLayout("KeyError") {
+                    // "Could not determine pixel size": uncalibrated, with whatever was assigned before the KeyError.
+                }
+            }
+        } else {
+            if isDigitalMicrograph(page) {
+                if let v = page[65003] { u.y = dmText(v) }
+                if let v = page[65004] { u.x = dmText(v) }
+                if let v = page[65005] { u.z = dmText(v) }
+                if let v = page[65009] { s.y = try dmNumber(v) }
+                if let v = page[65010] { s.x = try dmNumber(v) }
+                if let v = page[65011] { s.z = try dmNumber(v) }
+                if let v = page[65006] { o.y = try dmNumber(v) }
+                if let v = page[65007] { o.x = try dmNumber(v) }
+                if let v = page[65008] { o.z = try dmNumber(v) }
+            }
+            if let meta = imageJDescription(page), meta["ImageJ"] != nil {
+                if meta["unit"] != nil {
+                    if meta["unit"] == .string("micron") { u.x = "µm"; u.y = "µm" }
+                    let (sx, sy) = try resolutionScales(page)
+                    s.x = sx; s.y = sy
+                }
+                if let spacing = meta["spacing"] {
+                    guard let z = spacing.numberValue else { throw TIFFError.unsupportedLayout("spacing is not a number") }
+                    s.z = z
+                }
+            }
+        }
+        let (scales, offsets, units) = ordered(names, s, o, u)
+        return dictionaries(shape: shape, names: names, scales: scales, offsets: offsets, units: units)
+    }
+
+    /// `_get_scales_from_x_y_resolution`: (YResolution den/num, XResolution den/num).
+    static func resolutionScales(_ page: TIFFDirectory) throws -> (Double, Double) {
+        guard case .rationals(let y)? = page[283]?.value, let yr = y.first,
+              case .rationals(let x)? = page[282]?.value, let xr = x.first else { throw TIFFError.unsupportedLayout("no resolution") }
+        return (Double(yr.denominator) / Double(yr.numerator), Double(xr.denominator) / Double(xr.numerator))
+    }
+
+    static let dmTags = [65003, 65004, 65005, 65009, 65010, 65011, 65006, 65007, 65008, 65022, 65024, 65025]
+    static func isDigitalMicrograph(_ page: TIFFDirectory) -> Bool { dmTags.contains { page[$0] != nil } }
+    static func dmText(_ tag: TIFFTag) -> String? {
+        if case .text(let s) = tag.value { return s }
+        if tag.type == 1 || tag.type == 7 { return TIFFFile.asciiString(tag.raw) }   // BYTE / UNDEFINED text, as tifffile decodes
+        return nil
+    }
+    static func dmNumber(_ tag: TIFFTag) throws -> Double {
+        switch tag.value {
+        case .reals(let v) where v.count == 1: return v[0]
+        case .integers(let v) where v.count == 1: return Double(v[0])
+        default: throw TIFFError.unsupportedLayout("a DM calibration tag that is not one number")
+        }
+    }
+
+    /// tifffile's `fei_metadata`: the SFEG sections, then the HELIOS ones (a section replaced whole by a later one of the
+    /// same name), each `read_fei_metadata`: lines stripped, `[Section]`, `key=value` at the first "=", values through
+    /// `astype`.
+    static func feiMetadata(_ page: TIFFDirectory) -> [String: [String: FormatoPythonValue]] {
+        var result: [String: [String: FormatoPythonValue]] = [:]
+        for code in [34680, 34682] {
+            guard let tag = page[code] else { continue }
+            var section: String?
+            var parsed: [String: [String: FormatoPythonValue]] = [:]
+            for raw in TIFFFile.bytes2str(tag.raw).split(omittingEmptySubsequences: false, whereSeparator: { $0 == "\n" || $0 == "\r" }) {
+                let line = raw.trimmingCharacters(in: .whitespaces)
+                if line.hasPrefix("[") {
+                    let name = String(line.dropFirst().dropLast())
+                    parsed[name] = [:]; section = name
+                    continue
+                }
+                guard let eq = line.firstIndex(of: "="), let sec = section else { continue }
+                let key = line[..<eq].trimmingCharacters(in: .whitespaces)
+                parsed[sec]?[key] = formatoPythonAsType(line[line.index(after: eq)...].trimmingCharacters(in: .whitespaces))
+            }
+            for (k, v) in parsed { result[k] = v }
+        }
+        return result
+    }
+
+    // MARK: Metadata
+
+    static func metadata(page: TIFFDirectory, file: String) throws -> FormatoMetadata {
+        func p(_ source: String, _ rule: String) -> FormatoProvenance { FormatoProvenance(file: file, source: source, rule: rule) }
+        var m = FormatoMetadata()
+        m.set(FormatoMetadataEntry(key: "General.original_filename", value: .text(file), units: nil,
+                                   provenance: p("(the file name)", "rsciio tiff: os.path.split(filename)[1]")))
+        m.set(FormatoMetadataEntry(key: "Signal.signal_type", value: .text(""), units: nil,
+                                   provenance: p("(constant)", "rsciio tiff: signal_type is \"\"")))
+        if let dt = page[306]?.text, let (date, time) = Self.dateTime(dt) {
+            m.set(FormatoMetadataEntry(key: "General.date", value: .text(date), units: nil, provenance: p("tag 306 DateTime", "rsciio tiff: strptime, date().isoformat()")))
+            m.set(FormatoMetadataEntry(key: "General.time", value: .text(time), units: nil, provenance: p("tag 306 DateTime", "rsciio tiff: strptime, time().isoformat()")))
+        }
+        if isDigitalMicrograph(page) {
+            if let q = page[65022] { m.set(FormatoMetadataEntry(key: "Signal.quantity", value: .text(dmText(q) ?? ""), units: nil, provenance: p("tag 65022", "rsciio tiff: DM intensity units"))) }
+            if let off = page[65024], let sc = page[65025] {
+                m.set(FormatoMetadataEntry(key: "Signal.Noise_properties.Variance_linear_model.gain_factor", value: .number(try dmNumber(sc)), units: nil, provenance: p("tag 65025", "rsciio tiff: DM intensity scale")))
+                m.set(FormatoMetadataEntry(key: "Signal.Noise_properties.Variance_linear_model.gain_offset", value: .number(try dmNumber(off)), units: nil, provenance: p("tag 65024", "rsciio tiff: DM intensity offset")))
+            }
+        }
+        if page[34680] != nil || page[34682] != nil {
+            try feiMapping(feiMetadata(page), into: &m, file: file)
+        }
+        return m
+    }
+
+    /// `datetime.strptime(value, "%Y:%m:%d %H:%M:%S")`, else `"%Y/%m/%d %H:%M"`; the ISO date and time strings, or nil
+    /// when neither matches (RosettaSciIO then records no date).
+    static func dateTime(_ s: String) -> (String, String)? {
+        func parse(_ pattern: String, _ hasSeconds: Bool) -> (String, String)? {
+            guard let re = try? NSRegularExpression(pattern: pattern),
+                  let m = re.firstMatch(in: s, range: NSRange(s.startIndex..., in: s)), m.range == NSRange(s.startIndex..., in: s) else { return nil }
+            let g = (1..<m.numberOfRanges).map { Int(s[Range(m.range(at: $0), in: s)!])! }
+            let (y, mo, d, h, mi) = (g[0], g[1], g[2], g[3], g[4]), sec = hasSeconds ? g[5] : 0
+            var comps = DateComponents(); comps.year = y; comps.month = mo; comps.day = d
+            let cal = Calendar(identifier: .gregorian)
+            guard (1...12).contains(mo), d >= 1, let range = cal.range(of: .day, in: .month, for: cal.date(from: DateComponents(year: y, month: mo))!),
+                  range.contains(d), (0...23).contains(h), (0...59).contains(mi), (0...61).contains(sec), sec <= 59 else { return nil }
+            return (String(format: "%04d-%02d-%02d", y, mo, d), String(format: "%02d:%02d:%02d", h, mi, sec))
+        }
+        return parse(#"^(\d{4}):(\d{1,2}):(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$"#, true)
+            ?? parse(#"^(\d{4})/(\d{1,2})/(\d{1,2}) (\d{1,2}):(\d{1,2})$"#, false)
+    }
+
+    /// RosettaSciIO's `mapping_fei`, applied as HyperSpy applies a mapping (the value at the path, through the function;
+    /// a function returning None gives no entry).
+    static func feiMapping(_ fei: [String: [String: FormatoPythonValue]], into m: inout FormatoMetadata, file: String) throws {
+        func put(_ key: String, _ section: String, _ field: String, _ make: (FormatoPythonValue) throws -> FormatoValue?, rule: String) rethrows {
+            guard let v = fei[section]?[field], let value = try make(v) else { return }
+            m.set(FormatoMetadataEntry(key: key, value: value, units: nil,
+                                       provenance: FormatoProvenance(file: file, source: "fei_metadata.\(section).\(field)", rule: rule)))
+        }
+        func raw(_ v: FormatoPythonValue) -> FormatoValue {
+            switch v { case .int(let i): return .number(Double(i)); case .float(let d): return .number(d); case .bool(let b): return .flag(b); case .string(let s): return .text(s) }
+        }
+        func scaled(_ factor: Double) -> (FormatoPythonValue) -> FormatoValue? { { v in v.asFloat.map { .number($0 * factor) } } }
+        put("Acquisition_instrument.SEM.beam_energy", "Beam", "HV", scaled(1e-3), rule: "rsciio mapping_fei: float(x) * 1e-3")
+        put("Acquisition_instrument.SEM.Stage.x", "Stage", "StageX", raw, rule: "rsciio mapping_fei: as is")
+        put("Acquisition_instrument.SEM.Stage.y", "Stage", "StageY", raw, rule: "rsciio mapping_fei: as is")
+        put("Acquisition_instrument.SEM.Stage.z", "Stage", "StageZ", raw, rule: "rsciio mapping_fei: as is")
+        put("Acquisition_instrument.SEM.Stage.rotation", "Stage", "StageR", raw, rule: "rsciio mapping_fei: as is")
+        put("Acquisition_instrument.SEM.Stage.tilt", "Stage", "StageT", raw, rule: "rsciio mapping_fei: as is")
+        put("Acquisition_instrument.SEM.working_distance", "Stage", "WorkingDistance", scaled(1e3), rule: "rsciio mapping_fei: float(x) * 1e3")
+        put("Acquisition_instrument.SEM.dwell_time", "Scan", "Dwelltime", raw, rule: "rsciio mapping_fei: as is")
+        put("Acquisition_instrument.SEM.beam_current", "EBeam", "BeamCurrent", scaled(1e9), rule: "rsciio mapping_fei: float(x) * 1e9")
+        put("Acquisition_instrument.SEM.microscope", "System", "SystemType", raw, rule: "rsciio mapping_fei: as is")
+        put("General.authors", "User", "User", raw, rule: "rsciio mapping_fei: as is")
+        try put("General.date", "User", "Date", { v in
+            guard case .string(let s) = v, let d = feiDate(s) else { throw FormatoReadError.unsupported("FEI User.Date '\(v)' is in a form this port of dateutil does not parse.") }
+            return .text(d)
+        }, rule: "rsciio mapping_fei: dateutil.parser.parse(x).date().isoformat()")
+        try put("General.time", "User", "Time", { v in
+            guard case .string(let s) = v, let t = feiTime(s) else { throw FormatoReadError.unsupported("FEI User.Time '\(v)' is in a form this port of dateutil does not parse.") }
+            return .text(t)
+        }, rule: "rsciio mapping_fei: dateutil.parser.parse(x).time().isoformat()")
+    }
+
+    /// dateutil's parse of an FEI date, for the forms ported: "MM/DD/YYYY" (month first, dateutil's default) and
+    /// "YYYY-MM-DD".
+    static func feiDate(_ s: String) -> String? {
+        let t = s.trimmingCharacters(in: .whitespaces)
+        let us = t.split(separator: "/").compactMap { Int($0) }
+        if us.count == 3, t.split(separator: "/").count == 3, (1...12).contains(us[0]), (1...31).contains(us[1]), us[2] >= 1000 {
+            return String(format: "%04d-%02d-%02d", us[2], us[0], us[1])
+        }
+        let iso = t.split(separator: "-").compactMap { Int($0) }
+        if iso.count == 3, t.split(separator: "-").count == 3, iso[0] >= 1000, (1...12).contains(iso[1]), (1...31).contains(iso[2]) {
+            return String(format: "%04d-%02d-%02d", iso[0], iso[1], iso[2])
+        }
+        return nil
+    }
+
+    /// dateutil's parse of an FEI time, for "H:MM:SS" with an optional AM/PM, as `time().isoformat()`.
+    static func feiTime(_ s: String) -> String? {
+        var t = s.trimmingCharacters(in: .whitespaces).uppercased()
+        var pm: Bool?
+        if t.hasSuffix(" AM") || t.hasSuffix(" PM") { pm = t.hasSuffix("PM"); t = String(t.dropLast(3)).trimmingCharacters(in: .whitespaces) }
+        let parts = t.split(separator: ":").map(String.init)
+        guard parts.count == 2 || parts.count == 3, let h0 = Int(parts[0]), let mi = Int(parts[1]) else { return nil }
+        let sec = parts.count == 3 ? Int(parts[2]) : 0
+        guard let sec, (0...59).contains(mi), (0...59).contains(sec) else { return nil }
+        var h = h0
+        if let pm {
+            guard (1...12).contains(h) else { return nil }
+            if pm && h != 12 { h += 12 } else if !pm && h == 12 { h = 0 }
+        }
+        guard (0...23).contains(h) else { return nil }
+        return String(format: "%02d:%02d:%02d", h, mi, sec)
+    }
+}
+
+extension FormatoPythonValue {
+    /// The number an int or float holds (ImageJ's `spacing`); nil for a bool or string.
+    var numberValue: Double? {
+        switch self { case .int(let i): return Double(i); case .float(let d): return d; default: return nil }
+    }
+}
+
+/// A series as a lazy array: a slab reads, for each image it covers, the rows it needs and cuts the columns.
+public nonisolated struct TIFFSeriesArray: FormatoLazyArray {
+    public let path: String
+    let series: TIFFSeries
+    public let shape: [Int]
+    public var dataType: FormatoDataType { series.dataType }
+
+    init(path: String, series: TIFFSeries, shape: [Int]) {
+        self.path = path
+        self.series = series
+        self.shape = shape
+    }
+
+    public func read(start: [Int], count: [Int]) throws -> FormatoArray {
+        try FormatoArray.checkSlab(start: start, count: count, shape: shape)
+        let rank = shape.count
+        let el = dataType.byteSize
+        let outerShape = Array(shape.prefix(rank - 2)), outerStart = Array(start.prefix(rank - 2)), outerCount = Array(count.prefix(rank - 2))
+        let (y0, ny, x0, nx) = (start[rank - 2], count[rank - 2], start[rank - 1], count[rank - 1])
+        let fd = open(path, O_RDONLY)
+        guard fd >= 0 else { throw FormatoReadError.cannotOpen(formatoDisplayFileName(path), String(cString: strerror(errno))) }
+        defer { close(fd) }
+        var out = Data()
+        out.reserveCapacity(count.reduce(1, *) * el)
+        // Every outer index in C order, as a flat image number.
+        var images: [Int] = []
+        if outerShape.isEmpty { images = [0] } else if !outerCount.contains(0) {
+            var idx = [Int](repeating: 0, count: outerShape.count)
+            while true {
+                var flat = 0
+                for k in 0..<outerShape.count { flat = flat * outerShape[k] + outerStart[k] + idx[k] }
+                images.append(flat)
+                var k = outerShape.count - 1
+                while k >= 0 { idx[k] += 1; if idx[k] < outerCount[k] { break }; idx[k] = 0; k -= 1 }
+                if k < 0 { break }
+            }
+        }
+        for image in images {
+            let src = series.images[image]
+            for y in y0..<(y0 + ny) where nx > 0 {
+                var row = Data(count: nx * el)
+                let at = src.layout.rowOffset(y) + src.shift + x0 * el
+                let got = row.withUnsafeMutableBytes { pread(fd, $0.baseAddress!, nx * el, off_t(at)) }
+                guard got == nx * el else { throw FormatoReadError.truncated(formatoDisplayFileName(path)) }
+                src.layout.toLittleEndian(&row)
+                out.append(row)
+            }
+        }
+        return try FormatoArray(dataType: dataType, shape: count, bytes: out)
+    }
+}

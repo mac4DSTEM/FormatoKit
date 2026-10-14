@@ -55,7 +55,7 @@ public nonisolated struct VeloxImageSignals: Sendable {
                       detector.keys.contains("ExposureTime") else { throw refuse("a stack with no frame time") }
                 raw = detector["ExposureTime"]
             }
-            guard let frameTime = pythonFloat(raw),
+            guard let frameTime = formatoPythonFloat(raw),
                   let time = FormatoUnits.convertScaleUnits(frameTime, units: "s", factor: 2 * frames) else {
                 throw refuse("a frame time that does not convert")
             }
@@ -69,8 +69,8 @@ public nonisolated struct VeloxImageSignals: Sendable {
         guard let unit = binary.keys.contains("PixelUnitX") ? binary["PixelUnitX"] as? String : "" else {
             throw refuse("PixelUnitX is not a string")
         }
-        guard let width = pythonFloat(size["width"]), let height = pythonFloat(size["height"]),
-              let ox = pythonFloat(offset["x"]), let oy = pythonFloat(offset["y"]) else {
+        guard let width = formatoPythonFloat(size["width"]), let height = formatoPythonFloat(size["height"]),
+              let ox = formatoPythonFloat(offset["x"]), let oy = formatoPythonFloat(offset["y"]) else {
             throw refuse("PixelSize or Offset lacks a value float() reads")
         }
         guard let x = FormatoUnits.convertScaleUnits(width, units: unit, factor: image.width),
@@ -92,7 +92,7 @@ public nonisolated struct VeloxImageSignals: Sendable {
         // The mapping `Optics.AccelerationVoltage -> float(x) / 1e3`, applied when the key is present (a value float()
         // refuses raises in HyperSpy's mapping, and is refused here).
         if let optics = om["Optics"] as? [String: Any], optics.keys.contains("AccelerationVoltage") {
-            guard let volts = pythonFloat(optics["AccelerationVoltage"]) else { throw refuse("an AccelerationVoltage float() refuses") }
+            guard let volts = formatoPythonFloat(optics["AccelerationVoltage"]) else { throw refuse("an AccelerationVoltage float() refuses") }
             md.set(FormatoMetadataEntry(key: "Acquisition_instrument.TEM.beam_energy", value: .number(volts / 1e3), units: "kV",
                                         provenance: FormatoProvenance(file: file, source: json + "Optics.AccelerationVoltage",
                                                                       rule: "rsciio emd velox mapping: float(x) / 1e3")))
@@ -113,37 +113,6 @@ extension VeloxImageSignals {
             throw FormatoReadError.unsupported("Velox image \(image.id): its metadata is not a JSON object.")
         }
         return object
-    }
-}
-
-/// Python's `float(x)` on a JSON value: a number (a JSON `true` is 1.0, as `float(True)`), or a string Python's float
-/// parser accepts (surrounding whitespace, a sign, "nan", "inf", "infinity" in any case, underscores between digits).
-/// nil where Python raises (null, a dictionary, an array, any other string). A hex float, which Swift reads and Python
-/// does not, is refused.
-func pythonFloat(_ value: Any?) -> Double? {
-    switch value {
-    case let n as NSNumber:
-        if CFGetTypeID(n) == CFBooleanGetTypeID() { return n.boolValue ? 1 : 0 }
-        return n.doubleValue
-    case let s as String:
-        var t = s.trimmingCharacters(in: .whitespacesAndNewlines)
-        if t.contains("_") {
-            let chars = Array(t)
-            for (i, c) in chars.enumerated() where c == "_" {
-                guard i > 0, i < chars.count - 1, chars[i - 1].isASCII, chars[i - 1].isNumber,
-                      chars[i + 1].isASCII, chars[i + 1].isNumber else { return nil }
-            }
-            t.removeAll { $0 == "_" }
-        }
-        let lower = t.lowercased()
-        let body = lower.hasPrefix("+") || lower.hasPrefix("-") ? String(lower.dropFirst()) : lower
-        let negative = lower.hasPrefix("-")
-        if body == "nan" { return negative ? -Double.nan : .nan }
-        if body == "inf" || body == "infinity" { return negative ? -.infinity : .infinity }
-        guard !body.isEmpty, body.allSatisfy({ "0123456789.e+-".contains($0) }) else { return nil }
-        return Double(t)
-    default:
-        return nil
     }
 }
 

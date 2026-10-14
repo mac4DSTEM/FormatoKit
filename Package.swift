@@ -61,6 +61,9 @@ let package = Package(
         .executableTarget(name: "FormatoHDF5ExitProbe", dependencies: ["FormatoEMD", "FormatoHDF5"],
                           path: "Tests/FormatoHDF5ExitProbe", swiftSettings: settings),
         // The Velox reader's part of SpectroKit's golden baseline, byte for byte (registration §1.3).
+        // Step 2 (docs/registration-step-2.md): the TIFF container and TIFF files as signals, against RosettaSciIO and tifffile.
+        .testTarget(name: "FormatoTIFFTests", dependencies: ["FormatoTIFF", "FormatoCore"], exclude: ["Fixtures"],
+                    swiftSettings: settings),
         .testTarget(name: "FormatoGoldenTests", dependencies: ["FormatoEMD", "FormatoCore"], exclude: ["Fixtures"],
                     swiftSettings: settings),
     ],

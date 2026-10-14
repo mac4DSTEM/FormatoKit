@@ -8,9 +8,12 @@
 
 import Foundation
 
-/// A stored element type. A file type outside this list (complex, RGB, bool) is refused by name, never converted.
+/// A stored element type. A file type outside this list (complex, bool) is refused by name, never converted.
+/// The colour types (registration step 2 §3.1) are RosettaSciIO's structured RGB arrays: one element is one pixel, its
+/// samples interleaved as stored (each sample little-endian), so shape and bytes equal RosettaSciIO's.
 public nonisolated enum FormatoDataType: String, Sendable, Equatable, CaseIterable {
     case int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64
+    case rgb8, rgba8, rgb16, rgba16
 
     /// Bytes per element.
     public var byteSize: Int {
@@ -19,6 +22,19 @@ public nonisolated enum FormatoDataType: String, Sendable, Equatable, CaseIterab
         case .int16, .uint16: return 2
         case .int32, .uint32, .float32: return 4
         case .int64, .uint64, .float64: return 8
+        case .rgb8: return 3
+        case .rgba8: return 4
+        case .rgb16: return 6
+        case .rgba16: return 8
+        }
+    }
+
+    /// Samples per element: 1, or 3 / 4 for the colour types.
+    public var components: Int {
+        switch self {
+        case .rgb8, .rgb16: return 3
+        case .rgba8, .rgba16: return 4
+        default: return 1
         }
     }
 }
@@ -70,9 +86,10 @@ public nonisolated struct FormatoArray: Sendable, Equatable {
 
     public var count: Int { bytes.count / dataType.byteSize }
 
-    /// Every value converted to Double, in C order (exact for every type except 64-bit integers beyond 2^53).
+    /// Every value converted to Double, in C order (exact for every type except 64-bit integers beyond 2^53); for a
+    /// colour type, every sample, interleaved (`count * components` values).
     public func doubles() -> [Double] {
-        var out = [Double](repeating: 0, count: count)
+        var out = [Double](repeating: 0, count: count * dataType.components)
         bytes.withUnsafeBytes { p in
             switch dataType {
             case .int8: for i in out.indices { out[i] = Double(p.loadUnaligned(fromByteOffset: i, as: Int8.self)) }
@@ -85,6 +102,8 @@ public nonisolated struct FormatoArray: Sendable, Equatable {
             case .uint64: for i in out.indices { out[i] = Double(UInt64(littleEndian: p.loadUnaligned(fromByteOffset: 8 * i, as: UInt64.self))) }
             case .float32: for i in out.indices { out[i] = Double(Float(bitPattern: UInt32(littleEndian: p.loadUnaligned(fromByteOffset: 4 * i, as: UInt32.self)))) }
             case .float64: for i in out.indices { out[i] = Double(bitPattern: UInt64(littleEndian: p.loadUnaligned(fromByteOffset: 8 * i, as: UInt64.self))) }
+            case .rgb8, .rgba8: for i in out.indices { out[i] = Double(p.loadUnaligned(fromByteOffset: i, as: UInt8.self)) }
+            case .rgb16, .rgba16: for i in out.indices { out[i] = Double(UInt16(littleEndian: p.loadUnaligned(fromByteOffset: 2 * i, as: UInt16.self))) }
             }
         }
         return out
