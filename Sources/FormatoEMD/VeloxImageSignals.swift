@@ -20,9 +20,17 @@ public nonisolated struct VeloxImageSignals: Sendable {
     public let readsWholeStacks: Bool
     /// RosettaSciIO's title of each image (registration step 3 §3.2).
     let titles: VeloxTitles
+    /// FormatoKit's policies for this read (registration 0.2.0): the pixel unit of an image is P1's. The default is 0.1.1's.
+    public let policy: VeloxReadPolicy
 
     /// Throws `FormatoReadError.unsupported` where RosettaSciIO's title rule raises on the file (registration step 3 §3.2).
     public init(path: String, cancelled: @Sendable () -> Bool = FormatoCancellation.task) throws {
+        try self.init(path: path, policy: VeloxReadPolicy(), cancelled: cancelled)
+    }
+
+    /// As `init(path:cancelled:)`, with FormatoKit's policies (registration 0.2.0 P1: `policy.unconvertedUnits`).
+    public init(path: String, policy: VeloxReadPolicy, cancelled: @Sendable () -> Bool = FormatoCancellation.task) throws {
+        self.policy = policy
         reader = VeloxEMDReader(path: path)
         images = try reader.images(cancelled: cancelled)
         readsWholeStacks = HDF5Serial.run { (try? VeloxFile(path: path)).map { !$0.exists("/Data/SpectrumImage") } ?? true }
@@ -34,7 +42,9 @@ public nonisolated struct VeloxImageSignals: Sendable {
 
     /// The images and titles of a file already opened (registration step 4 §3.2: the spectrum-image path reads the first
     /// image only).
-    init(reader: VeloxEMDReader, images: [VeloxImageInfo], readsWholeStacks: Bool, titles: VeloxTitles) {
+    init(reader: VeloxEMDReader, images: [VeloxImageInfo], readsWholeStacks: Bool, titles: VeloxTitles,
+         policy: VeloxReadPolicy = VeloxReadPolicy()) {
+        self.policy = policy
         self.reader = reader
         self.images = images
         self.readsWholeStacks = readsWholeStacks
@@ -96,14 +106,14 @@ public nonisolated struct VeloxImageSignals: Sendable {
               let ox = veloxPythonFloat(offset["x"]), let oy = veloxPythonFloat(offset["y"]) else {
             throw refuse("PixelSize or Offset lacks a value float() reads")
         }
-        guard let x = FormatoUnits.convertScaleUnits(width, units: unit, factor: image.width),
-              let scaleY = FormatoUnits.convertUnits(height, from: unit, to: x.units),
-              let offsetX = FormatoUnits.convertUnits(ox, from: unit, to: x.units),
-              let offsetY = FormatoUnits.convertUnits(oy, from: unit, to: x.units) else {
+        guard let calibration = VeloxPixelCalibration.make(width: width, height: height, offsetX: ox, offsetY: oy, unit: unit,
+                                                           factor: image.width, policy: policy) else {
             throw refuse("pixel units '\(unit)' or a pixel size this reader does not convert")
         }
-        axes.append(FormatoAxis(name: "y", size: image.height, scale: scaleY, offset: offsetY, units: x.units, navigate: false))
-        axes.append(FormatoAxis(name: "x", size: image.width, scale: x.value, offset: offsetX, units: x.units, navigate: false))
+        axes.append(FormatoAxis(name: "y", size: image.height, scale: calibration.scaleY, offset: calibration.offsetY,
+                                units: calibration.units, navigate: false))
+        axes.append(FormatoAxis(name: "x", size: image.width, scale: calibration.scaleX, offset: calibration.offsetX,
+                                units: calibration.units, navigate: false))
 
         var md = FormatoMetadata()
         let json = "Data/Image/\(image.id)/Metadata[0]."
@@ -122,6 +132,9 @@ public nonisolated struct VeloxImageSignals: Sendable {
             md.set(FormatoMetadataEntry(key: "Acquisition_instrument.TEM.beam_energy", value: .number(volts / 1e3), units: "kV",
                                         provenance: FormatoProvenance(file: file, source: json + "Optics.AccelerationVoltage",
                                                                       rule: "rsciio emd velox mapping: float(x) / 1e3")))
+        }
+        if calibration.keptAsWritten {
+            md.set(VeloxPixelCalibration.entry(unit: unit, file: file, source: json + "BinaryResult.PixelUnitX"))
         }
         return (shape, stacked, axes, md, title?.text)
     }

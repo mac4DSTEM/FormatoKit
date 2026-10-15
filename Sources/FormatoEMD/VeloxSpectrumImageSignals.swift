@@ -6,7 +6,7 @@
 //        `_fill_array_with_stream[_sum_frames]` line for line, every count a `+= 1` in the target type; its six options as
 //        parameters with its defaults. Eager, as RosettaSciIO's non-lazy path.
 //        The streams are read here through `VeloxFile`, not through the moved `VeloxEMDReader.readSpectrumImage`, whose rules
-//        (the ScanSize x ScanArea grid, the CSR store, every stream summed) are SpectroKit's and stay as they are.
+//        (the ScanSize x ScanArea grid, the CSR store, every stream summed) are the inherited reader's and stay as they are.
 //        Every refusal names RosettaSciIO's raise, or the registered deviation it is (registration step 4 §3).
 //
 
@@ -30,15 +30,19 @@ public nonisolated struct VeloxSpectrumImageOptions: Sendable, Equatable {
     /// `SI_dtype`: the counts' type; nil is the first stream's `StreamEncoding`. Counts wrap (integers) or stop growing
     /// (float32 at 2^24, float64 at 2^53) exactly as `+= 1` in that type does.
     public var dataType: FormatoDataType?
+    /// FormatoKit's own policies (registration 0.2.0): the unit of a pixel, the grid, the array cap, the block size. Not RosettaSciIO
+    /// arguments; the default is 0.1.1's behaviour, and a non-default path that changes the result says so in the metadata.
+    public var policy: VeloxReadPolicy
 
     public init(firstFrame: Int = 0, lastFrame: Int? = nil, sumFrames: Bool = true, sumEDSDetectors: Bool = true,
-                rebinEnergy: Int = 1, dataType: FormatoDataType? = nil) {
+                rebinEnergy: Int = 1, dataType: FormatoDataType? = nil, policy: VeloxReadPolicy = VeloxReadPolicy()) {
         self.firstFrame = firstFrame
         self.lastFrame = lastFrame
         self.sumFrames = sumFrames
         self.sumEDSDetectors = sumEDSDetectors
         self.rebinEnergy = rebinEnergy
         self.dataType = dataType
+        self.policy = policy
     }
 }
 
@@ -114,7 +118,7 @@ private nonisolated struct VeloxSpectrumImageRead {
             // `_read_image_data(h5data, read_stack=False)` reads `h5data[:, :, 0]`: IndexError without a frame (A1, F3).
             if hasSpectrumImage, image.frameCount == 0 { throw raises("the first image \(first) has no frame") }
             let images = VeloxImageSignals(reader: VeloxEMDReader(path: path), images: [image],
-                                           readsWholeStacks: !hasSpectrumImage, titles: titles)
+                                           readsWholeStacks: !hasSpectrumImage, titles: titles, policy: options.policy)
             _ = try images.describe(image)
             grid = (image.height, image.width)
         }
@@ -173,16 +177,31 @@ private nonisolated struct VeloxSpectrumImageRead {
         let streams = file.children(of: "/Data/SpectrumStream")
         guard !streams.isEmpty else { return [] }                         // pruned (version 11)
 
-        // §3.3: the grid is the first image's; refused where the stream's ScanSize x ScanArea says otherwise.
+        // §3.3: the grid is the first image's; refused where the stream's ScanSize x ScanArea says otherwise (registration 0.2.0 P2
+        // makes that a choice).
         let head = "/Data/SpectrumStream/" + streams[0]
         let headJSON = try file.readMetadataJSON(group: head, column: 0)
         guard let om = (try? JSONSerialization.jsonObject(with: headJSON)) as? [String: Any] else {
             throw raises("the metadata of stream \(streams[0]) is not a JSON object")
         }
+        var chosen = grid
+        var gridEntry: FormatoMetadataEntry?
         if let derived = (try? VeloxMetadata.parse(jsonData: headJSON))?.derivedGrid, derived != grid {
-            throw deviation("the first image is \(grid.ny) x \(grid.nx) pixels, the stream's ScanSize x ScanArea \(derived.ny) x \(derived.nx)", "§3.3")
+            let both = "the first image is \(grid.ny) x \(grid.nx) pixels, the stream's ScanSize x ScanArea \(derived.ny) x \(derived.nx)"
+            let source = String(head.dropFirst()) + "/Metadata[0].Scan"
+            switch o.policy.spectrumImageGrid {
+            case .firstImageChecked:
+                throw deviation(both, "§3.3")
+            case .firstImage:
+                gridEntry = veloxPolicyEntry("grid", value: "\(grid.ny) x \(grid.nx)", file: fileName, source: source,
+                                             rule: "spectrumImageGrid = firstImage decodes onto the first image's grid (ny x nx), as RosettaSciIO does, where FormatoKit's default refuses: \(both)")
+            case .scanSizeTimesArea:
+                chosen = derived
+                gridEntry = veloxPolicyEntry("grid", value: "\(derived.ny) x \(derived.nx)", file: fileName, source: source,
+                                             rule: "spectrumImageGrid = scanSizeTimesArea decodes onto the stream's ScanSize x ScanArea grid (ny x nx), not the first image's: \(both)")
+            }
         }
-        let (ny, nx) = grid
+        let (ny, nx) = chosen
         guard ny >= 1, nx >= 1 else { throw raises("an image of \(ny) x \(nx) pixels") }
         // ny * nx checked before any arithmetic on it (Gate B, A1, F7: it trapped); RosettaSciIO's arrays raise there too.
         let (pixels, pixelsOverflow) = ny.multipliedReportingOverflow(by: nx)
@@ -220,14 +239,18 @@ private nonisolated struct VeloxSpectrumImageRead {
         }
 
         // §3.6: the axes, from stream 0's metadata.
-        let axes = try edsAxes(om: om, json: headJSON, ny: ny, nx: nx, frames: o.sumFrames ? nil : last - first, bins: bins0)
+        let (axes, unitsAsWritten) = try edsAxes(om: om, json: headJSON, ny: ny, nx: nx, frames: o.sumFrames ? nil : last - first, bins: bins0)
         try VeloxTitles.checkMetadataDict(om, id: "stream " + streams[0], refuse: { raises($0) })
-        let metadata = try edsMetadata(om: om, group: head)
+        var metadata = try edsMetadata(om: om, group: head)
+        if let unit = unitsAsWritten {
+            metadata.set(VeloxPixelCalibration.entry(unit: unit, file: fileName, source: String(head.dropFirst()) + "/Metadata[0].BinaryResult.PixelUnitX"))
+        }
+        if let gridEntry { metadata.set(gridEntry) }
 
         let layout = VeloxStreamFill.Layout(ny: ny, nx: nx, first: first, last: last, rebin: o.rebinEnergy, sumFrames: o.sumFrames)
         var out: [FormatoSignal] = []
         if o.sumEDSDetectors {
-            let array = try VeloxCountArray(dataType: dataType, shape: layout.shape(bins: bins0))
+            let array = try VeloxCountArray(dataType: dataType, shape: layout.shape(bins: bins0), maximumBytes: o.policy.arrayByteLimit)
             for name in streams {
                 try fill(array, stream: "/Data/SpectrumStream/\(name)/Data", layout: layout, bins: bins0)
             }
@@ -241,7 +264,7 @@ private nonisolated struct VeloxSpectrumImageRead {
                 guard bins == bins0 else {
                     throw deviation("stream \(name) has \(bins) channels, stream \(streams[0]) \(bins0): the energy axis would not fit", "§3.5")
                 }
-                let array = try VeloxCountArray(dataType: dataType, shape: layout.shape(bins: bins))
+                let array = try VeloxCountArray(dataType: dataType, shape: layout.shape(bins: bins), maximumBytes: o.policy.arrayByteLimit)
                 try fill(array, stream: group + "/Data", layout: layout, bins: bins)
                 out.append(FormatoSignal(title: "EDS", signalType: "EDS_TEM", axes: axes, metadata: metadata, data: try array.finish()))
             }
@@ -281,7 +304,7 @@ private nonisolated struct VeloxSpectrumImageRead {
             throw deviation("\(dataset) is not one column of unsigned 16-bit integers", "§3.5")
         }
         let total = d.dims[0]
-        let blockValues = min(max(total, 1), VeloxEMDReader.defaultBlockValues)
+        let blockValues = min(max(total, 1), options.policy.blockValues)
         let buffer = UnsafeMutablePointer<UInt16>.allocate(capacity: blockValues)
         defer { buffer.deallocate() }
         var at = 0
@@ -306,7 +329,8 @@ private nonisolated struct VeloxSpectrumImageRead {
     }
 
     /// §3.6.
-    func edsAxes(om: [String: Any], json: Data, ny: Int, nx: Int, frames: Int?, bins: Int) throws -> [FormatoAxis] {
+    /// The axes, and the pixel unit as written when `FormatoUnconvertedUnits.keepAsWritten` kept it.
+    func edsAxes(om: [String: Any], json: Data, ny: Int, nx: Int, frames: Int?, bins: Int) throws -> (axes: [FormatoAxis], unitsAsWritten: String?) {
         // 1. `_get_detector_information(om)`.
         if let binary = om["BinaryResult"] {
             guard let binary = binary as? [String: Any] else { throw raises("BinaryResult is not an object") }
@@ -337,10 +361,8 @@ private nonisolated struct VeloxSpectrumImageRead {
         }
         // 3. x with factor shape[1]: nx when frames are summed, ny when not (RosettaSciIO's index).
         let factor = frames == nil ? nx : ny
-        guard let x = FormatoUnits.convertScaleUnits(width, units: unit, factor: factor),
-              let scaleY = FormatoUnits.convertUnits(height, from: unit, to: x.units),
-              let offsetX = FormatoUnits.convertUnits(ox, from: unit, to: x.units),
-              let offsetY = FormatoUnits.convertUnits(oy, from: unit, to: x.units) else {
+        guard let x = VeloxPixelCalibration.make(width: width, height: height, offsetX: ox, offsetY: oy, unit: unit, factor: factor,
+                                                 policy: options.policy) else {
             throw deviation("pixel units '\(unit)' or a pixel size this reader does not convert", "§3.6 (step 1 A5)")
         }
         var axes: [FormatoAxis] = []
@@ -354,13 +376,13 @@ private nonisolated struct VeloxSpectrumImageRead {
             }
             axes.append(FormatoAxis(name: "Time", size: frames, scale: time.value, offset: 0, units: time.units, navigate: true))
         }
-        axes.append(FormatoAxis(name: "y", size: ny, scale: scaleY, offset: offsetY, units: x.units, navigate: true))
-        axes.append(FormatoAxis(name: "x", size: nx, scale: x.value, offset: offsetX, units: x.units, navigate: true))
+        axes.append(FormatoAxis(name: "y", size: ny, scale: x.scaleY, offset: x.offsetY, units: x.units, navigate: true))
+        axes.append(FormatoAxis(name: "x", size: nx, scale: x.scaleX, offset: x.offsetX, units: x.units, navigate: true))
         // 5. The energy axis.
         let energy = try dispersionOffset(om: om, json: json)
         axes.append(FormatoAxis(name: "X-ray energy", size: bins / options.rebinEnergy, scale: energy.scale, offset: energy.offset,
                                 units: energy.units, navigate: false))
-        return axes
+        return (axes, x.keptAsWritten ? unit : nil)
     }
 
     /// `_get_dispersion_offset`: the first `Detectors` entry, in written order, whose DetectorName contains
@@ -428,8 +450,19 @@ private nonisolated struct VeloxSpectrumImageRead {
         guard let width = veloxPythonFloat(size["width"]), let ox = veloxPythonFloat(offset["x"]) else {
             throw raises("PixelSize.width or Offset.x: float() refuses it")
         }
-        guard let x = FormatoUnits.convertScaleUnits(width, units: unitX, factor: 1),
-              let offsetX = FormatoUnits.convertUnits(ox, from: unitX, to: x.units) else {
+        // Registration 0.2.0 P1: an unhandled unit is kept as written when every unit involved is that one string.
+        let x: (value: Double, units: String), offsetX: Double
+        var keptUnits = false
+        switch FormatoUnits.scaleOutcome(width, units: unitX, factor: 1) {
+        case .converted(let value, let units):
+            guard let converted = FormatoUnits.convertUnits(ox, from: unitX, to: units) else {
+                throw deviation("pixel units '\(unitX)' or a pixel size this reader does not convert", "§3.8 (step 1 A5)")
+            }
+            (x, offsetX) = ((value, units), converted)
+        case .unhandledUnit where options.policy.unconvertedUnits == .keepAsWritten:
+            (x, offsetX) = ((width, unitX), ox)
+            keptUnits = true
+        case .unhandledUnit, .pintRaises:
             throw deviation("pixel units '\(unitX)' or a pixel size this reader does not convert", "§3.8 (step 1 A5)")
         }
         var y: (scale: Double, offset: Double)?
@@ -441,11 +474,18 @@ private nonisolated struct VeloxSpectrumImageRead {
             guard let height = veloxPythonFloat(size["height"]), let oy = veloxPythonFloat(offset["y"]) else {
                 throw raises("PixelSize.height or Offset.y: float() refuses it")
             }
-            guard let sy = FormatoUnits.convertUnits(height, from: unitY, to: x.units),
-                  let offY = FormatoUnits.convertUnits(oy, from: unitY, to: x.units) else {
-                throw deviation("pixel units '\(unitY)' this reader does not convert to '\(x.units)'", "§3.8 (step 1 A5)")
+            if keptUnits {
+                guard unitY == unitX else {
+                    throw deviation("pixel units '\(unitY)' this reader does not convert to '\(x.units)'", "§3.8 (step 1 A5)")
+                }
+                y = (height, oy)
+            } else {
+                guard let sy = FormatoUnits.convertUnits(height, from: unitY, to: x.units),
+                      let offY = FormatoUnits.convertUnits(oy, from: unitY, to: x.units) else {
+                    throw deviation("pixel units '\(unitY)' this reader does not convert to '\(x.units)'", "§3.8 (step 1 A5)")
+                }
+                y = (sy, offY)
             }
-            y = (sy, offY)
         }
 
         var out: [FormatoSignal] = []
@@ -484,6 +524,9 @@ private nonisolated struct VeloxSpectrumImageRead {
             md.set(FormatoMetadataEntry(key: "General.original_filename", value: .text(fileName), units: nil,
                                         provenance: FormatoProvenance(file: fileName, source: "(the file name)",
                                                                       rule: "rsciio emd velox: the file opened (its name here; registration step 4 §3.8)")))
+            if keptUnits {
+                md.set(VeloxPixelCalibration.entry(unit: unitX, file: fileName, source: String(siGroup.dropFirst()) + "/Metadata[0].BinaryResult.PixelUnitX"))
+            }
             out.append(FormatoSignal(title: "EELS", signalType: "EELS", axes: axes, metadata: md, data: data))
         }
         return out
@@ -532,7 +575,7 @@ private nonisolated struct VeloxSpectrumImageRead {
         }
         let count = try FormatoArray.elementCount(d.dims)
         let (bytes, overflow) = count.multipliedReportingOverflow(by: type.byteSize)
-        guard !overflow, bytes <= VeloxCountArray.maximumBytes else { throw deviation("\(path) is larger than this reader accepts", "§3.8") }
+        guard !overflow, bytes <= options.policy.arrayByteLimit else { throw deviation("\(path) is larger than this reader accepts", "§3.8") }
         var out = Data(count: bytes)
         if count > 0 {
             try out.withUnsafeMutableBytes {
@@ -692,19 +735,21 @@ package nonisolated enum VeloxStreamFill {
 /// The counts of one spectrum image in its target type, zeroed, filled in place; `finish()` hands its bytes to a FormatoArray
 /// without a copy (freed here if never finished).
 nonisolated final class VeloxCountArray {
-    /// The largest array this reader allocates: the machine's memory (RosettaSciIO's `np.zeros` raises beyond what it can map).
-    static let maximumBytes = Int(min(ProcessInfo.processInfo.physicalMemory, UInt64(Int.max)))
+    /// The default limit on one array: the machine's memory (RosettaSciIO's `np.zeros` raises beyond what it can map).
+    static let physicalMemoryBytes = VeloxReadPolicy().arrayByteLimit
 
     let dataType: FormatoDataType
     let shape: [Int]
     private var storage: UnsafeMutableRawPointer?
     private let byteCount: Int
 
-    init(dataType: FormatoDataType, shape: [Int]) throws {
+    /// `maximumBytes`: the policy's limit on one array (registration 0.2.0 P3).
+    init(dataType: FormatoDataType, shape: [Int], maximumBytes: Int = VeloxCountArray.physicalMemoryBytes) throws {
         let count = try FormatoArray.elementCount(shape)
         let (bytes, overflow) = count.multipliedReportingOverflow(by: dataType.byteSize)
-        guard !overflow, bytes <= Self.maximumBytes else {
-            throw FormatoReadError.unsupported("A spectrum image of shape \(shape) in \(dataType.rawValue) is larger than this Mac's memory.")
+        guard !overflow, bytes <= maximumBytes else {
+            let limit = maximumBytes == Self.physicalMemoryBytes ? "this Mac's memory" : "the \(maximumBytes) bytes the policy allows"
+            throw FormatoReadError.unsupported("A spectrum image of shape \(shape) in \(dataType.rawValue) is larger than \(limit).")
         }
         self.dataType = dataType
         self.shape = shape

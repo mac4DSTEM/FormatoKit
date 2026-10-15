@@ -76,23 +76,39 @@ public nonisolated enum FormatoUnits {
         return value * factor(a, b)
     }
 
+    /// What `scaleOutcome` found. `convertScaleUnits` is nil for both failures; a policy tells them apart (registration 0.2.0 P1).
+    package nonisolated enum ScaleOutcome: Sendable, Equatable {
+        /// The compacted value and Pint's short form of the compact unit.
+        case converted(value: Double, units: String)
+        /// `units` is not one FormatoUnits handles: a reader's policy decides.
+        case unhandledUnit
+        /// Pint raises (the value times the factor under- or overflows in the base unit): a refusal under every policy.
+        case pintRaises
+    }
+
     /// RosettaSciIO Velox's `_convert_scale_units(value, units, factor)`, its `factor` exactly as RosettaSciIO passes it
     /// (an axis size, or twice a frame count): returns the compacted value and Pint's short form of the compact unit.
     /// nil when `units` is not handled, and where Pint raises (the value times the factor under- or overflows in the base unit).
     public static func convertScaleUnits(_ value: Double, units: String, factor: Int) -> (value: Double, units: String)? {
-        guard let unit = parse(units) else { return nil }
+        if case .converted(let v, let u) = scaleOutcome(value, units: units, factor: factor) { return (v, u) }
+        return nil
+    }
+
+    /// `convertScaleUnits` with its two failures told apart; the arithmetic is the same.
+    package static func scaleOutcome(_ value: Double, units: String, factor: Int) -> ScaleOutcome {
+        guard let unit = parse(units) else { return .unhandledUnit }
         let half = Double(factor) / 2                       // `factor /= 2`
         let scaled = value * half                           // `factor * v`
         // `to_compact` returns the quantity unchanged when it is unitless, zero, NaN or infinite.
         if unit.base.isEmpty || scaled == 0 || scaled.isNaN || scaled.isInfinite {
-            return (scaled / half, unit.shortForm)
+            return .converted(value: scaled / half, units: unit.shortForm)
         }
         // `_get_compact_base`: the quantity in the unprefixed base, and the power of its one unit.
         let base = Unit(prefixIndex: unprefixed, base: unit.base, power: unit.power)
         let magnitude = scaled * self.factor(unit, base)
         // Pint takes `math.log10` of this magnitude and `math.floor` of the result: a magnitude that under- or overflowed to
         // 0 or infinity raises there (ValueError, OverflowError). Not converted (Gate B F1).
-        guard magnitude != 0, magnitude.isFinite else { return nil }
+        guard magnitude != 0, magnitude.isFinite else { return .pintRaises }
         let l = log10(abs(magnitude)) / Double(unit.power) / 3
         let power = Int(unit.power > 0 ? l.rounded(.down) : l.rounded(.up)) * 3
         // `_pick_compact_unit`: bisect_left over the prefix powers, the last one past the end.
@@ -100,6 +116,6 @@ public nonisolated enum FormatoUnits {
         if index >= FormatoUnitsFactors.powers.count { index = FormatoUnitsFactors.powers.count - 1 }
         let compact = Unit(prefixIndex: index, base: unit.base, power: unit.power)
         let converted = scaled * self.factor(unit, compact)   // `quantity.to(new_unit)`, from the original unit
-        return (converted / half, compact.shortForm)
+        return .converted(value: converted / half, units: compact.shortForm)
     }
 }
