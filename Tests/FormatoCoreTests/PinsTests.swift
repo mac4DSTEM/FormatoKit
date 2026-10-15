@@ -134,6 +134,20 @@ import FormatoEMD
         #expect(refused == 0)
     }
 
+    /// Step 3's Gate B files (Tests/FormatoEMDTests/Fixtures/refuter-step3, tools/step-3/refuter_pins.py; registration step 3
+    /// A1): 11 RosettaSciIO raises on (the detector-metadata lookup, root datasets, Acquisition, Version), refused here too;
+    /// 2 it reads, read equal.
+    @Test func testStep3RefuterFilesAgreeOrAreRefused() throws {
+        let files = try #require(try loadJSON("step-3-refuter-pins.json")["files"] as? [[String: Any]])
+        let dir = TestPaths.root.appendingPathComponent("Tests/FormatoEMDTests/Fixtures/refuter-step3")
+        let (read, signals, refused) = try compare(files, locate: { name in
+            let u = dir.appendingPathComponent(name); return FileManager.default.fileExists(atPath: u.path) ? u : nil
+        }, mustFind: true)
+        #expect(read == 13)
+        #expect(refused == 11)
+        #expect(signals == 2)
+    }
+
     /// Gate B's files (Fixtures/refuter, tools/step-1/pins.py --set refuter): built by the refuter from RosettaSciIO's public
     /// fei_example_tem_stack.emd with one metadata value changed each. Where RosettaSciIO raises, FormatoKit must refuse
     /// (F1-F3); where it reads, the signals must be equal; `u_stack_unit_px.emd` (Pint's "px") is refused on purpose

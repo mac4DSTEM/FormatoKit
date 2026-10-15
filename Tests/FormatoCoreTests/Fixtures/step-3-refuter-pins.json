@@ -1,0 +1,279 @@
+{
+ "files": [
+  {
+   "bytes": 21792,
+   "format": "velox",
+   "path": "A1_ops_named_no_Detectors_key.emd",
+   "raises": {
+    "message": "'Detectors'",
+    "type": "KeyError"
+   },
+   "set": "step-3-refuter",
+   "sha256": "41583ac0d1366144cccbc8c8d817da05cb438b01e0e92c34e735064c8e967f89",
+   "signals": []
+  },
+  {
+   "bytes": 21792,
+   "format": "velox",
+   "path": "A2_ops_named_detector_without_name.emd",
+   "raises": {
+    "message": "'DetectorName'",
+    "type": "KeyError"
+   },
+   "set": "step-3-refuter",
+   "sha256": "dccf9676b5761f6e94a665dc237012fb8a6f8a6790a816a1f4fffb6a6d2560fb",
+   "signals": []
+  },
+  {
+   "bytes": 21792,
+   "format": "velox",
+   "path": "A3_ops_unrecognized_detector_without_name.emd",
+   "raises": {
+    "message": "'DetectorName'",
+    "type": "KeyError"
+   },
+   "set": "step-3-refuter",
+   "sha256": "821603941d4f997c56bcd15e43370861f3919b38e5169d0a1efa64fceb530167",
+   "signals": []
+  },
+  {
+   "bytes": 21792,
+   "format": "velox",
+   "path": "A4_ops_named_Detectors_is_list.emd",
+   "raises": {
+    "message": "'int' object is not subscriptable",
+    "type": "TypeError"
+   },
+   "set": "step-3-refuter",
+   "sha256": "f053e6c003b61bc49b4d8251fa6af3efd0e7c6c45972fe97b5e94f26a8a0a679",
+   "signals": []
+  },
+  {
+   "bytes": 21192,
+   "format": "velox",
+   "path": "C10_md_acq_no_start_custom_str.emd",
+   "raises": null,
+   "set": "step-3-refuter",
+   "sha256": "fac71c180448dbba53fd6b5517359cf5f64c5de79634613197378f1e86db93cd",
+   "signals": [
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "01d6febbee59f0e9c0c16012b18498398b339c81c0c8b178da5c2cd9f122808c",
+     "data_sha256": "fd0aeb541c19aff80e447a51b0e00271d4a72f1d028bcf169ca43c704cbc8896",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "DI"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "C10_md_acq_no_start_custom_str.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "DI",
+     "velox_image_id": "a"
+    }
+   ],
+   "spectrum_stream_not_read": false
+  },
+  {
+   "bytes": 21192,
+   "format": "velox",
+   "path": "C10_md_acq_no_start_no_custom.emd",
+   "raises": {
+    "message": "'CustomProperties'",
+    "type": "KeyError"
+   },
+   "set": "step-3-refuter",
+   "sha256": "a44e5f500a0131a15cf99f529b00295c4f4f9bf1f229ee199bf8d980a25ce934",
+   "signals": []
+  },
+  {
+   "bytes": 21192,
+   "format": "velox",
+   "path": "C10_md_no_acq.emd",
+   "raises": {
+    "message": "'Acquisition'",
+    "type": "KeyError"
+   },
+   "set": "step-3-refuter",
+   "sha256": "58dbcef764e2d6f4c07182751ec249afd63708d76deada517eb26bfad6632b9c",
+   "signals": []
+  },
+  {
+   "bytes": 21192,
+   "format": "velox",
+   "path": "C7_displays_dataset_root_img.emd",
+   "raises": {
+    "message": "'Dataset' object has no attribute 'keys'",
+    "type": "AttributeError"
+   },
+   "set": "step-3-refuter",
+   "sha256": "5094ef6a0ceec38769a94188702dc97a3bbf95e93f0286129f4f97d6e843c96b",
+   "signals": []
+  },
+  {
+   "bytes": 21192,
+   "format": "velox",
+   "path": "C7_features_dataset_root_img.emd",
+   "raises": {
+    "message": "'Dataset' object has no attribute 'keys'",
+    "type": "AttributeError"
+   },
+   "set": "step-3-refuter",
+   "sha256": "be54e97e579a65b02943215fa22d86ceaa5e52cc48df11307b45531dd67dbc42",
+   "signals": []
+  },
+  {
+   "bytes": 21192,
+   "format": "velox",
+   "path": "C7_ops_dataset_root.emd",
+   "raises": {
+    "message": "'Dataset' object has no attribute 'keys'",
+    "type": "AttributeError"
+   },
+   "set": "step-3-refuter",
+   "sha256": "fa6adeba3cf746b51dc0b1fe6cacc4e87ebe453d5a175957218ee2226d2a5635",
+   "signals": []
+  },
+  {
+   "bytes": 21192,
+   "format": "velox",
+   "path": "G_ver_missing_key_image.emd",
+   "raises": {
+    "message": "'version'",
+    "type": "KeyError"
+   },
+   "set": "step-3-refuter",
+   "sha256": "9211836e918887c36325ff6fa3dcbca3ae2dc13d553dd1db9ce56e1d9581638f",
+   "signals": []
+  },
+  {
+   "bytes": 29928,
+   "format": "velox",
+   "path": "G_ver_nbsp.emd",
+   "raises": null,
+   "set": "step-3-refuter",
+   "sha256": "ce2e16ddc13cb14878fc2468335aaefc1c5af6ed365937994fef5f92c1e67583",
+   "signals": [
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "01d6febbee59f0e9c0c16012b18498398b339c81c0c8b178da5c2cd9f122808c",
+     "data_sha256": "fd0aeb541c19aff80e447a51b0e00271d4a72f1d028bcf169ca43c704cbc8896",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "DISP"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "G_ver_nbsp.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "DISP",
+     "velox_image_id": "d1"
+    }
+   ],
+   "spectrum_stream_not_read": true
+  },
+  {
+   "bytes": 29928,
+   "format": "velox",
+   "path": "G_ver_zerowidth.emd",
+   "raises": {
+    "message": "invalid literal for int() with base 10: '11\\u200b'",
+    "type": "ValueError"
+   },
+   "set": "step-3-refuter",
+   "sha256": "5a9217b46a71cd4347155afc5d2baa4f55c9d6fd1f28f151d27b919baeeba7b5",
+   "signals": []
+  }
+ ],
+ "generator": "tools/step-3/refuter_pins.py",
+ "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.digitalmicrograph.file_reader; rsciio.emd.file_reader, select_type='images')",
+ "set": "step-3-refuter",
+ "versions": {
+  "h5py": "3.16.0",
+  "numpy": "2.5.4",
+  "pint": "0.26.1",
+  "python": "3.14.7"
+ }
+}

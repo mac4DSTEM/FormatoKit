@@ -43,8 +43,16 @@ nonisolated struct VeloxTitles: Sendable {
         // `read_file`: the version, the image type, and `_parse_metadata_group` of the four groups (a group's datasets by
         // name; a dataset child is one JSON). Only `Operations` and `Displays` are read below; the other two are parsed so a
         // bad entry refuses the file as it raises in RosettaSciIO.
+        // `self.version = _parse_json(f["Version"][0])["version"]`: the key must be there (KeyError), whatever the type.
+        guard let versionText = file.readString("/Version"),
+              let version = (try? JSONSerialization.jsonObject(with: Data(versionText.utf8))) as? [String: Any],
+              version.keys.contains("version") else {
+            throw refuse("its Version has no version key")
+        }
         var groups: [String: [String: Entry]] = [:]
         for name in ["Displays", "Operations", "SharedProperties", "Features"] where file.exists("/" + name) {
+            // `_parse_metadata_group` on a dataset: `_get_keys_from_group` raises AttributeError (Gate B, A1).
+            guard !isDataset("/" + name) else { throw refuse("/\(name) is a dataset, not a group") }
             var entries: [String: Entry] = [:]
             for child in file.children(of: "/" + name) {
                 let path = "/\(name)/\(child)"
@@ -65,9 +73,7 @@ nonisolated struct VeloxTitles: Sendable {
         var labels: [String: (text: String, source: String)] = [:]
         if spectrumStream {
             // `int(self.version)`, only here.
-            guard let versionText = file.readString("/Version"),
-                  let version = (try? JSONSerialization.jsonObject(with: Data(versionText.utf8))) as? [String: Any],
-                  let versionNumber = Self.pythonInt(version["version"]) else {
+            guard let versionNumber = Self.pythonInt(version["version"]) else {
                 throw refuse("its Version is not an integer")
             }
             if versionNumber >= 11 {
@@ -102,9 +108,11 @@ nonisolated struct VeloxTitles: Sendable {
         var out: [String: Title] = [:]
         for id in images {
             let group = "/Data/Image/" + id
-            guard let om = (try? JSONSerialization.jsonObject(with: file.readMetadataJSON(group: group, column: 0))) as? [String: Any] else {
+            let omData = try file.readMetadataJSON(group: group, column: 0)
+            guard let om = (try? JSONSerialization.jsonObject(with: omData)) as? [String: Any] else {
                 throw refuse("the metadata of image \(id) is not a JSON object")
             }
+            try Self.checkMetadataDict(om, id: id, refuse: refuse)
             // `_get_detector_information`: the image's own Detectors (the four merged groups hold no such key).
             var information: Any?
             var informationKey = ""
@@ -134,6 +142,11 @@ nonisolated struct VeloxTitles: Sendable {
                     guard let text = name as? String else { throw refuse("Detectors.\(informationKey).DetectorName of image \(id) is not a string") }
                     carried = (text, "Data/Image/\(id)/Metadata[0].Detectors.\(informationKey).DetectorName (rsciio DetectorInformation)")
                 }
+            }
+            // `_get_detector_metadata_dict(om, self.detector_name)` when a name is set (Gate B, A1): it iterates `om["Detectors"]`
+            // in written order, indexing each entry's DetectorName, until one equals the name.
+            if let name = carried?.text {
+                try Self.checkDetectorMetadata(om, data: omData, name: name, id: id, refuse: refuse)
             }
             if let label = labels[id] {
                 out[id] = Title(text: label.text, source: label.source)
@@ -217,11 +230,60 @@ nonisolated struct VeloxTitles: Sendable {
         return ("Unrecognized_image_signal", "/Operations (no entry names the image; rsciio _get_detector_name)")
     }
 
-    /// Python's `int(x)` for a JSON string or integer: surrounding whitespace allowed, ASCII digits, an optional sign.
+    /// The raises of `_get_metadata_dict(om)` (Gate B, A1): `om["Acquisition"]` must be a dictionary; without its
+    /// `AcquisitionStartDatetime`, `om["CustomProperties"]` must exist and be a string or a dictionary; with it, its
+    /// `DateTime` must be there. (A value `_convert_datetime` then rejects is not checked: registered, A1.)
+    private static func checkMetadataDict(_ om: [String: Any], id: String, refuse: (String) -> FormatoReadError) throws {
+        guard let acquisition = om["Acquisition"] as? [String: Any] else { throw refuse("image \(id) has no Acquisition dictionary") }
+        if let start = acquisition["AcquisitionStartDatetime"] {
+            guard let start = start as? [String: Any], start.keys.contains("DateTime") else {
+                throw refuse("image \(id): Acquisition.AcquisitionStartDatetime has no DateTime")
+            }
+        } else {
+            guard let custom = om["CustomProperties"] else { throw refuse("image \(id): no AcquisitionStartDatetime and no CustomProperties") }
+            if let custom = custom as? [String: Any], let stamp = custom["Detectors[BM-Ceta].TimeStamp"] {
+                guard let stamp = stamp as? [String: Any], stamp.keys.contains("value") else {
+                    throw refuse("image \(id): CustomProperties' TimeStamp has no value")
+                }
+            } else if !(custom is String) && !(custom is [String: Any]) {
+                throw refuse("image \(id): CustomProperties is neither a string nor a dictionary")
+            }
+        }
+    }
+
+    /// The raises of `_get_detector_metadata_dict(om, name)`: `om["Detectors"]` must exist; a dictionary is walked in written
+    /// order (`VeloxMetadata.detectorKeyOrder`), each entry indexed by DetectorName, until one equals `name`; an empty list or
+    /// string is walked without effect; any other value raises (TypeError).
+    private static func checkDetectorMetadata(_ om: [String: Any], data: Data, name: String, id: String,
+                                              refuse: (String) -> FormatoReadError) throws {
+        guard let detectors = om["Detectors"] else { throw refuse("image \(id) has no Detectors (rsciio _get_detector_metadata_dict)") }
+        if let map = detectors as? [String: Any] {
+            let written = VeloxMetadata.detectorKeyOrder(jsonData: data) ?? []
+            let order = written.filter { map[$0] != nil } + map.keys.filter { !written.contains($0) }.sorted()
+            for key in order {
+                guard let entry = map[key] as? [String: Any], let detectorName = entry["DetectorName"] else {
+                    throw refuse("image \(id): Detectors.\(key) has no DetectorName (rsciio _get_detector_metadata_dict)")
+                }
+                if (detectorName as? String) == name { return }
+            }
+        } else if let list = detectors as? [Any], list.isEmpty {
+            return
+        } else if let text = detectors as? String, text.isEmpty {
+            return
+        } else {
+            throw refuse("image \(id): Detectors is not a dictionary (rsciio _get_detector_metadata_dict)")
+        }
+    }
+
+    /// Python's `int(x)` for a JSON string or integer: surrounding Unicode whitespace allowed (a zero-width space is not
+    /// whitespace), ASCII digits, an optional sign.
     private static func pythonInt(_ value: Any?) -> Int? {
         if let n = value as? NSNumber, CFGetTypeID(n) != CFBooleanGetTypeID() { return Int(exactly: n.doubleValue.rounded(.towardZero)) }
         guard let text = value as? String else { return nil }
-        return Int(text.trimmingCharacters(in: .whitespacesAndNewlines))
+        let scalars = text.unicodeScalars
+        guard let first = scalars.firstIndex(where: { !$0.properties.isWhitespace }),
+              let last = scalars.lastIndex(where: { !$0.properties.isWhitespace }) else { return nil }
+        return Int(String(scalars[first...last]))
     }
 
     /// Python's `path.split("/")[-1]`.

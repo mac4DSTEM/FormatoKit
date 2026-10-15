@@ -136,4 +136,33 @@ as an option (the default only); writing.
 
 ## 11. Amendments
 
-(none yet)
+**A1 (2026-10-15, 13:00, the first runs, the mutants and Gate B).** None moves a registered number.
+1. *Results on `f66bd60`.* Gate P3: all 42 public Velox images (step-1 pins) and the 22 planted ones equal to RosettaSciIO
+   in dtype, stored bytes and title, with `General.title` and L1; the owner's 18 files (`tools/step-1/owner-check.sh`, the
+   step-1 owner pins reused): 51 signals equal, the 11 Velox images now in their stored type and titles (log
+   `.build/owner/owner-check.log`, never committed). `tools/step-1/mutants.py --step 3`: 15 of 15 red. Mutant 15 is aimed
+   at the slab cut (a slab taken from the frame's origin) because the slab code no longer has a Float32 path.
+2. *The consumers note* of §5 is `docs/consumers-0.1.0.md` (one note for step 3 and the 0.1.0 candidate), not 0.0.4.
+3. *Gate B.* One refuter (Sonnet) on the frozen `f66bd60`: 247 hand-built files, about 1 900 fuzz files and 41 targeted
+   ones against RosettaSciIO. No crash, no wrong type, bytes or title on ordinary inputs; all ten types, big-endian
+   datasets, chunked, compressed and filtered stacks, links and lazy slabs held. Fixed (each refusing where RosettaSciIO
+   raises): `_get_detector_metadata_dict`'s lookup, which `_read_image` runs whenever a name is set (no `Detectors`, a
+   `Detectors` that is a non-empty list, an entry before the match without `DetectorName`; walked in written order);
+   `Operations`, `Displays`, `SharedProperties` or `Features` stored as a root dataset; `_get_metadata_dict`'s indexing
+   (no `Acquisition`; no `AcquisitionStartDatetime` and no `CustomProperties`); a `Version` without its `version` key;
+   Python's `int()` whitespace (a no-break space is stripped, a zero-width space is not). Regression: 13 of its files under
+   `Tests/FormatoEMDTests/Fixtures/refuter-step3/` with RosettaSciIO's reading (`tools/step-3/refuter_pins.py`), 11 that
+   raise and 2 that read; red on `f66bd60` (11 issues), green on the fix.
+4. *Registered deviations* (refusals where RosettaSciIO reads, or the reverse, on files no Velox version writes):
+   - a title, `dataPath`, `Detectors` entry or index that is not a string (null, number, bool, list, dict; RosettaSciIO
+     carries the object as the title, and null resets the carried name): refused;
+   - names compared and sorted as Swift strings: an image or path that differs only by Unicode normalisation (NFC "é"
+     against NFD "e" + U+0301) is one name here; groups listed in name order, where h5py follows a group's creation order
+     when `track_order` was set;
+   - fixed-length, multi-element, scalar or empty string datasets in the four groups (Velox writes one variable-length
+     string per entry; RosettaSciIO swallows an IndexError and drops the rest of that group);
+   - JSON that Python's `json` and `JSONSerialization` read differently: NaN and Infinity (refused here), a BOM, a trailing
+     comma, text after an embedded NUL (read here), a lone surrogate, nesting beyond 512 levels;
+   - `_convert_datetime`'s own refusals of a date value, and `float()` of the TimeStamp, are not checked;
+   - the moved reader's rules stay: only 3-D image stacks are listed (a 1-, 2- or 4-D `Data` is skipped, where RosettaSciIO
+     reads the 4-D one and raises on the others), the `Velox` format string, images over its size bound, LZF filters.
