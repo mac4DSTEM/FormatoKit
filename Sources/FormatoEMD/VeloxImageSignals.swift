@@ -32,12 +32,29 @@ public nonisolated struct VeloxImageSignals: Sendable {
     /// RosettaSciIO's title of `image`, or nil when its metadata has none.
     public func title(of image: VeloxImageInfo) -> String? { titles.byImage[image.id]?.text }
 
+    /// The images and titles of a file already opened (registration step 4 §3.2: the spectrum-image path reads the first
+    /// image only).
+    init(reader: VeloxEMDReader, images: [VeloxImageInfo], readsWholeStacks: Bool, titles: VeloxTitles) {
+        self.reader = reader
+        self.images = images
+        self.readsWholeStacks = readsWholeStacks
+        self.titles = titles
+    }
+
     /// The lazy signal of `image`. Throws `FormatoReadError.unsupportedDataType` for a compound image (Velox's FFT and DPC),
     /// and `.unsupported` for units this port does not convert or a stack with no frame time.
     public func signal(_ image: VeloxImageInfo) throws -> FormatoLazySignal {
         guard let stored = image.elementType, let dataType = FormatoDataType(rawValue: stored.rawValue) else {
             throw FormatoReadError.unsupportedDataType("Velox image \(image.id) (\(image.detectorName))")
         }
+        let (shape, stacked, axes, md, title) = try describe(image)
+        return FormatoLazySignal(title: title ?? "", signalType: "", axes: axes, metadata: md,
+                                 array: VeloxImageArray(reader: reader, id: image.id, shape: shape, stacked: stacked, dataType: dataType))
+    }
+
+    /// Everything of `image`'s signal but its data: what RosettaSciIO's `_read_image` computes and where it raises, whatever
+    /// the stored type (the spectrum-image path runs it on the first image, compound or not; registration step 4 §3.2).
+    func describe(_ image: VeloxImageInfo) throws -> (shape: [Int], stacked: Bool, axes: [FormatoAxis], metadata: FormatoMetadata, title: String?) {
         // RosettaSciIO's `_read_image` reads the image's own metadata (column 0) as a dictionary and indexes it; a key it
         // indexes that is missing, or a value `float()` refuses, raises there. The same rules here, on the same JSON, so a
         // value the file states but that does not parse is never replaced by a default (Gate B F2, F3).
@@ -106,8 +123,7 @@ public nonisolated struct VeloxImageSignals: Sendable {
                                         provenance: FormatoProvenance(file: file, source: json + "Optics.AccelerationVoltage",
                                                                       rule: "rsciio emd velox mapping: float(x) / 1e3")))
         }
-        return FormatoLazySignal(title: title?.text ?? "", signalType: "", axes: axes, metadata: md,
-                                 array: VeloxImageArray(reader: reader, id: image.id, shape: shape, stacked: stacked, dataType: dataType))
+        return (shape, stacked, axes, md, title?.text)
     }
 }
 

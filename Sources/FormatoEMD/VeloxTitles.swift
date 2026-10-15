@@ -28,8 +28,9 @@ nonisolated struct VeloxTitles: Sendable {
     private static let kinds = ["CameraInputOperation", "StemInputOperation", "SurfaceReconstructionOperation",
                                 "MathematicsOperation", "DpcOperation", "IntegrationOperation", "FftOperation"]
 
-    /// Reads the file's titles. Must run inside `HDF5Serial.run`.
-    init(file: VeloxFile, fileName: String) throws {
+    /// Reads the file's titles. Must run inside `HDF5Serial.run`. `firstImageOnly`: RosettaSciIO's `_read_images` with
+    /// `select_type="spectrum_image"`, which reads the first image (name order) and returns (registration step 4 §3.2).
+    init(file: VeloxFile, fileName: String, firstImageOnly: Bool = false) throws {
         func refuse(_ why: String) -> FormatoReadError { .unsupported("Velox file \(fileName): \(why) (RosettaSciIO raises).") }
         func json(_ path: String) throws -> Any {
             guard let text = file.readString(path) else { throw refuse("\(path) is not one variable-length string") }
@@ -66,7 +67,8 @@ nonisolated struct VeloxTitles: Sendable {
             }
             groups[name] = entries
         }
-        let images = file.children(of: "/Data/Image")
+        let allImages = file.children(of: "/Data/Image")
+        let images = firstImageOnly ? Array(allImages.prefix(1)) : allImages
         let spectrumStream = file.exists("/Data/Image") && file.exists("/Data/SpectrumImage")
 
         // `_parse_image_display`, SpectrumStream files only: image id -> label.
@@ -233,7 +235,7 @@ nonisolated struct VeloxTitles: Sendable {
     /// The raises of `_get_metadata_dict(om)` (Gate B, A1): `om["Acquisition"]` must be a dictionary; without its
     /// `AcquisitionStartDatetime`, `om["CustomProperties"]` must exist and be a string or a dictionary; with it, its
     /// `DateTime` must be there. (A value `_convert_datetime` then rejects is not checked: registered, A1.)
-    private static func checkMetadataDict(_ om: [String: Any], id: String, refuse: (String) -> FormatoReadError) throws {
+    static func checkMetadataDict(_ om: [String: Any], id: String, refuse: (String) -> FormatoReadError) throws {
         guard let acquisition = om["Acquisition"] as? [String: Any] else { throw refuse("image \(id) has no Acquisition dictionary") }
         if let start = acquisition["AcquisitionStartDatetime"] {
             guard let start = start as? [String: Any], start.keys.contains("DateTime") else {

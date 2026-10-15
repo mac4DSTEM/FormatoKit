@@ -6,7 +6,7 @@ mutant must turn at least one test red. The copy keeps one warm .build across mu
     mutants.py [--commit REV] [--only N,...] [--step 1|2]
 
 `--step 2` runs docs/registration-step-2.md §6's mutants (FormatoTIFF) instead of step 1's; `--step 3` registration step 3
-§6's (Velox stored types and titles).
+§6's (Velox stored types and titles); `--step 4` registration step 4 §6's (Velox spectrum images).
 
 Prints one line per mutant (`red` / `SURVIVED` / `does not apply`) and `mutants: N of M red`; exit 0 only if every one is red.
 """
@@ -82,11 +82,32 @@ MUTANTS_STEP3 = [   # docs/registration-step-3.md §6
     (15, "a lazy slab cut from the frame's origin", IMG, "out.append(try frame.slab(start: Array(start.suffix(2)), count: Array(count.suffix(2))).bytes)", "out.append(try frame.slab(start: [0, 0], count: Array(count.suffix(2))).bytes)", V),
 ]
 
+SI = "Sources/FormatoEMD/VeloxSpectrumImageSignals.swift"
+P4 = "SpectrumImagePinsTests|VeloxSpectrumImageTests"
+MUTANTS_STEP4 = [   # docs/registration-step-4.md §6
+    (1, "the frame turnover tested after the value", SI, '        for value in block {\n            if navigation == frameSize {\n                navigation = 0\n                frame += 1\n                if frame == layout.last { state.stopped = true; break }\n            }\n            if value != 65535 {\n                if layout.first <= frame {\n                    let channel = Int(value)\n                    guard channel < bins else { state.outOfRange = true; break }\n                    let index: Int\n                    if layout.sumFrames {\n                        index = navigation * outBins + channel / layout.rebin\n                    } else {\n                        let f = frame - layout.first\n                        guard f < frames else { state.outOfRange = true; break }\n                        index = (f * frameSize + navigation) * outBins + channel / layout.rebin\n                    }\n                    increment(&counts[index])\n                }\n            } else {\n                navigation += 1\n            }\n        }\n        state.navigation = navigation', '        for value in block {\n            if value != 65535 {\n                if layout.first <= frame {\n                    let channel = Int(value)\n                    guard channel < bins else { state.outOfRange = true; break }\n                    let index: Int\n                    if layout.sumFrames {\n                        index = navigation * outBins + channel / layout.rebin\n                    } else {\n                        let f = frame - layout.first\n                        guard f < frames else { state.outOfRange = true; break }\n                        index = (f * frameSize + navigation) * outBins + channel / layout.rebin\n                    }\n                    increment(&counts[index])\n                }\n            } else {\n                navigation += 1\n                if navigation == frameSize {\n                    navigation = 0\n                    frame += 1\n                    if frame == layout.last { state.stopped = true; break }\n                }\n            }\n        }\n        state.navigation = navigation', P4),
+    (2, "no stop at frame == last_frame", SI, "if frame == layout.last { state.stopped = true; break }", "if false && frame == layout.last { state.stopped = true; break }", P4),
+    (3, "first_frame <= frame made <", SI, "if layout.first <= frame {", "if layout.first < frame {", P4),
+    (4, "the channel not divided by rebin_energy", SI, "index = navigation * outBins + channel / layout.rebin", "index = navigation * outBins + channel % outBins", P4),
+    (5, "the dispersion not multiplied by rebin_energy", SI, "let scale = dispersion / 1000.0 * Double(options.rebinEnergy)", "let scale = dispersion / 1000.0", P4),
+    (6, "integer counts saturating instead of wrapping", SI, "case .uint16: run(UInt16.self) { $0 &+= 1 }", "case .uint16: run(UInt16.self) { if $0 < .max { $0 += 1 } }", P4),
+    (7, "float32 counts growing past 2^24 (as a Double sum rounded once)", SI, "case .float32: run(Float.self) { $0 += 1 }", "case .float32: run(Float.self) { $0 = $0 >= 16_777_216 ? $0.nextUp : $0 + 1 }", P4),
+    (8, "streams 1... not added", SI, "for name in streams {\n                try fill(array,", "for name in streams.prefix(1) {\n                try fill(array,", P4),
+    (9, "the not-summed frame index frame, not frame - first_frame", SI, "let f = frame - layout.first", "let f = frame", P4),
+    (10, "the x scale factor nx when frames are not summed", SI, "let factor = frames == nil ? nx : ny", "let factor = nx", P4),
+    (11, "the grid from the last image", SI, 'guard let first = file.children(of: "/Data/Image").first else {', 'guard let first = file.children(of: "/Data/Image").last else {', P4),
+    (12, "last_frame from the markers although endFramePosition is there", SI, "var lastFrame = o.lastFrame ?? numberOfFrames", "var lastFrame = o.lastFrame", P4),
+    (13, "the energy detector matched by equality", SI, "guard wantedText.isEmpty || name.range(of: wantedText, options: .literal) != nil else { continue }", "guard name == wantedText else { continue }", P4),
+    (14, "the EELS transpose (1, 2, 0) shape", SI, "return try FormatoArray(dataType: a.dataType, shape: [s2, s0, s1], bytes: out)", "return try FormatoArray(dataType: a.dataType, shape: [s1, s2, s0], bytes: out)", P4),
+    (15, "the EELS energy offset and dispersion swapped", SI, 'scale: energyScale, offset: energyOffset, units: "eV"', 'scale: energyOffset, offset: energyScale, units: "eV"', P4),
+    (16, "the dispersion's KeyError fallback a refusal", SI, 'guard let dispersionValue = entry["Dispersion"] else { return fallback }', 'guard let dispersionValue = entry["Dispersion"] else { throw raises("no Dispersion") }', P4),
+]
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--commit", default="HEAD")
     ap.add_argument("--only")
-    ap.add_argument("--step", default="1", choices=["1", "2", "3"])
+    ap.add_argument("--step", default="1", choices=["1", "2", "3", "4"])
     a = ap.parse_args()
     only = {int(x) for x in a.only.split(",")} if a.only else None
     work = Path(os.environ.get("MUTANTS_WORK") or tempfile.mkdtemp(prefix="formato-mutants-"))
@@ -109,7 +130,7 @@ def main():
     if not tiffs.exists() and (ROOT / ".build/rsciio-tiff").exists():
         tiffs.symlink_to(ROOT / ".build/rsciio-tiff")
     red = total = 0
-    for n, what, path, old, new, flt in {"1": MUTANTS, "2": MUTANTS_STEP2, "3": MUTANTS_STEP3}[a.step]:
+    for n, what, path, old, new, flt in {"1": MUTANTS, "2": MUTANTS_STEP2, "3": MUTANTS_STEP3, "4": MUTANTS_STEP4}[a.step]:
         if only and n not in only:
             continue
         total += 1

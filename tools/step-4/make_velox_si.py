@@ -343,6 +343,26 @@ def file_bins(out):
     return pl, "uint16", "si-planted-bins.emd"
 
 
+def file_endframe(out):
+    """Amendment A1: endFramePosition (2) below the stream's own frames (3), so last_frame's default is told from the markers'
+    count; and the matched detector without Dispersion, so the energy axis is RosettaSciIO's KeyError fallback (1, 0, none)."""
+    rng = np.random.default_rng([SEED, 4, 6])
+    pl = Planted(2, 2, 3, 1, [8])
+    for f in range(3):
+        for p in range(4):
+            pl.add(0, f, p, (p + 2 * f) % 8, 1 + f)
+    pl.number_of_frames = 2
+    path = os.path.join(out, "si-planted-endframe.emd")
+    with new_file(path, 11, "v11") as f:
+        area = (0, 0, 1, 1)
+        add_image(f, "img0", np.arange(12, dtype=np.uint16).reshape(2, 2, 3), image_doc((2, 2), area))
+        add_si_settings(f, {"startFramePosition": "1", "endFramePosition": "2"})
+        det = detectors_doc([("Detector-0", "HAADF", None, None), ("Detector-1", "SuperXG11", "20", "-1000")])
+        del det["Detector-1"]["Dispersion"]
+        add_stream(f, "s0", pl.encode(0, rng), 8, "uint16", base_doc(det, "SuperXG1", "1", (2, 2), area))
+    return pl, "uint16", "si-planted-endframe.emd"
+
+
 def file_sk(out, case, truth):
     """SpectroKit's planted case: its stream(s), settings and HAADF data verbatim; metadata completed."""
     src = os.path.join(out, "spectrokit", f"velox-stream-{case}.emd")
@@ -404,7 +424,7 @@ def build(out):
     """Writes every planted file; returns {name: (Planted, stream 0 encoding)}."""
     os.makedirs(out, exist_ok=True)
     made = {}
-    for maker in (file_v11, file_v9, file_eels, file_grid, file_bins):
+    for maker in (file_v11, file_v9, file_eels, file_grid, file_bins, file_endframe):
         pl, enc, name = maker(out)
         made[name] = (pl, enc)
     with open(os.path.join(out, "spectrokit", "velox-streams-truth.json")) as fh:

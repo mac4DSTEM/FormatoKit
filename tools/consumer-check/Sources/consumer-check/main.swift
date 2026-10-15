@@ -93,6 +93,13 @@ do {
         let s = try titled.signal(a08).load()
         check(s.data.dataType == .uint64 && s.title == "DPC" && titled.title(of: a08) == "DPC", "stored type and title")
     } else { check(false, "the planted title file lists a08") }
+    // Step 4: a spectrum image through the public API, defaults and two options (planted file, registration step 4 §4).
+    let si = tests.appendingPathComponent("FormatoEMDTests/Fixtures/step4/sk-1stream-3frames.emd").path
+    let eds = try VeloxSpectrumImageSignals(path: si).signals
+    check(eds.count == 1 && eds[0].data.shape == [3, 4, 4096] && eds[0].data.dataType == .uint16 && eds[0].signalType == "EDS_TEM",
+          "VeloxSpectrumImageSignals: the summed spectrum image")
+    let frames = try VeloxSpectrumImageSignals(path: si, options: VeloxSpectrumImageOptions(sumFrames: false, rebinEnergy: 4, dataType: .float32)).signals
+    check(frames.count == 1 && frames[0].data.shape == [3, 3, 4, 1024] && frames[0].axes.first?.name == "Time", "VeloxSpectrumImageOptions")
 } catch { check(false, "adapters: \(error)") }
 check(FormatoUnits.convertScaleUnits(1.5e-9, units: "m", factor: 100)?.units == "nm", "FormatoUnits")
 check(FormatoUnits.parse("µm")?.shortForm == "μm", "units parse")
