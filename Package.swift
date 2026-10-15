@@ -9,9 +9,8 @@
 // and tools/test.sh runs this package's tests with `-c release`. One product per module. What one module needs from
 // another is `package`, never `public`; what a consumer reads is `public` and is guarded by tools/consumer-check.
 // libhdf5 ships inside FormatoHDF5 as a resource (the readers dlopen it): `swift build` and `swift test` need no setup.
-// macOS 27 on Apple silicon (the shipped dylibs are arm64); iPadOS is not claimed yet. The floor is the owner's to set
-// before 0.1.0 (macOS 15 / iPadOS 18 is the proposal): sources and tests build unchanged at `.macOS("15.0")` (checked
-// 2026-10-15, 0.0.3), so new code avoids APIs newer than macOS 15 where that costs nothing.
+// macOS 15 / iOS 18 (0.2.1). The shipped dylibs are arm64 with minos 15. FormatoHDF5 and FormatoEMD load libhdf5 at run time and
+// are macOS-only in practice: on iOS they build, but a Velox read refuses (no libhdf5 for iOS). The other modules are pure Swift.
 import PackageDescription
 
 let settings: [SwiftSetting] = [
@@ -22,7 +21,7 @@ let settings: [SwiftSetting] = [
 
 let package = Package(
     name: "FormatoKit",
-    platforms: [.macOS("27.0")],
+    platforms: [.macOS(.v15), .iOS(.v18)],
     products: [
         .library(name: "FormatoCore", targets: ["FormatoCore"]),
         .library(name: "FormatoDM", targets: ["FormatoDM"]),

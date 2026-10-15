@@ -92,9 +92,9 @@ swift run formato-info Tests/FormatoEMDTests/Fixtures/velox-titles-v6-image.emd
 
 ## Requirements
 
-macOS 27 on Apple silicon today, Swift 6.2 tools. The Swift code builds and passes its tests at macOS 15; the bundled libhdf5
-dylibs (used by FormatoHDF5 and FormatoEMD) are built for macOS 26, so the declared floor stays at 27 until they are rebuilt
-for 15. The pure-Swift modules (FormatoCore, FormatoDM, FormatoTIFF, FormatoMRC/EMPAD/MSA) are planned for iPadOS 18 too.
+macOS 15 or later on Apple silicon, iOS 18 or later, Swift 6.2 tools (Xcode 26 or later). The pure-Swift modules (FormatoCore, FormatoDM,
+FormatoTIFF, FormatoMRC/EMPAD/MSA) build for iOS 18. FormatoHDF5 and FormatoEMD load the bundled arm64 macOS libhdf5 at run time: they
+are macOS-only in practice (on iOS they compile, and a Velox read refuses).
 **libhdf5 is inside the package** (HDF5 2.1.1 with libsz and libaec, arm64, as a resource of `FormatoHDF5`), so `swift build`
 and `swift test` need nothing installed. The Velox reader looks for libhdf5 in this order: the path in the
 `FORMATO_HDF5_PATH` environment variable, the host app's `Frameworks` folder, the bundled copy, then the loader's path.
@@ -123,4 +123,4 @@ the planted files only. CI (`.github/workflows/ci.yml`) runs the hook proof, the
 
 ## Status
 
-`docs/status.md`; what each tag changes for a consumer is in `docs/consumers-<tag>.md`. Tags are made by the maintainer.
+`docs/status.md`; what each tag changes for a consumer is in `CHANGELOG.md` (its Migration paragraph). Tags are made by the maintainer.

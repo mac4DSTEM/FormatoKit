@@ -48,6 +48,6 @@ model, units, cancellation), `FormatoDM`, `FormatoEMD`, `FormatoHDF5` (step 1), 
 - **The owner's data** lives in `../data`, read as `$MACEM_DATA`: never copied or committed; numbers measured on it are cited
   with their log; a manifest line in `../data/README.md` per file used; never a gate.
 - **Pushing, tagging and creating the remote are the owner's.** One session per repo; `main` only; commit by explicit paths at
-  every green checkpoint. At each tag, `docs/consumers-x.y.z.md` says what each consumer changes.
+  every green checkpoint. At each tag, `CHANGELOG.md` says what each consumer changes (a Migration paragraph; `docs/consumers-*.md` up to 0.2.0).
 - **Names** (the suite's standard): the library is domain + `Kit`, modules carry its prefix (`Formato*`).
 - **Suite board**: this repo's row is `lanes/formatokit`; how a session opens and closes it is in `../CLAUDE.md`.

@@ -67,7 +67,7 @@ build, `bin/`, `out/{spectro,formato}/<n>-<label>.txt` (the dumps that are compa
 file and side), `files.tsv`. A normal run deletes the copies and starts fresh; `--reuse` keeps them and their build cache
 (development only). `--jobs` (default 6, at most 8) files run side by side; files of 200 MB and up run one at a time.
 Output: `move-parity: N files, all byte-identical` and exit 0, or the first lines of `diff` for each differing file and exit 1.
-The script writes nothing in any repository and reads the owner's data only. Needs `swift`, `git`, `unzip` and macOS 27 on
+The script writes nothing in any repository and reads the owner's data only. Needs `swift`, `git`, `unzip` and macOS 15 or later on
 Apple silicon. Delete the scratch's `.build` folders after (they are build products).
 
 ## Result

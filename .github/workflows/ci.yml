@@ -1,8 +1,7 @@
 # FormatoKit CI: the hook proof, the gate (tools/test.sh = `swift test -c release`, warning-checked) and the consumer check.
 #
-# Written 2026-10-15 (0.0.3); enabling Actions on the repository is the owner's. The package needs macOS 27 and a Swift 6.2
-# toolchain (Package.swift: `.macOS("27.0")`, tools 6.2): the runner image must carry an Xcode with the macOS 27 SDK.
-# `macos-latest` is used with the newest Xcode selected; if the image lags, pin `runs-on` to the first image that has it.
+# Written 2026-10-15 (0.0.3); enabling Actions on the repository is the owner's. The package declares macOS 15 / iOS 18 and
+# tools 6.2 (0.2.1): the macos-15 image with Xcode 26.0 pinned below (Swift 6.2). The step fails if Swift is older than 6.2.
 # No libhdf5 step: FormatoHDF5 ships it. No References/: without the RosettaSciIO clone the pins tests run on the committed
 # copies of the pins and fixtures (tools/test.sh); the oracles are rerun locally, never in CI.
 # tools/step-1/names.sh (the 121 moved names) stays a local check: it reads the original package's tests from a sibling checkout (see the script).
@@ -21,15 +20,15 @@ concurrency:
 
 jobs:
   test:
-    runs-on: macos-latest
+    runs-on: macos-15
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
-      - name: Select the newest Xcode
+      - name: Select Xcode 26.0 (Swift 6.2)
         run: |
-          xcode=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
-          sudo xcode-select -s "$xcode"
+          sudo xcode-select -s /Applications/Xcode_26.0.app
           swift --version
+          swift --version | grep -E "Swift version 6\.([2-9]|[1-9][0-9])" || { echo "Swift 6.2 or newer needed"; exit 1; }
       - name: Hook proof (no sleep or poll loops, no kills by name)
         run: tools/hooks/test-no-sleep-poll.sh
       - name: Gate (tools/test.sh, release)

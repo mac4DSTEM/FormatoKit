@@ -11,7 +11,7 @@ let formatoKit = URL(fileURLWithPath: Context.packageDirectory).deletingLastPath
 
 let package = Package(
     name: "ConsumerCheck",
-    platforms: [.macOS("27.0")],
+    platforms: [.macOS(.v15)],
     dependencies: [.package(path: "../..")],
     targets: [
         .executableTarget(name: "consumer-check", dependencies: [

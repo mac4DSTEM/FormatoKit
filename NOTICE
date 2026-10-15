@@ -90,12 +90,32 @@ tools/step-1/pint_factors.py.
 HDF5, libaec and libsz (shipped)
 ================================================================================
 
-Sources/FormatoHDF5/Resources/hdf5/ carries HDF5 2.1.1 with libaec and libsz, the
-arm64 dylibs mac4DSTEM vendors (commit 5ba712a0), byte for byte:
+Sources/FormatoHDF5/Resources/hdf5/ carries HDF5 2.1.1 with libaec 1.1.7 and libsz, arm64, minos 15.0 (otool -l), rebuilt
+for 0.2.1 (until 0.2.0 they were mac4DSTEM's Homebrew builds, commit 5ba712a0, minos 26):
 
-    libhdf5.dylib   sha256 c374776deeb3e4b12874ca8d5e7aad1837a70d9363885cc742302f9d98283c64
-    libsz.2.dylib   sha256 6ebc2e1c15e432564acdb33875ab14d977c63589402929f5c274de1b46d4774b
-    libaec.0.dylib  sha256 166a8041fb067358993cd456f1d189631e2fd7931371e46a22d191bcc461b8a5
+    libhdf5.dylib   sha256 d3789c224e6664cd487016a7ef5e71005984f8a04f69a7f643fcdf0332a33491
+    libsz.2.dylib   sha256 2621662e6a3550c5d5f0349146baaa8b85964a25d573a0a2d4b571b14ae8a521
+    libaec.0.dylib  sha256 e939c1331d1e8b2dfbfb18c1a5e849e6a60fc7aa748bef4c3ddb5d9ab55451c9
+
+The recipe (2026-10-15, Apple clang from Xcode 27, cmake from Homebrew, scratch folder outside the repository, 8 jobs):
+
+    sources  https://github.com/HDFGroup/hdf5/releases/download/2.1.1/hdf5-2.1.1.tar.gz
+             sha256 efff93b5a904d66e8f626d7da60b5eedc9faf544be27dbabbaa87967b8ad798b
+             https://github.com/MathisRosenhauer/libaec/releases/download/v1.1.7/libaec-1.1.7.tar.gz
+             sha256 cc7b93be9002e25a88b45d6b8d5f6120756cb5e1000613f91d803ce0beba24d9
+             (both equal GitHub's published asset digests; libaec's also Homebrew's formula)
+    env      MACOSX_DEPLOYMENT_TARGET=15.0
+    libaec   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64 \
+             -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 -DCMAKE_INSTALL_PREFIX=$P
+    hdf5     cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64 \
+             -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 -DCMAKE_INSTALL_PREFIX=$P -DCMAKE_PREFIX_PATH=$P \
+             -DHDF5_USE_GNU_DIRS=ON -DHDF5_BUILD_FORTRAN=OFF -DHDF5_BUILD_CPP_LIB=OFF -DHDF5_BUILD_EXAMPLES=OFF \
+             -DHDF5_BUILD_TOOLS=OFF -DBUILD_TESTING=OFF -DHDF5_ENABLE_SZIP_SUPPORT=ON -DHDF5_ENABLE_ZLIB_SUPPORT=ON \
+             -DHDF5_ENABLE_NONSTANDARD_FEATURE_FLOAT16=OFF      (Homebrew's flags, C library only)
+    fix-up   install_name_tool on libhdf5: -id @rpath/libhdf5.dylib; libsz and libaec as @loader_path/...; its rpaths
+             replaced by @loader_path/../lib; then codesign -s - (ad hoc) on all three, as the earlier copies.
+    check    otool -l: minos 15.0 in all three; no load command names an absolute path (libz is /usr/lib/libz.1.dylib).
+    note     libhdf5's build stamp ("Installation point") names the scratch prefix of the build.
 
 HDF5 - https://www.hdfgroup.org/, copyright The HDF Group and the Board of
 Trustees of the University of Illinois, BSD-style license: Licenses/HDF5-LICENSE.txt.
