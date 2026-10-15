@@ -2,9 +2,9 @@
 
 What is live, one table; then the hand-off and what is unverified. Rules are in `CLAUDE.md`; the registrations in
 `docs/registration-step-1.md` and `docs/registration-step-2.md` (amendments A1 onward); what each consumer changes in
-`docs/consumers-0.0.1.md` to `docs/consumers-0.0.3.md`; the format checklist in `docs/parity.md`.
+`docs/consumers-0.0.1.md` to `docs/consumers-0.1.0.md`; the format checklist in `docs/parity.md`.
 
-## Live (2026-10-15: steps 1 and 2 early morning, tagged 0.0.2; the 0.0.3 candidate late morning)
+## Live (2026-10-15: steps 1 and 2 early morning, tagged 0.0.2; the 0.0.3 candidate late morning; step 3 and the 0.1.0 candidate after)
 
 | Area | State | Evidence |
 |---|---|---|
@@ -20,7 +20,7 @@ What is live, one table; then the hand-off and what is unverified. Rules are in 
 | Lazy = eager (L1) | every pinned signal's seeded slabs equal the eager array's; the file array on planted slabs | `PinsTests`, `ArrayTests` |
 | The owner's files | Re-run after the Gate B fixes on `59a6bef`, unchanged: 18 files (14 DM4 under `eels/`, three Ceta `.emd`, the 1.7 GB Velox SI's images): 51 signals bit-identical to RosettaSciIO, the 1.2 to 1.5 GB EELS spectrum images included; RosettaSciIO 15 s, FormatoKit 7 s | `tools/step-1/owner-check.sh` on `70c6222` (log: `.build/owner/owner-check.log`) |
 | libhdf5 (H1) | HDF5 2.1.1 + libsz + libaec ship as a `FormatoHDF5` resource; found after the host's copies; a separate package reads Velox with no variable set | `BundledLibraryTests`; `tools/consumer-check/run.sh` |
-| Consumer check | 35 checks (0.0.3: both values of each flag, the detector order) through the public API, Debug, 0 warnings, `MAC4DSTEM_HDF5_PATH` unset | `tools/consumer-check/run.sh` |
+| Consumer check | 36 checks (0.0.3: both values of each flag, the detector order; step 3: a stored type and a title) through the public API, Debug, 0 warnings, `MAC4DSTEM_HDF5_PATH` unset | `tools/consumer-check/run.sh` |
 | Break-once proof | 16 of 16 planned mutants red on a copy of `db9e14a` (XCTest) and again on `59a6bef` (Swift Testing, after the Gate B fixes; mutant 10 re-aimed at the fixed line) | `tools/step-1/mutants.py` |
 | Gate B refuter | One refuter on `3391460`: F1 (a units trap), F2 and F3 (Velox defaults where RosettaSciIO raises), F6 (the gate's allow-list) fixed in `dee9e58` with 11 of its files pinned; F4, F5, F7, F8 and F2's DM half registered as named deviations | registration A5; `PinsTests.testRefuterFilesAgreeOrAreRefused` |
 | Step 2 registration | Written before code (`e566efe`); amendments A1 (the pins) and A2 (Gate B) | `docs/registration-step-2.md` |
@@ -32,9 +32,11 @@ What is live, one table; then the hand-off and what is unverified. Rules are in 
 | 0.0.3 ask 1: five members public | `VeloxSpectrumImage.streamCount`, `.energyCalibrationAgrees`, `VeloxStreamInfo.id`, `VeloxEventStore.streamsAgreeOnCoverage`, `.pixelCount` (SpectroKit's tests read them); both flags over every stream, seen at both values on the planted `velox-flags-planted.emd` and `velox-tiny.emd`; 3 sampled mutants red | registration step 1 A6; `VeloxPublicFlagsTests`; consumer check |
 | 0.0.3 ask 2: Velox detector order | `VeloxMetadata.detectors` in the written key order, as RosettaSciIO (was index order): the energy axis, `exposureTimeSeconds`, segments follow; SpectroKit's planted axis-order file equal to RosettaSciIO's pin (0.02 keV/ch from -1.9 keV, was 0.01 / -0.5); three moved tests changed and renamed on purpose; red first, 3 sampled mutants red; Gate B (68 inputs) fixed two minor cases; no public file moves (174 metadata columns scanned) | registration step 1 A7; `VeloxDetectorOrderTests`; `tools/asks-0.0.3/` |
 | Standards | `.spi.yml` (DocC, five modules), `.github/workflows/ci.yml` (hook proof, gate, consumer check; enabling Actions is the owner's); the hook refuses `killall` and `pkill` without `-P <pid>` or a scratchpad path; the package builds unchanged at a macOS 15 floor (the floor stays 27 until the owner decides) | `tools/hooks/test-no-sleep-poll.sh`; `Package.swift` |
+| Step 3: Velox images, stored type and titles | Registered before code (`6196b70`), planted truth and pins before code (`4154149`); `VeloxImageSignals` in the stored type (`readImageFrameBytes`) and titled by RosettaSciIO's rule (`VeloxTitles`); P3: all 42 public and 22 planted images equal in dtype, bytes and title; the owner's 18 files, 51 signals equal; 15/15 mutants red; Gate B (about 2 200 generated files): RosettaSciIO's remaining raises ported, deviations registered | `docs/registration-step-3.md` A1; `PinsTests`, `VeloxTitlesTests`; `tools/step-1/owner-check.sh` |
+| 0.1.0 candidate | `formato-info` (an example executable: every signal of a DM, Velox or TIFF file through the public API), README's first ten minutes, `docs/parity.md` with RosettaSciIO's reader options, `docs/consumers-0.1.0.md` | `swift run formato-info <file>` |
 | Empty modules | `FormatoMRC`, `FormatoEMPAD`, `FormatoMSA`: a scope statement each | their source file |
-| Tests | Swift Testing throughout (the owner's standard, 2026-10-15): 159 tests, the 121 moved names among them (3 renamed on purpose, A7); 0 failures, 0 warnings beyond the registered strip lines | `tools/test.sh`; `tools/step-1/names.sh` |
-| Gate | `tools/test.sh` green and stamped on the 0.0.3 candidate, the commit that carries this line (refuses to stamp with an untracked file under Sources/Tests) | `.build/last-green`; `tools/last-green.sh` |
+| Tests | Swift Testing throughout (the owner's standard, 2026-10-15): 165 tests, the 121 moved names among them (3 renamed on purpose, A7); 0 failures, 0 warnings beyond the registered strip lines | `tools/test.sh`; `tools/step-1/names.sh` |
+| Gate | `tools/test.sh` green and stamped on the 0.1.0 candidate, the commit that carries this line (the 0.0.3 candidate was `8d647bd`) (refuses to stamp with an untracked file under Sources/Tests) | `.build/last-green`; `tools/last-green.sh` |
 
 Validation: none. Agreement with RosettaSciIO and recovery of planted files are what is claimed (registration §8).
 
@@ -42,19 +44,21 @@ Validation: none. Agreement with RosettaSciIO and recovery of planted files are 
 
 The suite board's `lanes/formatokit` carries the next prompt. What the next session starts from:
 
-1. **The Velox gaps of step 1** (`docs/parity.md`), registered as an amendment or step 3: stored-dtype image reads and
-   RosettaSciIO's `Operations` title rule; then Velox spectrum images as FormatoSignal.
-2. **The next format lane** in the order the owner's data needs: EMPAD and the 4D HDF5 readers from mac4DSTEM (when its
-   session is ready), then MRC and MSA; or TIFF's next branches (compression via a ported LZW/Deflate, the Zeiss SEM and
-   JEOL SightX branches) if the owner's files need them.
-3. 0.0.2 is tagged (the owner, 2026-10-15). The owner tags 0.0.3 on the candidate (the board row has the commands);
-   SpectroKit re-pins at its next session, drops its head-stream stand-in and the `withKnownIssue` around E1
-   (`docs/consumers-0.0.3.md`); macTEM can move its TIFF container onto `TIFFFile` in its lane.
+1. **Step 4: Velox spectrum images as signals** (`select_type="spectrum_image"`: frame sums, `SI_dtype`, `rebin_energy`,
+   first and last frame), registered first. Its first question: the oracle's `sparse` (absent from the venv; a stub module
+   lets RosettaSciIO's non-lazy stream path run without a download, or the owner approves installing sparse and numba);
+   RosettaSciIO's SI grid is the last image's (the moved reader's registered deviation).
+2. **The next format lane** in the order the owner's data needs: EMPAD and the 4D HDF5 readers from mac4DSTEM, then MRC and
+   MSA; or TIFF's next branches if the owner's files need them.
+3. The owner tags 0.0.3 (`8d647bd`) and 0.1.0 (the candidate), SpectroKit re-pins and drops its stand-in and the
+   `withKnownIssue` around E1 (`docs/consumers-0.0.3.md`, `docs/consumers-0.1.0.md`); the 0.2.0 generality pass (defaults as
+   parameters, no suite names) is the owner's next kit-wide step.
 
 ## Unverified
 
 - The resource-bundled dylibs inside a signed, notarised app (the apps embed their own; the bundle's copies are ad-hoc
   signed): not tried. An owner decision on the board.
 - Big-endian DM files: none exists to test; not detected.
+- Velox: spectrum images are not yet signals (step 4); the step-3 deviations of registration step 3 A1.
 - No performance work: lazy reads are positioned reads (DM, TIFF) and per-frame reads (Velox), not memory-mapped.
 - TIFF: tifffile's shaped, OME and pyramid series, compression and the other vendor branches are refused, not read.

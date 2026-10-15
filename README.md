@@ -9,14 +9,37 @@ build on it. Swift 6 strict concurrency, headless, lazy where a file is large, o
 |---|---|---|
 | `FormatoCore` | the data model: arrays as stored, axes, units (Pint's compact units, ported), metadata with provenance, lazy signals; cancellation | step 1 |
 | `FormatoDM` | Gatan DigitalMicrograph `.dm3` / `.dm4`: listing, 2D images, EDS and EELS spectrum images, the tag tree; every object as a signal | step 1 (moved from SpectroKit 0.3.0, plus the signal adapter) |
-| `FormatoEMD` | Thermo Fisher Velox `.emd`: spectrum streams (sparse), images, metadata; images as signals. Later: NCEM / Berkeley EMD | step 1 (moved from SpectroKit 0.3.0, plus the image adapter) |
+| `FormatoEMD` | Thermo Fisher Velox `.emd`: spectrum streams (sparse), images, metadata; images as signals in their stored type, titled as RosettaSciIO titles them. Later: spectrum images as signals, NCEM / Berkeley EMD | steps 1 and 3 (moved from SpectroKit 0.3.0, plus the image adapter) |
 | `FormatoHDF5` | the process-wide HDF5 lock and quit barrier, the shipped libhdf5. Later: hspy, the sidecar | step 1 (moved) |
 | `FormatoTIFF` | the TIFF container with a public tag walker (any private tag as stored); FEI, Gatan DM, ImageJ and plain TIFF as signals | step 2 |
 | `FormatoMRC` | MRC / MRC2014 with FEI extended headers | empty |
 | `FormatoEMPAD` | EMPAD 4D-STEM raw data; the 4D HDF5 readers | empty |
 | `FormatoMSA` | EMSA/MAS spectra | empty |
 
-`docs/parity.md` is the checklist against RosettaSciIO's formats table: what reads, what is pinned, what is next.
+`docs/parity.md` is the checklist against RosettaSciIO's formats table and its reader options: what reads, what is pinned,
+what is next.
+
+## The first ten minutes
+
+```swift
+// Package.swift: .package(url: "https://github.com/mac4DSTEM/FormatoKit", exact: "0.1.0")
+import FormatoDM
+
+let dm = try DMFile(path: "spectrum-image.dm4")
+for object in dm.objects {
+    let lazy = try dm.signal(index: object.index)          // nothing read yet
+    print(lazy.title, lazy.array.dataType, lazy.array.shape, lazy.axes.map(\.units))
+    let signal = try lazy.load()                           // the stored bytes, C order, little-endian
+    print(signal.metadata["Acquisition_instrument.TEM.beam_energy"]?.provenance.source ?? "-")
+}
+```
+
+`VeloxImageSignals(path:)` (FormatoEMD) and `TIFFSignals(path:)` (FormatoTIFF) work the same way. The example executable
+prints every signal of a file:
+
+```sh
+swift run formato-info Tests/FormatoEMDTests/Fixtures/velox-titles-v6-image.emd
+```
 
 ## Requirements
 
@@ -39,12 +62,15 @@ tools/test.sh                      # the gate: swift test -c release, warning-ch
 tools/last-green.sh                # the last green commit and whether HEAD equals it
 tools/step-1/names.sh              # the 121 test names moved from SpectroKit 0.3.0 are all here
 tools/step-1/owner-check.sh        # the owner's files against RosettaSciIO (needs the suite's data/ folder)
-python3 -I tools/step-1/mutants.py # break-once proof on a copy of HEAD
+References/rsciio-venv/bin/python -I -B tools/step-1/mutants.py [--step 2|3]   # break-once proof on a copy of HEAD
+tools/consumer-check/run.sh        # a separate package, public API only, Debug, no warnings, libhdf5 from the package
 ```
 
 The oracle is not in the repository: `References/rosettasciio-049e7d70` (the pinned clone) and `References/rsciio-venv`;
-`docs/registration-step-1.md` §2 says how they are pinned. Without them the pins test runs on the committed public file only.
+`docs/registration-step-1.md` §2 says how they are pinned. Without them the pins test runs on the committed public file and
+the planted files only. CI (`.github/workflows/ci.yml`) runs the hook proof, the gate and the consumer check on macOS.
 
 ## Status
 
-`docs/status.md`. No tag yet; the first (0.0.1) is the owner's.
+`docs/status.md`; what each tag changes for a consumer is in `docs/consumers-<tag>.md` (0.0.1 to 0.1.0). Tags are the
+owner's.

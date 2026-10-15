@@ -47,6 +47,10 @@ let package = Package(
         .target(name: "FormatoMRC", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "FormatoEMPAD", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "FormatoMSA", dependencies: ["FormatoCore"], swiftSettings: settings),
+        // The first ten minutes: `swift run formato-info <file>` prints every signal of a DM, Velox or TIFF file (public API
+        // only). An example, not a product.
+        .executableTarget(name: "formato-info", dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoTIFF"],
+                          path: "Examples/formato-info", swiftSettings: settings),
 
         // FormatoCore's own tests: the data model, units, lazy = eager, and the pins against RosettaSciIO.
         .testTarget(name: "FormatoCoreTests", dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD"],

@@ -13,7 +13,7 @@ instruments and techniques, out of scope until someone asks.
 | RosettaSciIO plugin | Extensions | RosettaSciIO writes | FormatoKit module | State | Priority |
 |---|---|---|---|---|---|
 | DigitalMicrograph | dm3, dm4 | no | `FormatoDM` | **pinned** (step 1): every object as a signal; 106 public signals and the owner's 40 bit for bit; the moved `DM4Experiment` API | A |
-| EMD, Velox | emd | no | `FormatoEMD` | **pinned** for images as signals (step 1, Float32); the spectrum stream read and parity-checked in SpectroKit's history (moved API); the detectors in RosettaSciIO's order (0.0.3) | A |
+| EMD, Velox | emd | no | `FormatoEMD` | **pinned** for images as signals (step 1; stored type and titles, step 3); the spectrum stream read and parity-checked in SpectroKit's history (moved API); the detectors in RosettaSciIO's order (0.0.3) | A |
 | EMD, NCEM / Berkeley | emd | yes | `FormatoEMD` | not read | B |
 | EMD, prismatic | emd | no | — | not read | C |
 | TIFF | tif, tiff | yes | `FormatoTIFF` | **pinned** (step 2) for FEI, Gatan DM tags, ImageJ and plain files, uncompressed strips: 31 public and planted series and the owner's 6 Ceta TIFFs bit for bit; the tag walker equal to tifffile; Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu streak, compression and tiles refused by name | A |
@@ -53,6 +53,22 @@ instruments and techniques, out of scope until someone asks.
 | TriVista | tvf | no | — | not read | C |
 | USID | h5, hdf5 | yes | — | not read | C |
 
+## Reader options (RosettaSciIO 049e7d70's `file_reader` arguments, for the formats FormatoKit holds)
+
+| Plugin | Argument | FormatoKit |
+|---|---|---|
+| DigitalMicrograph | `lazy` | always lazy (`FormatoLazySignal`, positioned reads); `load()` is the eager array, registered equal (L1) |
+| | `order`, `optimize`, `chunks` | no: C order as stored; dask chunking has no counterpart |
+| EMD (Velox) | `lazy` | images lazy per frame (L1); the moved spectrum-stream reader decodes eagerly into CSR |
+| | `select_type="images"` | `VeloxImageSignals`: stored type and RosettaSciIO's titles (step 3) |
+| | `select_type="spectrum_image"`, `first_frame`, `last_frame`, `sum_frames`, `sum_EDS_detectors`, `rebin_energy`, `SI_dtype` | as signals: step 4. The moved `VeloxEMDReader.readSpectrumImage(frames:)` already sums every stream over a frame range (SpectroKit's use) |
+| | `select_type="single_spectrum"` | no |
+| | `load_SI_image_stack` | the default only (the first frame of an SI file's images) |
+| | `dataset_path`, `stack_group` (NCEM / Berkeley EMD) | no: NCEM EMD is not read |
+| TIFF | `lazy` | always lazy (L1) |
+| | `force_read_resolution`, `multipage_as_list`, `hamamatsu_streak_axis_type` | no: refused branches, or the default |
+| Writers (EMD NCEM, TIFF) | `file_writer` | no writing yet |
+
 ## Inside the pinned formats: what is not yet equal
 
 - **TIFF vendor branches not ported:** Zeiss SEM (`sem`), TVIPS, Olympus SIS, JEOL SightX, Hamamatsu streak (11 of the
@@ -78,17 +94,15 @@ instruments and techniques, out of scope until someone asks.
   (RosettaSciIO takes the last n, FormatoKit the first n); empty or array-only `spim` / `spim.eels` / `Monarc Spectrometer`
   groups; tag names holding "."; strings over 4 KiB (registration A5). The moved DM walk does not expose these; a later
   registered change of it can.
-- **Velox images: stored dtype.** FormatoKit reads Float32 (exact for 8- and 16-bit integers and float32; every public and
-  owner image is one of those). RosettaSciIO keeps the stored type.
-- **Velox titles:** RosettaSciIO names an image from the `Operations` group (element maps, DPC, FFT, the camera's display
-  name); FormatoKit uses `BinaryResult.Detector` (26 of the 42 public images and 7 of the owner's 11 differ).
+- **Velox images: stored type and titles (equal since step 3).** Every public, planted and owner image in its stored type
+  and with RosettaSciIO's title (`Operations`, `DetectorInformation`, the label maps); `docs/registration-step-3.md`. Left:
+  an `Operations` kind or `Displays/ImageDisplay` stored as one dataset instead of a group is refused (Python iterates
+  its JSON in written order); no file seen has one.
 - **Velox compound images** (FFT, DPC) are refused; RosettaSciIO returns them complex.
 - **Units outside FormatoUnits** (m and s with SI prefixes, their inverses, dimensionless) refuse the image: Pint also
   reads "px", "Å", "nanometre" and more (registration A5, F7).
-- **Float64 Velox values just above Float32's largest value** become infinity (HDF5's conversion) where NumPy's `astype`
-  gives the largest Float32; the stored-dtype read of step 2 removes the difference.
 - **Velox spectrum images as signals** (`select_type="spectrum_image"`, frame sums, rebinning, `SI_dtype`, the sparse
-  output): the moved reader decodes the stream; the signal adapter and its pins are step 2.
+  output): the moved reader decodes the stream; the signal adapter and its pins are step 4.
 - **Velox detector order (equal since 0.0.3):** `VeloxMetadata.detectors` follows the written order of the `Detectors` keys,
   as RosettaSciIO's `json.loads`, so the energy axis and the detector-metadata match take the same entry (registration step 1
   A7). Left: a key written twice in one object reads its first value here and its last in Python (no file seen has one).
