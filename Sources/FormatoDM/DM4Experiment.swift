@@ -14,10 +14,10 @@
 //  requested 2D image reads its own bytes.
 //
 //  Tag paths: docs/archive/v5/edx-research-2026-10-05/reports/gms.md §2.
-//  PUBLIC since SpectroKit 0.2.0 (macTEM's ask of 2026-10-13, its ADR 019): `readImage`, `tagTree`, `DM4Image`,
-//  `DM4Axis` and the six `DM4ImageObject` fields macTEM reads, so macTEM reads DM through SpectroCore and keeps no
+//  PUBLIC (access only, at a consumer's request of 2026-10-13): `readImage`, `tagTree`, `DM4Image`,
+//  `DM4Axis` and the six `DM4ImageObject` fields a consumer reads, so it reads DM through this module and keeps no
 //  copy. Access only: no line of the walk or the decode changed.
-//  An EELS spectrum image is decoded by `readEELSSpectrumImage` (SpectroKit EELS slice 1b, public): the same walk, the
+//  An EELS spectrum image is decoded by `readEELSSpectrumImage` (EELS slice 1b, public): the same walk, the
 //  same role rule, the same channel-block read as the EDS one, and E0 / alpha / beta from the tags RosettaSciIO maps.
 //  An EDS spectrum image is decoded by `readEDSSpectrumImage` (v5.0 WP2 R2): the
 //  only object it reads whole, in channel blocks, never the 4D blob. No real GMS
@@ -131,7 +131,7 @@ public nonisolated struct DM4ImageObject: Sendable, Equatable {
     /// Numeric arrays and structs are not in it. Added 2026-10-12 for consumers that show an object's metadata.
     public let imageTagNumbers: [String: Double]
     /// Every string under this object's `ImageTags`, prefix removed (`DataBar.Acquisition Date`): the type-18 strings
-    /// and the short UTF-16 arrays (units, dates). Each is cut at the walk's kept length (4 KiB, `keptStringBytes`),
+    /// and the short UTF-16 arrays (units, dates). Each is cut at the walk's kept length (4 KiB by default, `DMReadOptions.maximumStringBytes`),
     /// so a longer UTF-16 string is absent and a longer type-18 string is cut. Added 2026-10-12.
     public let imageTagStrings: [String: String]
     /// Where the pixel blob starts in the file and how many bytes the tag declares.
@@ -212,6 +212,11 @@ public nonisolated enum DM4Experiment {
         try Walk(source: try Source.file(path)).objects
     }
 
+    /// As `list(path:)`, with the walk's `options`.
+    public static func list(path: String, options: DMReadOptions) throws -> [DM4ImageObject] {
+        try Walk(source: try Source.file(path), maximumStringBytes: options.maximumStringBytes).objects
+    }
+
     /// Reads image object `index` (one-based, `DM4ImageObject.index`) as Float32.
     /// Reads only that object's own bytes.
     public static func readImage(path: String, index: Int) throws -> DM4Image {
@@ -220,6 +225,11 @@ public nonisolated enum DM4Experiment {
 
     public static func list(data: Data) throws -> [DM4ImageObject] {
         try Walk(source: Source.data(data)).objects
+    }
+
+    /// As `list(data:)`, with the walk's `options`.
+    public static func list(data: Data, options: DMReadOptions) throws -> [DM4ImageObject] {
+        try Walk(source: Source.data(data), maximumStringBytes: options.maximumStringBytes).objects
     }
 
     /// The tag tree of a BARE DM tag stream: a complete DM3/DM4 stream whose root group is an image's `ImageTags` themselves
@@ -231,6 +241,12 @@ public nonisolated enum DM4Experiment {
     /// Bounds-checked as `list(data:)`: a cut or malformed stream throws `DM4Error.truncated` (or `.cannotOpen`).
     public static func tagTree(data: Data) throws -> (numbers: [String: Double], strings: [String: String]) {
         let walk = try Walk(source: Source.data(data))
+        return (walk.numbers, walk.strings)
+    }
+
+    /// As `tagTree(data:)`, with the walk's `options`.
+    public static func tagTree(data: Data, options: DMReadOptions) throws -> (numbers: [String: Double], strings: [String: String]) {
+        let walk = try Walk(source: Source.data(data), maximumStringBytes: options.maximumStringBytes)
         return (walk.numbers, walk.strings)
     }
 
@@ -612,7 +628,7 @@ public nonisolated enum DM4Experiment {
 
     // MARK: Tag walk
 
-    private static let keptStringBytes = 4096
+    private static let keptArrayBytes = 4096
     private static let knownLabels: Set<String> = ["Survey", "Scan Signal", "EELS", "Diffraction", "EDS"]
 
     /// DEVIATION from DM4Reader: it walks the same tag grammar but keeps only
@@ -633,8 +649,10 @@ public nonisolated enum DM4Experiment {
         var arrays: [String: [Double]] = [:]
         var blobs: [String: (offset: Int, bytes: Int)] = [:]
         var objects: [DM4ImageObject] = []
+        let keptStringBytes: Int
 
-        init(source: Source) throws {
+        init(source: Source, maximumStringBytes: Int = 4096) throws {
+            keptStringBytes = max(maximumStringBytes, 0)
             cursor = Cursor(source)
             let v = Int(cursor.u32be())
             if cursor.overran { throw cursor.failure }
@@ -695,7 +713,7 @@ public nonisolated enum DM4Experiment {
                 let length = info.count >= 2 ? try int(info[1]) : 0
                 let (end, o) = cursor.offset.addingReportingOverflow(length)
                 guard !o, end <= cursor.source.size else { throw DM4Error.truncated }
-                strings[path] = String(decoding: cursor.bytes(min(length, DM4Experiment.keptStringBytes)),
+                strings[path] = String(decoding: cursor.bytes(min(length, keptStringBytes)),
                                        as: UTF8.self)
                 cursor.seek(end)
             case 15:
@@ -736,14 +754,14 @@ public nonisolated enum DM4Experiment {
                     blobs[path] = (start, nbytes)
                 } else {
                     guard end <= cursor.source.size else { throw DM4Error.truncated }
-                    if nbytes < DM4Experiment.keptStringBytes, elementType == 4 {
+                    if nbytes < keptStringBytes, elementType == 4 {
                         // ushort array: a string (units, label, experiment ID) AND, if it is
                         // short, possibly numbers.
                         var units = [UInt16]()
                         for _ in 0..<length { units.append(cursor.u16le()) }
                         strings[path] = String(decoding: units.filter { $0 > 0 }, as: UTF16.self)
                         if length <= 64 { arrays[path] = units.map(Double.init) }
-                    } else if nbytes < DM4Experiment.keptStringBytes, (2...12).contains(elementType), elementType != 8 {
+                    } else if nbytes < DM4Experiment.keptArrayBytes, (2...12).contains(elementType), elementType != 8 {
                         var values = [Double]()
                         for _ in 0..<length { values.append(cursor.value(elementType)) }
                         arrays[path] = values

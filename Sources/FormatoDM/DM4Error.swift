@@ -1,8 +1,8 @@
 //
 //  DM4Error.swift
 //  Role: The error type of the GMS `.dm4` readers (`DM4Reader`, `DM4Experiment`).
-//        Split out of DM4Reader.swift so it can move to SpectroCore with
-//        `DM4Experiment` (SpectroKit S1, ADR 064); declaration unchanged.
+//        Split out of DM4Reader.swift so it can move with
+//        `DM4Experiment` (registration step 1 §1.1); declaration unchanged.
 //
 
 import Foundation

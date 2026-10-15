@@ -5,7 +5,7 @@
 //        stored, shape = `Dimensions` reversed, the axes (scale, offset = -origin * scale, units, name, navigate), the signal
 //        type, the title, and the metadata of step 1 with the tag path each value came from. Lazy: the data is read from
 //        the file by slab, never whole unless asked (`FormatoFileArray`).
-//        What it builds on is `DM4Experiment.list`'s walk (moved from SpectroKit 0.3.0, unchanged): one parser.
+//        What it builds on is `DM4Experiment.list`'s walk (inherited, unchanged): one parser.
 //        RosettaSciIO's `post_process` (HyperSpy's `to_signal1D` for a spectrum image, then `squeeze`) is HyperSpy's step,
 //        not the reader's, and is not applied: the signal is the file reader's dictionary.
 //
@@ -21,8 +21,13 @@ public nonisolated struct DMFile: Sendable {
 
     /// Lists the file (header only: the walk seeks past every data block).
     public init(path: String) throws {
+        try self.init(path: path, options: DMReadOptions())
+    }
+
+    /// As `init(path:)`, with the walk's `options` (how much of a string the walk keeps).
+    public init(path: String, options: DMReadOptions) throws {
         self.path = path
-        self.objects = try DM4Experiment.list(path: path).filter { $0.roleSource != .thumbnailIndex }
+        self.objects = try DM4Experiment.list(path: path, options: options).filter { $0.roleSource != .thumbnailIndex }
     }
 
     /// The stored element type of a DM type code, or nil for a type FormatoKit does not read (3 and 13 complex, 4, 5 and

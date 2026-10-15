@@ -4,7 +4,7 @@
 //        defaults (docs/registration-step-2.md §1.2), over the parts of tifffile 2026.9.20 it relies on: the series (ImageJ,
 //        else uniform or generic grouping), the FEI INI tags, the ImageJ description, the Gatan DM tags. Data as stored;
 //        RGB as one element per pixel. Out of step 2, refused by name: Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX,
-//        Hamamatsu streak, compressed or tiled pages.
+//        Hamamatsu streak (unless `TIFFReadOptions.vendorBranches` is `.readAsGeneric`), compressed or tiled pages.
 //
 
 import Foundation
@@ -150,13 +150,31 @@ public nonisolated struct TIFFSignals: Sendable {
     public let file: TIFFFile
     public let series: [TIFFSeries]
 
+    /// The vendor branch this file was read as a plain TIFF for (`TIFFReadOptions.vendorBranches == .readAsGeneric`), or nil:
+    /// nil for every file read by default and for a file that carries no vendor branch's tags.
+    public let vendorBranch: String?
+
+    /// Reads the file with the default options: a vendor branch that is not ported is refused by name.
     public init(path: String) throws {
+        try self.init(path: path, options: TIFFReadOptions())
+    }
+
+    /// Reads the file under `options`. Layout refusals (compression, tiles, unsupported sample layouts) hold under every
+    /// option.
+    public init(path: String, options: TIFFReadOptions) throws {
         let file = try TIFFFile(path: path)
         guard let first = file.directories.first else { throw TIFFError.notTIFF(formatoDisplayFileName(path)) }
         self.file = file
+        var branch: String?
         if let refusal = Self.outOfScope(first) {
-            throw FormatoReadError.unsupported("\(formatoDisplayFileName(path)) is a \(refusal) TIFF, whose reading is not ported yet (registration step 2 §1.2).")
+            switch options.vendorBranches {
+            case .refuse:
+                throw FormatoReadError.unsupported("\(formatoDisplayFileName(path)) is a \(refusal) TIFF, whose reading is not ported yet (registration step 2 §1.2).")
+            case .readAsGeneric:
+                branch = refusal
+            }
         }
+        vendorBranch = branch
         series = try Self.buildSeries(file)
     }
 
@@ -315,7 +333,13 @@ public nonisolated struct TIFFSignals: Sendable {
             // `_read_tiff`: any exception while parsing the scale gives the default dictionaries.
             axes = Self.dictionaries(shape: shape, names: names, scales: nil, offsets: nil, units: nil)
         }
-        let metadata = try Self.metadata(page: page, file: name)
+        var metadata = try Self.metadata(page: page, file: name)
+        if let vendorBranch {
+            metadata.set(FormatoMetadataEntry(
+                key: "FormatoKit.policy.vendor_branch", value: .text(vendorBranch), units: nil,
+                provenance: FormatoProvenance(file: name, source: "(the page's vendor tags)",
+                                              rule: "FormatoKit policy, not RosettaSciIO's: read as a plain TIFF, the \(vendorBranch) branch is not ported")))
+        }
         return FormatoLazySignal(title: "", signalType: "", axes: axes, metadata: metadata,
                                  array: TIFFSeriesArray(path: file.path, series: s, shape: shape))
     }

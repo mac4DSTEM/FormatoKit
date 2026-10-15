@@ -6,7 +6,7 @@
 //        a consumer reads any private tag (Thermo Fisher's Velox XML 34683, Gatan's 65027, TIA's) as it is stored.
 //        Tag values decode as tifffile 2026.9.20 decodes them (`TiffTag._process_value`): ASCII loses its trailing NULs,
 //        decodes as UTF-8 or else cp1252, and is stripped of surrounding whitespace.
-//        Written for FormatoKit; macTEM's TIFFImageReader (GPL-3.0) was read as the seed.
+//        Written for FormatoKit; a GPL-3.0 TIFF image reader from an earlier project was read as the seed.
 //
 
 import Foundation
