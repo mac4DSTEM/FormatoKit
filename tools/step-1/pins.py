@@ -28,6 +28,36 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+def cap_memory():
+    """The suite's rule (../CLAUDE.md, owner 2026-10-15 12:30): every oracle or helper process caps its memory first, 8 GB by
+    default (FORMATO_MEM_CAP_GB to change it), so an oversized case fails loudly instead of swapping. macOS refuses
+    setrlimit(RLIMIT_AS / RLIMIT_DATA) below infinity ("current limit exceeds maximum limit", checked 2026-10-15 on this Mac), so
+    the cap is tried and, in any case, enforced by a watchdog thread on the process's own peak resident size (ru_maxrss, bytes
+    on macOS), every 0.2 s: past the cap the process prints why and exits 3. Inputs stay under 2 GB as well."""
+    import resource
+    import threading
+    import time
+    cap = int(float(os.environ.get("FORMATO_MEM_CAP_GB", "8")) * (1 << 30))
+    for limit in (resource.RLIMIT_AS, resource.RLIMIT_DATA):
+        try:
+            resource.setrlimit(limit, (cap, cap))
+        except (ValueError, OSError):
+            pass
+
+    def watch():
+        while True:
+            peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+            if peak > cap:
+                sys.stderr.write(f"pins: resident size {peak >> 20} MB passed the {cap >> 20} MB cap; stopping (suite memory rule)\n")
+                sys.stderr.flush()
+                os._exit(3)
+            time.sleep(0.2)
+    threading.Thread(target=watch, daemon=True, name="memory-cap").start()
+
+
+cap_memory()
+
 CLONE = ROOT / "References" / "rosettasciio-049e7d70"
 VENV = ROOT / "References" / "rsciio-venv"
 PIN = "049e7d7070e84779b499adaf3295beee9facb004"

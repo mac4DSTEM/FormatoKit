@@ -5,6 +5,9 @@
 # its numbers are cited with this log in docs/status.md, and every file read has a line in ../data/README.md.
 #   owner-check.sh      prints the files read, the result line, exit 0 when every signal agrees.
 set -euo pipefail
+# The suite's memory rule (../CLAUDE.md, 2026-10-15): the Python oracle stops itself past 8 GB resident (tools/step-1/pins.py
+# cap_memory, a watchdog: macOS refuses setrlimit on RLIMIT_AS / RLIMIT_DATA); the owner's inputs are under 2 GB, and the Swift
+# side's arrays are sized from them (the SI's dense array is 1.6 GB).
 cd "${0:A:h}/../.."
 data=${MACEM_DATA:-../data}
 out=$PWD/.build/owner
