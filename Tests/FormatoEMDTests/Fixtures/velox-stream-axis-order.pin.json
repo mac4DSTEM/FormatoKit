@@ -1,0 +1,15 @@
+{
+ "rsciio": "049e7d7070e84779b499adaf3295beee9facb004",
+ "file": "velox-stream-axis-order.emd",
+ "sha256": "5fb8100f76e030c83a0dd88e7df98c33ce70151e8a8b36469ce7f8ad094dae3b",
+ "stream": "aaaa",
+ "dispersion_keV": 0.02,
+ "offset_keV": -1.9,
+ "units": "keV",
+ "binary_result_detector": "SuperXG1",
+ "detector_keys_file_order": [
+  "Detector-0",
+  "Detector-10",
+  "Detector-2"
+ ]
+}

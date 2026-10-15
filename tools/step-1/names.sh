@@ -26,8 +26,19 @@ for line in sys.stdin:
 '
 }
 want=$(for f in $moved; do git -C $sk --no-optional-locks show $tag:$f | names; done | sort)
+# Renamed on purpose (registration step 1 A7, 0.0.3: the Velox detectors in the written order, not the index order): the old
+# name counts as present when the new one is.
+renamed=(
+  VeloxMetadataFieldsTests.testFirstMeansLowestDetectorIndexWhateverTheKeyOrder VeloxMetadataFieldsTests.testFirstMeansTheFirstWrittenKeyAsRosettaSciIO
+  VeloxMetadataFieldsTests.testDetectorIndexOrderIsNumericNotTextual VeloxMetadataFieldsTests.testDetectorsKeepTheWrittenOrderNotTheIndexOrNameOrder
+  VeloxMetadataFieldsTests.testPlantedDetectorsCarryTheirOwnExposureTimeInIndexOrder VeloxMetadataFieldsTests.testPlantedDetectorsCarryTheirOwnExposureTimeInWrittenOrder
+)
 have=$(cat Tests/Formato*Tests/*.swift | names | sort)
+for old new in $renamed; do
+  if print -r -- $have | grep -qx -- $new; then have+=$'\n'$old; fi
+done
+have=$(print -r -- $have | sort)
 missing=$(comm -23 <(print -r -- $want) <(print -r -- $have))
 n=$(print -r -- $want | grep -c .)
 if [[ -n $missing ]]; then print -r -- "missing:"; print -r -- $missing; exit 1; fi
-print "names: $n of $n moved names present"
+print "names: $n of $n moved names present ($(( ${#renamed} / 2 )) renamed on purpose, registration step 1 A7)"

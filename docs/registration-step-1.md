@@ -342,3 +342,35 @@ segments of every stream's detector). Evidence: `VeloxPublicFlagsTests` sees eac
 `velox-flags-planted.emd` (new, `tools/asks-0.0.3/make_velox_flags.py`, its truth the layout: a second stream that stops
 early under one calibration) and `velox-tiny.emd`; three sampled mutants red (both flags computed from the head stream
 only, `pixelCount` as the row width); the consumer check carries the same both-value checks through the public API.
+
+**A7 (2026-10-15, 11:15, the 0.0.3 asks; tier 2, a reader rule, registered before the fix with its tests red).** SpectroKit
+0.4.0's finding (its EDX stage-gates registration, amendment 1 item 5, row E1): `VeloxMetadata.parse` sorted the `Detectors`
+entries by their `Detector-<n>` index, standing for the file's order, where RosettaSciIO 049e7d70 iterates the order
+`json.loads` keeps, the written one: the energy axis is the first entry in that order whose name CONTAINS
+`BinaryResult.Detector` (`_emd_velox.py:866-876`), the detector metadata the first whose name EQUALS it (`:51-57`, the rule
+`exposureTimeSeconds` applies). The rule now: `detectors` is in the written order of the keys, read by a scan of the
+metadata text (`VeloxMetadata.detectorKeyOrder`: the root object's `Detectors` only, keys decoded, a repeated key at its
+first place); a key the scan does not list goes after, in index order. Every consumer of `detectors` follows: the energy
+axis, `exposureTimeSeconds`, `VeloxStreamInfo.segments`, `superXDetectors`.
+- **Pins.** SpectroKit's planted `velox-stream-axis-order.emd` (c5a9a5e, `tools/edx-stages/make_velox_streams.py` case
+  "axis-order", 49 576 bytes, sha256 `5fb8100f76e030c83a0dd88e7df98c33ce70151e8a8b36469ce7f8ad094dae3b`) is copied into
+  `Tests/FormatoEMDTests/Fixtures/`; `tools/asks-0.0.3/pin_axis_order.py` reads it through RosettaSciIO's own stream path
+  (`_parse_sub_data_group_metadata` on the first stream, the reader's `_get_dispersion_offset`; `file_reader` itself stops
+  earlier on this planted file, KeyError 'Displays' in the image-title map) and writes `velox-stream-axis-order.pin.json`:
+  0.02 keV per channel from -1.9 keV (Detector-10), where the index order gave 0.01 from -0.5 (Detector-2). Case f of
+  `velox-metadata-planted.emd` (keys written 4, 2, 5, 1, 3, 0, all but 0 named BM-Ceta): RosettaSciIO's
+  `_get_detector_metadata_dict` returns Detector-4 (ExposureTime "4"); the index order gave Detector-1 (0.5).
+- **Tests.** New `VeloxDetectorOrderTests` (the planted file against the pin; an escaped key and a nested `Detectors`
+  object; strings and nested values that hold braces and the word Detectors). Three moved tests assert the opposite rule and
+  are changed and renamed on purpose (`tools/step-1/names.sh` maps the old names): `testFirstMeansLowestDetectorIndexWhateverTheKeyOrder`
+  → `testFirstMeansTheFirstWrittenKeyAsRosettaSciIO`, `testDetectorIndexOrderIsNumericNotTextual` →
+  `testDetectorsKeepTheWrittenOrderNotTheIndexOrNameOrder`, `testPlantedDetectorsCarryTheirOwnExposureTimeInIndexOrder` →
+  `...InWrittenOrder`; case f's exposure literal is 4, its exposures listed in the written order. Red on `5680bac`'s reader
+  (7 tests, 15 issues), green on the fix; three sampled mutants red (the order ignored, escaped keys not decoded, strings
+  inside nested values not skipped).
+- **No known real file moves.** Every `Metadata` column holding `Detectors` in RosettaSciIO's public Velox files and this
+  repo's fixtures was scanned (174 columns, 2026-10-15): only the two planted out-of-order cases are out of index order.
+  SpectroKit found the owner's stem-edx header in index order. The pins, the golden and move parity are unchanged.
+- **Known, not changed (registered).** On a key written twice in the same object, `JSONSerialization` keeps the FIRST value
+  and Python's `json.loads` the LAST (checked 2026-10-15); the scan lists the key at its first place, as Python does, but the
+  value read is still the first. Velox writes no repeated key in any file seen.

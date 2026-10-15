@@ -437,6 +437,8 @@ public nonisolated struct VeloxScanTransformation: Equatable, Sendable {
 }
 
 public nonisolated struct VeloxMetadata: Sendable {
+    /// The `Detectors` entries in the order the metadata text writes their keys, as RosettaSciIO reads them (0.0.3; until
+    /// then sorted by `Detector-<n>` index, the same order on every public and owner file).
     public let detectors: [VeloxDetectorInfo]
     /// The detector whose events the first stream carries (`BinaryResult.Detector`).
     public let binaryResultDetector: String?
@@ -492,12 +494,11 @@ public nonisolated struct VeloxMetadata: Sendable {
     public let operatingMode: String?
     /// `Optics.ProjectorMode` as stored: a code in an `.emd` as well ("1", "2").
     public let projectorMode: String?
-    /// `ExposureTime` (s) of the first `Detectors` entry, in `Detector-<n>` index order, whose `DetectorName` equals
-    /// `BinaryResult.Detector`. The rule is macTEM's ask, applied with the matching of RosettaSciIO 049e7d70's
+    /// `ExposureTime` (s) of the first `Detectors` entry, in the order the file writes the keys, whose `DetectorName`
+    /// equals `BinaryResult.Detector`. The rule is macTEM's ask, applied with the matching of RosettaSciIO 049e7d70's
     /// `_get_detector_metadata_dict` (`_emd_velox.py:51-57`): `==`, not the energy axis's `contains`, and the first
-    /// entry. RosettaSciIO takes the first as the file stores the keys; this reader cannot see that order and takes
-    /// index order. The order matters only when two entries share a `DetectorName`, and none of the 42 image entries of
-    /// RosettaSciIO's public files has two (they also store the keys in index order).
+    /// entry as the file stores the keys (FormatoKit 0.0.3, registration step 1 A7; until then index order, which differs
+    /// only when two entries share a `DetectorName` out of index order; no public file writes its keys out of index order).
     /// This is not RosettaSciIO's `DetectorMetadata`: RosettaSciIO feeds `_get_detector_metadata_dict` another name,
     /// from `Operations` or from `Detectors["Detector-<DetectorIndex>"].DetectorName` (`_emd_velox.py:326-330`,
     /// `447-449`, `464-535`). `BinaryResult.DetectorIndex` is not consulted here: the public '1854 Camera Ceta.emd'
@@ -523,18 +524,111 @@ public nonisolated struct VeloxMetadata: Sendable {
         guard let root = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any] else {
             throw VeloxEMDError.missingMetadata("a JSON object as metadata")
         }
-        return parse(root: root)
+        return parse(root: root, detectorKeyOrder: detectorKeyOrder(jsonData: jsonData))
     }
 
-    package static func parse(root: [String: Any]) -> VeloxMetadata {
+    /// The keys of the root object's `Detectors` object in the order the text writes them (RosettaSciIO's `json.loads`
+    /// keeps that order; a Swift dictionary does not). A key written twice keeps its first place, as in a Python dict; of
+    /// two root `Detectors` the last is listed, whose value `json.loads` keeps. Keys are compared decoded (`\u002d` is "-").
+    /// nil when there is no root `Detectors` object or the text is not one JSON object this scan can walk (UTF-8, no BOM):
+    /// the caller then keeps index order. Linear in the text; it parses nothing but the keys.
+    package static func detectorKeyOrder(jsonData: Data) -> [String]? {
+        let b = [UInt8](jsonData)
+        let n = b.count
+        var i = 0
+        func whitespace() { while i < n, b[i] == 0x20 || b[i] == 0x09 || b[i] == 0x0A || b[i] == 0x0D { i += 1 } }
+        func skipString() -> Bool {   // at a quote: moves past the closing quote
+            guard i < n, b[i] == 0x22 else { return false }
+            i += 1
+            while i < n {
+                if b[i] == 0x5C { i += 2; continue }
+                if b[i] == 0x22 { i += 1; return true }
+                i += 1
+            }
+            return false
+        }
+        func string() -> String? {   // at a quote: the decoded string
+            let start = i
+            guard skipString() else { return nil }
+            let body = b[(start + 1)..<(i - 1)]
+            if !body.contains(0x5C) { return String(decoding: body, as: UTF8.self) }
+            return (try? JSONSerialization.jsonObject(with: Data(b[start..<i]), options: .fragmentsAllowed)) as? String
+        }
+        func skipValue() -> Bool {
+            guard i < n else { return false }
+            switch b[i] {
+            case 0x22: return skipString()
+            case 0x7B, 0x5B:
+                var depth = 0
+                while i < n {
+                    switch b[i] {
+                    case 0x22: guard skipString() else { return false }; continue
+                    case 0x7B, 0x5B: depth += 1
+                    case 0x7D, 0x5D:
+                        depth -= 1
+                        if depth == 0 { i += 1; return true }
+                    default: break
+                    }
+                    i += 1
+                }
+                return false
+            default:   // a number or a literal
+                let start = i
+                while i < n, ![0x2C, 0x7D, 0x5D, 0x20, 0x09, 0x0A, 0x0D].contains(b[i]) { i += 1 }
+                return i > start
+            }
+        }
+        /// At `{`: the object's keys in written order, first place kept; each value skipped.
+        func keys(visit: (String) -> Bool) -> Bool {
+            guard i < n, b[i] == 0x7B else { return false }
+            i += 1
+            whitespace()
+            if i < n, b[i] == 0x7D { i += 1; return true }
+            while true {
+                whitespace()
+                guard let key = string() else { return false }
+                whitespace()
+                guard i < n, b[i] == 0x3A else { return false }
+                i += 1
+                whitespace()
+                guard visit(key) else { return false }
+                whitespace()
+                guard i < n else { return false }
+                if b[i] == 0x2C { i += 1; continue }
+                guard b[i] == 0x7D else { return false }
+                i += 1
+                return true
+            }
+        }
+        whitespace()
+        var order: [String]?
+        let walked = keys { key in
+            guard key == "Detectors", i < n, b[i] == 0x7B else { return skipValue() }
+            var listed: [String] = [], seen = Set<String>()
+            let ok = keys { k in
+                if seen.insert(k).inserted { listed.append(k) }
+                return skipValue()
+            }
+            order = listed
+            return ok
+        }
+        return walked ? order : nil
+    }
+
+    package static func parse(root: [String: Any], detectorKeyOrder: [String]? = nil) -> VeloxMetadata {
         func dict(_ parent: [String: Any]?, _ key: String) -> [String: Any]? { parent?[key] as? [String: Any] }
-        // `Detector-<n>` in index order, standing for the file's order: a JSON object has no order in Swift, and the
-        // index is the stored order in every public file (rsciio iterates the stored order).
+        // `Detector-<n>` in the order the text writes the keys, as rsciio's `json.loads` keeps them and its rules take the
+        // first match in (registration step 1 A7, FormatoKit 0.0.3; until then the index order). A Swift dictionary has no
+        // order, so `detectorKeyOrder` scans the text; a key it does not list (no text, or a text the scan cannot walk)
+        // goes after the listed ones, in index order.
+        let written = Dictionary((detectorKeyOrder ?? []).enumerated().map { ($1, $0) }, uniquingKeysWith: { first, _ in first })
         var detectors: [VeloxDetectorInfo] = []
+        var place: [Int] = []
         if let all = root["Detectors"] as? [String: Any] {
             for (key, value) in all {
                 guard key.hasPrefix("Detector-"), let index = Int(key.dropFirst("Detector-".count)),
                       let d = value as? [String: Any] else { continue }
+                place.append(written[key] ?? Int.max)
                 detectors.append(VeloxDetectorInfo(
                     index: index, name: d["DetectorName"] as? String ?? "", type: d["DetectorType"] as? String ?? "",
                     enabled: jsonBool(d["Enabled"]), inserted: jsonBool(d["Inserted"]),
@@ -544,7 +638,7 @@ public nonisolated struct VeloxMetadata: Sendable {
                     realTimeColumn0: jsonDouble(d["RealTime"]), liveTimeColumn0: jsonDouble(d["LiveTime"]),
                     exposureTimeSeconds: jsonDouble(d["ExposureTime"])))
             }
-            detectors.sort { $0.index < $1.index }
+            detectors = zip(place, detectors).sorted { ($0.0, $0.1.index) < ($1.0, $1.1.index) }.map(\.1)
         }
         let binary = root["BinaryResult"] as? [String: Any]
         let detectorName = binary?["Detector"] as? String

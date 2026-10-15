@@ -366,10 +366,10 @@ extension VeloxEMDSerialized {
             #expect(m.detectors.map(\.exposureTimeSeconds) == [nil, 2])
         }
 
-        /// A JSON object has no order in Swift; "file order" is the Detector-<n> index, numerically. The keys are written
-        /// in DESCENDING order here (11 ... 0): the first BM-Ceta is Detector-1 (ExposureTime 10), not the first key
-        /// written.
-        @Test func testFirstMeansLowestDetectorIndexWhateverTheKeyOrder() throws {
+        /// "First" is the first key WRITTEN, as RosettaSciIO's `json.loads` keeps it (registration step 1 A7; until 0.0.3 the
+        /// index order, as `testFirstMeansLowestDetectorIndexWhateverTheKeyOrder`). The keys are written in DESCENDING order
+        /// here (11 ... 0): the first BM-Ceta is Detector-11 (ExposureTime 110), not the lowest index.
+        @Test func testFirstMeansTheFirstWrittenKeyAsRosettaSciIO() throws {
             // Detector-0 is HAADF; Detector-1 ... Detector-11 are BM-Ceta with ExposureTime = index * 10.
             let entries = (0...11).reversed().map { i in
                 i == 0 ? #""Detector-0": {"DetectorName": "HAADF"}"#
@@ -377,12 +377,13 @@ extension VeloxEMDSerialized {
             }
             let detectors = entries.joined(separator: ", ")
             let m = try parse(#"{"BinaryResult": {"Detector": "BM-Ceta"}, "Detectors": {"# + detectors + "}}")
-            #expect(m.detectors.map(\.index) == Array(0...11), "sorted by index")
-            #expect(m.exposureTimeSeconds == 10)
+            #expect(m.detectors.map(\.index) == Array((0...11).reversed()), "the written order")
+            #expect(m.exposureTimeSeconds == 110)
         }
 
-        /// The index is a number, not text: Detector-10 comes after Detector-9 (text order would put "Detector-10" first).
-        @Test func testDetectorIndexOrderIsNumericNotTextual() throws {
+        /// The written order is kept, neither the index order (2, 9, 10, 11) nor the text order (10, 11, 2, 9) (A7; until
+        /// 0.0.3 the numeric index order, as `testDetectorIndexOrderIsNumericNotTextual`).
+        @Test func testDetectorsKeepTheWrittenOrderNotTheIndexOrNameOrder() throws {
             let m = try parse(#"""
             {"BinaryResult": {"Detector": "BM-Ceta"},
              "Detectors": {"Detector-11": {"DetectorName": "BM-Ceta", "ExposureTime": "11"},
@@ -390,8 +391,8 @@ extension VeloxEMDSerialized {
                            "Detector-9": {"DetectorName": "BM-Ceta", "ExposureTime": "9"},
                            "Detector-2": {"DetectorName": "HAADF"}}}
             """#)
-            #expect(m.detectors.map(\.index) == [2, 9, 10, 11])
-            #expect(m.exposureTimeSeconds == 9)
+            #expect(m.detectors.map(\.index) == [11, 10, 9, 2])
+            #expect(m.exposureTimeSeconds == 11)
         }
 
         /// Without an Optics section, a CustomProperties section or a Detectors section every new field is nil.
@@ -435,10 +436,12 @@ extension VeloxEMDSerialized {
             let operatingMode: String?
             let projectorMode: String?
             let exposure: Double?
-            /// `metadata.detectors[n].exposureTimeSeconds`, in Detector-<n> index order.
+            /// `metadata.detectors[n].exposureTimeSeconds`, in the written order of the keys.
             let detectorExposures: [Double?]
             /// What column 1 (the decoy) holds: a different value in every field.
             let decoy: Decoy
+            /// The Detector-<n> indices in the written order, when that is not 0, 1, 2, ... (case f).
+            var writtenIndices: [Int]? = nil
         }
 
         private struct Decoy: Sendable {
@@ -496,13 +499,14 @@ extension VeloxEMDSerialized {
                     detectorExposures: [nil, 2],
                     decoy: Decoy(magnification: 25, stemMagnification: 45, cameraLength: 26, operatingMode: "27",
                                  projectorMode: "28", exposure: 29)),
-            // f: the Detectors keys are written 4, 2, 5, 1, 3, 0; the first BM-Ceta by index is Detector-1. No
-            // CustomProperties.
+            // f: the Detectors keys are written 4, 2, 5, 1, 3, 0; the first BM-Ceta WRITTEN is Detector-4 (A7: RosettaSciIO
+            // 049e7d70's `_get_detector_metadata_dict` returns it, ExposureTime "4"; until 0.0.3 Detector-1 by index, 0.5).
+            // No CustomProperties.
             Planted(id: "case-f-key-order", binaryDetector: "BM-Ceta", magnification: 20000,
-                    stemMagnification: nil, cameraLength: 0.5, operatingMode: "2", projectorMode: "1", exposure: 0.5,
-                    detectorExposures: [nil, 0.5, 7, 3, 4, 5],
+                    stemMagnification: nil, cameraLength: 0.5, operatingMode: "2", projectorMode: "1", exposure: 4,
+                    detectorExposures: [4, 7, 5, 0.5, 3, nil],
                     decoy: Decoy(magnification: 31, stemMagnification: 46, cameraLength: 32, operatingMode: "33",
-                                 projectorMode: "34", exposure: 35)),
+                                 projectorMode: "34", exposure: 35), writtenIndices: [4, 2, 5, 1, 3, 0]),
             // g: "0" is a value, the stem magnification's as {"type": "bool", "value": "0"}.
             Planted(id: "case-g-zeros", binaryDetector: "BM-Ceta", magnification: 0,
                     stemMagnification: 0, cameraLength: 0, operatingMode: "0", projectorMode: "0", exposure: 0,
@@ -567,11 +571,12 @@ extension VeloxEMDSerialized {
             }
         }
 
-        /// Each detector entry's own ExposureTime, in Detector-<n> index order (the written key order does not show).
-        @Test func testPlantedDetectorsCarryTheirOwnExposureTimeInIndexOrder() throws {
+        /// Each detector entry's own ExposureTime, in the written order of the keys (A7; until 0.0.3 the index order, as
+        /// `testPlantedDetectorsCarryTheirOwnExposureTimeInIndexOrder`). Case f is the one written out of index order.
+        @Test func testPlantedDetectorsCarryTheirOwnExposureTimeInWrittenOrder() throws {
             for (image, want) in zip(try plantedImages(), Self.planted) {
                 let detectors = image.metadata.detectors
-                #expect(detectors.map(\.index) == Array(0..<want.detectorExposures.count), "\(want.id) indices")
+                #expect(detectors.map(\.index) == (want.writtenIndices ?? Array(0..<want.detectorExposures.count)), "\(want.id) indices")
                 #expect(detectors.map(\.exposureTimeSeconds) == want.detectorExposures, "\(want.id) exposures")
             }
         }
