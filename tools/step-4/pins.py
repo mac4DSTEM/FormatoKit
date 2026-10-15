@@ -51,6 +51,15 @@ def sha(b):
     return hashlib.sha256(b).hexdigest()
 
 
+def le_sha(data, np):
+    """sha256 of the array's little-endian C-order bytes, as step 1's `le_bytes`, without copying an array that is already
+    little-endian and contiguous (the owner's SI is 1.6 GB; a copy took the oracle past the suite's 8 GB cap)."""
+    a = np.ascontiguousarray(data)
+    if a.dtype.byteorder == ">" or (a.dtype.byteorder == "=" and sys.byteorder == "big"):
+        a = a.astype(a.dtype.newbyteorder("<"))
+    return hashlib.sha256(memoryview(a).cast("B")).hexdigest()
+
+
 def axis_record(a):
     def num(v):
         if isinstance(v, bool) or not isinstance(v, (int, float)) and not hasattr(v, "dtype"):
@@ -73,7 +82,7 @@ def signal_record(sig, np):
         "signal_type": md.get("Signal", {}).get("signal_type"),
         "dtype": step1.dtype_name(data.dtype),
         "shape": list(data.shape),
-        "data_sha256": sha(step1.le_bytes(data)),
+        "data_sha256": le_sha(data, np),
         "axes": axes,
         "axes_sizes_match_shape": [a["size"] for a in axes] == list(data.shape),
         "axes_numeric": all(a["scale_bits"] is not None and a["offset_bits"] is not None for a in axes),

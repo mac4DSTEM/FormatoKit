@@ -251,9 +251,15 @@ it is); the `DetectorMetadata` mapping and RosettaSciIO's wider metadata (dates,
    outside the ten types (bool, complex, float16, numpy aliases) cannot be asked for. Left as before: a raising mapping
    (`AccelerationVoltage` that `float()` refuses) counts as RosettaSciIO raising (step 2's convention).
 5. *Memory* (the suite's rule of 12:30, after the refuter's oracle grew to 44 GB on a hostile grid and was killed by the
-   coordinator): every oracle process caps itself at 8 GB. macOS refuses `setrlimit` on RLIMIT_AS and RLIMIT_DATA below
-   infinity, so `tools/step-1/pins.py cap_memory()` (imported by every FormatoKit pins script) also runs a watchdog on its own
-   peak resident size and exits 3 past the cap; the refuter's worker did the same. Inputs given to RosettaSciIO stay under 2 GB.
+   coordinator): every oracle launch runs under the suite's `../tools/memcap.sh` (8 GB over the process tree; the owner-check
+   scripts call it), and inputs given to RosettaSciIO stay under 2 GB. macOS refuses `setrlimit` on RLIMIT_AS and RLIMIT_DATA
+   below infinity: the refuter's worker first set them inside try/except and so ran uncapped (as did a draft of `cap_memory()`
+   that was never committed); `tools/step-1/pins.py cap_memory()` as committed adds a watchdog on its own peak resident size
+   (exit 3), a second line behind memcap.sh. The refuter's worker then got the same watchdog.
+   The earlier owner runs (on `4ac6df0`) were therefore uncapped; under the cap the step-4 owner oracle first passed 8 GB (the
+   little-endian copy made for hashing the 1.6 GB array), so `tools/step-4/pins.py` now hashes a contiguous little-endian array
+   in place (same digest; the committed pins regenerate unchanged), and the owner check passes under memcap.sh (peak 5.5 GB;
+   O1, O4 and frames 100 to 200 equal again).
    Not refuted on this machine: hostile grids and bin counts against RosettaSciIO (run on FormatoKit only, which refuses them
    or allocates lazily up to the machine's memory); the overflowing grid is pinned as "not run". The refuter's phase G3 results
    are absent. Regenerating step 3's pins now flips only their informational `spectrum_stream_not_read` to false (sparse is
