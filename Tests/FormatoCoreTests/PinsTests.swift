@@ -88,7 +88,9 @@ import FormatoEMD
             #expect(read == files.count, "every pinned file read")
             #expect(signals + refused == 153, "111 DM + 42 Velox signals")
         } else if read == 0 {
-            try Test.cancel("References/rosettasciio-049e7d70 is absent and no committed public file is pinned")
+            // Nothing to compare: References/rosettasciio-049e7d70 is absent and no committed public file is pinned.
+            // An early return, not Test.cancel (newer than the Swift Testing in Xcode 26.0, which CI pins).
+            return
         }
     }
 
