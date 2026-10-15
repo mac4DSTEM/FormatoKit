@@ -31,7 +31,8 @@ model, units, cancellation), `FormatoDM`, `FormatoEMD`, `FormatoHDF5` (step 1), 
 - **Green stamp**: a full, passing `tools/test.sh` on a clean tracked tree writes `.build/last-green`; `tools/last-green.sh`
   prints it and whether HEAD equals it.
 - **Hook**: `.claude/settings.json` runs `tools/hooks/no-sleep-poll.sh` before every Bash call (no sleep of 30 s or more, no
-  sleep in a loop). Proof: `tools/hooks/test-no-sleep-poll.sh`.
+  sleep in a loop, no `killall`, no `pkill` without `-P <pid>` or a scratchpad path: kill your own jobs by pid). Proof:
+  `tools/hooks/test-no-sleep-poll.sh`, also run by CI (`.github/workflows/ci.yml`).
 - **A reference for every number.** RosettaSciIO at `049e7d7070e84779b499adaf3295beee9facb004` in the gitignored
   `References/rosettasciio-049e7d70`, installed from that clone into `References/rsciio-venv` (Python 3.14.7, NumPy 2.5.4,
   h5py 3.16.0, Pint 0.26.1, tifffile 2026.9.20; `References/rsciio-venv-freeze.txt`). Oracles run as `References/rsciio-venv/bin/python -I -B`.
