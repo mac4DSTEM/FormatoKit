@@ -83,10 +83,12 @@ do {
     check(s.metadata["General.title"]?.provenance.source == "ImageList.2.Name", "metadata provenance")
     let slab = try dm.signal(index: 2).array.read(start: [1, 0, 1], count: [2, 2, 2])
     check(slab == (try s.data.slab(start: [1, 0, 1], count: [2, 2, 2])), "lazy slab = eager slab")
-    let images = try VeloxImageSignals(path: tests.appendingPathComponent("FormatoEMDTests/Fixtures/velox-metadata-planted.emd").path)
-    check(!images.images.isEmpty, "VeloxImageSignals")
+    // RosettaSciIO raises on the moved metadata fixture (KeyError 'Scan'); since step 3 VeloxImageSignals refuses it too.
+    check((try? VeloxImageSignals(path: tests.appendingPathComponent("FormatoEMDTests/Fixtures/velox-metadata-planted.emd").path)) == nil,
+          "VeloxImageSignals refuses a file RosettaSciIO raises on")
     // Step 3: the stored type and RosettaSciIO's title through the public API (planted file, registration step 3 §4).
     let titled = try VeloxImageSignals(path: tests.appendingPathComponent("FormatoEMDTests/Fixtures/velox-titles-v6-image.emd").path)
+    check(titled.images.count == 14, "VeloxImageSignals lists the images")
     if let a08 = titled.images.first(where: { $0.id == "a08" }) {
         let s = try titled.signal(a08).load()
         check(s.data.dataType == .uint64 && s.title == "DPC" && titled.title(of: a08) == "DPC", "stored type and title")
