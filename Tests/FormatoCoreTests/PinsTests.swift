@@ -49,7 +49,8 @@ import FormatoEMD
         }
     }
 
-    private func assertMetadata(_ ours: FormatoMetadata, _ pinned: [[String: Any]], _ what: String, skip: Set<String> = []) {
+    private func assertMetadata(_ ours: FormatoMetadata, _ pinned: [[String: Any]], _ what: String, skip: Set<String> = [],
+                                producedName: (pinned: String, opened: String)? = nil) {
         let pinnedKeys = Set(pinned.compactMap { $0["key"] as? String }).subtracting(skip)
         #expect(Set(ours.keys).subtracting(skip) == pinnedKeys, "\(what): metadata keys")
         for p in pinned {
@@ -57,7 +58,11 @@ import FormatoEMD
             if p["kind"] as? String == "number" {
                 #expect(e.value.number.map(hex) == p["value_bits"] as? String, "\(what): \(key)")
             } else {
-                #expect(e.value.text == p["value"] as? String, "\(what): \(key)")
+                // A DM file's name is in its metadata and title: the committed copy of EELS_SI.dm4 is stored as
+                // rsciio-EELS_SI.dm4, so a pinned value equal to the pinned file's name is compared with the opened file's.
+                var expected = p["value"] as? String
+                if let n = producedName, expected == n.pinned { expected = n.opened }
+                #expect(e.value.text == expected, "\(what): \(key)")
             }
             if let source = p["source"] as? String {
                 // A1.5: compared by the tail from the first named group on ("Microscope Info.Voltage", "Optics...").
@@ -203,8 +208,11 @@ import FormatoEMD
                     #expect(eager.data.dataType.rawValue == p["dtype"] as? String, "\(what): dtype")
                     #expect(eager.data.shape == p["shape"] as? [Int], "\(what): shape")
                     #expect(sha(eager.data.bytes) == p["data_sha256"] as? String, "\(what): data")
-                    #expect(eager.title == p["title"] as? String, "\(what): title")
-                    assertMetadata(eager.metadata, p["metadata"] as! [[String: Any]], what)
+                    let pinnedName = (path as NSString).lastPathComponent
+                    let title = (p["title"] as? String) == pinnedName ? url.lastPathComponent : p["title"] as? String
+                    #expect(eager.title == title, "\(what): title")
+                    assertMetadata(eager.metadata, p["metadata"] as! [[String: Any]], what,
+                                   producedName: (pinnedName, url.lastPathComponent))
                     try assertLazyEqualsEager(lazy, eager, what)
                     signals += 1
                 }
