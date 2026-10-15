@@ -114,9 +114,9 @@ public nonisolated struct VeloxEventStore: Sendable {
     /// DEVIATION: rsciio's jitted loop indexes past the array for them (undefined).
     public let outOfRangeValues: Int
     /// False when the streams of a multi-detector file did not all end in the same place.
-    package let streamsAgreeOnCoverage: Bool
+    public let streamsAgreeOnCoverage: Bool
 
-    package var pixelCount: Int { geometry.pixelsPerFrame }
+    public var pixelCount: Int { geometry.pixelsPerFrame }
     /// Total counts (events) in the store: the stream's non-marker value count
     /// inside the frame range (prediction P4).
     public var totalCounts: Int { counts.reduce(0) { $0 + Int($1) } }
@@ -929,7 +929,7 @@ public nonisolated struct VeloxSpectrumImage: Sendable {
     public let metadata: VeloxMetadata
     package let version: String
     /// Streams summed (4 for a Super-X, 6 for an UltraX, 1 otherwise).
-    package let streamCount: Int
+    public let streamCount: Int
     /// `endFramePosition` of `SpectrumImageSettings` (end, 1-based inclusive) and `startFramePosition`.
     package let settingsFrames: (start: Int?, end: Int?)
     /// Every stream, in name order, with the detector it carries and the X-ray segments that detector name
@@ -938,12 +938,12 @@ public nonisolated struct VeloxSpectrumImage: Sendable {
     public let streams: [VeloxStreamInfo]
     /// False when the segments the streams resolve to do not all share dispersion and offset: the summed
     /// spectrum would then mix energy scales, and `metadata.energyAxis` (the first stream's) fits only some of it.
-    package let energyCalibrationAgrees: Bool
+    public let energyCalibrationAgrees: Bool
 }
 
 public nonisolated struct VeloxStreamInfo: Sendable {
     /// The stream's group id under Data/SpectrumStream.
-    package let id: String
+    public let id: String
     /// `BinaryResult.Detector` and `DetectorIndex` of the stream's own metadata (column 0).
     package let detectorName: String?
     package let detectorIndex: Int?

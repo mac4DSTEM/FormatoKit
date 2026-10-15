@@ -332,3 +332,13 @@ outside FormatoKit. Its findings, and what was done:
   type, truncation at nine cut points), the owner's 17 smaller files, 60+ slab shapes per file against NumPy slices, the
   shipped libhdf5 from a fresh package in Debug and Release with the variable unset (and a clean `libraryUnavailable`
   without the bundle), and the move's diff (registered changes only).
+
+**A6 (2026-10-15, 10:45, the 0.0.3 asks; tier 2, access only).** SpectroKit 0.4.0's `SpectroEDXTests` read five members of the
+moved Velox reader that A2's access list left `package`; SpectroKit registered a test-side stand-in for two of them (its
+`consumers-0.4.0.md` §7) that checks the head stream only. Now `public`, no other change: `VeloxSpectrumImage.streamCount`,
+`VeloxSpectrumImage.energyCalibrationAgrees`, `VeloxStreamInfo.id`, `VeloxEventStore.streamsAgreeOnCoverage`,
+`VeloxEventStore.pixelCount`. The two flags are the reader's own, computed over EVERY stream (`ends.allSatisfy`, the
+segments of every stream's detector). Evidence: `VeloxPublicFlagsTests` sees each flag at both values on
+`velox-flags-planted.emd` (new, `tools/asks-0.0.3/make_velox_flags.py`, its truth the layout: a second stream that stops
+early under one calibration) and `velox-tiny.emd`; three sampled mutants red (both flags computed from the head stream
+only, `pixelCount` as the row width); the consumer check carries the same both-value checks through the public API.

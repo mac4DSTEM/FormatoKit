@@ -39,6 +39,17 @@ do {
     check((try? VeloxEMDReader(path: velox).readSpectrumImage(cancelled: { true })) == nil, "cancellation throws")
     do { _ = try VeloxEMDReader(path: velox).readSpectrumImage(cancelled: { true }) } catch { check(error is FormatoCancelled, "FormatoCancelled") }
 } catch { check(false, "readSpectrumImage: \(error)") }
+// 0.0.3: the five members SpectroKit's tests read, each flag at both values (negative controls), over every stream.
+do {
+    let tiny = try VeloxEMDReader(path: velox).readSpectrumImage()
+    check(tiny.streamCount == 2 && tiny.streams.map(\.id).count == 2 && tiny.eventStore.pixelCount == 6, "streamCount, stream ids, pixelCount")
+    check(tiny.eventStore.streamsAgreeOnCoverage, "streamsAgreeOnCoverage true when the streams end together")
+    check(!tiny.energyCalibrationAgrees, "energyCalibrationAgrees false on two calibrations")
+    let flags = try VeloxEMDReader(path: tests.appendingPathComponent("FormatoEMDTests/Fixtures/velox-flags-planted.emd").path).readSpectrumImage()
+    check(flags.streams.map(\.id) == ["s0", "s1"] && flags.eventStore.pixelCount == 4, "stream ids in name order")
+    check(!flags.eventStore.streamsAgreeOnCoverage, "streamsAgreeOnCoverage false when a later stream stops early")
+    check(flags.energyCalibrationAgrees, "energyCalibrationAgrees true on one calibration")
+} catch { check(false, "0.0.3 members: \(error)") }
 check(VeloxEMDReader.elementSelection(fromSettingsJSON: Data(#"{"elementSelection":[8,14]}"#.utf8)) == ["O", "Si"], "elementSelection")
 check(HDF5Serial.run { 1 + 1 } == 2, "HDF5Serial.run")
 
