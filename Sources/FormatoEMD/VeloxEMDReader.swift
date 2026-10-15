@@ -529,9 +529,10 @@ public nonisolated struct VeloxMetadata: Sendable {
 
     /// The keys of the root object's `Detectors` object in the order the text writes them (RosettaSciIO's `json.loads`
     /// keeps that order; a Swift dictionary does not). A key written twice keeps its first place, as in a Python dict; of
-    /// two root `Detectors` the last is listed, whose value `json.loads` keeps. Keys are compared decoded (`\u002d` is "-").
-    /// nil when there is no root `Detectors` object or the text is not one JSON object this scan can walk (UTF-8, no BOM):
-    /// the caller then keeps index order. Linear in the text; it parses nothing but the keys.
+    /// two root `Detectors` the FIRST is listed, the one whose values `JSONSerialization` keeps (Python keeps the last: the
+    /// registered repeated-key deviation, A7 and its Gate B note). Keys are compared decoded (`\u002d` is "-"); a leading
+    /// UTF-8 BOM is skipped, as `JSONSerialization` accepts it. nil when there is no root `Detectors` object or the text is
+    /// not one JSON object this scan can walk: the caller then keeps index order. Linear in the text; it parses only keys.
     package static func detectorKeyOrder(jsonData: Data) -> [String]? {
         let b = [UInt8](jsonData)
         let n = b.count
@@ -600,6 +601,7 @@ public nonisolated struct VeloxMetadata: Sendable {
                 return true
             }
         }
+        if n >= 3, b[0] == 0xEF, b[1] == 0xBB, b[2] == 0xBF { i = 3 }
         whitespace()
         var order: [String]?
         let walked = keys { key in
@@ -609,7 +611,7 @@ public nonisolated struct VeloxMetadata: Sendable {
                 if seen.insert(k).inserted { listed.append(k) }
                 return skipValue()
             }
-            order = listed
+            if order == nil { order = listed }
             return ok
         }
         return walked ? order : nil

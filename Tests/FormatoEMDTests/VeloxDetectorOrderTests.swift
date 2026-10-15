@@ -65,5 +65,23 @@ extension VeloxEMDSerialized {
             #expect(m.detectors.map(\.index) == [7, 0])
             #expect(m.exposureTimeSeconds == 0.7, "the first BF written")
         }
+
+        /// Gate B (refuter on 42f27e3): of two root `Detectors` objects `JSONSerialization` keeps the FIRST's values, so the
+        /// order is the first's too (it listed the last's: indices [1, 0] and 2 eV, neither reading). Python keeps the last
+        /// (rsciio: [5, 1], 5 eV): the registered repeated-key deviation, now at least one consistent reading.
+        @Test func testTwoRootDetectorsObjectsReadTheFirstConsistently() throws {
+            let json = #"{"BinaryResult":{"Detector":"SuperXG1"},"Detectors":{"Detector-0":{"DetectorName":"SuperXG11","Dispersion":"1","OffsetEnergy":"1"},"Detector-1":{"DetectorName":"SuperXG12","Dispersion":"2","OffsetEnergy":"2"}},"Detectors":{"Detector-5":{"DetectorName":"SuperXG15","Dispersion":"5","OffsetEnergy":"5"},"Detector-1":{"DetectorName":"SuperXG12","Dispersion":"2","OffsetEnergy":"2"}}}"#
+            let m = try VeloxMetadata.parse(jsonData: Data(json.utf8))
+            #expect(m.detectors.map(\.index) == [0, 1])
+            #expect(m.energyAxis == VeloxEnergyAxis(offsetKeV: 0.001, scaleKeV: 0.001))
+        }
+
+        /// Gate B: a leading UTF-8 BOM, which `JSONSerialization` accepts, does not drop the written order.
+        @Test func testALeadingByteOrderMarkKeepsTheWrittenOrder() throws {
+            let json = #"{"BinaryResult": {"Detector": "BF"}, "Detectors": {"Detector-5": {"DetectorName": "BF", "ExposureTime": "5"}, "Detector-1": {"DetectorName": "BF", "ExposureTime": "1"}}}"#
+            let m = try VeloxMetadata.parse(jsonData: Data([0xEF, 0xBB, 0xBF]) + Data(json.utf8))
+            #expect(m.detectors.map(\.index) == [5, 1])
+            #expect(m.exposureTimeSeconds == 5)
+        }
     }
 }

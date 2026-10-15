@@ -374,3 +374,12 @@ axis, `exposureTimeSeconds`, `VeloxStreamInfo.segments`, `superXDetectors`.
 - **Known, not changed (registered).** On a key written twice in the same object, `JSONSerialization` keeps the FIRST value
   and Python's `json.loads` the LAST (checked 2026-10-15); the scan lists the key at its first place, as Python does, but the
   value read is still the first. Velox writes no repeated key in any file seen.
+- **Gate B (one refuter, Sonnet, on the frozen `42f27e3`).** 68 inputs through Swift and RosettaSciIO 049e7d70, a read of
+  the scan for bounds, timings: no crash, no wrong number on valid input; every other difference traced to a known cause
+  (non-`Detector-<int>` keys, non-object entries, the nil axis, NaN and lone surrogates, the repeated-key deviation). Fixed:
+  (1) of two root `Detectors` objects the scan listed the LAST's order while `JSONSerialization` keeps the FIRST's values (a
+  mix of the two readings); it now lists the first, one consistent reading (Python keeps the last: the registered
+  deviation); (2) a leading UTF-8 BOM, which `JSONSerialization` accepts, made the scan give up (index order); it is now
+  skipped. Two regression tests, red on `42f27e3` (4 issues), green on the fix. Held: escapes and surrogate pairs, braces and
+  backslashes in strings, deep nesting, every `Detectors` shape, odd `Detector-` keys, NUL padding, truncated text; the scan
+  is faster than one `JSONSerialization` pass on every realistic shape.
