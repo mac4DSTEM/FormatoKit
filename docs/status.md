@@ -37,29 +37,30 @@ What is live, one table; then the hand-off and what is unverified. Rules are in 
 | Step 4: Velox spectrum images as signals | Registered before code (`499adfc`), planted truth and pins before code (`9b740fa`); `VeloxSpectrumImageSignals` and `VeloxSpectrumImageOptions` (`4ac6df0`): RosettaSciIO's `select_type="spectrum_image"` (EELS then EDS, the six options, counts accumulated in the target type), the moved reader unchanged; oracle with sparse 0.19.2 and numba 0.68.0. P4: 28 files, 226 runs, 234 signals equal, 34 refused where RosettaSciIO raises, 9 registered deviations; 20 kernel pins; 16/16 mutants red (mutant 1 re-aimed: the registered one is equivalent) | `docs/registration-step-4.md` A1; `SpectrumImagePinsTests`, `VeloxSpectrumImageTests` |
 | Step 4 Gate B | One refuter on `4ac6df0`, about 28 000 generated cases: no wrong count, type or shape; fixed in `40a1d7d` (a trap on an overflowing grid, endFramePosition past Int64, a zero-frame image, Unicode digits, JSON decimals one ulp off, Pint's fermi), 15 files pinned, red first (23 issues and the trap); deviations registered | registration step 4 A1; `testStep4RefuterFilesAgreeOrAreRefused` |
 | The owner's SI as a spectrum image | O1, `rebin_energy=4`, frames 100 to 200: equal to RosettaSciIO (926 x 215 x 4096 uint16, 1.6 GB; FormatoKit 1 to 4 s each) | `tools/step-4/owner-check.sh` on `4ac6df0` (log `.build/owner-step4/owner-check.log`) |
+| 0.2.0 generality pass | No app or project name in Sources, tests, README, Package.swift, the example or the consumer checks (`git grep` empty); `FORMATO_HDF5_PATH` (step 1 A8); FormatoKit's policies as parameters with 0.1.1's defaults (`VeloxReadPolicy`, `TIFFReadOptions`, `DMReadOptions`; registration 0.2.0 A1); DocC per module; README stands alone with a second consumer built from it; CI's type-check timeouts fixed (CI not yet re-run: needs a push); the Swift code measured green at macOS 15 and compiling for iOS 18, the declaration kept at 27 (the bundled dylibs need macOS 26) | `docs/registration-0.2.0.md`, `docs/consumers-0.2.0.md`; gate stamped at `cd2938b` |
 | Empty modules | `FormatoMRC`, `FormatoEMPAD`, `FormatoMSA`: a scope statement each | their source file |
-| Tests | Swift Testing throughout (the owner's standard, 2026-10-15): 174 tests, the 121 moved names among them (3 renamed on purpose, A7); 0 failures, 0 warnings beyond the registered strip lines | `tools/test.sh`; `tools/step-1/names.sh` |
+| Tests | Swift Testing throughout (the owner's standard, 2026-10-15): 199 tests, the 121 moved names among them (3 renamed on purpose, A7); 0 failures, 0 warnings beyond the registered strip lines | `tools/test.sh`; `tools/step-1/names.sh` |
 | Gate | `tools/test.sh` green and stamped on `40a1d7d` (the Gate B fixes; later commits are docs only); 0.0.3 is `8d647bd`, 0.1.0 `bc832ab` (refuses to stamp with an untracked file under Sources/Tests) | `.build/last-green`; `tools/last-green.sh` |
 
 Validation: none. Agreement with RosettaSciIO and recovery of planted files are what is claimed (registration §8).
 
 ## Hand-off
 
-The suite board's `lanes/formatokit` carries the next prompt. What the next session starts from:
+The suite board's `lanes/formatokit` carries the next prompt. In order:
 
-1. **The owner tags 0.1.1** (the step-4 candidate: additive, `docs/consumers-0.1.1.md`); SpectroKit needs nothing (it keeps the
-   moved reader); an app that wants RosettaSciIO's exact spectrum-image arrays uses `VeloxSpectrumImageSignals`.
-2. **The next format lane** in the order the owner's data needs: EMPAD and the 4D HDF5 readers from mac4DSTEM (mac4DSTEM's
-   session hands over its readers read-only), then MRC and MSA; or Velox's single spectra (`Data/Spectrum`,
-   `select_type="single_spectrum"`), a small step on step 4's code.
-3. The 0.2.0 generality pass (defaults as parameters, no suite names) is the owner's next kit-wide step; the platform floor and
-   the libhdf5-inside-apps question stay the owner's.
+1. **The 0.2.0 refuter** (registration 0.2.0 §3: one refuter over the non-default policy paths, against RosettaSciIO where it
+   reads), its fixes red first; then the owner tags 0.2.0.
+2. **0.2.1: macOS 15 and iOS 18.** Rebuild the three dylibs with MACOSX_DEPLOYMENT_TARGET=15 (HDF5 2.1.1, the same build,
+   registered), declare `.macOS(.v15), .iOS(.v18)`, HDF5 and Velox macOS-only at run time; pin the Xcode version in CI.
+3. **Step 5**: EMPAD and the 4D HDF5 readers.
 
 ## Unverified
 
 - The resource-bundled dylibs inside a signed, notarised app (the apps embed their own; the bundle's copies are ad-hoc
   signed): not tried. An owner decision on the board.
 - Big-endian DM files: none exists to test; not detected.
+- `References/` is still a folder here (moving it to `../References/FormatoKit` with a link was refused by this session's
+  permission check: the owner's command is on the board).
 - Velox: the step-3 deviations of registration step 3 A1 and step 4's of A1; `lazy=True` and single spectra are not ported;
   hostile grids and bin counts were run on FormatoKit only (the suite's memory rule): not refuted against RosettaSciIO here.
 - No performance work: lazy reads are positioned reads (DM, TIFF) and per-frame reads (Velox), not memory-mapped.
