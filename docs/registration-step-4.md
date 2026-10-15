@@ -214,4 +214,47 @@ it is); the `DetectorMetadata` mapping and RosettaSciIO's wider metadata (dates,
 
 ## 11. Amendments
 
-None yet.
+**A1 (2026-10-15, 12:45 CEST, the first runs, the mutants and Gate B).** None moves a registered number.
+1. *A planted file added after code started* (`si-planted-endframe.emd`, at `4ac6df0`): `endFramePosition` 2 over a stream of
+   3 frames, and the matched detector without `Dispersion`, so mutants 12 (`last_frame` from the markers) and 16 (the energy
+   fallback) have a file that tells them apart; generated, pinned and equal to RosettaSciIO like the others.
+2. *Results on `4ac6df0`.* Gate P4: 28 files (10 public, 12 planted, 6 SpectroKit copies), 226 (file, option set) runs, 234
+   signals equal in type, shape, bytes, axes bit for bit, title, signal type and metadata; 34 refused where RosettaSciIO raises;
+   9 registered deviations (the grid file's 8 reads, the bin counts' unsummed read). 20 kernel pins equal. Planted literals
+   green. Consumer check 39 of 39. The owner's SI (`tools/step-4/owner-check.sh`, log `.build/owner-step4/owner-check.log`, never
+   committed): O1, O4 and frames 100 to 200, all equal (926 x 215 x 4096 and x 1024 uint16; RosettaSciIO 9.8 s for the three,
+   FormatoKit 1 to 4 s each). `tools/step-1/mutants.py --step 4`: 15 of 16 red; **mutant 1 as registered is equivalent**
+   (testing the frame turnover right after a frame's last marker or on the next value counts the same events in the same
+   voxels for every stream when ny * nx >= 1; only when the loop's stop flag is set differs) and is re-aimed at a turnover one
+   pixel early: red, so 16 of 16.
+3. *Gate B* (one refuter, Sonnet, on the frozen `4ac6df0`; about 28 000 generated (file, option set) cases against RosettaSciIO
+   with numba): no wrong count, type or shape on ordinary inputs; wraps, float32 past 2^24, rebinning, frame ranges, 1 to 12
+   streams, gzip / shuffle / fletcher32 streams, links, 20 EELS types and ranks 0 to 4 agree. Fixed (`40a1d7d`, red first on
+   `4ac6df0`: 23 issues and a trap; 15 refuter files pinned by `tools/step-4/refuter_pins.py` in `step4/refuter/`):
+   - F7: with no `endFramePosition` and no `last_frame`, a first image whose ny * nx overflows Int trapped in the frame count;
+     now checked first and refused (RosettaSciIO raises on such an array).
+   - F2: an `endFramePosition` beyond Int64 was taken as absent; Python keeps the integer and raises downstream (OverflowError,
+     or ValueError for the array extent; with an explicit `last_frame` only a negative one raises): ported.
+   - F3: a zero-frame first image raises in RosettaSciIO (`h5data[:, :, 0]`): refused (spectrum-image files).
+   - F1: Velox numbers read Unicode decimal digits ("٣", "１") and underscores as Python's `int()` and `float()` do, after
+     Python's own strip (`str.isspace`; Foundation's whitespace set also holds the zero-width space, which Python keeps). For
+     FormatoEMD only (the SI path, `VeloxImageSignals`, the `Version` in `VeloxTitles`); TIFF and DM keep step 2's F15.
+   - F5: a JSON number that `JSONSerialization` keeps as `NSDecimalNumber` gave a Double one ulp off Python's correctly rounded
+     value (e.g. 0.000271666335894359: `...ef18` against `...ef17`); `formatoPythonFloat` (FormatoCore) now parses its exact
+     decimal text. Velox writes its numbers as strings, so no public, planted or owner pin moves; the "ulp" cases the refuter
+     filed against FormatoUnits were this, not the unit arithmetic. Beyond NSDecimalNumber's 38 digits a value may still differ.
+   - F6: "fm" is Pint's fermi (it compacts to "Mfm", "mfm"), not femto-metre: refused by `FormatoUnits.parse` (step 1's units).
+4. *Registered deviations added:* a big-endian uint16 stream is READ here (RosettaSciIO's jitted fill raises a numba
+   TypingError on the non-native type; the values are the native file's); the first image's `PixelUnitX` null is refused, as the
+   image path refuses it (step 3); a `DetectorName` or `BinaryResult.Detector` that is not a string (Python's `in` reads a list as
+   membership) is refused; an LZF-filtered stream is refused (no LZF filter in the shipped libhdf5, step 3 A1); `SI_dtype` values
+   outside the ten types (bool, complex, float16, numpy aliases) cannot be asked for. Left as before: a raising mapping
+   (`AccelerationVoltage` that `float()` refuses) counts as RosettaSciIO raising (step 2's convention).
+5. *Memory* (the suite's rule of 12:30, after the refuter's oracle grew to 44 GB on a hostile grid and was killed by the
+   coordinator): every oracle process caps itself at 8 GB. macOS refuses `setrlimit` on RLIMIT_AS and RLIMIT_DATA below
+   infinity, so `tools/step-1/pins.py cap_memory()` (imported by every FormatoKit pins script) also runs a watchdog on its own
+   peak resident size and exits 3 past the cap; the refuter's worker did the same. Inputs given to RosettaSciIO stay under 2 GB.
+   Not refuted on this machine: hostile grids and bin counts against RosettaSciIO (run on FormatoKit only, which refuses them
+   or allocates lazily up to the machine's memory); the overflowing grid is pinned as "not run". The refuter's phase G3 results
+   are absent. Regenerating step 3's pins now flips only their informational `spectrum_stream_not_read` to false (sparse is
+   installed); the committed pins are kept (the message of `6bdecb3` said byte-identical for both: true for step 4 only).
