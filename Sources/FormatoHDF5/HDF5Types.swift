@@ -11,7 +11,7 @@ public typealias hsize_t = UInt64
 /// The bundled libhdf5 is built `Threadsafety: OFF`, and it was entered from
 /// two unserialised paths — `H5Reader`, an actor per instance, and
 /// `BraggVectorEMDWriter`, a nonisolated enum with its own `dlopen`.
-/// mac4DSTEM's `tools/hdf5-race-probe` reproduces the crash: serial completes, concurrent
+/// A race probe in a host application's tools reproduces the crash: serial completes, concurrent
 /// dies with SIGBUS inside the first twenty iterations. This is HDF5's own
 /// thread-safe build done from outside — its `H5_API_LOCK` is a global mutex
 /// around every API call; this one is around every logical operation (an
@@ -41,19 +41,19 @@ public nonisolated enum HDF5Serial {
     /// THE QUIT BARRIER (Slot 4¾ review, 2026-10-02). `exit()`, where every
     /// Quit ends, runs HDF5's own atexit handler `H5_term_library`, which takes
     /// no lock of ours: a Task still inside `H5Dread` raced the teardown and
-    /// the process crashed at quit (mac4DSTEM's `tools/hdf5-exit-race-test`). This handler
+    /// the process crashed at quit (reproduced by a host application's exit-race test). This handler
     /// takes the lock and never gives it back. HDF5 registers its handler once
     /// per process, inside the first `H5open`, and atexit runs last-registered
     /// first — so every loader calls this right after a successful `H5open`
-    /// (here `VeloxEMDReader`; in the hosts mac4DSTEM's `H5Reader` and
-    /// `BraggVectorEMDWriter`, macTEM's `SidecarHDF5`):
+    /// (here `VeloxEMDReader`; in a host, its own HDF5 readers and
+    /// writers):
     /// exit waits for the one call in flight, then HDF5 tears down with no
     /// other thread able to enter. The lock is recursive, so an exit on a
     /// thread that holds it goes straight through; nothing that holds it waits
     /// on the main thread. Cost: a quit waits for at most one locked operation,
     /// and never longer than `exitBarrierBound` (below).
     ///
-    /// BOUNDED (SpectroKit 0.2.0; macTEM ADR 021, its ask of 2026-10-14). A thread stuck INSIDE HDF5 holds the lock
+    /// BOUNDED (the inherited 0.2.0, at a host's request of 2026-10-14). A thread stuck INSIDE HDF5 holds the lock
     /// forever (a damaged global heap makes `H5Aread` spin in `H5HG__cache_heap_deserialize`; the heap has no checksum),
     /// and the unbounded wait made Quit wait for Force Quit. The handler now waits `exitBarrierBound` for the lock
     /// (`lock(before:)`). Past it, it writes one line to stderr and calls `_exit(70)` (EX_SOFTWARE; the status `exit`
@@ -78,16 +78,16 @@ public nonisolated enum HDF5Serial {
     nonisolated(unsafe) private static var exitBarrierInstalled = false
 
     /// How long a quit waits for the HDF5 operation in flight: 10 s, shorter than a user reaches for Force Quit. Inside
-    /// SpectroKit every locked operation is one call or one block (a Velox slab of at most 32 Mi values; the whole
+    /// this package every locked operation is one call or one block (a Velox slab of at most 32 Mi values; the whole
     /// 1745 MB Velox read took 3.8 s in Release, S3). A host's locked operations are its own and can be longer:
-    /// mac4DSTEM holds the lock for a whole sidecar rebuild, or a tile read of up to physicalMemory/24 bytes, which a
+    /// a host may hold the lock for a whole sidecar rebuild, or a tile read of up to physicalMemory/24 bytes, which a
     /// slow volume can stretch past 10 s. So the bound limits the quit; it does not promise that no operation outlasts
     /// it. A host write that publishes by temporary file and rename leaves its destination unchanged when the quit cuts
     /// it.
     public static var exitBarrierBound: TimeInterval {
         Double(exitBarrierBoundMilliseconds.load(ordering: .acquiring)) / 1000
     }
-    /// The bound for this process. For the barrier's own tests (`SpectroHDF5ExitProbe`); a host does not set it.
+    /// The bound for this process. For the barrier's own tests (`FormatoHDF5ExitProbe`); a host does not set it.
     package static func setExitBarrierBound(_ seconds: TimeInterval) {
         let milliseconds = (seconds * 1000).rounded()
         // False for NaN, infinity, a negative value, or milliseconds that do not fit an Int (`Int(...)` would trap).

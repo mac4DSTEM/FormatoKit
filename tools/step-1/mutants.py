@@ -123,7 +123,7 @@ def main():
     refs = copy / "References"
     if not refs.exists():
         refs.symlink_to(ROOT / "References")
-    env = dict(os.environ, MAC4DSTEM_HDF5_PATH=str(copy / "Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib"))
+    env = dict(os.environ, FORMATO_HDF5_PATH=str(copy / "Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib"))
     # The public zips the pins read, unzipped as tools/test.sh does (into the copy's .build).
     subprocess.run(["zsh", "-c", "set -e; d=.build/rsciio-unzipped/emd; rm -rf .build/rsciio-unzipped; mkdir -p $d; "
                     "for z in fei_emd_files.zip velox_EELS_EDS.zip velox_emd_v11_elementSelection.zip velox_emd_version11.zip; do "

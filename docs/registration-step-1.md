@@ -383,3 +383,12 @@ axis, `exposureTimeSeconds`, `VeloxStreamInfo.segments`, `superXDetectors`.
   skipped. Two regression tests, red on `42f27e3` (4 issues), green on the fix. Held: escapes and surrogate pairs, braces and
   backslashes in strings, deep nesting, every `Detectors` shape, odd `Detector-` keys, NUL padding, truncated text; the scan
   is faster than one `JSONSerialization` pass on every realistic shape.
+
+**A8 (2026-10-15, 14:20 CEST, the 0.2.0 generality pass).** The four inherited files change on purpose, with no behaviour
+change except one: comments and two error strings lose the names of the apps and the package they came from (the record stays
+in this registration, `NOTICE` and `docs/consumers-*.md`); and the libhdf5 override variable is renamed from the old app-named
+`MAC4DSTEM_HDF5_PATH` to `FORMATO_HDF5_PATH` (read in `VeloxEMDReader.swift`'s library lookup; no fallback to the old name; a
+breaking change named in `docs/consumers-0.2.0.md`). `tools/step-1/move-parity/run.sh` exports both, because SpectroKit 0.3.0,
+the other side of that comparison, still reads the old one. The 121 inherited test names and the golden's 175 lines are
+unchanged. Registration 0.2.0's P6 adds a registered `maximumStringBytes` parameter to the DM walk (default byte-identical);
+its diff is cited there.

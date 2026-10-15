@@ -1,7 +1,7 @@
 //
 //  FormatoHDF5Library.swift
 //  Role: Where the libhdf5 that FormatoKit ships lives (docs/registration-step-1.md §5). HDF5 2.1.1 with libsz and libaec,
-//        the three arm64 dylibs mac4DSTEM vendors (its commit 5ba712a0; sha256 in NOTICE), are a resource of this target,
+//        the three arm64 dylibs (vendored at 5ba712a0; provenance and sha256 in NOTICE), are a resource of this target,
 //        so a package that depends on FormatoKit reads HDF5 files with nothing installed and no variable set. The readers
 //        `dlopen` libhdf5 (they never link it); this is one more place for them to look, after the host's own copy.
 //

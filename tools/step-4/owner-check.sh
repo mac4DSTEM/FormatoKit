@@ -20,5 +20,5 @@ if [[ ! -s $out/owner-pins.json || ${OWNER_REUSE_PINS:-0} == 0 ]]; then
   /usr/bin/time -p ../tools/memcap.sh -- References/rsciio-venv/bin/python -I -B tools/step-4/pins.py --owner "${f:A}" --out $out/owner-pins.json --options O1,O4,O11 2>&1 | grep -v WARNING
 fi
 export FORMATO_OWNER_SI_PINS=$out/owner-pins.json FORMATO_OWNER_SI_FILE=${f:A}
-export MAC4DSTEM_HDF5_PATH=${MAC4DSTEM_HDF5_PATH:-$PWD/Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib}
+export FORMATO_HDF5_PATH=${FORMATO_HDF5_PATH:-$PWD/Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib}
 swift test -c release --filter SpectrumImagePinsTests.testOwnerSpectrumImages 2>&1 | tee $out/owner-check.log | grep -E "OwnerSI:|error|issue|passed after|failed after" | tail -8

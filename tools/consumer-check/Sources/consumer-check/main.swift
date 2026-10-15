@@ -19,10 +19,10 @@ let planted = tests.appendingPathComponent("FormatoDMTests/Fixtures/eels-planted
 let demo = tests.appendingPathComponent("FormatoDMTests/Fixtures/demo-edx-tiny.dm4").path
 
 // H1: no variable, the shipped library.
-check(ProcessInfo.processInfo.environment["MAC4DSTEM_HDF5_PATH"] == nil, "MAC4DSTEM_HDF5_PATH is unset for this run")
+check(ProcessInfo.processInfo.environment["FORMATO_HDF5_PATH"] == nil, "FORMATO_HDF5_PATH is unset for this run")
 check(FormatoHDF5Library.bundledLibraryPath != nil, "the shipped libhdf5 is found next to the consumer")
 
-// FormatoEMD: the moved API SpectroKit 0.4.0 and the apps call.
+// FormatoEMD: the inherited API that consumers call.
 check(VeloxEMDReader.isVeloxEMD(path: velox), "isVeloxEMD")
 check(VeloxEMDReader.isVeloxFile(path: velox), "isVeloxFile")
 do {
@@ -39,7 +39,7 @@ do {
     check((try? VeloxEMDReader(path: velox).readSpectrumImage(cancelled: { true })) == nil, "cancellation throws")
     do { _ = try VeloxEMDReader(path: velox).readSpectrumImage(cancelled: { true }) } catch { check(error is FormatoCancelled, "FormatoCancelled") }
 } catch { check(false, "readSpectrumImage: \(error)") }
-// 0.0.3: the five members SpectroKit's tests read, each flag at both values (negative controls), over every stream.
+// 0.0.3: the five members a consumer's tests read, each flag at both values (negative controls), over every stream.
 do {
     let tiny = try VeloxEMDReader(path: velox).readSpectrumImage()
     check(tiny.streamCount == 2 && tiny.streams.map(\.id).count == 2 && tiny.eventStore.pixelCount == 6, "streamCount, stream ids, pixelCount")
@@ -50,7 +50,7 @@ do {
     check(!flags.eventStore.streamsAgreeOnCoverage, "streamsAgreeOnCoverage false when a later stream stops early")
     check(flags.energyCalibrationAgrees, "energyCalibrationAgrees true on one calibration")
 } catch { check(false, "0.0.3 members: \(error)") }
-// 0.0.3: the Detectors entries in the written order, as RosettaSciIO (SpectroKit's planted file; the index order gave 0.01 / -0.5).
+// 0.0.3: the Detectors entries in the written order, as RosettaSciIO (a planted file; the index order gave 0.01 / -0.5).
 do {
     let order = try VeloxEMDReader(path: tests.appendingPathComponent("FormatoEMDTests/Fixtures/velox-stream-axis-order.emd").path).readSpectrumImage()
     check(order.metadata.energyAxis?.offsetKeV == -1.9 && order.metadata.energyAxis?.scaleKeV == 0.02, "energy axis from the first detector written")

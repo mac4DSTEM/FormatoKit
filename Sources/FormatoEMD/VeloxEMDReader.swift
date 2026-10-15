@@ -18,7 +18,7 @@
 //  an image like any other image). No AppState: nothing in the app sees this yet.
 //
 //  Images (2026-10-12): `images()` lists a file's `Data/Image` stacks and `readImageFrame` reads one
-//  frame of one as Float32, so macTEM's image reader needs no second Velox parser. A file that
+//  frame of one as Float32, so an image reader needs no second Velox parser. A file that
 //  holds only images is a Velox file (`isVeloxFile`) but not a spectrum image (`isVeloxEMD`).
 //
 
@@ -468,15 +468,15 @@ public nonisolated struct VeloxMetadata: Sendable {
     public let instrumentModel: String?
     public let acquisitionStartUnixTime: Double?
     public let scanTransformation: VeloxScanTransformation?
-    // The six below (SpectroKit 0.2.0: five from macTEM's ask of 2026-10-13, `stemMagnification` the owner's of
-    // 2026-10-14) are as stored: no unit conversion, no decoding, nil when absent or not a number. macTEM's Velox-TIFF
+    // The six below (added in the inherited reader's 0.2.0: five at a consumer's request of 2026-10-13, `stemMagnification` at another of
+    // 2026-10-14) are as stored: no unit conversion, no decoding, nil when absent or not a number. A Velox-TIFF
     // reader reads the same names from the same tree in XML. "Not a number": a string is parsed by Swift's `Double(_:)`
     // (no surrounding spaces, no `_`; "0x10" is 16), where RosettaSciIO uses Python's `float`; the two agree on every
     // string of RosettaSciIO 049e7d70's public Velox files (tools/velox-metadata-parity). A string that spells NaN or
     // infinity ("nan", "inf", "Infinity", in any case, signed) parses to a non-finite value in Swift and in Python
     // alike and is returned as that value, not as nil: a reader that needs a finite number checks `isFinite`. A JSON
     // number is taken as is (a JSON `true`/`false` as 1/0, as Python's `float(True)` is 1.0; Velox stores numbers as
-    // strings). `exposureTimeSeconds` is macTEM's ask (the entry named by `BinaryResult.Detector`) applied with
+    // strings). `exposureTimeSeconds` is a consumer's request (the entry named by `BinaryResult.Detector`) applied with
     // RosettaSciIO's name matching; it is not RosettaSciIO's `DetectorMetadata` (see the field).
     /// `Optics.NominalMagnification`. Absent from every STEM image of RosettaSciIO 049e7d70's public files.
     public let nominalMagnification: Double?
@@ -495,7 +495,7 @@ public nonisolated struct VeloxMetadata: Sendable {
     /// `Optics.ProjectorMode` as stored: a code in an `.emd` as well ("1", "2").
     public let projectorMode: String?
     /// `ExposureTime` (s) of the first `Detectors` entry, in the order the file writes the keys, whose `DetectorName`
-    /// equals `BinaryResult.Detector`. The rule is macTEM's ask, applied with the matching of RosettaSciIO 049e7d70's
+    /// equals `BinaryResult.Detector`. The rule is a consumer's request, applied with the matching of RosettaSciIO 049e7d70's
     /// `_get_detector_metadata_dict` (`_emd_velox.py:51-57`): `==`, not the energy axis's `contains`, and the first
     /// entry as the file stores the keys (FormatoKit 0.0.3, registration step 1 A7; until then index order, which differs
     /// only when two entries share a `DetectorName` out of index order; no public file writes its keys out of index order).
@@ -747,14 +747,14 @@ private nonisolated let collectVeloxLink: @convention(c)
         return 0
     }
 
-/// Where the Velox reader looks for libhdf5, in order (SpectroKit 0.3.0's list plus one): the `MAC4DSTEM_HDF5_PATH`
+/// Where the Velox reader looks for libhdf5, in order (the inherited list plus one): the `FORMATO_HDF5_PATH`
 /// override, the host app's `Frameworks/libhdf5.dylib` (a host that ships its own is served first), the copy FormatoKit ships
 /// (`FormatoHDF5Library.bundledLibraryPath`, docs/registration-step-1.md §5), then the loader's search path. A host with other names sets `libraryCandidates` once, before the first read.
 package nonisolated enum VeloxHDF5Library {
     /// The default list: exactly the lookup the reader has always done.
     package static let defaultCandidates: @Sendable () -> [String] = {
         [
-            ProcessInfo.processInfo.environment["MAC4DSTEM_HDF5_PATH"],
+            ProcessInfo.processInfo.environment["FORMATO_HDF5_PATH"],
             Bundle.main.privateFrameworksURL?.appendingPathComponent("libhdf5.dylib").path,
             Bundle.main.executableURL?.deletingLastPathComponent().appendingPathComponent("../Frameworks/libhdf5.dylib").standardized.path,
             FormatoHDF5Library.bundledLibraryPath,

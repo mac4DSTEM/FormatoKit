@@ -1,11 +1,11 @@
 // swift-tools-version: 6.2
-// FormatoKit — the macEM suite's file-format library, the Mac counterpart of RosettaSciIO: readers (and later writers)
+// FormatoKit — a file-format library for electron microscopy on the Mac, the counterpart of RosettaSciIO: readers (and later writers)
 // for the electron-microscopy formats, one module per format, over one data model (FormatoCore: axes, units, metadata
 // with provenance, lazy signals). Checked bit for bit against RosettaSciIO (GPL-3.0) at a pinned commit; the DM and Velox
-// readers were moved here from SpectroKit 0.3.0 (GPL-3.0). docs/registration-step-1.md is the first registration.
+// readers are inherited from an earlier GPL-3.0 package (registration step 1 §1.1). docs/registration-step-1.md is the first registration.
 //
-// Swift 6 language mode, nonisolated by default (no `.defaultIsolation`), the three upcoming features the suite's
-// packages enable, no unsafe flags (a versioned dependency cannot carry them): a consumer builds the kit optimised itself,
+// Swift 6 language mode, nonisolated by default (no `.defaultIsolation`), the three upcoming features that
+// the settings below enable, no unsafe flags (a versioned dependency cannot carry them): a consumer builds the kit optimised itself,
 // and tools/test.sh runs this package's tests with `-c release`. One product per module. What one module needs from
 // another is `package`, never `public`; what a consumer reads is `public` and is guarded by tools/consumer-check.
 // libhdf5 ships inside FormatoHDF5 as a resource (the readers dlopen it): `swift build` and `swift test` need no setup.
@@ -38,9 +38,9 @@ let package = Package(
         .target(name: "FormatoCore", swiftSettings: settings),
         // HDF5: the process-wide HDF5 lock and quit barrier (HDF5Serial), the shipped libhdf5. Later: hspy, the sidecar.
         .target(name: "FormatoHDF5", resources: [.copy("Resources/hdf5")], swiftSettings: settings),
-        // Gatan DigitalMicrograph .dm3 / .dm4: DM4Experiment (moved from SpectroKit 0.3.0) and the signal adapter.
+        // Gatan DigitalMicrograph .dm3 / .dm4: DM4Experiment (inherited reader, registration step 1 §1.1) and the signal adapter.
         .target(name: "FormatoDM", dependencies: ["FormatoCore"], swiftSettings: settings),
-        // EMD: Velox (moved from SpectroKit 0.3.0) and its image adapter. Later: NCEM / Berkeley EMD.
+        // EMD: Velox (inherited reader, registration step 1 §1.1) and its image adapter. Later: NCEM / Berkeley EMD.
         .target(name: "FormatoEMD", dependencies: ["FormatoCore", "FormatoHDF5"], swiftSettings: settings),
         // Empty until registered; their scope is in their one source file's doc comment.
         .target(name: "FormatoTIFF", dependencies: ["FormatoCore"], swiftSettings: settings),
@@ -66,7 +66,7 @@ let package = Package(
         // its own process). Not a product; FormatoHDF5Tests depends on it only so `swift test` builds it.
         .executableTarget(name: "FormatoHDF5ExitProbe", dependencies: ["FormatoEMD", "FormatoHDF5"],
                           path: "Tests/FormatoHDF5ExitProbe", swiftSettings: settings),
-        // The Velox reader's part of SpectroKit's golden baseline, byte for byte (registration §1.3).
+        // The Velox reader's part of the inherited golden baseline, byte for byte (registration §1.3).
         // Step 2 (docs/registration-step-2.md): the TIFF container and TIFF files as signals, against RosettaSciIO and tifffile.
         .testTarget(name: "FormatoTIFFTests", dependencies: ["FormatoTIFF", "FormatoCore"], exclude: ["Fixtures"],
                     swiftSettings: settings),

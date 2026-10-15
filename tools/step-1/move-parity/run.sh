@@ -105,8 +105,9 @@ fi
 print "built both in $(( EPOCHSECONDS - T0 )) s"
 
 # libhdf5: SpectroKit 0.3.0 ships none; FormatoKit's own copy serves both.
-export MAC4DSTEM_HDF5_PATH=$FKC/Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib
-[[ -f $MAC4DSTEM_HDF5_PATH ]] || { print -u2 "missing $MAC4DSTEM_HDF5_PATH"; exit 3 }
+export FORMATO_HDF5_PATH=$FKC/Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib
+[[ -f $FORMATO_HDF5_PATH ]] || { print -u2 "missing $FORMATO_HDF5_PATH"; exit 3 }
+export MAC4DSTEM_HDF5_PATH=$FORMATO_HDF5_PATH   # the original package's side still reads its own name
 
 # 4. The file list: label, path.
 RAW=$SCRATCH/files.raw
@@ -157,7 +158,7 @@ while IFS=$'\t' read -r label fpath_; do
   if (( size >= 200000000 )); then dest=big; else dest=small; fi
   printf '%s\0%s\0' "$stem" "$fpath_" >> "$SCRATCH/jobs-$dest.0"
 done < "$SCRATCH/files.tsv"
-export MAC4DSTEM_HDF5_PATH
+export FORMATO_HDF5_PATH MAC4DSTEM_HDF5_PATH
 T1=$EPOCHSECONDS
 xargs -0 -n 2 -P "$JOBS" "$HERE/run.sh" __one < "$SCRATCH/jobs-small.0"
 T2=$EPOCHSECONDS
