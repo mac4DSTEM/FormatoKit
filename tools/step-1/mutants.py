@@ -3,7 +3,7 @@
 (`git archive`, never the working tree), the tests that should catch it run (`swift test -c release --filter ...`), and the
 mutant must turn at least one test red. The copy keeps one warm .build across mutants.
 
-    mutants.py [--commit REV] [--only N,...] [--step 1|2]
+    mutants.py [--commit REV] [--only N,...] [--step 1|2|3|4] [--jobs N]
 
 `--step 2` runs docs/registration-step-2.md §6's mutants (FormatoTIFF) instead of step 1's; `--step 3` registration step 3
 §6's (Velox stored types and titles); `--step 4` registration step 4 §6's (Velox spectrum images).
@@ -85,7 +85,9 @@ MUTANTS_STEP3 = [   # docs/registration-step-3.md §6
 SI = "Sources/FormatoEMD/VeloxSpectrumImageSignals.swift"
 P4 = "SpectrumImagePinsTests|VeloxSpectrumImageTests"
 MUTANTS_STEP4 = [   # docs/registration-step-4.md §6
-    (1, "the frame turnover tested after the value", SI, '        for value in block {\n            if navigation == frameSize {\n                navigation = 0\n                frame += 1\n                if frame == layout.last { state.stopped = true; break }\n            }\n            if value != 65535 {\n                if layout.first <= frame {\n                    let channel = Int(value)\n                    guard channel < bins else { state.outOfRange = true; break }\n                    let index: Int\n                    if layout.sumFrames {\n                        index = navigation * outBins + channel / layout.rebin\n                    } else {\n                        let f = frame - layout.first\n                        guard f < frames else { state.outOfRange = true; break }\n                        index = (f * frameSize + navigation) * outBins + channel / layout.rebin\n                    }\n                    increment(&counts[index])\n                }\n            } else {\n                navigation += 1\n            }\n        }\n        state.navigation = navigation', '        for value in block {\n            if value != 65535 {\n                if layout.first <= frame {\n                    let channel = Int(value)\n                    guard channel < bins else { state.outOfRange = true; break }\n                    let index: Int\n                    if layout.sumFrames {\n                        index = navigation * outBins + channel / layout.rebin\n                    } else {\n                        let f = frame - layout.first\n                        guard f < frames else { state.outOfRange = true; break }\n                        index = (f * frameSize + navigation) * outBins + channel / layout.rebin\n                    }\n                    increment(&counts[index])\n                }\n            } else {\n                navigation += 1\n                if navigation == frameSize {\n                    navigation = 0\n                    frame += 1\n                    if frame == layout.last { state.stopped = true; break }\n                }\n            }\n        }\n        state.navigation = navigation', P4),
+    # The registered mutant 1 (the turnover tested after the value) is equivalent: for ny * nx >= 1 both orders count the same
+    # events in the same voxels (amendment A1); re-aimed at a turnover one pixel early.
+    (1, "the frame turnover one pixel early", SI, "            if navigation == frameSize {\n                navigation = 0", "            if navigation == frameSize - 1 {\n                navigation = 0", P4),
     (2, "no stop at frame == last_frame", SI, "if frame == layout.last { state.stopped = true; break }", "if false && frame == layout.last { state.stopped = true; break }", P4),
     (3, "first_frame <= frame made <", SI, "if layout.first <= frame {", "if layout.first < frame {", P4),
     (4, "the channel not divided by rebin_energy", SI, "index = navigation * outBins + channel / layout.rebin", "index = navigation * outBins + channel % outBins", P4),
@@ -108,6 +110,7 @@ def main():
     ap.add_argument("--commit", default="HEAD")
     ap.add_argument("--only")
     ap.add_argument("--step", default="1", choices=["1", "2", "3", "4"])
+    ap.add_argument("--jobs", type=int, default=None, help="swift test -j N (the suite's 8-job machine-wide limit)")
     a = ap.parse_args()
     only = {int(x) for x in a.only.split(",")} if a.only else None
     work = Path(os.environ.get("MUTANTS_WORK") or tempfile.mkdtemp(prefix="formato-mutants-"))
@@ -140,7 +143,8 @@ def main():
             print(f"  {n:2d} does not apply ({pristine.count(old)} matches): {what}", flush=True); continue
         f.write_text(pristine.replace(old, new))
         try:
-            r = subprocess.run(["swift", "test", "-c", "release", "--filter", flt], cwd=copy, env=env, capture_output=True, text=True)
+            jobs = ["-j", str(a.jobs)] if a.jobs else []
+            r = subprocess.run(["swift", "test", "-c", "release", *jobs, "--filter", flt], cwd=copy, env=env, capture_output=True, text=True)
             out = r.stdout + r.stderr
             # XCTest prints " error: -[Suite test] : ..."; Swift Testing prints "✘ Test ... recorded an issue ...".
             failed = r.returncode != 0 and (" error: -[" in out or "failed (" in out or "✘ Test" in out)

@@ -2,7 +2,7 @@
 
 The checklist that makes "complete" a measured claim (suite ROADMAP, "Kits", phase 4). Started 2026-10-15 from RosettaSciIO
 049e7d70's own format list (its 38 `rsciio/*/specifications.yaml`, the source of its supported-formats table). Updated at
-every tag (last: 0.0.3, 2026-10-15). "Pinned" means a gate compares FormatoKit with RosettaSciIO bit for bit on that format's files; "read" means a
+every tag (last: the 0.1.1 candidate, 2026-10-15). "Pinned" means a gate compares FormatoKit with RosettaSciIO bit for bit on that format's files; "read" means a
 reader exists without that gate.
 
 ## The formats
@@ -13,7 +13,7 @@ instruments and techniques, out of scope until someone asks.
 | RosettaSciIO plugin | Extensions | RosettaSciIO writes | FormatoKit module | State | Priority |
 |---|---|---|---|---|---|
 | DigitalMicrograph | dm3, dm4 | no | `FormatoDM` | **pinned** (step 1): every object as a signal; 106 public signals and the owner's 40 bit for bit; the moved `DM4Experiment` API | A |
-| EMD, Velox | emd | no | `FormatoEMD` | **pinned** for images as signals (step 1; stored type and titles, step 3); the spectrum stream read and parity-checked in SpectroKit's history (moved API); the detectors in RosettaSciIO's order (0.0.3) | A |
+| EMD, Velox | emd | no | `FormatoEMD` | **pinned** for images as signals (step 1; stored type and titles, step 3) and for spectrum images as signals (step 4: EDS from the streams and EELS, every option); the moved spectrum-stream API as SpectroKit uses it; the detectors in RosettaSciIO's order (0.0.3); single spectra (`Data/Spectrum`) not read | A |
 | EMD, NCEM / Berkeley | emd | yes | `FormatoEMD` | not read | B |
 | EMD, prismatic | emd | no | — | not read | C |
 | TIFF | tif, tiff | yes | `FormatoTIFF` | **pinned** (step 2) for FEI, Gatan DM tags, ImageJ and plain files, uncompressed strips: 31 public and planted series and the owner's 6 Ceta TIFFs bit for bit; the tag walker equal to tifffile; Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu streak, compression and tiles refused by name | A |
@@ -59,9 +59,9 @@ instruments and techniques, out of scope until someone asks.
 |---|---|---|
 | DigitalMicrograph | `lazy` | always lazy (`FormatoLazySignal`, positioned reads); `load()` is the eager array, registered equal (L1) |
 | | `order`, `optimize`, `chunks` | no: C order as stored; dask chunking has no counterpart |
-| EMD (Velox) | `lazy` | images lazy per frame (L1); the moved spectrum-stream reader decodes eagerly into CSR |
+| EMD (Velox) | `lazy` | images lazy per frame (L1); spectrum images eager, as RosettaSciIO's `lazy=False` (its `lazy=True` sparse COO path, whose float counts beyond 2^24 differ, is not ported); the moved spectrum-stream reader decodes eagerly into CSR |
 | | `select_type="images"` | `VeloxImageSignals`: stored type and RosettaSciIO's titles (step 3) |
-| | `select_type="spectrum_image"`, `first_frame`, `last_frame`, `sum_frames`, `sum_EDS_detectors`, `rebin_energy`, `SI_dtype` | as signals: step 4. The moved `VeloxEMDReader.readSpectrumImage(frames:)` already sums every stream over a frame range (SpectroKit's use) |
+| | `select_type="spectrum_image"`, `first_frame`, `last_frame`, `sum_frames`, `sum_EDS_detectors`, `rebin_energy`, `SI_dtype` | `VeloxSpectrumImageSignals` with `VeloxSpectrumImageOptions` (step 4): all six, RosettaSciIO's defaults, pinned on 10 public, 12 planted and 6 SpectroKit files over ten option sets. The moved `VeloxEMDReader.readSpectrumImage(frames:)` keeps SpectroKit's rules |
 | | `select_type="single_spectrum"` | no |
 | | `load_SI_image_stack` | the default only (the first frame of an SI file's images) |
 | | `dataset_path`, `stack_group` (NCEM / Berkeley EMD) | no: NCEM EMD is not read |
@@ -101,8 +101,13 @@ instruments and techniques, out of scope until someone asks.
 - **Velox compound images** (FFT, DPC) are refused; RosettaSciIO returns them complex.
 - **Units outside FormatoUnits** (m and s with SI prefixes, their inverses, dimensionless) refuse the image: Pint also
   reads "px", "Å", "nanometre" and more (registration A5, F7).
-- **Velox spectrum images as signals** (`select_type="spectrum_image"`, frame sums, rebinning, `SI_dtype`, the sparse
-  output): the moved reader decodes the stream; the signal adapter and its pins are step 4.
+- **Velox spectrum images (equal since step 4).** EDS and EELS spectrum images as RosettaSciIO's `select_type="spectrum_image"`
+  returns them, every option, the counts wrapping in the stream's type as its jitted loop does (`docs/registration-step-4.md`).
+  Left, registered deviations (refused here where RosettaSciIO reads): a first image whose grid differs from ScanSize x
+  ScanArea; a stream that is not one uint16 column; a channel at or beyond the bin count (RosettaSciIO writes outside the
+  voxel); frames not summed with no frame left or `last_frame` 0; streams of different bin counts read apart; no FrameTime with
+  frames not summed; numpy dtype aliases as `StreamEncoding`; EELS in a type outside the ten or with string calibrations. Not
+  ported: `lazy=True`, `select_type=None` / `"single_spectrum"`, `load_SI_image_stack`.
 - **Velox detector order (equal since 0.0.3):** `VeloxMetadata.detectors` follows the written order of the `Detectors` keys,
   as RosettaSciIO's `json.loads`, so the energy axis and the detector-metadata match take the same entry (registration step 1
   A7). Left: a key written twice in one object reads its first value here and its last in Python (no file seen has one).
