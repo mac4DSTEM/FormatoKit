@@ -4,7 +4,8 @@ Written 2026-10-15 by FormatoKit's session, for anyone bumping from 0.1.0. Every
 `docs/consumers-0.1.0.md` still holds.
 
 **Why 0.1.1 and not 0.2.0.** Step 4 is additive: one new public type with its options, and nothing a 0.1.0 consumer calls
-changes its result or its signature (the moved `VeloxEMDReader` is byte-identical, `VeloxImageSignals` returns the same
+changes its signature, or its result on any public, planted or owner file (three unusual-file cases below move toward
+RosettaSciIO) (the moved `VeloxEMDReader` is byte-identical, `VeloxImageSignals` returns the same
 signals). A patch bump says "nothing to change unless you want the new reader". 0.2.0 stays the generality pass the owner
 named (defaults as parameters, no suite names), which may break.
 
