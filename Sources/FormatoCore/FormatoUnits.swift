@@ -38,9 +38,13 @@ public nonisolated enum FormatoUnits {
                                 "deci", "", "deca", "hecto", "kilo", "mega", "giga", "tera", "peta", "exa", "zetta", "yotta",
                                 "ronna", "quetta"]
 
+    /// The whitespace Pint's parser skips around a unit: ASCII only (a no-break, zero-width or ideographic space makes Pint raise;
+    /// registration 0.2.0 A2).
+    private static let pintWhitespace = CharacterSet(charactersIn: " \t\n\r\u{0B}\u{0C}")
+
     /// Parses the units strings the formats carry. nil for anything not handled (see the file header).
     public static func parse(_ text: String) -> Unit? {
-        var s = text.trimmingCharacters(in: .whitespaces)
+        var s = text.trimmingCharacters(in: pintWhitespace)
         if s.isEmpty || s == "dimensionless" { return Unit(prefixIndex: unprefixed, base: "", power: 1) }
         // Pint reads "fm" as the fermi, its own unit, not femto-metre: compacted it gives "Mfm", "mfm", ... (registration step 4
         // A1, F6). Not converted.
@@ -48,7 +52,7 @@ public nonisolated enum FormatoUnits {
         var power = 1
         if s.hasPrefix("1/") || s.hasPrefix("1 /") {
             power = -1
-            s = String(s.drop(while: { $0 != "/" }).dropFirst()).trimmingCharacters(in: .whitespaces)
+            s = String(s.drop(while: { $0 != "/" }).dropFirst()).trimmingCharacters(in: pintWhitespace)
         }
         for (base, long) in [("m", "meter"), ("s", "second")] {
             for (i, symbol) in FormatoUnitsFactors.symbols.enumerated() {

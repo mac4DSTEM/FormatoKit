@@ -392,3 +392,10 @@ breaking change named in `docs/consumers-0.2.0.md`). `tools/step-1/move-parity/r
 the other side of that comparison, still reads the old one. The 121 inherited test names and the golden's 175 lines are
 unchanged. Registration 0.2.0's P6 adds a registered `maximumStringBytes` parameter to the DM walk (default byte-identical);
 its diff is cited there.
+
+**A9 (2026-10-15, 15:20 CEST, the 0.2.0 refuter).** Two registered changes to inherited files, red first on `79182b3`:
+`VeloxMetadata.derivedGrid` returns nil for a ScanSize x ScanArea beyond 2^31 pixels a side (it trapped in `Int()`: a crash on
+every path that asks for the scan grid, default included); and the DM walk's numeric-array branch never takes a ushort array
+(type 4), which the default always keeps as a string below 4096 bytes, so a smaller `DMReadOptions.maximumStringBytes` leaves
+such an array absent instead of turning it into numbers. Both byte-identical on every file seen; the 121 names and the golden
+unchanged.

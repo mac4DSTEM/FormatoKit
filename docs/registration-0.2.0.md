@@ -69,3 +69,18 @@ tests, 9 hand mutants red; the inherited DM walk's diff is the string limit thre
 non-default string limit below 4096 moves a ushort array that is not a string into the numeric branch (invisible through
 `tagTree`). **Not yet done: the one refuter over the non-default paths** (§3): the first item of the next session, before the
 0.2.0 tag.
+
+**A2 (2026-10-15, 15:20 CEST, the refuter).** One refuter (Sonnet) on the frozen `79182b3`, about 15 600 runs (6 800 fuzzed),
+the oracle under the suite's `memcap.sh`: P2 `.firstImage` equal to RosettaSciIO bit for bit wherever it reads (O1 to O10), the
+flag iff the grids differ, `.scanSizeTimesArea` equal to RosettaSciIO on a twin regrown to the stream's grid, fallbacks right;
+P1's literal axes bit-exact (NaN, infinities, -0.0, denormals), every Pint raise on a handled unit still refused; P3 and P8 at
+every boundary; P5 on every vendor tag and RosettaSciIO's 8 public vendor TIFFs (the generic reading equals RosettaSciIO on the
+tag-free twin); P6 from 0 to Int.max; the defaults equal the pins on 360 runs. Fixed (red first: a trap and 2 issues;
+`Refuter020Tests`, `DMPolicyTests.testAShortUShortArrayNeverTakesTheNumericBranch`): F1 a ScanSize x ScanArea past Int trapped
+(`derivedGrid`, default path too; step 1 A9); F2 FormatoUnits trimmed Foundation's whitespace set, so a no-break, zero-width or
+ideographic space around a unit read as handled where Pint raises (and a newline the other way): now Pint's ASCII whitespace;
+F4 a ushort array below 4096 bytes took the numeric branch under a smaller string limit (step 1 A9). **Registered deviation
+(F3):** under `.keepAsWritten`, a unit Pint knows but FormatoUnits does not ("um", "nanometre") with a value Pint's compacting
+under- or overflows (1e-320) is read as written where Pint raises; opt-in and unphysical. Also left: "1<NBSP>/nm", which Pint
+reads, is refused (and kept as written under `.keepAsWritten`).
+

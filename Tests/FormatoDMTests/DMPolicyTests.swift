@@ -131,4 +131,18 @@ import Testing
             #expect(withBig.first?.spectrumImageRect == nil, "a 600-element array stays dropped: \(options.maximumStringBytes)")
         }
     }
+
+    /// The 0.2.0 refuter's F4 (registration 0.2.0 A2): a ushort array the default keeps as a string (under 4096 bytes) never
+    /// becomes a numeric array under a smaller string limit; it is then simply absent.
+    @Test func testAShortUShortArrayNeverTakesTheNumericBranch() throws {
+        let tags: [Node] = [.group("SI", [.group("Acquisition", [.group("Survey Image", [.utf16("Spectrum Image Rect", String(repeating: "A", count: 100))])])])]
+        let dims: [Node] = [.int("", 2), .int("", 2)]
+        let image: [Node] = [.group("ImageData", [.blob("Data", bytes: [1, 2, 3, 4]), .int("DataType", 6), .group("Dimensions", dims)]),
+                             .group("ImageTags", tags)]
+        let data = Self.stream([.group("ImageList", [.group("", image)])])
+        for limit in [4096, 100, 1, 0] {
+            let objects = try DM4Experiment.list(data: data, options: DMReadOptions(maximumStringBytes: limit))
+            #expect(objects.first?.spectrumImageRect == nil, "limit \(limit)")
+        }
+    }
 }

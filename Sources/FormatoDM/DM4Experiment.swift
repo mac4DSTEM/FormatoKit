@@ -761,7 +761,7 @@ public nonisolated enum DM4Experiment {
                         for _ in 0..<length { units.append(cursor.u16le()) }
                         strings[path] = String(decoding: units.filter { $0 > 0 }, as: UTF16.self)
                         if length <= 64 { arrays[path] = units.map(Double.init) }
-                    } else if nbytes < DM4Experiment.keptArrayBytes, (2...12).contains(elementType), elementType != 8 {
+                    } else if nbytes < DM4Experiment.keptArrayBytes, (2...12).contains(elementType), elementType != 8, elementType != 4 {   // a ushort array is a string or nothing (registration 0.2.0 A2)
                         var values = [Double]()
                         for _ in 0..<length { values.append(cursor.value(elementType)) }
                         arrays[path] = values

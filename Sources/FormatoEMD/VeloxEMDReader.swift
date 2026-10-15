@@ -516,7 +516,8 @@ public nonisolated struct VeloxMetadata: Sendable {
     public var derivedGrid: (ny: Int, nx: Int)? {
         guard let w = scanSizeWidth, let h = scanSizeHeight, let a = scanArea else { return nil }
         let nx = Double(w) * (a.right - a.left), ny = Double(h) * (a.bottom - a.top)
-        guard abs(nx - nx.rounded()) < 0.01, abs(ny - ny.rounded()) < 0.01, nx >= 1, ny >= 1 else { return nil }
+        // Bounded before Int(): a ScanSize x ScanArea past 2^31 is no scan grid (it trapped; registration step 1 A9).
+        guard abs(nx - nx.rounded()) < 0.01, abs(ny - ny.rounded()) < 0.01, nx >= 1, ny >= 1, nx <= 2_147_483_648, ny <= 2_147_483_648 else { return nil }
         return (Int(ny.rounded()), Int(nx.rounded()))
     }
 
