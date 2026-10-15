@@ -2,18 +2,19 @@
 
 A file-format library for macOS: the Mac counterpart of [RosettaSciIO](https://github.com/hyperspy/rosettasciio).
 A Swift package of readers (and later writers) for the electron-microscopy formats, one module per format over one data model,
-checked bit for bit against RosettaSciIO. No UI. Applications import it by tagged version, and anyone can
-build on it. Swift 6 strict concurrency, headless, lazy where a file is large, one SwiftPM product per module.
+checked bit for bit against RosettaSciIO at commit `049e7d70` (its signals, axes, units and metadata; where it raises, so
+does FormatoKit, by name). No UI. Import it by tagged version. Swift 6 strict concurrency, headless, lazy where a file is
+large, one SwiftPM product per module.
 
 | Module | Scope | State |
 |---|---|---|
-| `FormatoCore` | the data model: arrays as stored, axes, units (Pint's compact units, ported), metadata with provenance, lazy signals; cancellation | step 1 |
-| `FormatoDM` | Gatan DigitalMicrograph `.dm3` / `.dm4`: listing, 2D images, EDS and EELS spectrum images, the tag tree; every object as a signal | step 1 (inherited reader, plus the signal adapter) |
-| `FormatoEMD` | Thermo Fisher Velox `.emd`: spectrum streams (sparse), images, metadata; images as signals in their stored type, titled as RosettaSciIO titles them. Later: spectrum images as signals, NCEM / Berkeley EMD | steps 1 and 3 (inherited reader, plus the image adapter) |
-| `FormatoHDF5` | the process-wide HDF5 lock and quit barrier, the shipped libhdf5. Later: hspy, the sidecar | step 1 (moved) |
-| `FormatoTIFF` | the TIFF container with a public tag walker (any private tag as stored); FEI, Gatan DM, ImageJ and plain TIFF as signals | step 2 |
+| `FormatoCore` | the data model: arrays as stored, axes, units (Pint's compact units, ported), metadata with provenance, lazy signals; cancellation | reads |
+| `FormatoDM` | Gatan DigitalMicrograph `.dm3` / `.dm4` (little-endian): every object as a signal, the tag tree, EDS and EELS spectrum images; complex, RGB and bool images are refused by name | reads |
+| `FormatoEMD` | Thermo Fisher Velox `.emd`: images as signals in their stored type, titled as RosettaSciIO titles them; EDS and EELS spectrum images as signals (`VeloxSpectrumImageSignals`, with `VeloxSpectrumImageOptions` for RosettaSciIO's six options); the sparse spectrum streams. Not read: single spectra, NCEM / Berkeley EMD | reads |
+| `FormatoHDF5` | the process-wide HDF5 lock and quit barrier, the shipped libhdf5. Not read: hspy | support |
+| `FormatoTIFF` | the TIFF container with a public tag walker (any private tag as stored); FEI, Gatan DM, ImageJ and plain TIFF as signals. Compression, tiles and the other vendors' branches are refused by name | reads |
 | `FormatoMRC` | MRC / MRC2014 with FEI extended headers | empty |
-| `FormatoEMPAD` | EMPAD 4D-STEM raw data; the 4D HDF5 readers | empty |
+| `FormatoEMPAD` | EMPAD 4D-STEM raw data; 4D HDF5 files | empty |
 | `FormatoMSA` | EMSA/MAS spectra | empty |
 
 `docs/parity.md` is the checklist against RosettaSciIO's formats table and its reader options: what reads, what is pinned,
@@ -21,21 +22,69 @@ what is next.
 
 ## The first ten minutes
 
+Add the package to your `Package.swift`, from the 0.2.0 tag of the FormatoKit repository
+(`.package(url: <the repository URL>, from: "0.2.0")`, or `.package(path: "../FormatoKit")` for a clone), and the products
+you need (`FormatoDM`, `FormatoEMD`, `FormatoTIFF`; each brings `FormatoCore`).
+
+To try it on files you have in hand, use the ones in this repository: planted files made for the tests, under
+`Tests/*/Fixtures`. The snippets below name them relative to a clone's root, so run them from there. RosettaSciIO's own
+test data (`rsciio/tests/data` in its repository, `dm`, `emd` and `tiff` folders) reads the same way.
+
+A Gatan file, `Tests/FormatoDMTests/Fixtures/eels-planted.dm4` (21 objects: images and EELS spectrum images; the ones of a type FormatoKit does not read are printed as refused):
+
 ```swift
-// Package.swift: .package(url: "https://github.com/mac4DSTEM/FormatoKit", exact: "0.1.0")
+import FormatoCore
 import FormatoDM
 
-let dm = try DMFile(path: "spectrum-image.dm4")
+let dm = try DMFile(path: "Tests/FormatoDMTests/Fixtures/eels-planted.dm4")
 for object in dm.objects {
-    let lazy = try dm.signal(index: object.index)          // nothing read yet
-    print(lazy.title, lazy.array.dataType, lazy.array.shape, lazy.axes.map(\.units))
-    let signal = try lazy.load()                           // the stored bytes, C order, little-endian
-    print(signal.metadata["Acquisition_instrument.TEM.beam_energy"]?.provenance.source ?? "-")
+    do {
+        let lazy = try dm.signal(index: object.index)      // nothing read yet
+        print(lazy.title, lazy.array.dataType, lazy.array.shape, lazy.axes.map(\.units))
+        let signal = try lazy.load()                       // the stored bytes, C order, little-endian
+        print(signal.metadata["Acquisition_instrument.TEM.beam_energy"]?.provenance.source ?? "-")
+    } catch {
+        print("object \(object.index) refused:", error)    // a type FormatoKit does not read is refused by name
+    }
 }
 ```
 
-`VeloxImageSignals(path:)` (FormatoEMD) and `TIFFSignals(path:)` (FormatoTIFF) work the same way. The example executable
-prints every signal of a file:
+A Velox file, images and then spectrum images: `velox-titles-v6-image.emd` holds 14 images, `step4/si-planted-v11.emd` one
+EDS spectrum image. `VeloxSpectrumImageOptions` takes RosettaSciIO's six arguments; the defaults are RosettaSciIO's:
+
+```swift
+import FormatoCore
+import FormatoEMD
+
+let velox = try VeloxImageSignals(path: "Tests/FormatoEMDTests/Fixtures/velox-titles-v6-image.emd")
+for image in velox.images {
+    let signal = try velox.signal(image).load()            // the stored type, RosettaSciIO's title
+    print(signal.title, signal.data.dataType, signal.data.shape)
+}
+
+let options = VeloxSpectrumImageOptions(rebinEnergy: 1)
+let spectrumImages = try VeloxSpectrumImageSignals(path: "Tests/FormatoEMDTests/Fixtures/step4/si-planted-v11.emd",
+                                                   options: options)
+for signal in spectrumImages.signals {
+    print(signal.title, signal.signalType, signal.data.dataType, signal.data.shape)
+}
+```
+
+A TIFF file, `Tests/FormatoTIFFTests/Fixtures/planted/fei-helios.tif` (one image, FEI's tags):
+
+```swift
+import FormatoCore
+import FormatoTIFF
+
+let tiff = try TIFFSignals(path: "Tests/FormatoTIFFTests/Fixtures/planted/fei-helios.tif")
+for n in tiff.series.indices {
+    let signal = try tiff.signal(series: n).load()
+    print(signal.title, signal.data.dataType, signal.data.shape, signal.axes.map(\.units))
+}
+```
+
+`tools/consumer-check/readme` builds exactly these three snippets as a separate package and runs them on those files.
+The example executable prints every signal of a file (axes, units, metadata with provenance, one value read lazily):
 
 ```sh
 swift run formato-info Tests/FormatoEMDTests/Fixtures/velox-titles-v6-image.emd
@@ -43,9 +92,12 @@ swift run formato-info Tests/FormatoEMDTests/Fixtures/velox-titles-v6-image.emd
 
 ## Requirements
 
-macOS 27 on Apple silicon, Swift 6.2 tools. **libhdf5 is inside the package** (HDF5 2.1.1 with libsz and libaec, arm64, as a
-resource of `FormatoHDF5`), so `swift build` and `swift test` need nothing installed. A host app that embeds its own libhdf5
-in `Frameworks/` is served first; `FORMATO_HDF5_PATH` overrides both. iPadOS is not claimed yet.
+macOS 27 on Apple silicon today, Swift 6.2 tools. The Swift code builds and passes its tests at macOS 15; the bundled libhdf5
+dylibs (used by FormatoHDF5 and FormatoEMD) are built for macOS 26, so the declared floor stays at 27 until they are rebuilt
+for 15. The pure-Swift modules (FormatoCore, FormatoDM, FormatoTIFF, FormatoMRC/EMPAD/MSA) are planned for iPadOS 18 too.
+**libhdf5 is inside the package** (HDF5 2.1.1 with libsz and libaec, arm64, as a resource of `FormatoHDF5`), so `swift build`
+and `swift test` need nothing installed. The Velox reader looks for libhdf5 in this order: the path in the
+`FORMATO_HDF5_PATH` environment variable, the host app's `Frameworks` folder, the bundled copy, then the loader's path.
 
 ## Licence
 
@@ -60,9 +112,9 @@ built on it must be GPL-compatible.
 tools/test.sh                      # the gate: swift test -c release, warning-checked, stamps .build/last-green
 tools/last-green.sh                # the last green commit and whether HEAD equals it
 tools/step-1/names.sh              # the 121 inherited test names are all here
-tools/step-1/owner-check.sh        # a field-file dataset against RosettaSciIO (needs a data folder; see the script)
 References/rsciio-venv/bin/python -I -B tools/step-1/mutants.py [--step 2|3]   # break-once proof on a copy of HEAD
-tools/consumer-check/run.sh        # a separate package, public API only, Debug, no warnings, libhdf5 from the package
+tools/consumer-check/run.sh        # two separate packages, public API only, Debug, no warnings, libhdf5 from the package;
+                                   # the second runs this README's snippets
 ```
 
 The oracle is not in the repository: `References/rosettasciio-049e7d70` (the pinned clone) and `References/rsciio-venv`;
@@ -71,5 +123,4 @@ the planted files only. CI (`.github/workflows/ci.yml`) runs the hook proof, the
 
 ## Status
 
-`docs/status.md`; what each tag changes for a consumer is in `docs/consumers-<tag>.md` (0.0.1 to 0.1.0). Tags are the
-owner's.
+`docs/status.md`; what each tag changes for a consumer is in `docs/consumers-<tag>.md`. Tags are made by the maintainer.
