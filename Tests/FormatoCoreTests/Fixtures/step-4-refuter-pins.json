@@ -1,0 +1,1161 @@
+{
+ "deviations": {
+  "detectorname-list.emd": [
+   "all",
+   "a DetectorName that is not a string: refused (A1)"
+  ],
+  "image-pixelunitx-null.emd": [
+   "all",
+   "the first image's PixelUnitX null: refused as the image path does (step 3; A1)"
+  ],
+  "overflow-grid-no-endframe.emd": [
+   "not-run",
+   "a (2^32, 2^32, 1) first image: RosettaSciIO reads its first frame whole"
+  ],
+  "stream-bigendian-u2.emd": [
+   "reads",
+   "a big-endian uint16 stream: numba's jitted fill refuses the non-native type; read here (A1)"
+  ],
+  "stream-lzf.emd": [
+   "all",
+   "an LZF-filtered stream: the shipped libhdf5 has no LZF filter (step 3 A1)"
+  ],
+  "unit-fm-fermi.emd": [
+   "all",
+   "'fm' is Pint's fermi: refused here (A1)"
+  ]
+ },
+ "files": [
+  {
+   "bytes": 26368,
+   "path": "detectorname-list.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": 2.9999999999999996,
+         "offset_bits": "4007ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 3,
+         "units": "nm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": -9.999999999999998,
+         "offset_bits": "c023ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 4,
+         "units": "nm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 16,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "dcd035dce06bf3b601d23d14478031bdf1fa393c2285929ecd31100f3617b520",
+       "dtype": "uint16",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "detectorname-list.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        3,
+        4,
+        16
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    }
+   },
+   "set": "refuter",
+   "sha256": "8e8e2118c4600399ff810eee0f60fdc8867aeb691b0259fdef5a267214f1912e"
+  },
+  {
+   "bytes": 26368,
+   "path": "dispersion-arabic-digits.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": 2.9999999999999996,
+         "offset_bits": "4007ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 3,
+         "units": "nm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": -9.999999999999998,
+         "offset_bits": "c023ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 4,
+         "units": "nm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 16,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "dcd035dce06bf3b601d23d14478031bdf1fa393c2285929ecd31100f3617b520",
+       "dtype": "uint16",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "dispersion-arabic-digits.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        3,
+        4,
+        16
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    }
+   },
+   "set": "refuter",
+   "sha256": "81809cacca6d54a77480c1f36a017a5654cab0cb8e9324fcefb174bfff7f11ce"
+  },
+  {
+   "bytes": 26368,
+   "path": "endframe-1e30.emd",
+   "runs": {
+    "L1": {
+     "options": {
+      "last_frame": 1
+     },
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": 2.9999999999999996,
+         "offset_bits": "4007ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 3,
+         "units": "nm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": -9.999999999999998,
+         "offset_bits": "c023ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 4,
+         "units": "nm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 16,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "214c6801b14063e5d84d3c895a705f5572832d713be750f4387c26dd6bd7d824",
+       "dtype": "uint16",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "endframe-1e30.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        3,
+        4,
+        16
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    },
+    "O1": {
+     "options": {},
+     "raises": {
+      "message": "int too big to convert",
+      "type": "OverflowError"
+     },
+     "signals": []
+    },
+    "O2": {
+     "options": {
+      "sum_frames": false
+     },
+     "raises": {
+      "message": "Maximum allowed dimension exceeded",
+      "type": "ValueError"
+     },
+     "signals": []
+    }
+   },
+   "set": "refuter",
+   "sha256": "4e16f79664221a8e19d47c246a87daab78fb0f116508064c9fb8f5caa46ea2e4"
+  },
+  {
+   "bytes": 26368,
+   "path": "endframe-arabic-digit.emd",
+   "runs": {
+    "L4": {
+     "options": {
+      "last_frame": 4
+     },
+     "raises": {
+      "message": "The `last_frame` cannot be greater than the number of frames, 3 for this file.",
+      "type": "ValueError"
+     },
+     "signals": []
+    },
+    "O1": {
+     "options": {},
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": 2.9999999999999996,
+         "offset_bits": "4007ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 3,
+         "units": "nm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": -9.999999999999998,
+         "offset_bits": "c023ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 4,
+         "units": "nm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 6,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "2f164bf7c46449840d0a09f761ba9ec9628eaee3172dd2dec24ce3903ff974e3",
+       "dtype": "float64",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "endframe-arabic-digit.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        3,
+        4,
+        6
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    },
+    "O2": {
+     "options": {
+      "sum_frames": false
+     },
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "Time",
+         "navigate": true,
+         "offset": 0.0,
+         "offset_bits": "0000000000000000",
+         "scale": 500.0,
+         "scale_bits": "407f400000000000",
+         "size": 3,
+         "units": "ms"
+        },
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": 2.9999999999999996,
+         "offset_bits": "4007ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 3,
+         "units": "nm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": -9.999999999999998,
+         "offset_bits": "c023ffffffffffff",
+         "scale": 2.0,
+         "scale_bits": "4000000000000000",
+         "size": 4,
+         "units": "nm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 6,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "0e93a5492e802aa924de085de06dd913095c27700aacc4f1ac2afb1b7c31a798",
+       "dtype": "float64",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "endframe-arabic-digit.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        3,
+        3,
+        4,
+        6
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    }
+   },
+   "set": "refuter",
+   "sha256": "22a377c678c8ed833e2ec23811ad1683661892cdf3c709bfef4b26d0d1943ec2"
+  },
+  {
+   "bytes": 26368,
+   "path": "image-pixelunitx-null.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": 2.9999999999999996,
+         "offset_bits": "4007ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 3,
+         "units": "nm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": -9.999999999999998,
+         "offset_bits": "c023ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 4,
+         "units": "nm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 16,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "dcd035dce06bf3b601d23d14478031bdf1fa393c2285929ecd31100f3617b520",
+       "dtype": "uint16",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "image-pixelunitx-null.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        3,
+        4,
+        16
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    }
+   },
+   "set": "refuter",
+   "sha256": "69fb47ca885ae9ed404b3a71314ecbdeeb564457f53addf77fa5c7ab6f062cf0"
+  },
+  {
+   "bytes": 26368,
+   "path": "image-zero-frames.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": {
+      "message": "Index (0) out of range for empty dimension",
+      "type": "IndexError"
+     },
+     "signals": []
+    }
+   },
+   "set": "refuter",
+   "sha256": "4723ed4fa3c5f037fda5f1c53ce069eab6b1f9019f4a8e6595abe408754a9539"
+  },
+  {
+   "bytes": 26368,
+   "path": "stream-bigendian-u2.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": {
+      "message": "Failed in nopython mode pipeline (step: nopython frontend)",
+      "type": "TypingError"
+     },
+     "signals": []
+    },
+    "O2": {
+     "options": {
+      "sum_frames": false
+     },
+     "raises": {
+      "message": "Failed in nopython mode pipeline (step: nopython frontend)",
+      "type": "TypingError"
+     },
+     "signals": []
+    }
+   },
+   "set": "refuter",
+   "sha256": "c55e3ccb6209e3ccd156fe0eec2d7a4f2bb410f4d51b902d6f06a8184d9cf6f9"
+  },
+  {
+   "bytes": 28984,
+   "path": "stream-lzf.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": 2.9999999999999996,
+         "offset_bits": "4007ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 3,
+         "units": "nm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": -9.999999999999998,
+         "offset_bits": "c023ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 4,
+         "units": "nm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 16,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "dcd035dce06bf3b601d23d14478031bdf1fa393c2285929ecd31100f3617b520",
+       "dtype": "uint16",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "stream-lzf.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        3,
+        4,
+        16
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    }
+   },
+   "set": "refuter",
+   "sha256": "641ebd5b968a7e873caa00811e40aa9fe7c5e1fa9ab521eb69ac92519ebcf2a3"
+  },
+  {
+   "bytes": 35024,
+   "path": "unit-am-ulp.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": 10000000000000.002,
+         "offset_bits": "42a2309ce5400001",
+         "scale": -2362450000000.0005,
+         "scale_bits": "c2813067f1c40001",
+         "size": 2,
+         "units": "zm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": 50000.000000000015,
+         "offset_bits": "40e86a0000000002",
+         "scale": 0.857967001540238,
+         "scale_bits": "3feb74773695333b",
+         "size": 1000,
+         "units": "zm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 2,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "668946bab9868b28489bb906205ee1026045c8bcd3ca62a1bdf733c65491351b",
+       "dtype": "uint16",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "unit-am-ulp.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        2,
+        1000,
+        2
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    }
+   },
+   "set": "refuter",
+   "sha256": "70a5433525971600229c0fd08eb674b2d3bf8528b4d7e5eaafdbe25be87b0ac1"
+  },
+  {
+   "bytes": 26368,
+   "path": "unit-fm-fermi.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": 2.9999999999999996,
+         "offset_bits": "4007ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 3,
+         "units": "nfm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": -9.999999999999998,
+         "offset_bits": "c023ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 4,
+         "units": "nfm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 16,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "dcd035dce06bf3b601d23d14478031bdf1fa393c2285929ecd31100f3617b520",
+       "dtype": "uint16",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "unit-fm-fermi.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        3,
+        4,
+        16
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    }
+   },
+   "set": "refuter",
+   "sha256": "55c5a71a727421422451e7080c246b08de5b6af091b98fa00cff5e572e2e4546"
+  },
+  {
+   "bytes": 26368,
+   "path": "unit-m-ulp-width2.7e-4-nx5.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": -0.48898429,
+         "offset_bits": "bfdf4b84c373b2aa",
+         "scale": 35568.281,
+         "scale_bits": "40e15e08fdf3b646",
+         "size": 1,
+         "units": "μm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": 9990000000.0,
+         "offset_bits": "42029b9a6c000000",
+         "scale": 271.666335894359,
+         "scale_bits": "4070faa94fd3a6c4",
+         "size": 5,
+         "units": "μm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 2,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "de47c9b27eb8d300dbb5f2c353e632c393262cf06340c4fa7f1b40c4cbd36f90",
+       "dtype": "uint16",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "unit-m-ulp-width2.7e-4-nx5.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        1,
+        5,
+        2
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    }
+   },
+   "set": "refuter",
+   "sha256": "6561530cbd4959744f6221b540e0a342e7bd805a37785ff702b021ed1ed07844"
+  },
+  {
+   "bytes": 26368,
+   "path": "unit-m-ulp-width3.85e-4-nx5.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": 0.003,
+         "offset_bits": "3f689374bc6a7efa",
+         "scale": 385.2011949587331,
+         "scale_bits": "4078133818347e0f",
+         "size": 1,
+         "units": "μm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": -0.01,
+         "offset_bits": "bf847ae147ae147b",
+         "scale": 385.2011949587331,
+         "scale_bits": "4078133818347e0f",
+         "size": 5,
+         "units": "μm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 2,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "de47c9b27eb8d300dbb5f2c353e632c393262cf06340c4fa7f1b40c4cbd36f90",
+       "dtype": "uint16",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "unit-m-ulp-width3.85e-4-nx5.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        1,
+        5,
+        2
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    }
+   },
+   "set": "refuter",
+   "sha256": "058a03b3b8d34c0cd7afa01ee3dfbae51c704a787b8d44dae36599e1d25b1c7f"
+  },
+  {
+   "bytes": 26368,
+   "path": "unit-ym-ulp.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": -4451292.20218601,
+         "offset_bits": "c150faf70cf09d97",
+         "scale": 2.5305162909999996e+16,
+         "scale_bits": "435679ba578ef8df",
+         "size": 1,
+         "units": "rm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": 0.03820199999999999,
+         "offset_bits": "3fa38f36694898f5",
+         "scale": 0.266345758479847,
+         "scale_bits": "3fd10bcf14865a3c",
+         "size": 64,
+         "units": "rm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 2,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+       "dtype": "uint16",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "unit-ym-ulp.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        1,
+        64,
+        2
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    }
+   },
+   "set": "refuter",
+   "sha256": "c0a3f51d173dd9445650621de1665e80c83f3a593f8ad682c9b9f5b44854d97a"
+  },
+  {
+   "bytes": 26368,
+   "path": "version-underscore.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": null,
+     "signals": [
+      {
+       "axes": [
+        {
+         "name": "y",
+         "navigate": true,
+         "offset": 2.9999999999999996,
+         "offset_bits": "4007ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 3,
+         "units": "nm"
+        },
+        {
+         "name": "x",
+         "navigate": true,
+         "offset": -9.999999999999998,
+         "offset_bits": "c023ffffffffffff",
+         "scale": 1.9999999999999998,
+         "scale_bits": "3fffffffffffffff",
+         "size": 4,
+         "units": "nm"
+        },
+        {
+         "name": "X-ray energy",
+         "navigate": false,
+         "offset": -0.05,
+         "offset_bits": "bfa999999999999a",
+         "scale": 0.01,
+         "scale_bits": "3f847ae147ae147b",
+         "size": 16,
+         "units": "keV"
+        }
+       ],
+       "axes_numeric": true,
+       "axes_sizes_match_shape": true,
+       "data_sha256": "dcd035dce06bf3b601d23d14478031bdf1fa393c2285929ecd31100f3617b520",
+       "dtype": "uint16",
+       "metadata": [
+        {
+         "key": "General.title",
+         "kind": "string",
+         "value": "EDS"
+        },
+        {
+         "key": "General.original_filename",
+         "kind": "string",
+         "value": "version-underscore.emd"
+        },
+        {
+         "key": "Acquisition_instrument.TEM.beam_energy",
+         "kind": "number",
+         "source": "Optics.AccelerationVoltage",
+         "value": 300.0,
+         "value_bits": "4072c00000000000"
+        }
+       ],
+       "original_filename_is_path": false,
+       "shape": [
+        3,
+        4,
+        16
+       ],
+       "signal_type": "EDS_TEM",
+       "title": "EDS"
+      }
+     ]
+    }
+   },
+   "set": "refuter",
+   "sha256": "7c45a133d834acae5655c99f5021932325d1f6d7228df32dd5ac91ef494e87c6"
+  },
+  {
+   "bytes": 26368,
+   "path": "overflow-grid-no-endframe.emd",
+   "runs": {
+    "O1": {
+     "options": {},
+     "raises": {
+      "message": "a (2^32, 2^32, 1) first image: RosettaSciIO reads its first frame whole",
+      "type": "NotRun"
+     },
+     "signals": []
+    }
+   },
+   "set": "refuter",
+   "sha256": "0921f49beba2d93ba13d107034fc4d7d2f1397eada351044c885737bea6c3267"
+  }
+ ],
+ "generator": "tools/step-4/refuter_pins.py",
+ "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.digitalmicrograph.file_reader; rsciio.emd.file_reader, select_type='images')",
+ "set": "step-4-refuter",
+ "versions": {
+  "h5py": "3.16.0",
+  "numba": "0.68.0",
+  "numpy": "2.5.4",
+  "pint": "0.26.1",
+  "python": "3.14.7",
+  "sparse": "0.19.2"
+ }
+}

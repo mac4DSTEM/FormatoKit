@@ -111,6 +111,8 @@ private nonisolated struct VeloxSpectrumImageRead {
                 return []
             }
             let image = try firstImage(first)
+            // `_read_image_data(h5data, read_stack=False)` reads `h5data[:, :, 0]`: IndexError without a frame (A1, F3).
+            if hasSpectrumImage, image.frameCount == 0 { throw raises("the first image \(first) has no frame") }
             let images = VeloxImageSignals(reader: VeloxEMDReader(path: path), images: [image],
                                            readsWholeStacks: !hasSpectrumImage, titles: titles)
             _ = try images.describe(image)
@@ -150,7 +152,16 @@ private nonisolated struct VeloxSpectrumImageRead {
         if let si = file.children(of: "/Data/SpectrumImage").first,
            let text = file.readString("/Data/SpectrumImage/\(si)/SpectrumImageSettings"),
            let object = (try? JSONSerialization.jsonObject(with: Data(text.utf8))) as? [String: Any] {
-            numberOfFrames = pythonIntValue(object["endFramePosition"])
+            switch pythonInt(object["endFramePosition"]) {
+            case .value(let n): numberOfFrames = n
+            case .tooLarge:
+                // Python keeps the integer: as last_frame it overflows numba's int64 (OverflowError) or the array extent
+                // (ValueError); an explicit last_frame is compared with it (a negative one raises "cannot be greater").
+                let negative = ((object["endFramePosition"] as? NSNumber)?.doubleValue ?? 0) < 0
+                    || ((object["endFramePosition"] as? String)?.trimmingCharacters(in: .whitespaces).hasPrefix("-") ?? false)
+                if o.lastFrame == nil || negative { throw raises("endFramePosition is beyond a 64-bit integer") }
+            case .invalid: break
+            }
         }
         var lastFrame = o.lastFrame ?? numberOfFrames
         if let last = o.lastFrame, let n = numberOfFrames, n != 0, last > n {
@@ -173,6 +184,9 @@ private nonisolated struct VeloxSpectrumImageRead {
         }
         let (ny, nx) = grid
         guard ny >= 1, nx >= 1 else { throw raises("an image of \(ny) x \(nx) pixels") }
+        // ny * nx checked before any arithmetic on it (Gate B, A1, F7: it trapped); RosettaSciIO's arrays raise there too.
+        let (pixels, pixelsOverflow) = ny.multipliedReportingOverflow(by: nx)
+        guard !pixelsOverflow else { throw raises("a grid of \(ny) x \(nx) pixels (no array that large)") }
 
         // Stream 0 (FeiSpectrumStream): bincount, the divisor check, the type.
         let settings0 = try acquisitionSettings(head)
@@ -194,7 +208,7 @@ private nonisolated struct VeloxSpectrumImageRead {
                 for v in block where v == 65535 { markers += 1 }
                 return true
             }
-            lastFrame = (markers + ny * nx - 1) / (ny * nx)
+            lastFrame = markers == 0 ? 0 : (markers - 1) / pixels + 1
         }
         let last = lastFrame!
         let first = o.firstFrame
@@ -317,8 +331,8 @@ private nonisolated struct VeloxSpectrumImageRead {
               size["width"] != nil, size["height"] != nil, offset["x"] != nil, offset["y"] != nil else {
             throw raises("PixelSize or Offset lacks a key")
         }
-        guard let width = formatoPythonFloat(size["width"]), let height = formatoPythonFloat(size["height"]),
-              let ox = formatoPythonFloat(offset["x"]), let oy = formatoPythonFloat(offset["y"]) else {
+        guard let width = veloxPythonFloat(size["width"]), let height = veloxPythonFloat(size["height"]),
+              let ox = veloxPythonFloat(offset["x"]), let oy = veloxPythonFloat(offset["y"]) else {
             throw raises("PixelSize or Offset holds a value float() refuses")
         }
         // 3. x with factor shape[1]: nx when frames are summed, ny when not (RosettaSciIO's index).
@@ -335,7 +349,7 @@ private nonisolated struct VeloxSpectrumImageRead {
             guard let scan = om["Scan"] as? [String: Any], let raw = scan["FrameTime"] else {
                 throw deviation("frames not summed and no Scan.FrameTime (RosettaSciIO's Time axis has no scale)", "§3.6")
             }
-            guard let frameTime = formatoPythonFloat(raw), let time = FormatoUnits.convertScaleUnits(frameTime, units: "s", factor: frames) else {
+            guard let frameTime = veloxPythonFloat(raw), let time = FormatoUnits.convertScaleUnits(frameTime, units: "s", factor: frames) else {
                 throw raises("Scan.FrameTime does not convert")
             }
             axes.append(FormatoAxis(name: "Time", size: frames, scale: time.value, offset: 0, units: time.units, navigate: true))
@@ -367,10 +381,10 @@ private nonisolated struct VeloxSpectrumImageRead {
             }
             guard wantedText.isEmpty || name.range(of: wantedText, options: .literal) != nil else { continue }
             guard let dispersionValue = entry["Dispersion"] else { return fallback }
-            guard let dispersion = formatoPythonFloat(dispersionValue) else { throw raises("Detectors.\(key).Dispersion: float() refuses it") }
+            guard let dispersion = veloxPythonFloat(dispersionValue) else { throw raises("Detectors.\(key).Dispersion: float() refuses it") }
             let scale = dispersion / 1000.0 * Double(options.rebinEnergy)
             guard let offsetValue = entry["OffsetEnergy"] else { return fallback }
-            guard let offset = formatoPythonFloat(offsetValue) else { throw raises("Detectors.\(key).OffsetEnergy: float() refuses it") }
+            guard let offset = veloxPythonFloat(offsetValue) else { throw raises("Detectors.\(key).OffsetEnergy: float() refuses it") }
             return (scale, offset / 1000.0, "keV")
         }
         return fallback
@@ -386,7 +400,7 @@ private nonisolated struct VeloxSpectrumImageRead {
                                     provenance: FormatoProvenance(file: fileName, source: "(the file name)", rule: "rsciio emd: os.path.split(filename)[1]")))
         // The mapping `Optics.AccelerationVoltage -> float(x) / 1e3`, when the path holds a value (HyperSpy's lookup).
         if let optics = om["Optics"] as? [String: Any], let raw = optics["AccelerationVoltage"], !(raw is NSNull) {
-            guard let volts = formatoPythonFloat(raw) else { throw raises("an AccelerationVoltage float() refuses") }
+            guard let volts = veloxPythonFloat(raw) else { throw raises("an AccelerationVoltage float() refuses") }
             md.set(FormatoMetadataEntry(key: "Acquisition_instrument.TEM.beam_energy", value: .number(volts / 1e3), units: "kV",
                                         provenance: FormatoProvenance(file: fileName, source: String(group.dropFirst()) + "/Metadata[0].Optics.AccelerationVoltage",
                                                                       rule: "rsciio emd velox mapping: float(x) / 1e3")))
@@ -411,7 +425,7 @@ private nonisolated struct VeloxSpectrumImageRead {
             throw raises("\(siGroup) BinaryResult lacks PixelSize.width, PixelUnitX or Offset.x")
         }
         guard let unitX = unitValue as? String else { throw deviation("PixelUnitX is not a string", "§3.8") }
-        guard let width = formatoPythonFloat(size["width"]), let ox = formatoPythonFloat(offset["x"]) else {
+        guard let width = veloxPythonFloat(size["width"]), let ox = veloxPythonFloat(offset["x"]) else {
             throw raises("PixelSize.width or Offset.x: float() refuses it")
         }
         guard let x = FormatoUnits.convertScaleUnits(width, units: unitX, factor: 1),
@@ -424,7 +438,7 @@ private nonisolated struct VeloxSpectrumImageRead {
                 throw raises("\(siGroup) BinaryResult lacks PixelSize.height, Offset.y or PixelUnitY")
             }
             guard let unitY = unitYValue as? String else { throw deviation("PixelUnitY is not a string", "§3.8") }
-            guard let height = formatoPythonFloat(size["height"]), let oy = formatoPythonFloat(offset["y"]) else {
+            guard let height = veloxPythonFloat(size["height"]), let oy = veloxPythonFloat(offset["y"]) else {
                 throw raises("PixelSize.height or Offset.y: float() refuses it")
             }
             guard let sy = FormatoUnits.convertUnits(height, from: unitY, to: x.units),
@@ -478,7 +492,7 @@ private nonisolated struct VeloxSpectrumImageRead {
     /// A JSON value Python keeps as a number: an integer or a float, not a bool.
     func jsonNumber(_ value: Any) -> Double? {
         guard let n = value as? NSNumber, CFGetTypeID(n) != CFBooleanGetTypeID() else { return nil }
-        return n.doubleValue
+        return formatoPythonFloat(n)   // an NSDecimalNumber from its exact text (A1, F5)
     }
 
     /// `_parse_sub_data_group_metadata` of any (n, k) uint8 dataset: column 0, cut at the first NUL, as JSON.
@@ -554,19 +568,62 @@ private nonisolated struct VeloxSpectrumImageRead {
 private let hdf5IntegerClass: Int32 = 0
 private let hdf5FloatClass: Int32 = 1
 
-/// Python's `int(x)` on a JSON value: an integer, a float truncated, a bool (0 or 1), or a string `int()` reads.
-nonisolated func pythonIntValue(_ value: Any?) -> Int? {
+/// Python's `int()` and `float()` read any Unicode decimal digit ("٣", "３") as its ASCII digit (registration step 4 A1, F1):
+/// the string with those digits mapped, for FormatoCore's ASCII rules. Velox only: TIFF and DM keep step 2's F15.
+nonisolated func veloxPythonDigits(_ s: String) -> String {
+    var out = String.UnicodeScalarView()
+    for scalar in s.unicodeScalars {
+        if !scalar.isASCII, scalar.properties.numericType == .decimal, let v = scalar.properties.numericValue, v >= 0, v <= 9 {
+            out.append(Unicode.Scalar(UInt8(48 + Int(v))))
+        } else {
+            out.append(scalar)
+        }
+    }
+    return String(out)
+}
+
+/// A string as Python's `int()` and `float()` see it: stripped of Unicode whitespace (`str.isspace`, not Foundation's set,
+/// which also holds the zero-width space Python keeps), its Unicode digits mapped; nil when anything non-ASCII is left.
+nonisolated func veloxPythonNumberText(_ s: String) -> String? {
+    let scalars = s.unicodeScalars
+    guard let first = scalars.firstIndex(where: { !$0.properties.isWhitespace }),
+          let last = scalars.lastIndex(where: { !$0.properties.isWhitespace }) else { return nil }
+    let t = veloxPythonDigits(String(scalars[first...last]))
+    return t.unicodeScalars.allSatisfy(\.isASCII) ? t : nil
+}
+
+/// Python's `float(x)` on a JSON value, Unicode digits included.
+nonisolated func veloxPythonFloat(_ value: Any?) -> Double? {
+    if let s = value as? String { return veloxPythonNumberText(s).flatMap { formatoPythonFloat($0) } }
+    return formatoPythonFloat(value)
+}
+
+/// Python's `int(x)` on a JSON value: an integer, a float truncated, a bool, or a string `int()` reads (Unicode digits and
+/// underscores included). `.tooLarge` for an integer Python holds and Int does not (RosettaSciIO then raises downstream).
+nonisolated enum PythonInt: Equatable { case value(Int), tooLarge, invalid }
+
+nonisolated func pythonInt(_ value: Any?) -> PythonInt {
     switch value {
     case let n as NSNumber:
-        if CFGetTypeID(n) == CFBooleanGetTypeID() { return n.boolValue ? 1 : 0 }
-        let d = n.doubleValue
-        guard d.isFinite else { return nil }
-        return Int(exactly: d.rounded(.towardZero))
+        if CFGetTypeID(n) == CFBooleanGetTypeID() { return .value(n.boolValue ? 1 : 0) }
+        let d = (n as? NSDecimalNumber).flatMap { Double($0.stringValue) } ?? n.doubleValue
+        guard d.isFinite else { return .invalid }                   // int(inf) raises OverflowError, int(nan) ValueError
+        return Int(exactly: d.rounded(.towardZero)).map(PythonInt.value) ?? .tooLarge
     case let s as String:
-        return formatoPythonInt(s).flatMap { Int(exactly: $0) }
+        guard let t = veloxPythonNumberText(s) else { return .invalid }
+        if let v = formatoPythonInt(t) { return Int(exactly: v).map(PythonInt.value) ?? .tooLarge }
+        // formatoPythonInt refuses beyond Int64; an all-digit string is still an integer to Python.
+        let body = t.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "_", with: "")
+        let digits = body.hasPrefix("-") || body.hasPrefix("+") ? body.dropFirst() : Substring(body)
+        return !digits.isEmpty && digits.allSatisfy({ $0.isASCII && $0.isNumber }) ? .tooLarge : .invalid
     default:
-        return nil
+        return .invalid
     }
+}
+
+nonisolated func pythonIntValue(_ value: Any?) -> Int? {
+    if case .value(let v) = pythonInt(value) { return v }
+    return nil
 }
 
 // MARK: - The fill (registration step 4 §3.5)

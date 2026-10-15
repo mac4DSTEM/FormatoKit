@@ -28,6 +28,8 @@ import FormatoEMD
             let parts = path.split(separator: "/")
             url = parts.count == 3 && parts[1].hasSuffix(".zip")
                 ? TestPaths.unzipped.appendingPathComponent(path) : TestPaths.rsciioData.appendingPathComponent(path)
+        case "refuter":
+            url = Self.planted.appendingPathComponent("refuter").appendingPathComponent(path)
         default:
             url = Self.planted.appendingPathComponent(path)
         }
@@ -56,7 +58,7 @@ import FormatoEMD
     private func isDeviation(_ path: String, _ o: [String: Any], _ deviations: [String: [String]]) -> Bool {
         guard let d = deviations[path] else { return false }
         switch d[0] {
-        case "all": return true
+        case "all", "not-run": return true
         case "unsummed": return o["sum_EDS_detectors"] as? Bool == false
         default: Issue.record("unknown deviation kind \(d[0])"); return false
         }
@@ -95,12 +97,14 @@ import FormatoEMD
         }
     }
 
-    @Test func testEveryPinnedSpectrumImageAgreesOrIsRefused() throws {
-        let doc = try loadJSON("step-4-pins.json")
+    private struct Tally { var files = 0, runs = 0, raised = 0, deviated = 0, read = 0, signals = 0 }
+
+    /// Every run of a pins document: RosettaSciIO raises -> refused; a registered deviation -> refused ("all", "unsummed",
+    /// "not-run") or read ("reads"); else the signals equal.
+    private func compare(_ doc: [String: Any], referencesPresent: Bool) throws -> Tally {
         let files = try #require(doc["files"] as? [[String: Any]])
         let deviations = doc["deviations"] as? [String: [String]] ?? [:]
-        let referencesPresent = FileManager.default.fileExists(atPath: TestPaths.rsciioData.path)
-        var runs = 0, raised = 0, deviated = 0, signals = 0, files_ = 0
+        var t = Tally()
         for f in files {
             let path = f["path"] as! String
             guard let url = locate(f) else {
@@ -108,17 +112,25 @@ import FormatoEMD
                 continue
             }
             #expect(sha(try Data(contentsOf: url)) == f["sha256"] as? String, "\(path): not the pinned file")
-            files_ += 1
+            t.files += 1
             let byOption = f["runs"] as! [String: [String: Any]]
             for key in byOption.keys.sorted() {
                 let run = byOption[key]!, what = "\(path) \(key)"
                 let o = run["options"] as! [String: Any]
                 let pinned = run["signals"] as! [[String: Any]]
-                runs += 1
+                t.runs += 1
+                if deviations[path]?.first == "reads" {
+                    // Registered: read here where RosettaSciIO raises (amendment A1).
+                    #expect(run["raises"] as? [String: Any] != nil, "\(what): a 'reads' deviation where RosettaSciIO raises")
+                    do { _ = try VeloxSpectrumImageSignals(path: url.path, options: try options(o)); t.read += 1 } catch {
+                        Issue.record("\(what): registered as read here, refused: \(error)")
+                    }
+                    continue
+                }
                 let refusedByRule = isDeviation(path, o, deviations)
                     || pinned.contains { $0["axes_numeric"] as? Bool == false || $0["axes_sizes_match_shape"] as? Bool == false }
                 if run["raises"] as? [String: Any] != nil || refusedByRule {
-                    if run["raises"] as? [String: Any] != nil { raised += 1 } else { deviated += 1 }
+                    if run["raises"] as? [String: Any] != nil { t.raised += 1 } else { t.deviated += 1 }
                     #expect(throws: (any Error).self, "\(what): RosettaSciIO \(run["raises"].map { "raises \($0)" } ?? "reads (a registered deviation)"); FormatoKit read it") {
                         _ = try VeloxSpectrumImageSignals(path: url.path, options: try options(o))
                     }
@@ -131,18 +143,40 @@ import FormatoEMD
                 #expect(ours.signals.count == pinned.count, "\(what): signal count")
                 for (i, (s, p)) in zip(ours.signals, pinned).enumerated() {
                     assertSignal(s, p, "\(what) #\(i)")
-                    signals += 1
+                    t.signals += 1
                 }
             }
         }
-        print("SpectrumImagePins: \(files_) files, \(runs) runs: \(signals) signals equal, \(raised) refused where RosettaSciIO raises, \(deviated) registered deviations")
+        return t
+    }
+
+    @Test func testEveryPinnedSpectrumImageAgreesOrIsRefused() throws {
+        let doc = try loadJSON("step-4-pins.json")
+        let referencesPresent = FileManager.default.fileExists(atPath: TestPaths.rsciioData.path)
+        let t = try compare(doc, referencesPresent: referencesPresent)
+        print("SpectrumImagePins: \(t.files) files, \(t.runs) runs: \(t.signals) signals equal, \(t.raised) refused where RosettaSciIO raises, \(t.deviated) registered deviations")
         if referencesPresent {
-            #expect(files_ == files.count)
-            #expect(runs == 226)
-            #expect(raised == 34)
-            #expect(deviated == 9, "the grid file's 8 reads (its O9 and O10 raise) and the bin counts' unsummed read")
-            #expect(signals == 244 - 8 - 2, "every signal RosettaSciIO returns outside the deviations")
+            #expect(t.files == (doc["files"] as! [Any]).count)
+            #expect(t.runs == 226)
+            #expect(t.raised == 34)
+            #expect(t.deviated == 9, "the grid file's 8 reads (its O9 and O10 raise) and the bin counts' unsummed read")
+            #expect(t.signals == 244 - 8 - 2, "every signal RosettaSciIO returns outside the deviations")
         }
+    }
+
+    /// Step 4's Gate B files (Tests/FormatoEMDTests/Fixtures/step4/refuter, tools/step-4/refuter_pins.py; amendment A1): the
+    /// fixes (Unicode digits, endFramePosition past Int64, a zero-frame first image, JSON decimals, the frame count's
+    /// overflow) and the registered deviations (fermi, a null image unit, a list DetectorName, LZF; a big-endian stream read).
+    @Test func testStep4RefuterFilesAgreeOrAreRefused() throws {
+        let doc = try loadJSON("step-4-refuter-pins.json")
+        let t = try compare(doc, referencesPresent: true)
+        print("SpectrumImageRefuterPins: \(t.files) files, \(t.runs) runs: \(t.signals) equal, \(t.raised) raise, \(t.deviated) deviations, \(t.read) read on purpose")
+        #expect(t.files == 15)
+        #expect(t.runs == 20)
+        #expect(t.raised == 5, "endframe-1e30 O1 and O2, the Arabic endFramePosition with last_frame 4, the zero-frame image, the overflowing grid (not run)")
+        #expect(t.deviated == 4, "fermi, the null image unit, the list DetectorName, LZF")
+        #expect(t.read == 2, "the big-endian stream, frames summed and not")
+        #expect(t.signals == 9)
     }
 
     /// The owner's spectrum image (registration step 4 §2): run by tools/step-4/owner-check.sh, which writes RosettaSciIO's

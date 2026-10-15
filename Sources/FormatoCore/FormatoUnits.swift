@@ -42,6 +42,9 @@ public nonisolated enum FormatoUnits {
     public static func parse(_ text: String) -> Unit? {
         var s = text.trimmingCharacters(in: .whitespaces)
         if s.isEmpty || s == "dimensionless" { return Unit(prefixIndex: unprefixed, base: "", power: 1) }
+        // Pint reads "fm" as the fermi, its own unit, not femto-metre: compacted it gives "Mfm", "mfm", ... (registration step 4
+        // A1, F6). Not converted.
+        if s == "fm" || s == "1/fm" || s == "1 / fm" { return nil }
         var power = 1
         if s.hasPrefix("1/") || s.hasPrefix("1 /") {
             power = -1

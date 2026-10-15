@@ -78,7 +78,7 @@ public nonisolated struct VeloxImageSignals: Sendable {
                       detector.keys.contains("ExposureTime") else { throw refuse("a stack with no frame time") }
                 raw = detector["ExposureTime"]
             }
-            guard let frameTime = formatoPythonFloat(raw),
+            guard let frameTime = veloxPythonFloat(raw),
                   let time = FormatoUnits.convertScaleUnits(frameTime, units: "s", factor: 2 * frames) else {
                 throw refuse("a frame time that does not convert")
             }
@@ -92,8 +92,8 @@ public nonisolated struct VeloxImageSignals: Sendable {
         guard let unit = binary.keys.contains("PixelUnitX") ? binary["PixelUnitX"] as? String : "" else {
             throw refuse("PixelUnitX is not a string")
         }
-        guard let width = formatoPythonFloat(size["width"]), let height = formatoPythonFloat(size["height"]),
-              let ox = formatoPythonFloat(offset["x"]), let oy = formatoPythonFloat(offset["y"]) else {
+        guard let width = veloxPythonFloat(size["width"]), let height = veloxPythonFloat(size["height"]),
+              let ox = veloxPythonFloat(offset["x"]), let oy = veloxPythonFloat(offset["y"]) else {
             throw refuse("PixelSize or Offset lacks a value float() reads")
         }
         guard let x = FormatoUnits.convertScaleUnits(width, units: unit, factor: image.width),
@@ -118,7 +118,7 @@ public nonisolated struct VeloxImageSignals: Sendable {
         // The mapping `Optics.AccelerationVoltage -> float(x) / 1e3`, applied when the key is present (a value float()
         // refuses raises in HyperSpy's mapping, and is refused here).
         if let optics = om["Optics"] as? [String: Any], optics.keys.contains("AccelerationVoltage") {
-            guard let volts = formatoPythonFloat(optics["AccelerationVoltage"]) else { throw refuse("an AccelerationVoltage float() refuses") }
+            guard let volts = veloxPythonFloat(optics["AccelerationVoltage"]) else { throw refuse("an AccelerationVoltage float() refuses") }
             md.set(FormatoMetadataEntry(key: "Acquisition_instrument.TEM.beam_energy", value: .number(volts / 1e3), units: "kV",
                                         provenance: FormatoProvenance(file: file, source: json + "Optics.AccelerationVoltage",
                                                                       rule: "rsciio emd velox mapping: float(x) / 1e3")))

@@ -14,6 +14,9 @@ package nonisolated func formatoPythonFloat(_ value: Any?) -> Double? {
     switch value {
     case let n as NSNumber:
         if CFGetTypeID(n) == CFBooleanGetTypeID() { return n.boolValue ? 1 : 0 }
+        // JSONSerialization keeps some JSON numbers as NSDecimalNumber, whose doubleValue can be one ulp from the correctly
+        // rounded value Python's json gives (registration step 4 A1, F5): parse its exact decimal text instead.
+        if let d = n as? NSDecimalNumber, let exact = Double(d.stringValue) { return exact }
         return n.doubleValue
     case let d as Double: return d
     case let i as Int: return Double(i)

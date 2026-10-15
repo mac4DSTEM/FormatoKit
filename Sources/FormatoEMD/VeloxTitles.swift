@@ -282,10 +282,8 @@ nonisolated struct VeloxTitles: Sendable {
     private static func pythonInt(_ value: Any?) -> Int? {
         if let n = value as? NSNumber, CFGetTypeID(n) != CFBooleanGetTypeID() { return Int(exactly: n.doubleValue.rounded(.towardZero)) }
         guard let text = value as? String else { return nil }
-        let scalars = text.unicodeScalars
-        guard let first = scalars.firstIndex(where: { !$0.properties.isWhitespace }),
-              let last = scalars.lastIndex(where: { !$0.properties.isWhitespace }) else { return nil }
-        return Int(String(scalars[first...last]))
+        // Python's strip, Unicode decimal digits and underscores between digits (registration step 4 A1, F1).
+        return veloxPythonNumberText(text).flatMap { formatoPythonInt($0) }.flatMap { Int(exactly: $0) }
     }
 
     /// Python's `path.split("/")[-1]`.
