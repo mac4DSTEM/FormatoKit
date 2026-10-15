@@ -1,0 +1,1284 @@
+{
+ "files": [
+  {
+   "bytes": 163024,
+   "format": "velox",
+   "path": "velox-titles-v6-image.emd",
+   "raises": null,
+   "set": "step-3-planted",
+   "sha256": "38d116e721a594bb51cd8ff31b96841ef78daef7d79636eab8ffc046c359ddf7",
+   "signals": [
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "115672f79ec4dcd6845373b5daf7177dc485ab77e029e3ddf4a92b75dcad4c30",
+     "data_sha256": "9dabd1227440659daca665ff545260d583c61767f81c2f642f16de6a1bbd8454",
+     "dtype": "uint8",
+     "dtype_str": "|u1",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "BM-Ceta"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "BM-Ceta",
+     "velox_image_id": "a01"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "01d6febbee59f0e9c0c16012b18498398b339c81c0c8b178da5c2cd9f122808c",
+     "data_sha256": "fd0aeb541c19aff80e447a51b0e00271d4a72f1d028bcf169ca43c704cbc8896",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "HAADF"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "HAADF",
+     "velox_image_id": "a02"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "b773820c171f80aa921088c4a01c6430175bc245101d19470468267813863736",
+     "data_sha256": "74656fbee8af720974256b5534196cc074699813c5291394d6f23da846a1d48e",
+     "dtype": "uint32",
+     "dtype_str": "<u4",
+     "float32_exact": false,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "iDPC"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "iDPC",
+     "velox_image_id": "a03"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "02663a9503d70eacdcd99ca28fcb26dd14fc00967647f5a66188c33c0d66c770",
+     "data_sha256": "263bf5ecb7cd6823d56671b6ab181504b54d24bfd789eea2baecb8bca315e5bc",
+     "dtype": "int8",
+     "dtype_str": "|i1",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "dDPC"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "dDPC",
+     "velox_image_id": "a04"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "e34dd04f4a6ad5a16d918016cc97472b22d6bb0b3e4231b2f0b020841c9ec2de",
+     "data_sha256": "ae5689a197db8589a31fe4e26c3ddc5155f571f2cecb3afb227483beeca33f8d",
+     "dtype": "int16",
+     "dtype_str": "<i2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "Filtered iDPC"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "Filtered iDPC",
+     "velox_image_id": "a05"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "34f2a58bd85c17e139e7b942aa48bfd99ca553d4233dabb5df8fa0818bfd5e4a",
+     "data_sha256": "90f10249cc67a1312fae008715ab78f80be695d2b83e67affcd8e4c467f91915",
+     "dtype": "int32",
+     "dtype_str": "<i4",
+     "float32_exact": false,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "A-C"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "A-C",
+     "velox_image_id": "a06"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "b76d05247ce7c8b362d0344604b0f7dcef55c8b5e249dd31a90852f6b977981b",
+     "data_sha256": "f927d31359085f3fec16cba82e9462c14c5b1cd70397f88a6981cba27304f1d8",
+     "dtype": "int64",
+     "dtype_str": "<i8",
+     "float32_exact": false,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "B-D"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "B-D",
+     "velox_image_id": "a07"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "93950356a6520665d420a7aa1c6814d3602fb576cffac680aa6c10753ddc93fc",
+     "data_sha256": "893719cbaabde4efc2ec7b4b17a5cb8a8dc32f753daa6bd9c1f043386393013f",
+     "dtype": "uint64",
+     "dtype_str": "<u8",
+     "float32_exact": false,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "DPC"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "DPC",
+     "velox_image_id": "a08"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "f299fd3ecb120ae9d687d2a4a6b7ff8812eafe0ed8dbc0600cab24bf03a5b102",
+     "data_sha256": "f299fd3ecb120ae9d687d2a4a6b7ff8812eafe0ed8dbc0600cab24bf03a5b102",
+     "dtype": "float32",
+     "dtype_str": "<f4",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "DCFI"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "DCFI",
+     "velox_image_id": "a09"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "1ec14007a678835fdd7dae5194df1e6cd33ab549bbe6f8911044f1d25b0af456",
+     "data_sha256": "39a6dd0f213f7e1dad17f1dda601d0ebad98594650065790b6a6a7b586a1d762",
+     "dtype": "float64",
+     "dtype_str": "<f8",
+     "float32_exact": false,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "Half FFT"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "Half FFT",
+     "velox_image_id": "a10"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "d9501bd059015e3e226daf1668fc1ab983ed2fbb161d9755bbe4ea1477d0ca30",
+     "data_sha256": "fd71f06897c812411b12f55f19e1f06ec39b53f79d626ae5a42011090ee4aee9",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "Unrecognized_image_signal"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "Unrecognized_image_signal",
+     "velox_image_id": "a11"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "79b0e4423d73e969f9eeac13c5438fa6e18b00b8a903ca6b96b8638d85a34894",
+     "data_sha256": "8c5cf0fae7f43787652fd112dbb36add5d292be37e26ea825b43f61900d65e73",
+     "dtype": "uint8",
+     "dtype_str": "|u1",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "DI-a12"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "DI-a12",
+     "velox_image_id": "a12"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "df533c0e1578526b4c0ee8aff0ed1c44af4b16986f37e3d3cf6833b5f1788da8",
+     "data_sha256": "df533c0e1578526b4c0ee8aff0ed1c44af4b16986f37e3d3cf6833b5f1788da8",
+     "dtype": "float32",
+     "dtype_str": "<f4",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "DF-S"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "DF-S",
+     "velox_image_id": "b1"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "4a0011021454d8c3ea939b3b16e60d2afbf9f166990a873cce23f9efed99b12e",
+     "data_sha256": "4551ad9b3881d04987dca4e42a032dc29da6b19b2d96bb23a9494abc35c5c200",
+     "dtype": "int16",
+     "dtype_str": "<i2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "DF-S"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v6-image.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "DF-S",
+     "velox_image_id": "b12"
+    }
+   ],
+   "spectrum_stream_not_read": false
+  },
+  {
+   "bytes": 49864,
+   "format": "velox",
+   "path": "velox-titles-v11-noops.emd",
+   "raises": null,
+   "set": "step-3-planted",
+   "sha256": "e565136e5554935d7260d847841a1bed5896b4dc91295c1b1d21a2ae23c82b77",
+   "signals": [
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "b3ff445ee80f81c1b4c7152ab80a656b9b0b5db4ae8b0bb24ae602c134d390d8",
+     "data_sha256": "a8192b2747b5e78cfbd9ecc3519fb03dda5dac1ef77689bb7e967d414bc6052f",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v11-noops.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": null,
+     "velox_image_id": "img-a"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "01d6febbee59f0e9c0c16012b18498398b339c81c0c8b178da5c2cd9f122808c",
+     "data_sha256": "fd0aeb541c19aff80e447a51b0e00271d4a72f1d028bcf169ca43c704cbc8896",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "DF4-B"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v11-noops.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "DF4-B",
+     "velox_image_id": "img-b"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "42ff261fa20c4cdcf32538acd89ef964d1440941711bc3df08c36e729791d104",
+     "data_sha256": "7a333ecf21172815cfd251787c2df6ce9ede2652148e5a6e4c015ca602aaeb27",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "DF4-B"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v11-noops.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "DF4-B",
+     "velox_image_id": "img-c"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "62bc8317d11b8714596742e9f97e7e7b7f7a5bc9190ae59dd265c0d86ee9a03c",
+     "data_sha256": "bd46f6d9ec8deff0b2500dbb241001b3ed7b55ce957dce870d9a72b11e71867a",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "HAADF"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v11-noops.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "HAADF",
+     "velox_image_id": "img-e"
+    }
+   ],
+   "spectrum_stream_not_read": false
+  },
+  {
+   "bytes": 39928,
+   "format": "velox",
+   "path": "velox-titles-v11-labels.emd",
+   "raises": null,
+   "set": "step-3-planted",
+   "sha256": "1d7f4dac97bcd381f0d81c3f2d0b8c6a921462deca84da1a1f3fc5c0b2d93da2",
+   "signals": [
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "b3ff445ee80f81c1b4c7152ab80a656b9b0b5db4ae8b0bb24ae602c134d390d8",
+     "data_sha256": "a8192b2747b5e78cfbd9ecc3519fb03dda5dac1ef77689bb7e967d414bc6052f",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "Si-K"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v11-labels.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "Si-K",
+     "velox_image_id": "c1"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "01d6febbee59f0e9c0c16012b18498398b339c81c0c8b178da5c2cd9f122808c",
+     "data_sha256": "fd0aeb541c19aff80e447a51b0e00271d4a72f1d028bcf169ca43c704cbc8896",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "DI-c2"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v11-labels.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "DI-c2",
+     "velox_image_id": "c2"
+    }
+   ],
+   "spectrum_stream_not_read": true
+  },
+  {
+   "bytes": 37496,
+   "format": "velox",
+   "path": "velox-titles-v9-labels.emd",
+   "raises": null,
+   "set": "step-3-planted",
+   "sha256": "3656cf928bd69e53e86b00dcbcaf9a1c977278282d69a9db04b3fd42712f54d5",
+   "signals": [
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "b3ff445ee80f81c1b4c7152ab80a656b9b0b5db4ae8b0bb24ae602c134d390d8",
+     "data_sha256": "a8192b2747b5e78cfbd9ecc3519fb03dda5dac1ef77689bb7e967d414bc6052f",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "HAADF-label"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v9-labels.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "HAADF-label",
+     "velox_image_id": "d1"
+    },
+    {
+     "axes": [
+      {
+       "name": "y",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 2,
+       "units": "pm"
+      },
+      {
+       "name": "x",
+       "navigate": false,
+       "offset": 0.0,
+       "offset_bits": "0000000000000000",
+       "scale": 200.0,
+       "scale_bits": "4069000000000000",
+       "size": 3,
+       "units": "pm"
+      }
+     ],
+     "axes_sizes_match_shape": true,
+     "data_f32_sha256": "01d6febbee59f0e9c0c16012b18498398b339c81c0c8b178da5c2cd9f122808c",
+     "data_sha256": "fd0aeb541c19aff80e447a51b0e00271d4a72f1d028bcf169ca43c704cbc8896",
+     "dtype": "uint16",
+     "dtype_str": "<u2",
+     "float32_exact": true,
+     "metadata": [
+      {
+       "key": "General.title",
+       "kind": "string",
+       "value": "HAADF2"
+      },
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "value": "velox-titles-v9-labels.emd"
+      },
+      {
+       "key": "Acquisition_instrument.TEM.beam_energy",
+       "kind": "number",
+       "source": "Optics.AccelerationVoltage",
+       "value": 200.0,
+       "value_bits": "4069000000000000"
+      }
+     ],
+     "shape": [
+      2,
+      3
+     ],
+     "signal_type": "",
+     "title": "HAADF2",
+     "velox_image_id": "d2"
+    }
+   ],
+   "spectrum_stream_not_read": true
+  }
+ ],
+ "generator": "tools/step-3/pins.py",
+ "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.digitalmicrograph.file_reader; rsciio.emd.file_reader, select_type='images')",
+ "set": "step-3-planted",
+ "versions": {
+  "h5py": "3.16.0",
+  "numpy": "2.5.4",
+  "pint": "0.26.1",
+  "python": "3.14.7"
+ }
+}
