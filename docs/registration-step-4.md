@@ -100,8 +100,9 @@ non-zero `number_of_frames` is refused (ValueError). If still none, `ceil(marker
 - **Each count is `+= 1` in the target type:** integers wrap modulo 2^bits (two's complement for the signed ones), float32
   and float64 add 1.0 with IEEE rounding (so they stop at 2^24 and 2^53). Identical to RosettaSciIO's jitted loop.
 - **Registered deviations (RosettaSciIO writes outside its array, which numba does not check):** a value `>= bincount` that is
-  not 65535 is refused; with frames not summed, `last_frame - first_frame < 1` is refused (RosettaSciIO raises for a
-  negative extent and writes out of bounds for zero).
+  not 65535 is refused; with frames not summed, `last_frame - first_frame < 1` is refused (RosettaSciIO raises ValueError for a
+  negative extent; for zero frames its Time axis divides by zero (ZeroDivisionError), or, without `Scan.FrameTime`, a
+  `last_frame` of 0 never stops and writes out of bounds).
 - **`sum_EDS_detectors` true:** one signal; streams 1... add their values into stream 0's array with stream 0's bin count, frame
   range and type (RosettaSciIO reads only their `Data`, not their settings or metadata). **False:** one signal per stream, each
   a `FeiSpectrumStream` (its own `bincount`, divisor check and `Metadata`; the type is stream 0's); the axes and metadata of
@@ -166,7 +167,8 @@ RosettaSciIO's code; `tools/step-4/pins.py` stops on any difference.
 - `si-planted-bins.emd`: two streams, `bincount` 16 and 32, channels below 16: summed reads equal; not summed refused here (§3.5).
 - `sk-<case>.emd` for SpectroKit's six cases: their stream and image datasets copied verbatim from the copies in
   `Fixtures/step4/spectrokit/` (with `PROVENANCE.md`: SpectroKit `9b93fb4`, path, sha256), with complete metadata and
-  `Displays`. Truth: SpectroKit's draw (`velox-streams-truth.json`, copied), including the voxel of 70 000 counts (uint16
+  `Displays` (and a `DetectorIndex` that names no `Detectors` entry dropped: axis-decoy and axis-order name a
+  Detector-3 they lack). Truth: SpectroKit's draw (`velox-streams-truth.json`, copied), including the voxel of 70 000 counts (uint16
   wraps to 4464) and the unterminated stream.
 
 ## 5. Gates
