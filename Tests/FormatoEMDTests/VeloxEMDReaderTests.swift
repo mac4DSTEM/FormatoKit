@@ -385,7 +385,7 @@ extension VeloxEMDSerialized {
             #expect(throws: (any Error).self) { try VeloxEMDReader(path: path).readSpectrumImage() }
         }
 
-        // MARK: Image API (2026-10-12: one Velox parser for the suite; macTEM reads plain images through it)
+        // MARK: Image API (2026-10-12: one Velox parser for every consumer; image readers read plain images through it)
 
         /// What `make-tiny-fixture.py --rsciio-truth` prints for the typed file (rsciio 049e7d70): per image the frames as (y, x) rows
         /// flattened, and the y/x axes in the unit rsciio compacted to (nm, um, pm from the image's own field of view). The values are

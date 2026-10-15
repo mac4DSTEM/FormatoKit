@@ -1,6 +1,6 @@
 //
 //  HDF5ExitBarrierTests.swift
-//  Role: Gate for the bounded quit barrier (SpectroKit 0.2.0; macTEM ADR 021). `exit()` runs the atexit handlers,
+//  Role: Gate for the bounded quit barrier (inherited, 0.2.0). `exit()` runs the atexit handlers,
 //        which a test cannot watch from inside its own process, so each scenario runs in `FormatoHDF5ExitProbe` (a
 //        child process; Tests/FormatoHDF5ExitProbe/main.swift) and the test reads what it wrote and how it ended.
 //
@@ -17,7 +17,7 @@
 //  `SpectrumImageOpener.open` and installs nothing itself; it asks the libhdf5 the loader loaded for `H5atclose`,
 //  HDF5's hook that calls back as the real `H5_term_library` starts, and the callback reports whether the lock is
 //  held. The mode also checks the lock is free just before `exit`, so a "lock-held" cannot come from a hold the open
-//  leaked. `MAC4DSTEM_HDF5_PATH` (tools/test.sh sets it) reaches the child through the inherited environment.
+//  leaked. `FORMATO_HDF5_PATH` (tools/test.sh sets it) reaches the child through the inherited environment.
 //
 //  Every probe runs under a hard deadline: a barrier that waits for ever (the 0.1.0 shape) goes red with "did not exit
 //  within N s" after the child is killed, and never hangs the suite.
@@ -142,7 +142,7 @@ import Foundation
     }
 
     /// Runs the probe in `mode`, reading both pipes to EOF concurrently (no pipe-buffer deadlock). The child inherits
-    /// this process's environment, `MAC4DSTEM_HDF5_PATH` among it. If the child is still there after `deadline`
+    /// this process's environment, `FORMATO_HDF5_PATH` among it. If the child is still there after `deadline`
     /// seconds it is terminated (then killed), the test fails with "did not exit within", and `timedOut` is set so
     /// the caller stops asserting on a half-run.
     private func runProbe(
@@ -279,8 +279,8 @@ import Foundation
     /// probe's as its `H5_term_library` starts, and the lock must be held then. A loader that installed the barrier
     /// before `H5open` would register it before HDF5's handler, so it would run after the teardown: "lock-free".
     @Test func testTheVeloxLoaderInstallsTheBarrierAfterHDF5sOwnTeardownHandler() throws {
-        guard ProcessInfo.processInfo.environment["MAC4DSTEM_HDF5_PATH"] != nil else {
-            Issue.record("MAC4DSTEM_HDF5_PATH is not set: run through tools/test.sh, which sets it for the probe too")
+        guard ProcessInfo.processInfo.environment["FORMATO_HDF5_PATH"] != nil else {
+            Issue.record("FORMATO_HDF5_PATH is not set: run through tools/test.sh, which sets it for the probe too")
             return
         }
         let run = try runProbe("velox-order", arguments: [Self.veloxTiny.path], deadline: 30)

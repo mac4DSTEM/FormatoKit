@@ -1,4 +1,4 @@
-// SpectroKit S1 test partition (ADR 064 section 3.3): the methods of DemoEDXFixtureTests that move with the EDX core;
+// Test partition (registration step 1 §1.1): the methods of DemoEDXFixtureTests that move with the EDX core;
 // the rest stay in DemoEDXFixtureTests.swift. Helpers are duplicated, not shared, across the split.
 import Testing
 import Foundation
@@ -72,9 +72,13 @@ import FormatoDM
         #expect(tags.azimuthDegrees == 45)
         #expect(tags.elevationDegrees == 22, "the planted physics (round 3), not the Titan file's 18")
         #expect(abs((try #require(tags.solidAngle)) - (0.7)) <= 1e-6)
-        #expect(abs((try #require(tags.realTime)) - (6 * 4 * 1.0e-3)) <= 1e-6)
+        let realTime: Double = try #require(tags.realTime)
+        let wantRealTime: Double = 6.0 * 4.0 * 1.0e-3
+        #expect(abs(realTime - wantRealTime) <= 1e-6)
         // Two of the four scan rows are 30 % dead (live 0.70), two 5 % dead (0.95): the scalar is real x mean live fraction 0.825.
-        #expect(abs((try #require(tags.liveTime)) - (6 * 4 * 1.0e-3 * 0.825)) <= 1e-6)
+        let liveTime: Double = try #require(tags.liveTime)
+        let wantLiveTime: Double = 6.0 * 4.0 * 1.0e-3 * 0.825
+        #expect(abs(liveTime - wantLiveTime) <= 1e-6)
         // Energy axis of the FILE: the generator's axis (E = (i - 23.9) * 0.02 keV, 512 channels) perturbed by E_file = 1.002 E_true - 10 eV,
         // so scale 0.02004 keV and origin 23.9 + 0.010 / 0.02004 = 24.399.
         let energy = try #require(eds.axes[2])

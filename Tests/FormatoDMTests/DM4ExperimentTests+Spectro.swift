@@ -1,4 +1,4 @@
-// SpectroKit S1 test partition (ADR 064 section 3.3): the methods of DM4ExperimentTests that move with the EDX core;
+// Test partition (registration step 1 §1.1): the methods of DM4ExperimentTests that move with the EDX core;
 // the rest stay in DM4ExperimentTests.swift. Helpers are duplicated, not shared, across the split.
 import Testing
 import Foundation
@@ -413,7 +413,8 @@ import FormatoDM
         let survey = try DM4Experiment.readImage(data: data, index: 2)
         #expect(survey.width == 4)
         #expect(survey.height == 3)
-        #expect(survey.pixels == (0..<12).map(Float.init))          // x fastest, row-major
+        let wantPixels: [Float] = (0..<12).map { (i: Int) -> Float in Float(i) }
+        #expect(survey.pixels == wantPixels)          // x fastest, row-major
         #expect(survey.xAxis == DM4Axis(origin: 0, scale: 0.5, units: "nm"))
         #expect(survey.yAxis == DM4Axis(origin: 2, scale: 0.75, units: "µm"))
         let scan = try DM4Experiment.readImage(data: data, index: 3)     // float32 scan-grid image

@@ -1,8 +1,8 @@
 //
 //  FormatoHDF5ExitProbe — main.swift
-//  Role: The child process of `HDF5ExitBarrierTests` (SpectroKitTests). `exit()` runs the atexit handlers, which a
+//  Role: The child process of `HDF5ExitBarrierTests` (FormatoHDF5Tests). `exit()` runs the atexit handlers, which a
 //        test cannot watch from inside its own process, so each scenario of the quit barrier
-//        (`HDF5Serial.installExitBarrier`, macTEM ADR 021) runs here and the test reads what the process wrote and
+//        (`HDF5Serial.installExitBarrier`) runs here and the test reads what the process wrote and
 //        how it ended.
 //
 //  Usage: FormatoHDF5ExitProbe <mode> [bound-seconds]
@@ -34,9 +34,9 @@
 //  in, "lock-free" if it did (a barrier that took the lock and gave it back before the teardown).
 //
 //  velox-order does not call `installExitBarrier` and registers no stand-in: the Velox loader does the first, and
-//  HDF5 itself is the second. It opens a Velox file through `VeloxEMDReader.readSpectrumImage` (SpectroKit 0.3.0 went through
-//  `SpectrumImageOpener.open`, which stays in SpectroKit and makes the same call), which makes the loader run `H5open` and then install the barrier. It then asks the libhdf5 that the loader loaded
-//  (`MAC4DSTEM_HDF5_PATH`, `RTLD_NOLOAD`: the same image, never a second copy) for `H5atclose`, HDF5's own hook that
+//  HDF5 itself is the second. It opens a Velox file through `VeloxEMDReader.readSpectrumImage` (the inherited test went through
+//  `SpectrumImageOpener.open`, which stays in the consuming package and makes the same call), which makes the loader run `H5open` and then install the barrier. It then asks the libhdf5 that the loader loaded
+//  (`FORMATO_HDF5_PATH`, `RTLD_NOLOAD`: the same image, never a second copy) for `H5atclose`, HDF5's own hook that
 //  calls a callback as `H5_term_library` starts, and registers one that writes whether the lock is held at that
 //  moment. If the loader had installed the barrier before `H5open`, the barrier would run after HDF5's handler and
 //  the callback would find the lock free. "lock-free-before-exit" is checked just before `exit`, so a "lock-held"
@@ -113,8 +113,8 @@ func runVeloxOrder(path: String) -> Never {
     typealias AtClose = @convention(c) (
         @convention(c) (UnsafeMutableRawPointer?) -> Void, UnsafeMutableRawPointer?
     ) -> Int32
-    guard let library = ProcessInfo.processInfo.environment["MAC4DSTEM_HDF5_PATH"] else {
-        setupFailed("MAC4DSTEM_HDF5_PATH is not set (tools/test.sh sets it): which libhdf5 did the loader load?")
+    guard let library = ProcessInfo.processInfo.environment["FORMATO_HDF5_PATH"] else {
+        setupFailed("FORMATO_HDF5_PATH is not set (tools/test.sh sets it): which libhdf5 did the loader load?")
     }
     guard let handle = dlopen(library, RTLD_NOW | RTLD_NOLOAD), let symbol = dlsym(handle, "H5atclose") else {
         setupFailed("H5atclose not found in the already loaded \(library)")

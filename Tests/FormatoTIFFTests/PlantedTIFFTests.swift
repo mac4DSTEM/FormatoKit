@@ -22,8 +22,11 @@ import FormatoCore
             let s = try load(name)
             #expect(s.data.shape == [3, 5], "\(name)")
             #expect(s.data.dataType == .uint16)
-            #expect(s.data.doubles() == (0..<3).flatMap { r in (0..<5).map { c in Double(1000 * r + c) } }, "\(name)")
-            #expect(s.axes.map(\.name) == ["height", "width"])
+            let want: [Double] = (0..<3).flatMap { (r: Int) -> [Double] in (0..<5).map { (c: Int) -> Double in Double(1000 * r + c) } }
+            #expect(s.data.doubles() == want, "\(name)")
+            let axisNames: [String?] = s.axes.map(\.name)
+            let wantNames: [String?] = ["height", "width"]
+            #expect(axisNames == wantNames)
         }
     }
 
@@ -98,7 +101,8 @@ import FormatoCore
             if type == 3 { u16(value); u16(0) } else { u32(value) }
         }
         u32(0)
-        d.append(contentsOf: (0..<3).flatMap { r in (0..<4).map { c in UInt8(10 * r + c) } })
+        let rows: [UInt8] = (0..<3).flatMap { (r: Int) -> [UInt8] in (0..<4).map { (c: Int) -> UInt8 in UInt8(10 * r + c) } }
+        d.append(contentsOf: rows)
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("formato-no-rps-\(UUID().uuidString).tif")
         try d.write(to: url)
         defer { try? FileManager.default.removeItem(at: url) }

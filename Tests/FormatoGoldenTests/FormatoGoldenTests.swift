@@ -1,10 +1,10 @@
 //
 //  FormatoGoldenTests.swift
-//  Gate M2 of docs/registration-step-1.md: the Velox reader's part of SpectroKit's golden baseline, byte for byte.
-//  SpectroKit 0.3.0's `Tests/SpectroCoreTests/Fixtures/spectro-golden/velox-tiny.txt` (mac4DSTEM's 71929a01 baseline, re-recorded
-//  on purpose at SpectroKit 0.2.0) holds the reader's outputs in its lines 1-175 and `SpectrumImageOpener`'s and the EDX
-//  windows' after them; `Fixtures/velox-tiny-reader.txt` is those 175 lines verbatim. The dump below is SpectroKit's
-//  `GoldenDump` (copied verbatim from its `Tests/SpectroGoldenTests/SpectroGoldenTests.swift` at 0.3.0) and the calls are the
+//  Gate M2 of docs/registration-step-1.md: the Velox reader's part of the inherited golden baseline, byte for byte.
+//  The inherited 0.3.0 golden file `velox-tiny.txt` (baseline 71929a01, re-recorded
+//  on purpose at the inherited reader's 0.2.0) holds the reader's outputs in its lines 1-175 and `SpectrumImageOpener`'s and the EDX
+//  windows' after them; `Fixtures/velox-tiny-reader.txt` is those 175 lines verbatim. The dump below is the inherited
+//  `GoldenDump` (copied verbatim from the inherited golden test at 0.3.0) and the calls are the
 //  scenario's first part, verbatim; no tolerance anywhere.
 //
 
@@ -12,7 +12,7 @@ import Testing
 import Foundation
 import FormatoEMD
 
-// MARK: - The dump (SpectroKit 0.3.0, verbatim)
+// MARK: - The dump (inherited, 0.3.0, verbatim)
 
 /// Reflection walk that writes one line per scalar: `path = value`. Deterministic: dictionaries and sets are sorted, absolute
 /// paths keep their last component, numeric arrays above 8 elements are summarised by count, exact sum and bit hash.
@@ -119,12 +119,12 @@ enum GoldenDump {
 
 // MARK: - Scenarios
 
-// MARK: - The scenario: the reader part of SpectroKit's "velox-tiny"
+// MARK: - The scenario: the reader part of the inherited "velox-tiny"
 
 enum FormatoGolden {
     static let fixtures = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures")
 
-    /// SpectroKit 0.3.0's `add("velox-tiny")` up to (not including) `SpectrumImageOpener.openVelox`, verbatim.
+    /// The inherited 0.3.0 `add("velox-tiny")` up to (not including) `SpectrumImageOpener.openVelox`, verbatim.
     static func veloxTinyReader() throws -> String {
         var out: [String] = ["# SpectroGolden velox-tiny"]
         let path = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
@@ -145,12 +145,12 @@ enum FormatoGolden {
 }
 
 @Suite(.serialized) struct FormatoGoldenTests {
-    /// Recomputes the reader's part of "velox-tiny" and compares it with SpectroKit's 175 lines, byte for byte, reporting
+    /// Recomputes the reader's part of "velox-tiny" and compares it with the inherited 175 lines, byte for byte, reporting
     /// the first differing line. Mutation: one count of the event store changed - red at its line.
-    @Test func testVeloxReaderOutputsAreByteIdenticalToSpectroKitsBaseline() throws {
+    @Test func testVeloxReaderOutputsAreByteIdenticalToTheInheritedBaseline() throws {
         let text = try FormatoGolden.veloxTinyReader()
         let recorded = try String(contentsOf: FormatoGolden.fixtures.appendingPathComponent("velox-tiny-reader.txt"), encoding: .utf8)
-        #expect(recorded.split(separator: "\n").count == 175, "the fixture is SpectroKit's 175 reader lines")
+        #expect(recorded.split(separator: "\n").count == 175, "the fixture is the inherited 175 reader lines")
         if text == recorded { return }
         let a = text.split(separator: "\n", omittingEmptySubsequences: false), b = recorded.split(separator: "\n", omittingEmptySubsequences: false)
         let i = (0..<min(a.count, b.count)).first { a[$0] != b[$0] } ?? min(a.count, b.count)

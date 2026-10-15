@@ -3,13 +3,13 @@ import Foundation
 import FormatoEMD
 
 extension VeloxEMDSerialized {
-    /// 0.0.3 (SpectroKit's ask, 2026-10-15; registration step 1 A7): `VeloxMetadata.parse` keeps the `Detectors` entries
+    /// 0.0.3 (a consumer's request, 2026-10-15; registration step 1 A7): `VeloxMetadata.parse` keeps the `Detectors` entries
     /// in the order the metadata text writes them, as RosettaSciIO's `json.loads` does, where it sorted them by the
     /// `Detector-<n>` index. RosettaSciIO 049e7d70 takes the FIRST entry in that order whose name contains
     /// `BinaryResult.Detector` for the energy axis (`_emd_velox.py:866-876`), and the first whose name equals it for the
     /// detector metadata (`:51-57`, the rule `exposureTimeSeconds` applies).
     ///
-    /// The planted file is SpectroKit's (`tools/edx-stages/make_velox_streams.py` case "axis-order", c5a9a5e), copied with
+    /// The planted file is inherited (`tools/edx-stages/make_velox_streams.py` case "axis-order", c5a9a5e), copied with
     /// its sha256; RosettaSciIO's reading of it is pinned in `velox-stream-axis-order.pin.json` by
     /// `tools/asks-0.0.3/pin_axis_order.py` before the fix. The inline cases are planted: their truth is the written order.
     @Suite final class VeloxDetectorOrderTests {

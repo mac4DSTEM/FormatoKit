@@ -1,14 +1,14 @@
 //
 //  VeloxMetadataFieldsTests.swift
-//  Role: Pin the six `VeloxMetadata` fields SpectroKit 0.2.0 added (nominalMagnification, stemMagnification,
+//  Role: Pin the six `VeloxMetadata` fields the inherited reader's 0.2.0 added (nominalMagnification, stemMagnification,
 //        cameraLengthMeters, operatingMode, projectorMode, exposureTimeSeconds) and each `VeloxDetectorInfo`'s
 //        `exposureTimeSeconds`: one rule per test, first on inline JSON (`VeloxMetadata.parse(jsonData:)`), then end
-//        to end on a planted Velox file. The first five are macTEM's ask of 2026-10-13; `stemMagnification`, which is
-//        `CustomProperties.StemMagnification.value` (what RosettaSciIO 049e7d70 maps as the magnification), is the
-//        owner's sixth of 2026-10-14.
+//        to end on a planted Velox file. The first five were requested by a consumer on 2026-10-13; `stemMagnification`, which is
+//        `CustomProperties.StemMagnification.value` (what RosettaSciIO 049e7d70 maps as the magnification), was
+//        requested sixth, on 2026-10-14.
 //
-//  PUBLIC API ONLY, on purpose: this target shares package access, but macTEM is another package and sees only
-//  `public`. Everything used below is `public` in SpectroCore (an external consumer compiles this file unchanged).
+//  PUBLIC API ONLY, on purpose: this target shares package access, but a consumer is another package and sees only
+//  `public`. Everything used below is `public` in FormatoEMD (an external consumer compiles this file unchanged).
 //
 //  The expected values are literals typed here, from the rules (the doc comments on `VeloxMetadata`, RosettaSciIO
 //  049e7d70 `_get_detector_metadata_dict`) and from tools/velox-metadata-parity/make_fixture.py, which plants them.
@@ -19,7 +19,7 @@
 //  Each Data/Image group of the planted file has a 2-column Metadata. Column 0 holds the values below; column 1 is a
 //  DECOY with a different value in every field, so a reader that takes the wrong column cannot pass.
 //
-//  Negative controls (SpectroKit 0.2.0): each edit below was applied alone to VeloxEMDReader.swift (49c6ef6) in a
+//  Negative controls (inherited reader 0.2.0): each edit below was applied alone to VeloxEMDReader.swift (49c6ef6) in a
 //  scratch clone and turned at least one test red (M11 by a crash):
 //    M1 exposure by `contains`; M2 exposure from `.last`; M3 the `!detectorName.isEmpty` guard removed; M4 `images()`
 //    reading metadata column 1; M5 cameraLengthMeters reading NominalMagnification; M6 operatingMode via `jsonDouble`;

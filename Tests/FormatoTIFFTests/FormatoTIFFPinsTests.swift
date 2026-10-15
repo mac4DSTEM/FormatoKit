@@ -48,7 +48,9 @@ import FormatoCore
     private func assertTags(_ dir: TIFFDirectory, _ pinned: [[String: Any]], _ what: String) {
         // tifffile drops a tag of a type it does not know; the walker keeps it (amendment A1): compared without those.
         let known: Set<Int> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18]
-        #expect(dir.tags.filter { known.contains($0.type) }.map(\.code) == pinned.map { $0["code"] as! Int }, "\(what): tag codes")
+        let gotCodes: [Int] = dir.tags.filter { known.contains($0.type) }.map(\.code)
+        let wantCodes: [Int] = pinned.map { (p: [String: Any]) -> Int in p["code"] as! Int }
+        #expect(gotCodes == wantCodes, "\(what): tag codes")
         for p in pinned {
             guard let tag = dir[p["code"] as! Int] else { continue }
             let w = "\(what) tag \(tag.code)"

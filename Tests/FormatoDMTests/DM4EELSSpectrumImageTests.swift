@@ -4,13 +4,13 @@
 //        a 3D EELS spectrum image of a GMS `.dm4` as Float32 counts in (y, x, channel) order, its energy axis, and E0 /
 //        convergence / collection semi-angle from the tags RosettaSciIO maps. Tier 2: file handling, no computed number.
 //
-//  PUBLIC API ONLY, on purpose (no @testable, no `package` access): macTEM is another package and sees only `public`.
+//  PUBLIC API ONLY, on purpose (no @testable, no `package` access): a consumer is another package and sees only `public`.
 //
 //  TWO FILES, TWO KINDS OF TRUTH.
 //   1. rsciio-EELS_SI.dm4: RosettaSciIO 049e7d70's public digitalmicrograph/3D/EELS_SI.dm4 (sha256 f9b8203f..., a real
 //      GMS 2.32 high-loss spectrum image, 2 x 2 x 2048 float32). rsciio-EELS_SI.truth.json is RosettaSciIO's own reading
 //      of it (tools/eels-reader/truth.py, the pinned checkout's `file_reader`): shape and axes as rsciio reports them,
-//      the sha256 of the counts as float32 little-endian in SpectroKit's (y, x, channel) order, sample values, E0 / alpha /
+//      the sha256 of the counts as float32 little-endian in the (y, x, channel) order, sample values, E0 / alpha /
 //      beta as rsciio's mapping gives them. The axis numbers and the three tag values are also typed here as literals.
 //      This file is SQUARE (nx = ny), so it cannot show an nx/ny swap; the planted file does.
 //   2. eels-planted.dm4 (tools/eels-reader/make_planted.py, standard library only): 21 objects, non-square 3 x 2 x 5 cubes
@@ -18,7 +18,7 @@
 //      rule is repeated below as code (`b`, `RULE`); eels-planted.truth.json is rsciio's reading of the same bytes (so
 //      the planted layout is also confirmed by an independent reader).
 //
-//  Negative controls (SpectroKit EELS slice 1b): each edit below was applied alone to DM4Experiment.swift (the commit
+//  Negative controls (EELS slice 1b of the inherited reader): each edit below was applied alone to DM4Experiment.swift (the commit
 //  that added readEELSSpectrumImage) in a scratch clone and turned at least one test red:
 //    M1 x and y swapped in the output index; M2 the returned energy axis taken from the x axis; M3 Voltage not divided by
 //    1000; M4 nx and ny read from swapped dimensions; M5 convergence read from the collection tag; M6 int16 decoded as
@@ -411,7 +411,10 @@ import FormatoDM
         #expect(i.counts[(1 * 3 + 2) * 5 + 3] == 4800)           // 100 * 128 - 8000
         let u = try read(Self.plantedPath, 8)
         #expect(u.counts[0] == 4_000_000_000)
-        #expect(u.counts[(1 * 3 + 2) * 5 + 3] == Float(UInt32(4_000_000_000 + 1_000_003 * 128)), "rounded to Float32")
+        let rawCount: UInt32 = 4_000_000_000 + 1_000_003 * 128
+        let wantCount: Float = Float(rawCount)
+        let gotCount: Float = u.counts[(1 * 3 + 2) * 5 + 3]
+        #expect(gotCount == wantCount, "rounded to Float32")
     }
 
     /// The energy axis of the planted cubes is (origin -40, scale 0.25, eV); x and y have their own calibrations, so
