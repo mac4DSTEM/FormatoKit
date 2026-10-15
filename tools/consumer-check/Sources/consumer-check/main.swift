@@ -53,7 +53,7 @@ do {
 // 0.0.3: the Detectors entries in the written order, as RosettaSciIO (SpectroKit's planted file; the index order gave 0.01 / -0.5).
 do {
     let order = try VeloxEMDReader(path: tests.appendingPathComponent("FormatoEMDTests/Fixtures/velox-stream-axis-order.emd").path).readSpectrumImage()
-    check(order.metadata.energyAxis == VeloxEnergyAxis(offsetKeV: -1.9, scaleKeV: 0.02), "energy axis from the first detector written")
+    check(order.metadata.energyAxis?.offsetKeV == -1.9 && order.metadata.energyAxis?.scaleKeV == 0.02, "energy axis from the first detector written")
     check(order.metadata.detectors.map(\.index) == [0, 10, 2], "detectors in the written order")
 } catch { check(false, "detector order: \(error)") }
 check(VeloxEMDReader.elementSelection(fromSettingsJSON: Data(#"{"elementSelection":[8,14]}"#.utf8)) == ["O", "Si"], "elementSelection")
