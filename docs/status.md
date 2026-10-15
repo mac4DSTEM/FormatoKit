@@ -1,10 +1,10 @@
 # Status
 
-What is live, one table; then the hand-off and what is unverified. Rules are in `CLAUDE.md`; the registration in
-`docs/registration-step-1.md` (amendments A1 onward); what each consumer changes in `docs/consumers-0.0.1.md`; the format
-checklist in `docs/parity.md`.
+What is live, one table; then the hand-off and what is unverified. Rules are in `CLAUDE.md`; the registrations in
+`docs/registration-step-1.md` and `docs/registration-step-2.md` (amendments A1 onward); what each consumer changes in
+`docs/consumers-0.0.1.md` to `docs/consumers-0.0.3.md`; the format checklist in `docs/parity.md`.
 
-## Live (2026-10-15 early morning: step 1, then step 2 in the same session)
+## Live (2026-10-15: steps 1 and 2 early morning, tagged 0.0.2; the 0.0.3 candidate late morning)
 
 | Area | State | Evidence |
 |---|---|---|
@@ -20,7 +20,7 @@ checklist in `docs/parity.md`.
 | Lazy = eager (L1) | every pinned signal's seeded slabs equal the eager array's; the file array on planted slabs | `PinsTests`, `ArrayTests` |
 | The owner's files | Re-run after the Gate B fixes on `59a6bef`, unchanged: 18 files (14 DM4 under `eels/`, three Ceta `.emd`, the 1.7 GB Velox SI's images): 51 signals bit-identical to RosettaSciIO, the 1.2 to 1.5 GB EELS spectrum images included; RosettaSciIO 15 s, FormatoKit 7 s | `tools/step-1/owner-check.sh` on `70c6222` (log: `.build/owner/owner-check.log`) |
 | libhdf5 (H1) | HDF5 2.1.1 + libsz + libaec ship as a `FormatoHDF5` resource; found after the host's copies; a separate package reads Velox with no variable set | `BundledLibraryTests`; `tools/consumer-check/run.sh` |
-| Consumer check | 27 checks through the public API, Debug, 0 warnings, `MAC4DSTEM_HDF5_PATH` unset | `tools/consumer-check/run.sh` |
+| Consumer check | 35 checks (0.0.3: both values of each flag, the detector order) through the public API, Debug, 0 warnings, `MAC4DSTEM_HDF5_PATH` unset | `tools/consumer-check/run.sh` |
 | Break-once proof | 16 of 16 planned mutants red on a copy of `db9e14a` (XCTest) and again on `59a6bef` (Swift Testing, after the Gate B fixes; mutant 10 re-aimed at the fixed line) | `tools/step-1/mutants.py` |
 | Gate B refuter | One refuter on `3391460`: F1 (a units trap), F2 and F3 (Velox defaults where RosettaSciIO raises), F6 (the gate's allow-list) fixed in `dee9e58` with 11 of its files pinned; F4, F5, F7, F8 and F2's DM half registered as named deviations | registration A5; `PinsTests.testRefuterFilesAgreeOrAreRefused` |
 | Step 2 registration | Written before code (`e566efe`); amendments A1 (the pins) and A2 (Gate B) | `docs/registration-step-2.md` |
@@ -29,9 +29,12 @@ checklist in `docs/parity.md`.
 | The owner's Ceta TIFFs | 6 files (8-bit RGB renders, uncalibrated in RosettaSciIO): 6 signals bit-identical | `tools/step-2/owner-check.sh` on `2136ffc` |
 | Step 2 break-once proof | 15 of 15 planned mutants red (mutant 2 needed a TIFF without RowsPerStrip, added) | `tools/step-1/mutants.py --step 2` |
 | Step 2 Gate B refuter | One refuter on `700ede0`, 15 500 generated TIFFs: five crashes and the series rules fixed or refused, three deviations registered | registration step 2 A2 |
+| 0.0.3 ask 1: five members public | `VeloxSpectrumImage.streamCount`, `.energyCalibrationAgrees`, `VeloxStreamInfo.id`, `VeloxEventStore.streamsAgreeOnCoverage`, `.pixelCount` (SpectroKit's tests read them); both flags over every stream, seen at both values on the planted `velox-flags-planted.emd` and `velox-tiny.emd`; 3 sampled mutants red | registration step 1 A6; `VeloxPublicFlagsTests`; consumer check |
+| 0.0.3 ask 2: Velox detector order | `VeloxMetadata.detectors` in the written key order, as RosettaSciIO (was index order): the energy axis, `exposureTimeSeconds`, segments follow; SpectroKit's planted axis-order file equal to RosettaSciIO's pin (0.02 keV/ch from -1.9 keV, was 0.01 / -0.5); three moved tests changed and renamed on purpose; red first, 3 sampled mutants red; Gate B (68 inputs) fixed two minor cases; no public file moves (174 metadata columns scanned) | registration step 1 A7; `VeloxDetectorOrderTests`; `tools/asks-0.0.3/` |
+| Standards | `.spi.yml` (DocC, five modules), `.github/workflows/ci.yml` (hook proof, gate, consumer check; enabling Actions is the owner's); the hook refuses `killall` and `pkill` without `-P <pid>` or a scratchpad path; the package builds unchanged at a macOS 15 floor (the floor stays 27 until the owner decides) | `tools/hooks/test-no-sleep-poll.sh`; `Package.swift` |
 | Empty modules | `FormatoMRC`, `FormatoEMPAD`, `FormatoMSA`: a scope statement each | their source file |
-| Tests | Swift Testing throughout (the owner's standard, 2026-10-15): 152 tests in 20 suites, the 121 moved names among them; 0 failures, 0 warnings beyond the registered strip lines | `tools/test.sh` |
-| Gate | `tools/test.sh` green and stamped at `2136ffc` (refuses to stamp with an untracked file under Sources/Tests) | `.build/last-green` |
+| Tests | Swift Testing throughout (the owner's standard, 2026-10-15): 159 tests, the 121 moved names among them (3 renamed on purpose, A7); 0 failures, 0 warnings beyond the registered strip lines | `tools/test.sh`; `tools/step-1/names.sh` |
+| Gate | `tools/test.sh` green and stamped on the 0.0.3 candidate, the commit that carries this line (refuses to stamp with an untracked file under Sources/Tests) | `.build/last-green`; `tools/last-green.sh` |
 
 Validation: none. Agreement with RosettaSciIO and recovery of planted files are what is claimed (registration §8).
 
@@ -44,8 +47,9 @@ The suite board's `lanes/formatokit` carries the next prompt. What the next sess
 2. **The next format lane** in the order the owner's data needs: EMPAD and the 4D HDF5 readers from mac4DSTEM (when its
    session is ready), then MRC and MSA; or TIFF's next branches (compression via a ported LZW/Deflate, the Zeiss SEM and
    JEOL SightX branches) if the owner's files need them.
-3. The owner tags 0.0.1 (or 0.0.2 with FormatoTIFF) after pushing; SpectroKit's session makes the 0.4.0 switch
-   (`docs/consumers-0.0.1.md`, `docs/consumers-0.0.2.md`); macTEM can move its TIFF container onto `TIFFFile` in its lane.
+3. 0.0.2 is tagged (the owner, 2026-10-15). The owner tags 0.0.3 on the candidate (the board row has the commands);
+   SpectroKit re-pins at its next session, drops its head-stream stand-in and the `withKnownIssue` around E1
+   (`docs/consumers-0.0.3.md`); macTEM can move its TIFF container onto `TIFFFile` in its lane.
 
 ## Unverified
 

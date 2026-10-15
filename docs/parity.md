@@ -2,7 +2,7 @@
 
 The checklist that makes "complete" a measured claim (suite ROADMAP, "Kits", phase 4). Started 2026-10-15 from RosettaSciIO
 049e7d70's own format list (its 38 `rsciio/*/specifications.yaml`, the source of its supported-formats table). Updated at
-every tag. "Pinned" means a gate compares FormatoKit with RosettaSciIO bit for bit on that format's files; "read" means a
+every tag (last: 0.0.3, 2026-10-15). "Pinned" means a gate compares FormatoKit with RosettaSciIO bit for bit on that format's files; "read" means a
 reader exists without that gate.
 
 ## The formats
@@ -13,7 +13,7 @@ instruments and techniques, out of scope until someone asks.
 | RosettaSciIO plugin | Extensions | RosettaSciIO writes | FormatoKit module | State | Priority |
 |---|---|---|---|---|---|
 | DigitalMicrograph | dm3, dm4 | no | `FormatoDM` | **pinned** (step 1): every object as a signal; 106 public signals and the owner's 40 bit for bit; the moved `DM4Experiment` API | A |
-| EMD, Velox | emd | no | `FormatoEMD` | **pinned** for images as signals (step 1, Float32); the spectrum stream read and parity-checked in SpectroKit's history (moved API) | A |
+| EMD, Velox | emd | no | `FormatoEMD` | **pinned** for images as signals (step 1, Float32); the spectrum stream read and parity-checked in SpectroKit's history (moved API); the detectors in RosettaSciIO's order (0.0.3) | A |
 | EMD, NCEM / Berkeley | emd | yes | `FormatoEMD` | not read | B |
 | EMD, prismatic | emd | no | — | not read | C |
 | TIFF | tif, tiff | yes | `FormatoTIFF` | **pinned** (step 2) for FEI, Gatan DM tags, ImageJ and plain files, uncompressed strips: 31 public and planted series and the owner's 6 Ceta TIFFs bit for bit; the tag walker equal to tifffile; Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu streak, compression and tiles refused by name | A |
@@ -89,6 +89,9 @@ instruments and techniques, out of scope until someone asks.
   gives the largest Float32; the stored-dtype read of step 2 removes the difference.
 - **Velox spectrum images as signals** (`select_type="spectrum_image"`, frame sums, rebinning, `SI_dtype`, the sparse
   output): the moved reader decodes the stream; the signal adapter and its pins are step 2.
+- **Velox detector order (equal since 0.0.3):** `VeloxMetadata.detectors` follows the written order of the `Detectors` keys,
+  as RosettaSciIO's `json.loads`, so the energy axis and the detector-metadata match take the same entry (registration step 1
+  A7). Left: a key written twice in one object reads its first value here and its last in Python (no file seen has one).
 - **Velox metadata mapping:** step 1 maps the file name and the beam energy; RosettaSciIO also maps the camera length,
   magnification, instrument, stage, detector and EDS fields.
 - **Lazy reading:** registered equal to eager (gate L1) for DM (positioned reads) and Velox images (per frame). Not yet
