@@ -5,7 +5,8 @@ mutant must turn at least one test red. The copy keeps one warm .build across mu
 
     mutants.py [--commit REV] [--only N,...] [--step 1|2]
 
-`--step 2` runs docs/registration-step-2.md §6's mutants (FormatoTIFF) instead of step 1's.
+`--step 2` runs docs/registration-step-2.md §6's mutants (FormatoTIFF) instead of step 1's; `--step 3` registration step 3
+§6's (Velox stored types and titles).
 
 Prints one line per mutant (`red` / `SURVIVED` / `does not apply`) and `mutants: N of M red`; exit 0 only if every one is red.
 """
@@ -60,11 +61,32 @@ MUTANTS_STEP2 = [
     (15, "lazy slab column offset off by one", TIFF, "let at = src.layout.rowOffset(y) + src.shift + x0 * el", "let at = src.layout.rowOffset(y) + src.shift + (x0 + 1) * el", T),
 ]
 
+IMG = "Sources/FormatoEMD/VeloxImageSignals.swift"
+TITLES = "Sources/FormatoEMD/VeloxTitles.swift"
+V = "VeloxTitlesTests|PinsTests"
+MUTANTS_STEP3 = [   # docs/registration-step-3.md §6
+    (1, "stored type ignored (Float32)", IMG, "let dataType = FormatoDataType(rawValue: stored.rawValue)", "let dataType = Optional(FormatoDataType.float32)", V),
+    (2, "uint64 read as int64", READER, "case .uint64: (memory, size) = (h5.uint64, 8)", "case .uint64: (memory, size) = (h5.int64, 8)", V),
+    (3, "a frame's bytes in the wrong order", IMG, "let frame = try FormatoArray(dataType: dataType, shape: frameShape, bytes: Data(bytes))", "let frame = try FormatoArray(dataType: dataType, shape: frameShape, bytes: Data(bytes.reversed()))", V),
+    (4, "CameraInputOperation gives detector", TITLES, 'guard let name = try lookup(entry, "cameraName") as? String', 'guard let name = try lookup(entry, "detector") as? String', V),
+    (5, "integrationMode true read as dDPC", TITLES, '(value as? String) == "true" ? "iDPC" : "dDPC"', '(value as? String) == "true" ? "dDPC" : "iDPC"', V),
+    (6, "Filtered never prefixed", TITLES, 'name = "Filtered " + name', 'name = "" + name', V),
+    (7, "inputIndex 1 gives A-C", TITLES, 'if index == "1" { return ("B-D"', 'if index == "1" { return ("A-C"', V),
+    (8, "FFT matched on dataPath", TITLES, 'if try contains(entry, "imageOutputPath")', 'if try contains(entry, "dataPath")', V),
+    (9, "the id-in-path test an equality", TITLES, "return text.range(of: id, options: .literal) != nil", "return Self.lastComponent(text) == id", V),
+    (10, "no DetectorInformation fallback", TITLES, "            } catch is Fallback {\n                if let information {", "            } catch is Fallback {\n                if false, let information {", V),
+    (11, "the carried name reset per image", TITLES, '            let group = "/Data/Image/" + id\n', '            carried = nil\n            let group = "/Data/Image/" + id\n', V),
+    (12, "label maps for Image files too", TITLES, "        if spectrumStream {", "        if true {", V),
+    (13, "version 11 labels from Presentation", TITLES, "if versionNumber >= 11 {", "if versionNumber >= 99 {", V),
+    (14, "STEM tried before camera", TITLES, '["CameraInputOperation", "StemInputOperation",', '["StemInputOperation", "CameraInputOperation",', V),
+    (15, "a lazy slab cut from the frame's origin", IMG, "out.append(try frame.slab(start: Array(start.suffix(2)), count: Array(count.suffix(2))).bytes)", "out.append(try frame.slab(start: [0, 0], count: Array(count.suffix(2))).bytes)", V),
+]
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--commit", default="HEAD")
     ap.add_argument("--only")
-    ap.add_argument("--step", default="1", choices=["1", "2"])
+    ap.add_argument("--step", default="1", choices=["1", "2", "3"])
     a = ap.parse_args()
     only = {int(x) for x in a.only.split(",")} if a.only else None
     work = Path(os.environ.get("MUTANTS_WORK") or tempfile.mkdtemp(prefix="formato-mutants-"))
@@ -87,7 +109,7 @@ def main():
     if not tiffs.exists() and (ROOT / ".build/rsciio-tiff").exists():
         tiffs.symlink_to(ROOT / ".build/rsciio-tiff")
     red = total = 0
-    for n, what, path, old, new, flt in (MUTANTS_STEP2 if a.step == "2" else MUTANTS):
+    for n, what, path, old, new, flt in {"1": MUTANTS, "2": MUTANTS_STEP2, "3": MUTANTS_STEP3}[a.step]:
         if only and n not in only:
             continue
         total += 1

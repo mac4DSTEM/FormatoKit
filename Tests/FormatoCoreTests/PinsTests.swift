@@ -2,8 +2,8 @@
 //  PinsTests.swift
 //  Gates P1 and L1 of docs/registration-step-1.md: every DM and Velox signal RosettaSciIO 049e7d70 returns from its public
 //  test files (Fixtures/step-1-pins.json, tools/step-1/pins.py) against FormatoDM's and FormatoEMD's adapters: shape, the
-//  data's sha256 (DM: the stored bytes; Velox: Float32, amendment step 1), every axis field bit for bit, the signal type,
-//  the title (DM) and the mapped metadata with its source; a type RosettaSciIO reads and FormatoKit does not is refused by
+//  data's sha256 over the stored bytes (Velox in its stored type since step 3; Float32 before), every axis field bit for
+//  bit, the signal type, the title (DM; Velox since step 3, gate P3) and the mapped metadata with its source; a type RosettaSciIO reads and FormatoKit does not is refused by
 //  name (A1.1). And L1: for every signal read, seeded slabs of the lazy array equal the same slabs cut from the eager one.
 //  The public files are read from the pinned clone in References/ (tools/test.sh unzips the zips after checking their
 //  sha256); without References, only the committed copy of 3D/EELS_SI.dm4 runs.
@@ -120,6 +120,20 @@ import FormatoEMD
         return velox.images.contains { (try? velox.signal($0)) == nil }
     }
 
+    /// Step 3's planted Velox files (registration step 3 §4; Tests/FormatoEMDTests/Fixtures/velox-titles-*.emd, pinned by
+    /// tools/step-3/pins.py): every Operations kind and branch, DetectorInformation and the carried name, both label maps, the
+    /// ten stored types. Compared as the public files are.
+    @Test func testStep3PlantedVeloxFilesAgree() throws {
+        let files = try #require(try loadJSON("step-3-pins.json")["files"] as? [[String: Any]])
+        let dir = TestPaths.root.appendingPathComponent("Tests/FormatoEMDTests/Fixtures")
+        let (read, signals, refused) = try compare(files, locate: { name in
+            let u = dir.appendingPathComponent(name); return FileManager.default.fileExists(atPath: u.path) ? u : nil
+        }, mustFind: true)
+        #expect(read == 4)
+        #expect(signals == 22)
+        #expect(refused == 0)
+    }
+
     /// Gate B's files (Fixtures/refuter, tools/step-1/pins.py --set refuter): built by the refuter from RosettaSciIO's public
     /// fei_example_tem_stack.emd with one metadata value changed each. Where RosettaSciIO raises, FormatoKit must refuse
     /// (F1-F3); where it reads, the signals must be equal; `u_stack_unit_px.emd` (Pint's "px") is refused on purpose
@@ -137,7 +151,7 @@ import FormatoEMD
 
     private func compare(_ files: [[String: Any]], locate: (String) -> URL?, mustFind: Bool,
                          refusedOnPurpose: Set<String> = []) throws -> (Int, Int, Int) {
-        var read = 0, signals = 0, refused = 0, titleDifferences: [String] = []
+        var read = 0, signals = 0, refused = 0
         for f in files {
             let path = f["path"] as! String
             guard let url = locate(path) else {
@@ -190,19 +204,20 @@ import FormatoEMD
                     }
                     let lazy = try velox.signal(image), eager = try lazy.load()
                     assertAxes(eager.axes, p["axes"] as! [[String: Any]], what)
+                    // Step 3 (registration step 3, gate P3): the stored type, its bytes and RosettaSciIO's title.
+                    #expect(eager.data.dataType.rawValue == p["dtype"] as? String, "\(what): dtype")
                     #expect(eager.data.shape == p["shape"] as? [Int], "\(what): shape")
-                    #expect(p["float32_exact"] as? Bool == true, "\(what): a stored type Float32 does not hold (A4)")
-                    #expect(sha(eager.data.bytes) == p["data_f32_sha256"] as? String, "\(what): data as Float32")
+                    #expect(sha(eager.data.bytes) == p["data_sha256"] as? String, "\(what): data in the stored type")
                     #expect(eager.signalType == "", "\(what): Velox images carry no signal type")
-                    if eager.title != p["title"] as? String { titleDifferences.append("\(what): \(eager.title) vs \(p["title"]!)") }
-                    assertMetadata(eager.metadata, p["metadata"] as! [[String: Any]], what, skip: ["General.title"])
+                    #expect(eager.title == (p["title"] as? String ?? ""), "\(what): title")
+                    #expect(velox.title(of: image) == p["title"] as? String, "\(what): title (nil when RosettaSciIO has none)")
+                    assertMetadata(eager.metadata, p["metadata"] as! [[String: Any]], what)
                     try assertLazyEqualsEager(lazy, eager, what)
                     signals += 1
                 }
             }
         }
-        print("PinsTests: \(read) files, \(signals) signals equal, \(refused) refused by name; Velox titles differing from RosettaSciIO's (A4): \(titleDifferences.count)")
-        for t in titleDifferences { print("  title  \(t)") }
+        print("PinsTests: \(read) files, \(signals) signals equal, \(refused) refused by name")
         return (read, signals, refused)
     }
 }

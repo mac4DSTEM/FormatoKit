@@ -807,6 +807,8 @@ nonisolated struct VeloxHDF5: @unchecked Sendable {
     let h5tgetSize: H5TgetSize, h5tgetSign: H5TgetSign
     let h5oopen: H5Oopen, h5oclose: H5Close, h5lvisit2: H5Lvisit2, h5freeMemory: H5freeMemory
     let uint8: hid_t, uint16: hid_t, uint32: hid_t, uint64: hid_t, float32: hid_t
+    /// FormatoKit step 3 (registration step 3 §1.1): the native types a stored-type image read needs beside the above.
+    let int8: hid_t, int16: hid_t, int32: hid_t, int64: hid_t, float64: hid_t
 
     static func load() throws -> VeloxHDF5 {
         let candidates = VeloxHDF5Library.libraryCandidates()
@@ -850,7 +852,10 @@ nonisolated struct VeloxHDF5: @unchecked Sendable {
             h5lvisit2: try symbol("H5Lvisit2", as: H5Lvisit2.self), h5freeMemory: try symbol("H5free_memory", as: H5freeMemory.self),
             uint8: try global("H5T_NATIVE_UINT8_g"), uint16: try global("H5T_NATIVE_UINT16_g"),
             uint32: try global("H5T_NATIVE_UINT32_g"), uint64: try global("H5T_NATIVE_UINT64_g"),
-            float32: try global("H5T_NATIVE_FLOAT_g"))
+            float32: try global("H5T_NATIVE_FLOAT_g"),
+            int8: try global("H5T_NATIVE_INT8_g"), int16: try global("H5T_NATIVE_INT16_g"),
+            int32: try global("H5T_NATIVE_INT32_g"), int64: try global("H5T_NATIVE_INT64_g"),
+            float64: try global("H5T_NATIVE_DOUBLE_g"))
     }
 }
 
@@ -1492,6 +1497,54 @@ public nonisolated struct VeloxEMDReader: Sendable {
                 try file.readSlab(dataset, type: file.h5.float32, start: [0, 0, frame], count: [height, width, 1], into: $0.baseAddress!)
             }
             return out
+        }
+    }
+
+    /// One frame of one image in its STORED type: `height * width` elements, row-major (y, then x), little-endian, read through
+    /// HDF5's native type of the stored class, size and sign, so no value changes (FormatoKit step 3, registration step 3
+    /// §1.1; `readImageFrame` above stays Float32 for its callers). Throws as `readImageFrame` does.
+    package func readImageFrameBytes(id: String, frame: Int, cancelled: @Sendable () -> Bool = FormatoCancellation.task) throws -> (VeloxImageElementType, [UInt8]) {
+        try HDF5Serial.run {
+            try FormatoCancellation.check(cancelled)
+            let file = try Self.openVeloxFile(path: path)
+            guard let group = Self.imageGroup(file: file, id: id) else { throw VeloxEMDError.unknownImage(id) }
+            let dataset = try file.open(group + "/Data")
+            defer { file.close(dataset) }
+            guard dataset.dims.count == 3 else { throw VeloxEMDError.unknownImage(id) }
+            let height = dataset.dims[0], width = dataset.dims[1], frames = dataset.dims[2]
+            guard frame >= 0, frame < frames else {
+                throw VeloxEMDError.frameRangeInvalid("frame \(frame) of image \(id) is outside its \(frames) frames")
+            }
+            guard let type = Self.imageElementType(of: dataset) else {
+                throw VeloxEMDError.unsupportedImageType(
+                    "image \(id) is stored as HDF5 type class \(dataset.typeClass), \(dataset.byteSize) bytes per element; "
+                    + "only integers of 1 to 8 bytes and 4 or 8-byte floats are read (Velox's FFT and DPC images are compound)")
+            }
+            let (pixels, overflow) = height.multipliedReportingOverflow(by: width)
+            guard !overflow, pixels > 0, pixels <= Self.maximumPixels else {
+                throw VeloxEMDError.readFailed("an image of \(height) x \(width) pixels is empty or larger than this reader accepts")
+            }
+            let h5 = file.h5
+            let memory: hid_t
+            let size: Int
+            switch type {
+            case .uint8: (memory, size) = (h5.uint8, 1)
+            case .uint16: (memory, size) = (h5.uint16, 2)
+            case .uint32: (memory, size) = (h5.uint32, 4)
+            case .uint64: (memory, size) = (h5.uint64, 8)
+            case .int8: (memory, size) = (h5.int8, 1)
+            case .int16: (memory, size) = (h5.int16, 2)
+            case .int32: (memory, size) = (h5.int32, 4)
+            case .int64: (memory, size) = (h5.int64, 8)
+            case .float32: (memory, size) = (h5.float32, 4)
+            case .float64: (memory, size) = (h5.float64, 8)
+            }
+            var out = [UInt8](repeating: 0, count: pixels * size)
+            try FormatoCancellation.check(cancelled)
+            try out.withUnsafeMutableBytes {
+                try file.readSlab(dataset, type: memory, start: [0, 0, frame], count: [height, width, 1], into: $0.baseAddress!)
+            }
+            return (type, out)   // native is little-endian on every platform this package builds for (arm64)
         }
     }
 
