@@ -457,6 +457,11 @@ public nonisolated struct VeloxMetadata: Sendable {
     public let stageAlphaRadians: Double?
     public let stageBetaRadians: Double?
     public let stagePositionMeters: (x: Double, y: Double, z: Double)?
+    /// `Stage.Position.x`, `.y`, `.z` each alone, metres as stored (nil when that coordinate is absent or not a number); RosettaSciIO
+    /// maps each coordinate on its own, where `stagePositionMeters` needs all three.
+    public let stageXMeters: Double?
+    public let stageYMeters: Double?
+    public let stageZMeters: Double?
     public let holderType: String?
     public let pixelSizeMeters: (width: Double, height: Double)?
     /// `BinaryResult.PixelUnitX`: the unit of the pixel width and of `offset.x`. (rsciio reads this one for both axes.)
@@ -712,6 +717,7 @@ public nonisolated struct VeloxMetadata: Sendable {
             screenCurrentAmperes: jsonDouble(optics?["ScreenCurrent"]),
             stageAlphaRadians: jsonDouble(stage?["AlphaTilt"]), stageBetaRadians: jsonDouble(stage?["BetaTilt"]),
             stagePositionMeters: positionTuple.map { (x: $0.0, y: $0.1, z: $0.2) },
+            stageXMeters: jsonDouble(position?["x"]), stageYMeters: jsonDouble(position?["y"]), stageZMeters: jsonDouble(position?["z"]),
             holderType: stage?["HolderType"] as? String,
             pixelSizeMeters: pixelTuple.map { (width: $0.0, height: $0.1) },
             pixelUnit: binary?["PixelUnitX"] as? String, pixelUnitY: binary?["PixelUnitY"] as? String,
