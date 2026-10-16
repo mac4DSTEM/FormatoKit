@@ -38,8 +38,27 @@
     ]
    },
    "binaryResultDetector": "BM-Ceta",
-   "detectorType": "ImagingDetector",
+   "detectorIndex": 8,
+   "detectorName": "BM-Ceta",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    }
+   ],
    "dwellTimeSeconds": 1e-05,
+   "id": "ceta",
    "instrumentModel": "Talos F200X",
    "name": "ceta",
    "reference": {
@@ -91,8 +110,27 @@
     ]
    },
    "binaryResultDetector": "HAADF",
-   "detectorType": "ScanningDetector",
+   "detectorIndex": 0,
+   "detectorName": "HAADF",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    }
+   ],
    "dwellTimeSeconds": 1e-05,
+   "id": "haadf",
    "instrumentModel": "Talos F200X",
    "name": "haadf",
    "reference": {
@@ -140,8 +178,27 @@
     ]
    },
    "binaryResultDetector": "HAADF",
-   "detectorType": "ScanningDetector",
+   "detectorIndex": 0,
+   "detectorName": "HAADF",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    }
+   ],
    "dwellTimeSeconds": 1e-05,
+   "id": "zeros",
    "instrumentModel": "Talos F200X",
    "name": "zeros",
    "reference": {

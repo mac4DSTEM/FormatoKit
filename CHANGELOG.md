@@ -4,6 +4,12 @@ Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what e
 
 ## Unreleased
 
+- Add `FormatoMRC.MRCReader` (lazy MRC / MRC2014 images and stacks as RosettaSciIO 049e7d70 reads them: little-endian header, nm axes, squeezed
+  size-1 axes, the 128-byte FEI pixel size; modes 0, 1, 2, 6; modes 4 and 12 refused by name) and the named option `MRCAppImage` (the first
+  consumer's Float32 reading: signed mode 0, machine stamp honoured, Angstrom, stacks refused). Both pinned bit for bit.
+- Add `FormatoTIFF.TIFFVeloxCalibration` and `TIFFReadOptions.veloxCalibration` (default false = RosettaSciIO, which reads no tag 34683): the
+  Velox XML pixel size cross-checked against tags 65450-65452, pinned to the consumer's reader.
+- Add `FormatoEMD.VeloxImageSelection`: the consumer's object rule (HAADF first, `DetectorIndex`, EDX exclusion) and its axes, pinned to its reader.
 - Add acquisition-metadata readers returning `FormatoCore.AcquisitionMetadata`: `AcquisitionMetadata.dm(_:)` / `.dm(numbers:strings:)`
   (FormatoDM), `.mrc(data:)` / `.mrc(path:)` (FormatoMRC), `.tiff(data:)` / `.tiff(path:)` (FormatoTIFF: Velox XML tag 34683, FEI SEM INI,
   DM tag stream 65027) and `.velox(_:)` (FormatoEMD). Each takes an `AcquisitionMetadataConvention`: `.rosettaSciIO` (the default) follows

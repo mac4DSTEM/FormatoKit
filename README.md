@@ -13,7 +13,7 @@ large, one SwiftPM product per module.
 | `FormatoEMD` | Thermo Fisher Velox `.emd`: images as signals in their stored type, titled as RosettaSciIO titles them; EDS and EELS spectrum images as signals (`VeloxSpectrumImageSignals`, with `VeloxSpectrumImageOptions` for RosettaSciIO's six options); the sparse spectrum streams. Not read: single spectra, NCEM / Berkeley EMD | reads; `AcquisitionMetadata.velox` |
 | `FormatoHDF5` | `HDF5Datacube`: lazy rank-four numeric HDF5 / py4DSTEM EMD 1.0 hyperslabs in stored order, calibration axes, scalar metadata and lazy origin maps; the shared loader, lock and quit barrier. HSPY is not read | reads, pinned |
 | `FormatoTIFF` | the TIFF container with a public tag walker (any private tag as stored); FEI, Gatan DM, ImageJ and plain TIFF as signals. Compression, tiles and the other vendors' branches are refused by name | reads; `AcquisitionMetadata.tiff` (Velox XML, FEI INI, DM stream) |
-| `FormatoMRC` | MRC / MRC2014: acquisition metadata (RosettaSciIO's 128-byte FEI sections, or the FEI1/FEI2 extended-header record); image reader later | metadata pinned |
+| `FormatoMRC` | MRC / MRC2014: `MRCReader` (lazy images and stacks as RosettaSciIO reads them), `MRCAppImage` (the consumer's Float32 reading), acquisition metadata (RosettaSciIO's 128-byte FEI sections, or the FEI1/FEI2 extended-header record) | reads, pinned |
 | `FormatoEMPAD` | EMPAD XML + raw, memory-mapped scan / image series with calibrations; 4D HDF5 later | reads, pinned |
 | `FormatoMIB` | Merlin MIB: mmap U08 (1/6-bit), U16 (12-bit), U32 (24-bit), trigger/timestamp scan shape; named app ScanX/ScanY convention; packed R64 refused | reads, pinned |
 | `FormatoMSA` | EMSA/MAS spectra | empty |

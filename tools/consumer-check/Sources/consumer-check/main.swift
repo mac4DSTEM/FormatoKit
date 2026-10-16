@@ -127,6 +127,19 @@ do {
     check(try Data(contentsOf: out) == Data([7]), "FormatoFileWrite")
     try? FileManager.default.removeItem(at: out)
 } catch { check(false, "acquisition metadata: \(error)") }
+// Image readers (round 4): the MRC reader, the Velox TIFF calibration option and the Velox object rule, public API only.
+do {
+    let mrcImage = tests.appendingPathComponent("FormatoMRCTests/Fixtures/image-readers/f32-3x2.mrc").path
+    let mrcSignal = try MRCReader(path: mrcImage).signal.load()
+    check(mrcSignal.data.shape == [2, 3] && mrcSignal.axes.map(\.units) == ["nm", "nm"], "MRCReader")
+    check(try MRCAppImage.read(path: mrcImage).x?.units == "Å", "MRCAppImage")
+    let velox = tests.appendingPathComponent("FormatoTIFFTests/Fixtures/image-readers/velox-nm.tif").path
+    let calibrated = try TIFFSignals(path: velox, options: TIFFReadOptions(veloxCalibration: true)).signal(series: 0)
+    check(calibrated.axes.contains { $0.units == "nm" && $0.scale == 0.25 }, "TIFFReadOptions.veloxCalibration")
+    check(TIFFVeloxCalibration.read(try TIFFFile(path: velox).directories[0]) != nil, "TIFFVeloxCalibration")
+    let objects = try VeloxEMDReader(path: tests.appendingPathComponent("FormatoEMDTests/Fixtures/image-readers/velox-objects.emd").path).images()
+    check(VeloxImageSelection.choose(objects)?.id == "c-haadf" && VeloxImageSelection.axes(of: objects[2]).x?.units == "m", "VeloxImageSelection")
+} catch { check(false, "image readers: \(error)") }
 check(FormatoUnits.convertScaleUnits(1.5e-9, units: "m", factor: 100)?.units == "nm", "FormatoUnits")
 check(FormatoUnits.parse("µm")?.shortForm == "μm", "units parse")
 

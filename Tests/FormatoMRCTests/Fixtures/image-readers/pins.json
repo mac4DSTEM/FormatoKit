@@ -1,0 +1,696 @@
+{
+ "app_commit": "cb6e164f9227bf716185ed515bb6a2afb3a8841f",
+ "cases": [
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     0.5,
+     -1.25,
+     3,
+     4,
+     5,
+     6
+    ],
+    "source": "MRC \u00b7 mode 2 float32",
+    "voltage": null,
+    "width": 3,
+    "x": {
+     "origin": 0,
+     "scale": 10,
+     "units": "\u00c5"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 10,
+     "units": "\u00c5"
+    }
+   },
+   "name": "f32-3x2",
+   "reference": {
+    "axes": [
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 3,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "0000003f0000a0bf00004040000080400000a0400000c040",
+    "dtype": "float32",
+    "shape": [
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     0,
+     127,
+     -128,
+     -1
+    ],
+    "source": "MRC \u00b7 mode 0 int8",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    }
+   },
+   "name": "int8-signed",
+   "reference": {
+    "axes": [
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "007f80ff",
+    "dtype": "uint8",
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     -32768,
+     0,
+     1,
+     32767
+    ],
+    "source": "MRC \u00b7 mode 1 int16",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    }
+   },
+   "name": "int16",
+   "reference": {
+    "axes": [
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "008000000100ff7f",
+    "dtype": "int16",
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     0,
+     1,
+     65535,
+     300
+    ],
+    "source": "MRC \u00b7 mode 6 uint16",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    }
+   },
+   "name": "uint16",
+   "reference": {
+    "axes": [
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "00000100ffff2c01",
+    "dtype": "uint16",
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     0.5,
+     -2,
+     65504,
+     0.00010001659393310547
+    ],
+    "source": "MRC \u00b7 mode 12 float16",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    }
+   },
+   "name": "float16",
+   "reference": {
+    "axes": [
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "003800c0ff7b8e06",
+    "dtype": "float16",
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "error": "mode(4)"
+   },
+   "name": "complex64",
+   "reference": {
+    "axes": [
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "0000803f0000004000004040000080c0",
+    "dtype": "complex64",
+    "shape": [
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "error": "mode(3)"
+   },
+   "name": "mode-3",
+   "reference": {
+    "error": "ValueError"
+   }
+  },
+  {
+   "app": {
+    "error": "stack(frames: 3)"
+   },
+   "name": "stack-3",
+   "reference": {
+    "axes": [
+     {
+      "name": "z",
+      "navigate": true,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 3,
+      "units": ""
+     },
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "000000000000803f0000004000004040000080400000a0400000c0400000e04000000041000010410000204100003041",
+    "dtype": "float32",
+    "shape": [
+     3,
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "MRC \u00b7 mode 2 float32",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 10,
+     "units": "\u00c5"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 20,
+     "units": "\u00c5"
+    }
+   },
+   "name": "origin",
+   "reference": {
+    "axes": [
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 4.0,
+      "scale": 2.0,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 2.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "0000803f000000400000404000008040",
+    "dtype": "float32",
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "uncalibrated: the cell length is not positive"
+    ],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "MRC \u00b7 mode 2 float32 \u00b7 uncalibrated: the cell length is not positive",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "zero-cell",
+   "reference": {
+    "axes": [
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.0,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.0,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "0000803f000000400000404000008040",
+    "dtype": "float32",
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "uncalibrated: the cell length is not positive"
+    ],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "MRC \u00b7 mode 2 float32 \u00b7 uncalibrated: the cell length is not positive",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "zero-sampling",
+   "reference": {
+    "axes": [
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "0000803f000000400000404000008040",
+    "dtype": "float32",
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 1,
+    "notes": [],
+    "pixels": [
+     1,
+     2,
+     3
+    ],
+    "source": "MRC \u00b7 mode 2 float32",
+    "voltage": null,
+    "width": 3,
+    "x": {
+     "origin": 0,
+     "scale": 10,
+     "units": "\u00c5"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 5,
+     "units": "\u00c5"
+    }
+   },
+   "name": "singleton-y",
+   "reference": {
+    "axes": [
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 3,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "0000803f0000004000004040",
+    "dtype": "float32",
+    "shape": [
+     3
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "uncalibrated: an FEI extended header holds the pixel size, not read"
+    ],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "MRC \u00b7 mode 2 float32 \u00b7 uncalibrated: an FEI extended header holds the pixel size, not read",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "fei-128",
+   "reference": {
+    "axes": [
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.25,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.25,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "0000803f000000400000404000008040",
+    "dtype": "float32",
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "MRC \u00b7 mode 2 float32",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    }
+   },
+   "name": "extended-64",
+   "reference": {
+    "axes": [
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "0000803f000000400000404000008040",
+    "dtype": "float32",
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "MRC \u00b7 mode 2 float32",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 1,
+     "units": "\u00c5"
+    }
+   },
+   "name": "big-endian",
+   "reference": {
+    "error": "ValueError"
+   }
+  },
+  {
+   "app": {
+    "error": "axisOrder(mapc: 2, mapr: 1, maps: 3)"
+   },
+   "name": "axis-order",
+   "reference": {
+    "axes": [
+     {
+      "name": "y",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     },
+     {
+      "name": "x",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 0.1,
+      "size": 2,
+      "units": "nm"
+     }
+    ],
+    "data_hex": "0000803f000000400000404000008040",
+    "dtype": "float32",
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "truncated",
+   "reference": {
+    "error": "ValueError"
+   }
+  }
+ ],
+ "reference_commit": "049e7d7070e84779b499adaf3295beee9facb004",
+ "rsciio_version": "0.14.1.dev96+g049e7d707"
+}

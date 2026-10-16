@@ -19,7 +19,7 @@ instruments and techniques, out of scope until someone asks.
 | EMD, prismatic | emd | no | — | not read | C |
 | TIFF | tif, tiff | yes | `FormatoTIFF` | **pinned** (step 2) for FEI, Gatan DM tags, ImageJ and plain files, uncompressed strips: 31 public and planted series and the owner's 6 Ceta TIFFs bit for bit; the tag walker equal to tifffile; Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu streak, compression and tiles refused by name | A |
 | TIA | ser, emi | no | `FormatoTIFF` or its own module | not read | B |
-| MRC | mrc, ali | no | `FormatoMRC` | empty | B |
+| MRC | mrc, ali | no | `FormatoMRC` | **pinned**: `MRCReader` (lazy; modes 0 uint8, 1, 2, 6; header little-endian whatever the stamp; nm axes; size-1 axes squeezed; FEI 128-byte pixel size in float32; complex64 and float16 refused: no `FormatoDataType`), bit for bit at 049e7d70 on synthetic files; `MRCAppImage` is the named consumer option (signed mode 0, stamp honoured, Angstrom, stacks refused, Float32) pinned to macTEM cb6e164; acquisition metadata: see the section below | B |
 | MRCZ | mrc, mrcz | yes | `FormatoMRC` | not read | C |
 | EMPAD | xml (+ raw) | no | `FormatoEMPAD` | **pinned**: mmap Float32 frames, footer removal, scan/series shapes, squeezed axes, both XML navigation calibrations, diffraction calibration and timestamp metadata; synthetic full-byte pins at 049e7d70 | A |
 | py4DSTEM / EMD 1.0 (py4DSTEM f050d207, h5py 3.11.0) | h5, hdf5, emd | — | `FormatoHDF5` | **pinned** for explicit rank-four numeric datasets: stored bytes and shape, hyperslabs, R/Q axes, flip, rotation, ellipse, probe semiangle, lazy origin maps. Compressed Float32 and big-endian UInt16 synthetic files; uniform generic dimension vectors and scalar attributes checked with h5py; nonlinear coordinates refused | A |
@@ -149,3 +149,17 @@ cb6e164 and pinned. Pins: synthetic files written byte by byte (`generate.py`), 
 | TIFF, FEI SEM INI (`tiff`) | `mapping_fei`: HV, dwell, date, time, system type | zero HV and dwell are kept; the date goes through the kit's dateutil port (day-first above 12 as the app); the detector is unmapped and labelled. |
 | TIFF, Velox XML (tag 34683) | none (no plugin reads the tag); the same schema's EMD mapping | acceleration voltage and camera length (every mode) are the EMD mapping's `float(x) / 1e3` and `* 1e3`, unguarded; the other values keep the app's rules and are labelled. |
 | EMD, Velox (`velox`) | beam energy, camera length (every mode), `StemMagnification` as magnification, `InstrumentClass` as microscope | magnification, camera length, exposure and mode are read (the app leaves them `unread`). RosettaSciIO's microscope is `InstrumentClass`, which `VeloxMetadata` does not expose; both conventions give `InstrumentModel`, labelled. |
+
+## Image readers (round 4)
+
+- **MRC** `MRCReader` equals RosettaSciIO's `file_reader` (data bytes, dtype, shape, axes names, sizes, scales and offsets bit for bit) on 17
+  synthetic files (`tools/acq-metadata/generate.py`): float32/int16/uint16/uint8 images, a stack, origins, zero cell lengths and samplings, a squeezed
+  y axis (the axes shift as RosettaSciIO's do), an FEI header, a non-FEI extended header; mode 3, a big-endian file read as little-endian and a
+  truncated file raise in both. Not read: modes 4 and 12 (read by RosettaSciIO; the data model has no complex or float16 type), the DE movie
+  files, `navigation_shape`, `metadata_file`. `MRCAppImage` is the consumer's option.
+- **TIFF, Velox pixel size** `TIFFReadOptions.veloxCalibration` (default off): RosettaSciIO reads no calibration from tag 34683, so the default
+  axes equal its (uncalibrated) axes on all 11 pinned files; with the option the Velox XML pixel size is read as the consumer reads it
+  (unit attributes as stored, cross-checked against tags 65450-65452, FEI SEM tags first, a refused XML falls through). Pinned to macTEM cb6e164.
+- **EMD, Velox object rule** `VeloxImageSelection` (consumer option; RosettaSciIO returns every image): `choose` and `axes(of:)` pinned to macTEM
+  cb6e164 on 7 synthetic images and 5 subsets. Its axes differ from `VeloxImageSignals`: the y unit is `PixelUnitY` (RosettaSciIO uses `PixelUnitX`)
+  and the origin is in pixels.

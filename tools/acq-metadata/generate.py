@@ -209,10 +209,10 @@ def tiff_file(extra):
     layout = {}
     for code, (typ, payload) in sorted(entries.items()):
         if len(payload) <= 4:
-            layout[code] = (typ, len(payload) // {3: 2, 4: 4}.get(typ, 1), payload.ljust(4, b'\0'))
+            layout[code] = (typ, len(payload) // {3: 2, 4: 4, 5: 8}.get(typ, 1), payload.ljust(4, b'\0'))
         else:
             if len(blob) % 2: blob += b'\0'
-            layout[code] = (typ, len(payload), struct.pack('<I', data_at + len(blob)))
+            layout[code] = (typ, len(payload) // {3: 2, 4: 4, 5: 8}.get(typ, 1), struct.pack('<I', data_at + len(blob)))
             blob += payload
     layout[273] = (4, 1, struct.pack('<I', data_at))
     out = bytearray(b'II*\0' + struct.pack('<I', 8) + struct.pack('<H', len(layout)))
@@ -276,6 +276,8 @@ def velox_md(index, name, dtype_name, extra, optics):
     return np.frombuffer(raw + b'\0' * (8192 - len(raw)), dtype=np.uint8).reshape(8192, 1)
 
 
+VELOX_TABLE = [{'index': 0, 'name': 'HAADF', 'type': 'ScanningDetector'}, {'index': 8, 'name': 'BM-Ceta', 'type': 'ImagingDetector'},
+               {'index': 5, 'name': 'SuperXG21', 'type': 'AnalyticalDetector'}]
 VELOX_IMAGES = {
     # name: (detector index, detector name, optics, extra)
     'ceta': (8, 'BM-Ceta', {'AccelerationVoltage': '200000', 'NominalMagnification': '17500', 'CameraLength': '0.844', 'OperatingMode': '1', 'ProjectorMode': '2'},
@@ -298,12 +300,10 @@ def write_velox(path):
 # ---------------------------------------------------------------------------------------------------------------- app harness
 def build_harness(td):
     src = td / 'src'; src.mkdir()
-    for name in ('AcquisitionMetadata', 'AcquisitionMetadata+DM', 'AcquisitionMetadata+MRC', 'AcquisitionMetadata+TIFF', 'AcquisitionMetadata+Velox', 'GuardedXML'):
+    for name in ('AcquisitionMetadata', 'AcquisitionMetadata+DM', 'AcquisitionMetadata+MRC', 'AcquisitionMetadata+TIFF', 'AcquisitionMetadata+Velox', 'GuardedXML', 'CalibratedImage', 'DisplayFileName', 'MRCImageReader', 'TIFFImageReader', 'VeloxImageReader'):
         t = subprocess.check_output(['git', '-C', str(SUITE / 'macTEM'), '--no-optional-locks', 'show', f'{APP}:Sources/TEMCore/Data/{name}.swift'], text=True)
-        t = '\n'.join(l for l in t.split('\n') if l.strip() not in ('import FormatoDM', 'import FormatoEMD'))
+        t = '\n'.join(l for l in t.split('\n') if l.strip() not in ('import FormatoDM', 'import FormatoEMD', 'import FormatoCore'))
         (src / (name.replace('+', '_') + '.swift')).write_text(t)
-    t = subprocess.check_output(['git', '-C', str(SUITE / 'macTEM'), '--no-optional-locks', 'show', f'{APP}:Sources/TEMCore/Data/TIFFImageReader.swift'], text=True)
-    (src / 'TIFFFile.swift').write_text('import Foundation\n' + t[t.index('/// The TIFF container'):])
     (src / 'harness.swift').write_text((HERE / 'harness.swift').read_text())
     exe = td / 'harness'
     subprocess.run(['swiftc', '-parse-as-library', '-swift-version', '6', '-package-name', 'app', '-o', str(exe)] + [str(p) for p in sorted(src.iterdir())], check=True)
@@ -314,6 +314,153 @@ def run_harness(exe, kind, cases, td):
     cp = td / f'{kind}.json'
     cp.write_text(json.dumps(cases))
     return json.loads(subprocess.check_output([str(exe), kind, str(cp)]))
+
+
+# ---------------------------------------------------------------------------------------------------------------- image readers
+def rational_tag(n, d=1): return (5, struct.pack('<II', n, d))
+def short_tag(v): return (3, struct.pack('<H', v))
+
+
+def velox_pixel_xml(x='2.5e-10', y='2.5e-10', xunit='m', yunit='m'):
+    return ('<Metadata xmlns="http://schemas.fei.com/Metadata/v1/2013/07"><BinaryResult><PixelSize><X unit="%s">%s</X><Y unit="%s">%s</Y>'
+            '</PixelSize></BinaryResult></Metadata>') % (xunit, x, yunit, y)
+
+
+TIFF_IMAGE_CASES = {
+    'velox-agree': {34683: ascii_tag(velox_pixel_xml()), 65450: rational_tag(40000000), 65451: rational_tag(40000000), 65452: short_tag(3)},
+    'velox-disagree': {34683: ascii_tag(velox_pixel_xml()), 65450: rational_tag(50000000), 65451: rational_tag(40000000), 65452: short_tag(3)},
+    # Velox stores pixels per cm as a float32-rounded integer: the tags agree with the XML within half a count plus half a float32 step.
+    'velox-float32-rounded': {34683: ascii_tag(velox_pixel_xml(x='4.46168e-11', y='4.46168e-11')), 65450: rational_tag(int(np.float32(0.01 / 4.46168e-11))), 65451: rational_tag(int(np.float32(0.01 / 4.46168e-11))), 65452: short_tag(3)},
+    'velox-xml-only': {34683: ascii_tag(velox_pixel_xml())},
+    'velox-nm': {34683: ascii_tag(velox_pixel_xml('0.25', '0.5', 'nm', 'nm'))},
+    'velox-mixed-units': {34683: ascii_tag(velox_pixel_xml('2.5e-10', '0.5', 'm', 'nm')), 65450: rational_tag(40000000), 65452: short_tag(3)},
+    'velox-zero-x': {34683: ascii_tag(velox_pixel_xml('0', '2.5e-10'))},
+    'velox-no-pixel-size': {34683: ascii_tag('<Metadata><BinaryResult/></Metadata>')},
+    'velox-refused-xml': {34683: ascii_tag('<!DOCTYPE a [<!ENTITY e "x">]>' + velox_pixel_xml())},
+    'velox-and-fei': {34683: ascii_tag(velox_pixel_xml()), 34682: ascii_tag(fei_ini())},
+    'plain': {},
+}
+
+
+def axes_records(sig):
+    return [{'name': a['name'], 'size': int(a['size']), 'scale': float(a['scale']), 'offset': float(a['offset']),
+             'units': a['units'] or '', 'navigate': bool(a['navigate'])} for a in sig['axes']]
+
+
+def mrc_image(nx=2, ny=2, nz=1, mode=2, payload=None, cella=(2.0, 2.0, 1.0), m=(2, 2, 1), origin=(0., 0., 0.), mapcrs=(1, 2, 3),
+              ext=b'', big=False):
+    e = '>' if big else '<'
+    h = bytearray(1024)
+    struct.pack_into(e + '4i', h, 0, nx, ny, nz, mode)
+    struct.pack_into(e + '3i', h, 28, *m)
+    struct.pack_into(e + '3f', h, 40, *cella)
+    struct.pack_into(e + '3i', h, 64, *mapcrs)
+    struct.pack_into(e + 'i', h, 92, len(ext))
+    struct.pack_into(e + '3f', h, 196, *origin)
+    h[208:212] = b'MAP '
+    h[212:216] = b'\x11\x11\0\0' if big else b'\x44\x44\0\0'
+    return bytes(h) + ext + payload
+
+
+def f32(values, big=False): return np.array(values, dtype='>f4' if big else '<f4').tobytes()
+
+
+FEI128 = bytearray(128 * 1024)
+struct.pack_into('<f', FEI128, 44, 2.5e-10)
+MRC_IMAGE_CASES = {
+    'f32-3x2': mrc_image(3, 2, 1, 2, f32([0.5, -1.25, 3, 4, 5, 6]), (30., 20., 1.), (3, 2, 1)),
+    'int8-signed': mrc_image(2, 2, 1, 0, bytes([0, 127, 128, 255])),
+    'int16': mrc_image(2, 2, 1, 1, np.array([-32768, 0, 1, 32767], '<i2').tobytes()),
+    'uint16': mrc_image(2, 2, 1, 6, np.array([0, 1, 65535, 300], '<u2').tobytes()),
+    'float16': mrc_image(2, 2, 1, 12, np.array([0.5, -2, 65504, 1e-4], '<f2').tobytes()),
+    'complex64': mrc_image(2, 1, 1, 4, np.array([1 + 2j, 3 - 4j], '<c8').tobytes(), m=(2, 1, 1), cella=(2., 1., 1.)),
+    'mode-3': mrc_image(2, 2, 1, 3, bytes(8)),
+    'stack-3': mrc_image(2, 2, 3, 2, f32(range(12)), (2., 2., 3.), (2, 2, 3)),
+    'origin': mrc_image(2, 2, 1, 2, f32([1, 2, 3, 4]), (20., 40., 1.), (2, 2, 1), (20., 40., 5.)),
+    'zero-cell': mrc_image(2, 2, 1, 2, f32([1, 2, 3, 4]), (0., 0., 0.), (2, 2, 1)),
+    'zero-sampling': mrc_image(2, 2, 1, 2, f32([1, 2, 3, 4]), (2., 2., 1.), (0, 0, 0)),
+    'singleton-y': mrc_image(3, 1, 1, 2, f32([1, 2, 3]), (30., 5., 1.), (3, 1, 1)),
+    'fei-128': mrc_image(2, 2, 1, 2, f32([1, 2, 3, 4]), ext=bytes(FEI128)),
+    'extended-64': mrc_image(2, 2, 1, 2, f32([1, 2, 3, 4]), ext=bytes(64)),
+    'big-endian': mrc_image(2, 2, 1, 2, f32([1, 2, 3, 4], big=True), big=True),
+    'axis-order': mrc_image(2, 2, 1, 2, f32([1, 2, 3, 4]), mapcrs=(2, 1, 3)),
+    'truncated': mrc_image(4, 4, 1, 2, f32([1, 2, 3])),
+}
+
+VELOX_TABLE2 = [{'index': 0, 'name': 'HAADF', 'type': 'ScanningDetector'}, {'index': 3, 'name': 'DF4', 'type': 'ImagingDetector'},
+                {'index': 5, 'name': 'SuperXG21', 'type': 'AnalyticalDetector'}, {'index': 8, 'name': 'BM-Ceta', 'type': 'ImagingDetector'}]
+# id -> (BinaryResult.Detector, DetectorIndex or None, pixel size (w, h) or None, (unit X, unit Y), offset (x, y) or None, dtype)
+VELOX_OBJECTS = {
+    'a-edx': ('SuperXG21', 5, (2e-10, 2e-10), ('m', 'm'), (0., 0.), 'uint16'),
+    'b-df': ('DF4', 3, (2e-10, 2e-10), ('m', 'm'), (0., 0.), 'uint16'),
+    'c-haadf': ('HAADF', 0, (2.5e-10, 2.5e-10), ('m', 'm'), (0., 0.), 'uint16'),
+    'd-ceta-index-mismatch': ('BM-Ceta', 0, (4e-9, 4e-9), ('m', 'm'), (0., 0.), 'uint16'),
+    'e-no-index': ('HAADF', None, (2e-10, 2e-10), ('m', 'm'), (0., 0.), 'uint16'),
+    'f-offsets-units': ('DF4', 3, (2e-10, 4e-10), ('m', 'nm'), (1e-9, -2e-9), 'int32'),
+    'g-zero-size': ('DF4', 3, (0.0, 2e-10), ('m', 'm'), (0., 0.), 'uint16'),
+}
+
+
+def write_velox_objects(path):
+    with h5py.File(path, 'w') as f:
+        f.create_dataset('Version', data=[json.dumps({'version': '11', 'format': 'Velox'})], dtype=S)
+        for i, (gid, (det, idx, size, units, offset, dtype)) in enumerate(VELOX_OBJECTS.items()):
+            binary = {'Detector': det, 'PixelSize': {'width': repr(size[0]), 'height': repr(size[1])},
+                      'Offset': {'x': repr(offset[0]), 'y': repr(offset[1])}, 'PixelUnitX': units[0], 'PixelUnitY': units[1]}
+            if idx is not None: binary['DetectorIndex'] = str(idx)
+            doc = {'BinaryResult': binary, 'Detectors': {f'Detector-{d["index"]}': {'DetectorName': d['name'], 'DetectorType': d['type']} for d in VELOX_TABLE2},
+                   'Acquisition': {'AcquisitionStartDatetime': {'DateTime': '1600000000'}}, 'Scan': {'DwellTime': '1e-05'},
+                   'Optics': {'AccelerationVoltage': '200000'}, 'Instrument': {'InstrumentModel': 'Talos F200X'}}
+            raw = json.dumps(doc).encode()
+            g = f.create_group(f'Data/Image/{gid}')
+            g.create_dataset('Data', data=(np.arange(6) + i).astype(dtype).reshape(2, 3, 1), track_times=False)
+            g.create_dataset('Metadata', data=np.frombuffer(raw + b'\0' * (8192 - len(raw)), dtype=np.uint8).reshape(8192, 1), track_times=False)
+
+
+def images_part(exe, td, pins):
+    # TIFF Velox calibration
+    d = ROOT / 'Tests/FormatoTIFFTests/Fixtures/image-readers'; d.mkdir(parents=True, exist_ok=True)
+    cases = []
+    for name, extra in TIFF_IMAGE_CASES.items():
+        path = d / f'{name}.tif'
+        path.write_bytes(tiff_file(extra))
+        sig = tiff_reader(str(path))[0]
+        cases.append({'name': name, 'path': str(path), 'reference': {'axes': axes_records(sig), 'shape': list(sig['data'].shape)}})
+    app = run_harness(exe, 'tiffimage', cases, td)
+    for c in cases: c['app'] = app[c['name']]; del c['path']
+    (d / 'pins.json').write_text(json.dumps({**pins, 'cases': cases}, indent=1, sort_keys=True) + '\n')
+
+    # MRC images
+    d = ROOT / 'Tests/FormatoMRCTests/Fixtures/image-readers'; d.mkdir(parents=True, exist_ok=True)
+    cases = []
+    for name, data in MRC_IMAGE_CASES.items():
+        path = d / f'{name}.mrc'
+        path.write_bytes(data)
+        try:
+            sig = mrc_reader(str(path))[0]
+            ref = {'shape': list(sig['data'].shape), 'dtype': sig['data'].dtype.name, 'axes': axes_records(sig),
+                   'data_hex': np.ascontiguousarray(sig['data']).astype(sig['data'].dtype.newbyteorder('<')).tobytes().hex()}
+        except Exception as e:
+            ref = {'error': type(e).__name__}
+        cases.append({'name': name, 'path': str(path), 'reference': ref})
+    app = run_harness(exe, 'mrcimage', cases, td)
+    for c in cases: c['app'] = app[c['name']]; del c['path']
+    (d / 'pins.json').write_text(json.dumps({**pins, 'cases': cases}, indent=1, sort_keys=True) + '\n')
+
+    # Velox object rule and axes
+    d = ROOT / 'Tests/FormatoEMDTests/Fixtures/image-readers'; d.mkdir(parents=True, exist_ok=True)
+    write_velox_objects(d / 'velox-objects.emd')
+    entries = []
+    for gid, (det, idx, size, units, offset, dtype) in VELOX_OBJECTS.items():
+        entries.append({'id': gid, 'detectorName': det, 'detectorIndex': idx, 'detectors': VELOX_TABLE2, 'pixelSize': list(size),
+                        'pixelUnit': units[0], 'pixelUnitY': units[1], 'offset': list(offset), 'voltage': 200000.0,
+                        'width': 3, 'height': 2, 'elementType': dtype})
+    subsets = {'all': list(VELOX_OBJECTS), 'without-haadf': [k for k in VELOX_OBJECTS if k != 'c-haadf'],
+               'only-edx-and-unindexed': ['a-edx', 'e-no-index'], 'edx-then-df': ['a-edx', 'b-df'], 'none': []}
+    cases = [{'name': n, 'ids': ids, 'entries': [e for e in entries if e['id'] in ids]} for n, ids in subsets.items()]
+    app = run_harness(exe, 'veloxobjects', cases, td)
+    for c in cases: c['app'] = app[c['name']]; del c['entries']
+    (d / 'pins.json').write_text(json.dumps({**pins, 'cases': cases, 'entries': entries}, indent=1, sort_keys=True) + '\n')
 
 
 def main():
@@ -378,7 +525,7 @@ def main():
         by_title = {s['metadata']['General'].get('title'): s for s in sigs}
         for gid, (idx, name, optics, extra) in VELOX_IMAGES.items():
             sig = by_title.get(name) if name != 'HAADF' else None
-            cases.append({'name': gid, 'detectorType': {0: 'ScanningDetector', 8: 'ImagingDetector'}[idx], 'binaryResultDetector': name,
+            cases.append({'name': gid, 'id': gid, 'detectorName': name, 'detectorIndex': idx, 'detectors': VELOX_TABLE, 'binaryResultDetector': name,
                           'instrumentModel': 'Talos F200X', 'acquisitionStartUnixTime': 1600000000.0, 'dwellTimeSeconds': 1e-05,
                           'accelerationVoltageVolts': float(optics['AccelerationVoltage'])})
         # RosettaSciIO names images by Operations or DetectorIndex; read each image group's mapping by its file order.
@@ -391,6 +538,8 @@ def main():
         app = run_harness(exe, 'velox', cases, td)
         for c in cases: c['app'] = app[c['name']]
         (OUT['FormatoEMD'] / 'acq-pins.json').write_text(json.dumps({**pins, 'cases': cases}, indent=1, sort_keys=True) + '\n')
+
+        images_part(exe, td, pins)
 
 
 main()

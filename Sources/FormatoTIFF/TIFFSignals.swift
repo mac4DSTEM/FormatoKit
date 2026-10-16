@@ -154,6 +154,8 @@ public nonisolated struct TIFFSignals: Sendable {
     /// nil for every file read by default and for a file that carries no vendor branch's tags.
     public let vendorBranch: String?
 
+    let veloxCalibration: Bool
+
     /// Reads the file with the default options: a vendor branch that is not ported is refused by name.
     public init(path: String) throws {
         try self.init(path: path, options: TIFFReadOptions())
@@ -175,6 +177,7 @@ public nonisolated struct TIFFSignals: Sendable {
             }
         }
         vendorBranch = branch
+        veloxCalibration = options.veloxCalibration
         series = try Self.buildSeries(file)
     }
 
@@ -328,12 +331,37 @@ public nonisolated struct TIFFSignals: Sendable {
         let codes = Array(isRGB ? String(s.axes.dropLast()) : s.axes)
         let shape = isRGB ? Array(s.shape.dropLast()) : s.shape
         let names = codes.map(Self.axisName)
-        let axes: [FormatoAxis]
+        var axes: [FormatoAxis]
         do { axes = try Self.axes(page: page, shape: shape, names: names) } catch {
             // `_read_tiff`: any exception while parsing the scale gives the default dictionaries.
             axes = Self.dictionaries(shape: shape, names: names, scales: nil, offsets: nil, units: nil)
         }
+        var veloxNote: String?
+        if veloxCalibration, page[34680] == nil, page[34682] == nil, let calibration = TIFFVeloxCalibration.read(page) {
+            // The first consumer's option: the XML's pixel size. "width" is the columns (x), "height" the rows (y).
+            switch calibration {
+            case .disagree:
+                axes = Self.dictionaries(shape: shape, names: names, scales: nil, offsets: nil, units: nil)
+                veloxNote = TIFFVeloxCalibration.disagreeNote
+            case .calibrated(let xScale, let xUnit, let yScale, let yUnit):
+                func usable(_ scale: Double, _ unit: String) -> Bool { scale.isFinite && scale > 0 && !unit.isEmpty }
+                var scales = [Double](repeating: 1, count: names.count)
+                var units = [String?](repeating: nil, count: names.count)
+                for (i, n) in names.enumerated() {
+                    if n == "width", usable(xScale, xUnit) { scales[i] = xScale; units[i] = xUnit }
+                    if n == "height", usable(yScale, yUnit) { scales[i] = yScale; units[i] = yUnit }
+                }
+                axes = Self.dictionaries(shape: shape, names: names, scales: scales, offsets: nil, units: units)
+                veloxNote = TIFFVeloxCalibration.unvalidatedNote
+            }
+        }
         var metadata = try Self.metadata(page: page, file: name)
+        if let veloxNote {
+            metadata.set(FormatoMetadataEntry(
+                key: "FormatoKit.policy.velox_calibration", value: .text(veloxNote), units: nil,
+                provenance: FormatoProvenance(file: name, source: "tag 34683 BinaryResult/PixelSize, tags 65450-65452",
+                                              rule: "FormatoKit option, not RosettaSciIO's: the first consumer's Velox pixel size")))
+        }
         if let vendorBranch {
             metadata.set(FormatoMetadataEntry(
                 key: "FormatoKit.policy.vendor_branch", value: .text(vendorBranch), units: nil,
