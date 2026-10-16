@@ -11,7 +11,7 @@ large, one SwiftPM product per module.
 | `FormatoCore` | the data model: arrays as stored, axes, units (Pint's compact units, ported), metadata with provenance, lazy signals; cancellation | reads |
 | `FormatoDM` | Gatan DigitalMicrograph `.dm3` / `.dm4` (little-endian): every object as a signal, the tag tree, EDS and EELS spectrum images; complex, RGB and bool images are refused by name | reads |
 | `FormatoEMD` | Thermo Fisher Velox `.emd`: images as signals in their stored type, titled as RosettaSciIO titles them; EDS and EELS spectrum images as signals (`VeloxSpectrumImageSignals`, with `VeloxSpectrumImageOptions` for RosettaSciIO's six options); the sparse spectrum streams. Not read: single spectra, NCEM / Berkeley EMD | reads |
-| `FormatoHDF5` | `HDF5Datacube`: lazy rank-four numeric HDF5 / py4DSTEM EMD 1.0 hyperslabs in stored order, calibration axes, scalar metadata and lazy origin maps; the shared loader, lock and quit barrier. HSPY is not read | reads, pinned |
+| `FormatoHDF5` | `HDF5Datacube`: lazy rank-four numeric HDF5 / py4DSTEM EMD 1.0 hyperslabs in stored order, calibration axes, scalar metadata and lazy origin maps; the shared loader, lock and quit barrier. HSPY is not read. `BraggVectorsEMD`: write and read py4DSTEM BraggVectors (EMD 1.0 peak grid, shapes, calibration scalars), atomic publish, a hook for the caller's own attributes | reads and writes, pinned |
 | `FormatoTIFF` | the TIFF container with a public tag walker (any private tag as stored); FEI, Gatan DM, ImageJ and plain TIFF as signals. Compression, tiles and the other vendors' branches are refused by name | reads |
 | `FormatoMRC` | MRC / MRC2014 with FEI extended headers | empty |
 | `FormatoEMPAD` | EMPAD XML + raw, memory-mapped scan / image series with calibrations; 4D HDF5 later | reads, pinned |
@@ -105,6 +105,20 @@ The file must stay unchanged while the reader or its signal exists. Compressed H
 HDF5 rather than memory mapping. `originMap(_:)` returns fitted/measured scan maps lazily. Scalar calibration datasets
 and legacy attributes are kept in `calibration`, with provenance; absent values use EMD dimension vectors, then pixel
 axes. Generic EMD fallback supports uniform coordinates; nonlinear coordinates throw a typed unsupported error. Rank-three promotion, dataset discovery, and app sidecar recognition are outside this API.
+
+py4DSTEM BraggVectors, written and read through the same loader (peaks are float64 `qx` = detector row, `qy` = column):
+
+```swift
+let shape = BraggGridShape(rows: 2, columns: 2), detector = BraggGridShape(rows: 256, columns: 256)
+try BraggVectorsEMD.write(peaks: peaks, scan: shape, detector: detector,
+                          calibration: BraggCalibration(qPixelSize: 0.01, qPixelUnits: "A^-1"),
+                          to: URL(fileURLWithPath: "vectors.h5"), sourcePath: "scan.h5") // never over the source
+let vectors = try BraggVectorsEMD.read(path: "vectors.h5") // py4DSTEM.read(...) opens the same file
+```
+
+The file is built beside the destination and renamed onto it, so a failed or cancelled write changes nothing.
+`convention: .appImageXY` hands peaks over as image x/y (mac4DSTEM's), and `extraAttributes` lets an app add its own string
+attributes to the file, root or BraggVectors group.
 
 ## Requirements
 

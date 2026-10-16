@@ -13,6 +13,10 @@ calibration axes and scalar metadata through FormatoCore, with lazy fitted and m
 py4DSTEM EMD 1.0 calibration, legacy scalar attributes, and uniform EMD dimension vectors. Dataset discovery and
 app-specific sidecar recognition belong to the consumer. Keep the source file unchanged while a reader exists.
 
+``BraggVectorsEMD`` writes and reads py4DSTEM `BraggVectors` in EMD 1.0: the raw peak grid of every scan position, the scan
+and detector shapes and the calibration scalars. Writes are atomic (a temporary file beside the destination, then rename)
+and refuse to replace the source file; ``BraggAxisConvention`` names the reference and the mac4DSTEM axis conventions.
+
 ## Topics
 
 ### Datacubes
@@ -21,6 +25,16 @@ app-specific sidecar recognition belong to the consumer. Keep the source file un
 - ``HDF5DatacubeError``
 - ``HDF5OriginComponent``
 
+
+### Bragg vectors
+
+- ``BraggVectorsEMD``
+- ``BraggPeak``
+- ``BraggGridShape``
+- ``BraggCalibration``
+- ``BraggAxisConvention``
+- ``BraggAttributeTarget``
+- ``BraggVectorsEMDError``
 
 ### The shipped library
 
