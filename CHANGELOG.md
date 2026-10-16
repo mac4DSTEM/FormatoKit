@@ -2,7 +2,11 @@
 
 Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what each tag changed for a consumer) and `docs/status.md`.
 
-## Unreleased
+## 0.3.0 (2026-10-16)
+
+New readers: EMPAD, 4D HDF5 datacubes, Merlin MIB, a lazy 4D DM4 gather and the MRC image reader; acquisition metadata for DM, MRC, TIFF and Velox
+EMD; Velox image selection and the Velox TIFF pixel size as named options; and writing: the py4DSTEM Bragg-vector EMD writer and the HDF5
+root-attribute file layer. The libhdf5 XCFramework is NOT in 0.3.0 (the asset upload is still pending); libhdf5 is still the bundled resource.
 
 - Add `FormatoHDF5.HDF5RootAttributes`, `HDF5FileIdentity` and `HDF5FileError`: the file layer of a small HDF5 sidecar whose content is root-group
   string attributes. Writes fixed-length UTF-8 null-padded scalars with library-version bounds (V18, LATEST); reads with named refusals (variable-length,
@@ -31,20 +35,21 @@ Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what e
   scan-fastest inference with Float32 output. Bytes, shape and axes are pinned to 049e7d70 (`tools/dm4-gather`).
   New `DM4Experiment.tagTree(path:options:)`.
 - Add `FormatoMIB.MIBReader`: lazy mapped processed Merlin frames, header metadata, inferred or explicit scan shapes and frame slicing, pinned to RosettaSciIO 049e7d70. Packed raw R64 (1/6/12/24-bit headers) throws the reference refusal. `MIBConvention.appScanXY` preserves the app reader’s ScanX/ScanY shape, orientation and Float32 conversion, pinned separately.
-
 - Add `FormatoHDF5.HDF5Datacube`: lazy rank-four numeric hyperslabs, py4DSTEM EMD 1.0 calibration axes,
   scalar calibration with provenance, legacy calibration attributes, and lazy fitted/measured origin maps.
   Float32 and UInt16 cubes are pinned bit for bit to py4DSTEM 0.14.19 (`f050d207`) and h5py 3.11.0.
 - Move the existing Velox dynamic bindings into FormatoHDF5 so both readers share one loader and exit barrier.
   Add the `FormatoHDF5` product and select a dataset with `HDF5Datacube(path:datasetPath:)`.
-
 - Add `FormatoEMPAD.EMPADReader`: lazy memory-mapped Float32 EMPAD frames with footer rows dropped,
   XML scan shapes, image series, singleton squeezing, navigation and diffraction calibrations, optional
   `qCalibration`, and timestamp metadata with provenance. Malformed pairs throw `EMPADError`.
 - Complete bytes, axes and mapped metadata pinned against RosettaSciIO 049e7d70 on synthetic compressed fixtures.
 
-**Migration.** Add the `FormatoEMPAD` product and open an XML header with `EMPADReader(path:)`.
-Keep the raw file unchanged while its reader or lazy signal exists.
+**Migration.** Nothing breaks: every change is additive and the defaults equal 0.2.1's. Add the `FormatoEMPAD`, `FormatoMIB`, `FormatoMRC` and
+`FormatoHDF5` products as you need them. `FormatoTIFF` now depends on `FormatoDM` (it reads DigitalMicrograph tag streams), so a consumer that links
+`FormatoTIFF` links `FormatoDM` too; no import changes. `TIFFReadOptions.init` gained `veloxCalibration: Bool = false` (a defaulted parameter: source
+compatible, not binary compatible). The test-support target `FormatoAcquisitionPins` is not a product. Keep a raw file unchanged while its EMPAD or MIB
+reader or lazy signal exists.
 
 ## 0.2.1
 

@@ -40,21 +40,20 @@ What is live, one table; then the hand-off and what is unverified. Rules are in 
 | 0.2.0 generality pass | No app or project name in Sources, tests, README, Package.swift, the example or the consumer checks (`git grep` empty); `FORMATO_HDF5_PATH` (step 1 A8); FormatoKit's policies as parameters with 0.1.1's defaults (`VeloxReadPolicy`, `TIFFReadOptions`, `DMReadOptions`; registration 0.2.0 A1); DocC per module; README stands alone with a second consumer built from it; CI's type-check timeouts fixed (CI not yet re-run: needs a push); the Swift code measured green at macOS 15 and compiling for iOS 18, the declaration kept at 27 (the bundled dylibs need macOS 26) | `docs/registration-0.2.0.md`, `docs/consumers-0.2.0.md`; gate stamped at `4ed20e1` after the refuter's fixes |
 | 0.2.1 floor | `.macOS(.v15), .iOS(.v18)`; libhdf5 2.1.1, libsz, libaec rebuilt at `MACOSX_DEPLOYMENT_TARGET=15.0` (minos 15.0 by `otool -l`; recipe, source hashes and new sha256 in `NOTICE`); gate green with the rebuilt bundle, every pin unchanged, consumer check green; FormatoCore, DM, TIFF and EMD build for iOS 18 (EMD/HDF5 macOS-only at run time); CI on `macos-15` with Xcode 26.0 pinned. Measured on macOS 27 only: the floor is not run on a macOS 15 machine (CI is the first run there). On iOS, FormatoHDF5 still copies the macOS dylibs as a resource: an iOS app should not link FormatoHDF5 or FormatoEMD | `CHANGELOG.md`, `NOTICE` |
 | EMPAD | `EMPADReader`: mmap frames, footer removal, scan / series shapes, squeezed axes, XML and explicit calibrations, timestamp metadata; typed malformed-pair errors | `EMPADTests`; `tools/empad/generate.py`; RosettaSciIO 049e7d70 |
-| Empty modules | `FormatoMRC`, `FormatoMSA`: a scope statement each | their source file |
+| Empty modules | `FormatoMSA`: a scope statement | its source file |
 | Tests | Swift Testing throughout: 206 tests (203 passed, 3 owner-data checks skipped), including 3 EMPAD tests over five oracle cases; 0 failures, 0 warnings beyond the registered strip lines | `tools/test.sh`; `tools/step-1/names.sh` |
 | Gate | `tools/test.sh` green and stamped on `40a1d7d` (the Gate B fixes; later commits are docs only); 0.0.3 is `8d647bd`, 0.1.0 `bc832ab` (refuses to stamp with an untracked file under Sources/Tests) | `.build/last-green`; `tools/last-green.sh` |
+| 0.3.0: readers | `EMPADReader`, `HDF5Datacube` (rank-four 4D HDF5, py4DSTEM EMD 1.0), `MIBReader`, `DM4Datacube` (lazy 4D DM4 gather), `MRCReader` (+ `MRCAppImage`), each pinned to its reference at the version in `docs/parity.md` | `docs/parity.md`; `tools/empad`, `hdf5-4d`, `mib`, `dm4-gather`, `acq-metadata` |
+| 0.3.0: metadata and options | `AcquisitionMetadata` for DM, MRC, TIFF and Velox EMD (`.rosettaSciIO` default, `.app` pinned to the consumer); `TIFFReadOptions.veloxCalibration` (default off = RosettaSciIO); `VeloxImageSelection`; Velox `InstrumentClass` unread (known gap) | `docs/parity.md`; `tools/acq-metadata` |
+| 0.3.0: writing | `BraggVectorsEMD` (py4DSTEM 0.14.19 reads what is written), `HDF5RootAttributes` (h5py 3.16.0 pins; golden file `kit-written.h5`, regenerated with `FORMATO_WRITE_GOLDEN=1`), `FormatoFileWrite` | `tools/bragg-writer`, `tools/hdf5-write` |
 
 Validation: none. Agreement with RosettaSciIO and recovery of planted files are what is claimed (registration §8).
 
 ## Hand-off
 
-The suite board's `lanes/formatokit` carries the next prompt. In order:
-
-1. **The owner tags 0.2.0** (the refuter ran: about 15 600 runs, three fixes red first in `4ed20e1`, one registered deviation;
-   registration 0.2.0 A2; gate stamped at `4ed20e1`).
-2. **0.2.1: macOS 15 and iOS 18.** Rebuild the three dylibs with MACOSX_DEPLOYMENT_TARGET=15 (HDF5 2.1.1, the same build,
-   registered), declare `.macOS(.v15), .iOS(.v18)`, HDF5 and Velox macOS-only at run time; pin the Xcode version in CI.
-3. **Step 5**: EMPAD is implemented on `codex/empad`; the 4D HDF5 readers remain next.
+0.3.0 is released in the changelog (2026-10-16); the maintainer tags. Not in 0.3.0: the libhdf5 XCFramework (the asset upload is pending; libhdf5
+stays the bundled resource). Next: close the Velox `InstrumentClass` gap (expose the key in `VeloxMetadata`, which moves the 175-line golden), then the
+XCFramework, then the formats in `docs/parity.md` by priority. `swift test` fails only `HDF5ExitBarrierTests` where `FORMATO_HDF5_PATH` is unset.
 
 ## Unverified
 
@@ -67,37 +66,3 @@ The suite board's `lanes/formatokit` carries the next prompt. In order:
   hostile grids and bin counts were run on FormatoKit only (the suite's memory rule): not refuted against RosettaSciIO here.
 - No performance work: lazy reads are positioned reads (DM, TIFF) and per-frame reads (Velox), not memory-mapped.
 - TIFF: tifffile's shaped, OME and pyramid series, compression and the other vendor branches are refused, not read.
-
-## R2 worktree hand-back
-
-Worktree: `_worktrees/FormatoKit-r2` under the suite root, based on main `74da291`.
-
-- `codex/hdf5-4d`: explicit dataset API `HDF5Datacube`, preserving stored array order and numeric type.
-  Shared bindings moved from FormatoEMD to FormatoHDF5; Velox keeps its existing candidate and error API.
-  Calibration scalars, EMD dim vectors and origin maps are covered by `DatacubeTests`.
-- Fixtures: `Tests/FormatoHDF5Tests/Fixtures/4d`; tiny synthetic files and full little-endian byte pins,
-  generated by `tools/hdf5-4d/generate.py`. Reference versions and commit are in `pins.json`.
-  Run from this worktree with
-  `MACEM_SUITE="$PWD/../.." MPLCONFIGDIR="$PWD/.build/matplotlib" ../../tools/memcap.sh -- ../../References/CuboKit/py4dstem-venv/bin/python -I -B tools/hdf5-4d/generate.py`.
-  The Python generator asserts py4DSTEM 0.14.19 / source f050d207; oracle peak RSS was 140 MB.
-- Tests: baseline full `swift test -c release --jobs 4` failed only
-  `HDF5ExitBarrierTests.testTheVeloxLoaderInstallsTheBarrierAfterHDF5sOwnTeardownHandler` (unset `FORMATO_HDF5_PATH`).
-  That test is unchanged. Final validation and review results follow below.
-- `FormatoMIB` (merged from `codex/mib-r3`): processed 1/6/12/24-bit Merlin frames, pinned to RosettaSciIO 049e7d70
-  with the app's convention as a named option (`tools/mib/generate.py`). Packed raw R64 throws the reference refusal.
-- `DM4Datacube` (`codex/dm4-gather`): lazy mapped 4D DM4 gather, RosettaSciIO order by default, app layout as an option. Known
-  limits: no contiguous fast path (a full `load()` is slow), the contradictory-units path is untested, a file truncated
-  during a read can raise SIGBUS (inherent to mmap).
-- Process: the exact `git worktree add … main` command failed because main was already checked out; the worktree
-  was created detached at main, then switched to `codex/hdf5-4d` from main. No app source was edited.
-  The user authorized a Codex reviewer in place of unavailable Sonnet; no owner approval of scientific behavior is claimed.
-  Board access is unavailable through the exposed tools; no other folder was edited for board bookkeeping.
-
-Final R2 validation: `tools/test.sh --disable-sandbox --jobs 4` is green: 206 passed, 3 owner-data checks skipped,
-including the three new datacube tests;
-no warnings beyond the allowed signed-dylib lines (none emitted on the final incremental build). The wrapper exports
-`FORMATO_HDF5_PATH`, so the unchanged known exit-barrier test passes in that context. Logs remain in
-`.build/logs/{baseline,red,review-red,full,generate}.log` in the retained worktree. The reviewer identified singleton
-axis rejection and silent nonlinear coordinates; regression tests failed before their fixes and passed afterward.
-Codex second-lane review completed with no remaining actionable issues. The gate received arguments and correctly
-wrote no last-green stamp. Fixtures occupy 228 KB on disk. No push, tag or merge was performed.
