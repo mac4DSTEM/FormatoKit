@@ -30,6 +30,7 @@ let package = Package(
         .library(name: "FormatoTIFF", targets: ["FormatoTIFF"]),
         .library(name: "FormatoMRC", targets: ["FormatoMRC"]),
         .library(name: "FormatoEMPAD", targets: ["FormatoEMPAD"]),
+        .library(name: "FormatoMIB", targets: ["FormatoMIB"]),
         .library(name: "FormatoMSA", targets: ["FormatoMSA"]),
     ],
     targets: [
@@ -45,6 +46,7 @@ let package = Package(
         .target(name: "FormatoTIFF", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "FormatoMRC", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "FormatoEMPAD", dependencies: ["FormatoCore"], swiftSettings: settings),
+        .target(name: "FormatoMIB", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "FormatoMSA", dependencies: ["FormatoCore"], swiftSettings: settings),
         // The first ten minutes: `swift run formato-info <file>` prints every signal of a DM, Velox or TIFF file (public API
         // only). An example, not a product.
@@ -72,6 +74,7 @@ let package = Package(
                     swiftSettings: settings),
         .testTarget(name: "FormatoEMPADTests", dependencies: ["FormatoEMPAD", "FormatoCore"], exclude: ["Fixtures"],
                     swiftSettings: settings),
+        .testTarget(name: "FormatoMIBTests", dependencies: ["FormatoMIB", "FormatoCore"], exclude: ["Fixtures"], swiftSettings: settings),
         .testTarget(name: "FormatoGoldenTests", dependencies: ["FormatoEMD", "FormatoCore"], exclude: ["Fixtures"],
                     swiftSettings: settings),
     ],

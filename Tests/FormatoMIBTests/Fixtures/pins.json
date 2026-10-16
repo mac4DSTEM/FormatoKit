@@ -1,0 +1,891 @@
+{
+  "reference_commit": "049e7d7070e84779b499adaf3295beee9facb004",
+  "rsciio_version": "0.14.1.dev96+g049e7d707",
+  "app_commit": "c809679c8ee23a355da6af4f63665aaf64f90d0d",
+  "cases": [
+    {
+      "name": "processed1-trigger",
+      "shape": [
+        2,
+        3,
+        3,
+        4
+      ],
+      "dtype": "uint8",
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 2,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 3,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "processed1-trigger.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": null,
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "processed6-trigger",
+      "shape": [
+        2,
+        3,
+        3,
+        4
+      ],
+      "dtype": "uint8",
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 2,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 3,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "processed6-trigger.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": null,
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "processed12-trigger",
+      "shape": [
+        2,
+        3,
+        3,
+        4
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 2,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 3,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "processed12-trigger.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": null,
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "processed12-timestamps",
+      "shape": [
+        2,
+        3,
+        3,
+        4
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 2,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 3,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "processed12-timestamps.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": null,
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "processed12-explicit",
+      "shape": [
+        2,
+        3,
+        3,
+        4
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 2,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 3,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "processed12-explicit.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": [
+        3,
+        2
+      ],
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "processed12-slice",
+      "shape": [
+        3,
+        3,
+        4
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "size": 3,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 2,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "processed12-slice.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": [
+        3,
+        2
+      ],
+      "first": -4,
+      "last": -1,
+      "app": false
+    },
+    {
+      "name": "processed12-interrupted",
+      "shape": [
+        4,
+        3,
+        4
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "size": 4,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 2,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "processed12-interrupted.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": [
+        4,
+        2
+      ],
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "processed12-continuous",
+      "shape": [
+        6,
+        3,
+        4
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "size": 6,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 2,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "processed12-continuous.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": null,
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "processed12-quad",
+      "shape": [
+        2,
+        3,
+        3,
+        4
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 2,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 3,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "processed12-quad.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": [
+        3,
+        2
+      ],
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "processed24-trigger",
+      "shape": [
+        2,
+        3,
+        3,
+        4
+      ],
+      "dtype": "uint32",
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 2,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 3,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "processed24-trigger.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": null,
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "singleton-1-3-4",
+      "shape": [
+        3,
+        4
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "size": 3,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "singleton-1-3-4.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": [
+        1
+      ],
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "singleton-2-1-4",
+      "shape": [
+        2,
+        4
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 4,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "singleton-2-1-4.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": [
+        2
+      ],
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "singleton-2-3-1",
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "",
+          "scale": 1.0,
+          "offset": 0.0,
+          "units": "",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "singleton-2-3-1.mib",
+          "date": "2026-01-02",
+          "time": "03:04:00.000000",
+          "time_zone": "UTC"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        },
+        "Acquisition_instrument": {
+          "dwell_time": 0.00125
+        }
+      },
+      "navigation": [
+        2
+      ],
+      "first": null,
+      "last": null,
+      "app": false
+    },
+    {
+      "name": "app-U08",
+      "shape": [
+        1,
+        2,
+        256,
+        256
+      ],
+      "dtype": "float32",
+      "axes": [],
+      "metadata": {},
+      "navigation": null,
+      "first": null,
+      "last": null,
+      "app": true
+    },
+    {
+      "name": "app-U16",
+      "shape": [
+        1,
+        2,
+        256,
+        256
+      ],
+      "dtype": "float32",
+      "axes": [],
+      "metadata": {},
+      "navigation": null,
+      "first": null,
+      "last": null,
+      "app": true
+    },
+    {
+      "name": "app-U32",
+      "shape": [
+        1,
+        2,
+        256,
+        256
+      ],
+      "dtype": "float32",
+      "axes": [],
+      "metadata": {},
+      "navigation": null,
+      "first": null,
+      "last": null,
+      "app": true
+    },
+    {
+      "name": "app-U08-2x2",
+      "shape": [
+        1,
+        2,
+        512,
+        512
+      ],
+      "dtype": "float32",
+      "axes": [],
+      "metadata": {},
+      "navigation": null,
+      "first": null,
+      "last": null,
+      "app": true
+    },
+    {
+      "name": "app-U08-2x2G",
+      "shape": [
+        1,
+        2,
+        514,
+        514
+      ],
+      "dtype": "float32",
+      "axes": [],
+      "metadata": {},
+      "navigation": null,
+      "first": null,
+      "last": null,
+      "app": true
+    }
+  ],
+  "raw": [
+    {
+      "name": "raw1",
+      "error": "RAW MIB data not supported."
+    },
+    {
+      "name": "raw6",
+      "error": "RAW MIB data not supported."
+    },
+    {
+      "name": "raw12",
+      "error": "RAW MIB data not supported."
+    },
+    {
+      "name": "raw24",
+      "error": "RAW MIB data not supported."
+    }
+  ]
+}

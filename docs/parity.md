@@ -23,7 +23,7 @@ instruments and techniques, out of scope until someone asks.
 | MRCZ | mrc, mrcz | yes | `FormatoMRC` | not read | C |
 | EMPAD | xml (+ raw) | no | `FormatoEMPAD` | **pinned**: mmap Float32 frames, footer removal, scan/series shapes, squeezed axes, both XML navigation calibrations, diffraction calibration and timestamp metadata; synthetic full-byte pins at 049e7d70 | A |
 | py4DSTEM / EMD 1.0 (py4DSTEM f050d207, h5py 3.11.0) | h5, hdf5, emd | — | `FormatoHDF5` | **pinned** for explicit rank-four numeric datasets: stored bytes and shape, hyperslabs, R/Q axes, flip, rotation, ellipse, probe semiangle, lazy origin maps. Compressed Float32 and big-endian UInt16 synthetic files; uniform generic dimension vectors and scalar attributes checked with h5py; nonlinear coordinates refused | A |
-| QuantumDetector (Merlin) | mib | no | `FormatoEMPAD` or its own | not read | B |
+| QuantumDetector (Merlin) | mib | no | `FormatoMIB` | **pinned**: processed U08 (1/6-bit), U16 (12-bit), U32 (24-bit), header metadata, explicit/trigger/timestamp shapes, interrupted lines, frame slices and singleton squeeze. Packed R64 raw headers at all four depths are refused, as in rsciio. Named `appScanXY` option pins ScanX/ScanY, unflipped orientation and Float32 conversion to app c809679c | B |
 | Arina (Dectris) | h5 | no | — | not read | B |
 | HSPY | hspy, hdf5 | yes | `FormatoHDF5` | not read; with the sidecar | B |
 | ZSPY | zspy | yes | — | not read | C |
@@ -120,3 +120,9 @@ instruments and techniques, out of scope until someone asks.
 - **Lazy reading:** registered equal to eager (gate L1) for DM (positioned reads) and Velox images (per frame). Not yet
   memory-mapped; no chunked HDF5 reads beyond the moved reader's blocks.
 - **Writing:** none.
+
+## Merlin conventions
+
+`MIBReader` defaults to RosettaSciIO `file_reader` at 049e7d70: fastest-first `navigationShape`, Python frame slices, singleton squeezing then a flip of the penultimate axis, integer pixels and timestamp/exposure metadata. Malformed/trailing partial frames are refused rather than silently truncated. Timestamp inference accepts UTC timestamps with up to nine fractional digits. No writable mmap, dask chunks or raw unpacking.
+
+`MIBConvention.appScanXY` uses the original reader at c809679c: a required ScanX/ScanY companion, 1x1 / 2x2 / 2x2G assemblies, unsqueezed scan axes, no flip, and Float32 conversion (including UInt32 rounding). Slicing/explicit navigation are refused in this convention. Both references refuse raw R64. `tools/mib/generate.py` compiles the pinned app initializer and pixel reader with an identity crop/bin view, records its output bytes, and pins rsciio data, axes and mapped metadata. All fixtures are synthetic, compressed and under 1 MB together.

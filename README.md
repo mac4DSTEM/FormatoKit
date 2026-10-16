@@ -15,6 +15,7 @@ large, one SwiftPM product per module.
 | `FormatoTIFF` | the TIFF container with a public tag walker (any private tag as stored); FEI, Gatan DM, ImageJ and plain TIFF as signals. Compression, tiles and the other vendors' branches are refused by name | reads |
 | `FormatoMRC` | MRC / MRC2014 with FEI extended headers | empty |
 | `FormatoEMPAD` | EMPAD XML + raw, memory-mapped scan / image series with calibrations; 4D HDF5 later | reads, pinned |
+| `FormatoMIB` | Merlin MIB: mmap U08 (1/6-bit), U16 (12-bit), U32 (24-bit), trigger/timestamp scan shape; named app ScanX/ScanY convention; packed R64 refused | reads, pinned |
 | `FormatoMSA` | EMSA/MAS spectra | empty |
 
 `docs/parity.md` is the checklist against RosettaSciIO's formats table and its reader options: what reads, what is pinned,
