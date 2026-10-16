@@ -1,0 +1,561 @@
+{
+ "cases": [
+  {
+   "calibration": {
+    "QR_flip": true,
+    "QR_rotation": 0.2617993877991494,
+    "QR_rotation_degrees": 15.0,
+    "Q_pixel_size": 0.0625,
+    "Q_pixel_units": "A^-1",
+    "R_pixel_size": 1.5,
+    "R_pixel_units": "nm",
+    "a": 1.5,
+    "b": 1.25,
+    "probe_semiangle": 20.5,
+    "qx0_mean": 7.5,
+    "qy0_mean": 9.25,
+    "theta": -0.25
+   },
+   "counts": [
+    2,
+    0,
+    1,
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   "detector": [
+    16,
+    20
+   ],
+   "group": "/braggvectors_root",
+   "name": "basic",
+   "scan": [
+    3,
+    4
+   ],
+   "structure": [
+    {
+     "attr_keys": [
+      "UUID",
+      "authoring_program",
+      "authoring_user",
+      "emd_group_type",
+      "version_major",
+      "version_minor"
+     ],
+     "attrs": {
+      "emd_group_type": "file",
+      "version_major": 1,
+      "version_minor": 0
+     },
+     "kind": "file",
+     "path": "/"
+    },
+    {
+     "attrs": {
+      "emd_group_type": "root",
+      "python_class": "Root"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root"
+    },
+    {
+     "attrs": {
+      "emd_group_type": "custom",
+      "python_class": "BraggVectors"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/braggvectors"
+    },
+    {
+     "attrs": {
+      "emd_group_type": "custom_pointlistarray",
+      "python_class": "PointListArray"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/braggvectors/_v_uncal"
+    },
+    {
+     "attrs": {},
+     "dtype": "vlen:[('qx', '<f8'), ('qy', '<f8'), ('intensity', '<f8')]",
+     "kind": "dataset",
+     "path": "/braggvectors_root/braggvectors/_v_uncal/data",
+     "shape": [
+      3,
+      4
+     ]
+    },
+    {
+     "attrs": {
+      "emd_group_type": "metadatabundle"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/braggvectors/metadatabundle"
+    },
+    {
+     "attrs": {
+      "emd_group_type": "metadata",
+      "python_class": "Metadata"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/braggvectors/metadatabundle/_braggvectors_shape"
+    },
+    {
+     "attrs": {
+      "type": "tuple"
+     },
+     "dtype": "int64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/braggvectors/metadatabundle/_braggvectors_shape/Qshape",
+     "shape": [
+      2
+     ],
+     "value": [
+      16,
+      20
+     ]
+    },
+    {
+     "attrs": {
+      "type": "tuple"
+     },
+     "dtype": "int64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/braggvectors/metadatabundle/_braggvectors_shape/Rshape",
+     "shape": [
+      2
+     ],
+     "value": [
+      3,
+      4
+     ]
+    },
+    {
+     "attrs": {
+      "emd_group_type": "metadatabundle"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/metadatabundle"
+    },
+    {
+     "attrs": {
+      "emd_group_type": "metadata",
+      "python_class": "Calibration"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/metadatabundle/calibration"
+    },
+    {
+     "attrs": {
+      "type": "bool"
+     },
+     "dtype": "bool",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/QR_flip",
+     "shape": [],
+     "value": [
+      true
+     ]
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/QR_rotation",
+     "shape": [],
+     "value": [
+      0.2617993877991494
+     ]
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/QR_rotation_degrees",
+     "shape": [],
+     "value": [
+      15.0
+     ]
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/Q_pixel_size",
+     "shape": [],
+     "value": [
+      0.0625
+     ]
+    },
+    {
+     "attrs": {
+      "type": "string"
+     },
+     "dtype": "string:ascii",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/Q_pixel_units",
+     "shape": [],
+     "value": "A^-1"
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/R_pixel_size",
+     "shape": [],
+     "value": [
+      1.5
+     ]
+    },
+    {
+     "attrs": {
+      "type": "string"
+     },
+     "dtype": "string:ascii",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/R_pixel_units",
+     "shape": [],
+     "value": "nm"
+    },
+    {
+     "attrs": {
+      "type": "string"
+     },
+     "dtype": "string:ascii",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/_root_treepath",
+     "shape": [],
+     "value": ""
+    },
+    {
+     "attrs": {
+      "length": 1,
+      "type": "list_of_strings"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/metadatabundle/calibration/_target_paths"
+    },
+    {
+     "attrs": {},
+     "dtype": "string:ascii",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/_target_paths/0",
+     "shape": [],
+     "value": "/braggvectors"
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/a",
+     "shape": [],
+     "value": [
+      1.5
+     ]
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/b",
+     "shape": [],
+     "value": [
+      1.25
+     ]
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/probe_semiangle",
+     "shape": [],
+     "value": [
+      20.5
+     ]
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/qx0_mean",
+     "shape": [],
+     "value": [
+      7.5
+     ]
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/qy0_mean",
+     "shape": [],
+     "value": [
+      9.25
+     ]
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/theta",
+     "shape": [],
+     "value": [
+      -0.25
+     ]
+    }
+   ]
+  },
+  {
+   "calibration": {
+    "QR_flip": false,
+    "Q_pixel_size": 1.0,
+    "Q_pixel_units": "pixels",
+    "R_pixel_size": 1.0,
+    "R_pixel_units": "pixels"
+   },
+   "counts": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "detector": [
+    8,
+    8
+   ],
+   "group": "/braggvectors_root",
+   "name": "empty",
+   "scan": [
+    2,
+    2
+   ],
+   "structure": [
+    {
+     "attr_keys": [
+      "UUID",
+      "authoring_program",
+      "authoring_user",
+      "emd_group_type",
+      "version_major",
+      "version_minor"
+     ],
+     "attrs": {
+      "emd_group_type": "file",
+      "version_major": 1,
+      "version_minor": 0
+     },
+     "kind": "file",
+     "path": "/"
+    },
+    {
+     "attrs": {
+      "emd_group_type": "root",
+      "python_class": "Root"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root"
+    },
+    {
+     "attrs": {
+      "emd_group_type": "custom",
+      "python_class": "BraggVectors"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/braggvectors"
+    },
+    {
+     "attrs": {
+      "emd_group_type": "custom_pointlistarray",
+      "python_class": "PointListArray"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/braggvectors/_v_uncal"
+    },
+    {
+     "attrs": {},
+     "dtype": "vlen:[('qx', '<f8'), ('qy', '<f8'), ('intensity', '<f8')]",
+     "kind": "dataset",
+     "path": "/braggvectors_root/braggvectors/_v_uncal/data",
+     "shape": [
+      2,
+      2
+     ]
+    },
+    {
+     "attrs": {
+      "emd_group_type": "metadatabundle"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/braggvectors/metadatabundle"
+    },
+    {
+     "attrs": {
+      "emd_group_type": "metadata",
+      "python_class": "Metadata"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/braggvectors/metadatabundle/_braggvectors_shape"
+    },
+    {
+     "attrs": {
+      "type": "tuple"
+     },
+     "dtype": "int64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/braggvectors/metadatabundle/_braggvectors_shape/Qshape",
+     "shape": [
+      2
+     ],
+     "value": [
+      8,
+      8
+     ]
+    },
+    {
+     "attrs": {
+      "type": "tuple"
+     },
+     "dtype": "int64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/braggvectors/metadatabundle/_braggvectors_shape/Rshape",
+     "shape": [
+      2
+     ],
+     "value": [
+      2,
+      2
+     ]
+    },
+    {
+     "attrs": {
+      "emd_group_type": "metadatabundle"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/metadatabundle"
+    },
+    {
+     "attrs": {
+      "emd_group_type": "metadata",
+      "python_class": "Calibration"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/metadatabundle/calibration"
+    },
+    {
+     "attrs": {
+      "type": "bool"
+     },
+     "dtype": "bool",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/QR_flip",
+     "shape": [],
+     "value": [
+      false
+     ]
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/Q_pixel_size",
+     "shape": [],
+     "value": [
+      1.0
+     ]
+    },
+    {
+     "attrs": {
+      "type": "string"
+     },
+     "dtype": "string:ascii",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/Q_pixel_units",
+     "shape": [],
+     "value": "pixels"
+    },
+    {
+     "attrs": {
+      "type": "number"
+     },
+     "dtype": "float64",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/R_pixel_size",
+     "shape": [],
+     "value": [
+      1.0
+     ]
+    },
+    {
+     "attrs": {
+      "type": "string"
+     },
+     "dtype": "string:ascii",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/R_pixel_units",
+     "shape": [],
+     "value": "pixels"
+    },
+    {
+     "attrs": {
+      "type": "string"
+     },
+     "dtype": "string:ascii",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/_root_treepath",
+     "shape": [],
+     "value": ""
+    },
+    {
+     "attrs": {
+      "length": 1,
+      "type": "list_of_strings"
+     },
+     "kind": "group",
+     "path": "/braggvectors_root/metadatabundle/calibration/_target_paths"
+    },
+    {
+     "attrs": {},
+     "dtype": "string:ascii",
+     "kind": "dataset",
+     "path": "/braggvectors_root/metadatabundle/calibration/_target_paths/0",
+     "shape": [],
+     "value": "/braggvectors"
+    }
+   ]
+  }
+ ],
+ "emdfile_version": "0.0.15",
+ "h5py_version": "3.11.0",
+ "numpy_version": "2.5.0",
+ "py4dstem_commit": "f050d207851f8accd3aa550365baaf1f38230428",
+ "py4dstem_version": "0.14.19"
+}

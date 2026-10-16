@@ -1,0 +1,43 @@
+{
+ "files": {
+  "swift-basic.h5": {
+   "calibration_equal": true,
+   "counts_equal": true,
+   "extra_attribute_names": [],
+   "extras_present": true,
+   "peaks_bit_exact": true,
+   "py4dstem_reads": true,
+   "sha256": "3f99b08c778667393079b132310881c1e643f854ed99d87e9b7a3d001ab15c7e",
+   "shapes_equal": true,
+   "structure_equal": true
+  },
+  "swift-empty.h5": {
+   "calibration_equal": true,
+   "counts_equal": true,
+   "extra_attribute_names": [],
+   "extras_present": true,
+   "peaks_bit_exact": true,
+   "py4dstem_reads": true,
+   "sha256": "913b13799d172533137aaf07b3f80ede3b7313c635e4b7d5df127d6a09c63911",
+   "shapes_equal": true,
+   "structure_equal": true
+  },
+  "swift-extras.h5": {
+   "calibration_equal": true,
+   "counts_equal": true,
+   "extra_attribute_names": [
+    "/@mac4dstem_session",
+    "/braggvectors_root/braggvectors@mac4dstem_detection_provenance",
+    "/braggvectors_root@mac4dstem_schema"
+   ],
+   "extras_present": true,
+   "peaks_bit_exact": true,
+   "py4dstem_reads": true,
+   "sha256": "0918f581533b9dd4c6849fd7513f01721086ddee694d5aab9f4e982efc726460",
+   "shapes_equal": true,
+   "structure_equal": true
+  }
+ },
+ "h5py_version": "3.11.0",
+ "py4dstem_version": "0.14.19"
+}
