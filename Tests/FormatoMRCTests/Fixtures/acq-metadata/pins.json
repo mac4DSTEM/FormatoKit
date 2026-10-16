@@ -1,0 +1,145 @@
+{
+ "app_commit": "cb6e164f9227bf716185ed515bb6a2afb3a8841f",
+ "cases": [
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "fei-128-sections",
+   "reference": {
+    "exposure": 0.30000001192092896,
+    "magnification": 14500.0
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "fei-128-big-endian-stamp",
+   "reference": {
+    "exposure": 0.30000001192092896,
+    "magnification": 14500.0
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "clock of the writer, zone not stored",
+     "otherCopy": null,
+     "value": "2022-12-05 13:13:07"
+    },
+    "cameraLengthMM": {
+     "note": "unvalidated: the mode is not checked",
+     "otherCopy": null,
+     "value": 844
+    },
+    "detector": {
+     "note": null,
+     "otherCopy": null,
+     "value": "Ceta"
+    },
+    "dwellUS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 10
+    },
+    "exposureS": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 0.5
+    },
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 300
+    },
+    "instrument": {
+     "note": null,
+     "otherCopy": null,
+     "value": "Talos F200X"
+    },
+    "magnification": {
+     "note": null,
+     "otherCopy": null,
+     "value": 28500
+    },
+    "mode": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "3"
+    },
+    "unread": []
+   },
+   "name": "fei2-all-set",
+   "reference": {}
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "clock of the writer, zone not stored",
+     "otherCopy": null,
+     "value": "2022-12-05 13:13:07"
+    },
+    "cameraLengthMM": null,
+    "detector": {
+     "note": null,
+     "otherCopy": null,
+     "value": "Ceta"
+    },
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": {
+     "note": null,
+     "otherCopy": null,
+     "value": "Talos F200X"
+    },
+    "magnification": null,
+    "mode": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "3"
+    },
+    "unread": []
+   },
+   "name": "fei2-zero-and-clear-bits",
+   "reference": {}
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "no-extended-header",
+   "reference": {}
+  }
+ ],
+ "reference_commit": "049e7d7070e84779b499adaf3295beee9facb004",
+ "rsciio_version": "0.14.1.dev96+g049e7d707"
+}

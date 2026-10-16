@@ -43,7 +43,7 @@ let package = Package(
         // EMD: Velox (inherited reader, registration step 1 §1.1) and its image adapter. Later: NCEM / Berkeley EMD.
         .target(name: "FormatoEMD", dependencies: ["FormatoCore", "FormatoHDF5"], swiftSettings: settings),
         // Additional formats; EMPAD reads XML + memory-mapped raw frames.
-        .target(name: "FormatoTIFF", dependencies: ["FormatoCore"], swiftSettings: settings),
+        .target(name: "FormatoTIFF", dependencies: ["FormatoCore", "FormatoDM"], swiftSettings: settings),
         .target(name: "FormatoMRC", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "FormatoEMPAD", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "FormatoMIB", dependencies: ["FormatoCore"], swiftSettings: settings),
@@ -57,9 +57,11 @@ let package = Package(
         .testTarget(name: "FormatoCoreTests", dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD"],
                     exclude: ["Fixtures"], swiftSettings: settings),
         // The moved tests, names unchanged (registration §1.2), and the adapters' own.
-        .testTarget(name: "FormatoDMTests", dependencies: ["FormatoDM", "FormatoCore"], exclude: ["Fixtures"],
+        // Test support: the pinned acquisition-metadata comparisons (tools/acq-metadata). Not a product.
+        .target(name: "FormatoAcquisitionPins", dependencies: ["FormatoCore"], path: "Tests/FormatoAcquisitionPins", swiftSettings: settings),
+        .testTarget(name: "FormatoDMTests", dependencies: ["FormatoDM", "FormatoCore", "FormatoAcquisitionPins"], exclude: ["Fixtures"],
                     swiftSettings: settings),
-        .testTarget(name: "FormatoEMDTests", dependencies: ["FormatoEMD", "FormatoCore", "FormatoHDF5"],
+        .testTarget(name: "FormatoEMDTests", dependencies: ["FormatoEMD", "FormatoCore", "FormatoHDF5", "FormatoAcquisitionPins"],
                     exclude: ["Fixtures"], swiftSettings: settings),
         .testTarget(name: "FormatoHDF5Tests", dependencies: ["FormatoHDF5", "FormatoCore", "FormatoEMD", "FormatoHDF5ExitProbe"],
                     exclude: ["Fixtures"],
@@ -70,7 +72,9 @@ let package = Package(
                           path: "Tests/FormatoHDF5ExitProbe", swiftSettings: settings),
         // The Velox reader's part of the inherited golden baseline, byte for byte (registration §1.3).
         // Step 2 (docs/registration-step-2.md): the TIFF container and TIFF files as signals, against RosettaSciIO and tifffile.
-        .testTarget(name: "FormatoTIFFTests", dependencies: ["FormatoTIFF", "FormatoCore"], exclude: ["Fixtures"],
+        .testTarget(name: "FormatoTIFFTests", dependencies: ["FormatoTIFF", "FormatoDM", "FormatoCore", "FormatoAcquisitionPins"], exclude: ["Fixtures"],
+                    swiftSettings: settings),
+        .testTarget(name: "FormatoMRCTests", dependencies: ["FormatoMRC", "FormatoCore", "FormatoAcquisitionPins"], exclude: ["Fixtures"],
                     swiftSettings: settings),
         .testTarget(name: "FormatoEMPADTests", dependencies: ["FormatoEMPAD", "FormatoCore"], exclude: ["Fixtures"],
                     swiftSettings: settings),

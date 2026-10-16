@@ -134,3 +134,18 @@ date, instrument and mode with rules (a) to (g) stated in the source header. The
 each format reader compares its values with rsciio's metadata (see the DM, MRC, TIFF and Velox rows) and states where
 the nil and unit rules differ. `GuardedXML` has no rsciio counterpart (rsciio parses unguarded); `FormatoFileWrite.write`
 is a Foundation helper. `formatoDisplayFileName` equals the app's `displayFileName` (test `testDisplayFileNameEqualsTheAppsCopy`).
+
+## Acquisition metadata (round 4, `tools/acq-metadata`)
+
+Every reader below takes a convention. **`.rosettaSciIO`** (default): RosettaSciIO 049e7d70's `mapping` applied the way HyperSpy applies
+it, for every field it maps (no positivity rule, its tag choices and mode tests, its unit arithmetic); a field it does not map is read by
+the consumer's rule and labelled `AcquisitionMetadata.unvalidatedNote`. **`.app`**: the consumer's reader, compiled unchanged from macTEM
+cb6e164 and pinned. Pins: synthetic files written byte by byte (`generate.py`), RosettaSciIO's returned mapping, the consumer's output.
+
+| Format | RosettaSciIO maps | `.rosettaSciIO` differs from `.app` by |
+|---|---|---|
+| DM (`AcquisitionMetadata.dm`) | beam energy, camera length, magnification, dwell, camera exposure, mode, microscope, date, time | a stack-builder image is read from `source.Tags at creation` instead of the direct tags; zero and negative values are kept; camera length is `STEM Camera Length` in every non-TEM mode (SEM included) and `Indicated Magnification` for TEM diffraction; the mode is STEM / SEM / TEM; the exposure is read only without DigiScan and has no second copy; the instrument is untrimmed. Date and time are joined into one stamp; dateutil's guessing is not ported (the layouts in the source header only). |
+| MRC (`.mrc`) | magnification and exposure of the 128-byte per-section FEI header (NEXT = 128 KiB) | `.app` reads the FEI1/FEI2 extended-header record by bitmask (HT, camera length, dwell, detector, date, instrument, mode); `.rosettaSciIO` reads neither (RosettaSciIO does not) and ignores the machine stamp. |
+| TIFF, FEI SEM INI (`tiff`) | `mapping_fei`: HV, dwell, date, time, system type | zero HV and dwell are kept; the date goes through the kit's dateutil port (day-first above 12 as the app); the detector is unmapped and labelled. |
+| TIFF, Velox XML (tag 34683) | none (no plugin reads the tag); the same schema's EMD mapping | acceleration voltage and camera length (every mode) are the EMD mapping's `float(x) / 1e3` and `* 1e3`, unguarded; the other values keep the app's rules and are labelled. |
+| EMD, Velox (`velox`) | beam energy, camera length (every mode), `StemMagnification` as magnification, `InstrumentClass` as microscope | magnification, camera length, exposure and mode are read (the app leaves them `unread`). RosettaSciIO's microscope is `InstrumentClass`, which `VeloxMetadata` does not expose; both conventions give `InstrumentModel`, labelled. |

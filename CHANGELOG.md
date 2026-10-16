@@ -4,6 +4,13 @@ Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what e
 
 ## Unreleased
 
+- Add acquisition-metadata readers returning `FormatoCore.AcquisitionMetadata`: `AcquisitionMetadata.dm(_:)` / `.dm(numbers:strings:)`
+  (FormatoDM), `.mrc(data:)` / `.mrc(path:)` (FormatoMRC), `.tiff(data:)` / `.tiff(path:)` (FormatoTIFF: Velox XML tag 34683, FEI SEM INI,
+  DM tag stream 65027) and `.velox(_:)` (FormatoEMD). Each takes an `AcquisitionMetadataConvention`: `.rosettaSciIO` (the default) follows
+  RosettaSciIO 049e7d70's mapping for every field it maps; `.app` is the first consumer's rule set, pinned to its source (macTEM cb6e164),
+  including its nil-for-zero and unit rules, the FEI1/FEI2 extended-header record and its `unread` fields. Pins and the generator: `tools/acq-metadata`.
+  Also: `VeloxImageInfo.resolvedDetector` / `.detectorType`. `FormatoTIFF` now depends on `FormatoDM`;
+  `FormatoMRC` gains `MRCError`.
 - Add to `FormatoCore`: public `AcquisitionMetadata` and `MetadataReading` (nine acquisition fields, nil when not recorded, with notes and second copies), `GuardedXML` (bounded XML parsing for file-carried documents), and `FormatoFileWrite.write(_:to:)` (scratch file then replace, `FormatoWriteError`). `formatoDisplayFileName` equals the app's copy and is pinned by a test.
 - Fix CI: the consumer check's README guard failed on the new `FormatoHDF5` README block; `tools/consumer-check/readme` now builds and runs it verbatim (on a scratch copy of the pinned `float32.h5` named `scan.h5`).
 - Add `FormatoDM.DM4Datacube`: lazy memory-mapped 4D DM4 images gathered over `DM4Experiment.tagTree(path:)`.

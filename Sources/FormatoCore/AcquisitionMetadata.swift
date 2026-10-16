@@ -110,3 +110,19 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
         return scale > 0 && abs(first - second) > 1e-6 * scale ? second : nil
     }
 }
+
+/// Which behaviour a format's acquisition-metadata reader follows where RosettaSciIO and the first consumer differ.
+///
+/// `.rosettaSciIO` (the default) follows RosettaSciIO at the pinned commit for every field RosettaSciIO maps: its tag
+/// choice, its mode tests and its unit arithmetic, with no positivity rule (a stored zero is 0, not nil). A field
+/// RosettaSciIO does not map is read by the consumer's rule and carries the note ``AcquisitionMetadata/unvalidatedNote``.
+/// `.app` is the consumer's own rule set (a to g above), pinned to its source; `docs/parity.md` lists the differences.
+public nonisolated enum AcquisitionMetadataConvention: Sendable, Equatable {
+    case rosettaSciIO
+    case app
+}
+
+extension AcquisitionMetadata {
+    /// The note of a value no RosettaSciIO mapping reads.
+    public static let unvalidatedNote = "unvalidated: no published reader reads it"
+}
