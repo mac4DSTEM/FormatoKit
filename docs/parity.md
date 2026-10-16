@@ -126,3 +126,11 @@ instruments and techniques, out of scope until someone asks.
 `MIBReader` defaults to RosettaSciIO `file_reader` at 049e7d70: fastest-first `navigationShape`, Python frame slices, singleton squeezing then a flip of the penultimate axis, integer pixels and timestamp/exposure metadata. Malformed/trailing partial frames are refused rather than silently truncated. Timestamp inference accepts UTC timestamps with up to nine fractional digits. No writable mmap, dask chunks or raw unpacking.
 
 `MIBConvention.appScanXY` uses the original reader at c809679c: a required ScanX/ScanY companion, 1x1 / 2x2 / 2x2G assemblies, unsqueezed scan axes, no flip, and Float32 conversion (including UInt32 rounding). Slicing/explicit navigation are refused in this convention. Both references refuse raw R64. `tools/mib/generate.py` compiles the pinned app initializer and pixel reader with an identity crop/bin view, records its output bytes, and pins rsciio data, axes and mapped metadata. All fixtures are synthetic, compressed and under 1 MB together.
+
+## Acquisition metadata and file writing (FormatoCore)
+
+`AcquisitionMetadata` / `MetadataReading` carry high tension, magnification, camera length, detector, dwell, exposure,
+date, instrument and mode with rules (a) to (g) stated in the source header. They are not a RosettaSciIO structure:
+each format reader compares its values with rsciio's metadata (see the DM, MRC, TIFF and Velox rows) and states where
+the nil and unit rules differ. `GuardedXML` has no rsciio counterpart (rsciio parses unguarded); `FormatoFileWrite.write`
+is a Foundation helper. `formatoDisplayFileName` equals the app's `displayFileName` (test `testDisplayFileNameEqualsTheAppsCopy`).
