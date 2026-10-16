@@ -64,6 +64,35 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     /// integer for MRC, labelled unvalidated (no pinned reference decodes it).
     public var mode: MetadataReading<String>?
 
+    // MARK: Added in 0.3.1 (additive). Read by the `.rosettaSciIO` convention only, where RosettaSciIO 049e7d70 maps the key
+    // and the file carries it; the `.app` convention leaves them nil (the consumer's readers do not read them). They are
+    // not in `Field`, so `unread` and the panel's nine rows are unchanged. A value is as RosettaSciIO's mapping returns
+    // it; where its unit conversion differs between formats the `note` names what was done to the stored number.
+
+    /// The microscope model, where `instrument` holds another name: Velox `.rosettaSciIO` puts `InstrumentClass` in
+    /// `instrument` (RosettaSciIO's microscope) and the stored `InstrumentModel` here.
+    public var instrumentModel: MetadataReading<String>?
+    /// Stage alpha tilt in degrees (SEM: the stage's single tilt, noted).
+    public var stageTiltAlphaDeg: MetadataReading<Double>?
+    /// Stage beta tilt in degrees.
+    public var stageTiltBetaDeg: MetadataReading<Double>?
+    /// Stage rotation in degrees (SEM).
+    public var stageRotationDeg: MetadataReading<Double>?
+    /// Stage position, the number RosettaSciIO's `Stage.x`, `.y`, `.z` holds; the note names the conversion applied to the stored value.
+    public var stageX: MetadataReading<Double>?
+    public var stageY: MetadataReading<Double>?
+    public var stageZ: MetadataReading<Double>?
+    /// Beam (probe) current in nA.
+    public var beamCurrentNA: MetadataReading<Double>?
+    /// SEM working distance in mm (stored in m: ×1e3).
+    public var workingDistanceMM: MetadataReading<Double>?
+    /// The operator (RosettaSciIO's `General.authors`).
+    public var operatorName: MetadataReading<String>?
+    /// EELS collection semi-angle in mrad.
+    public var collectionAngleMrad: MetadataReading<Double>?
+    /// Convergence semi-angle in mrad.
+    public var convergenceAngleMrad: MetadataReading<Double>?
+
     /// The fields this file's FORMAT reader cannot read yet, though the file may record them: shown "Not read from this
     /// format yet", never "Not recorded" (a reader that does not expose them yet). Empty for every other format.
     public var unread: Set<Field> = []
@@ -88,6 +117,15 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
         guard let v, v.isFinite, v > 0 else { return nil }
         return v
     }
+
+    /// Python's `round(x, digits)` of a double: the exact decimal value rounded half-even, as `String(format:)` does.
+    static func pythonRound(_ x: Double, _ digits: Int) -> Double {
+        guard x.isFinite else { return x }
+        return Double(String(format: "%.\(digits)f", x)) ?? x
+    }
+
+    /// NumPy's `degrees` of a double: `x * (180 / pi)`.
+    static func numpyDegrees(_ x: Double) -> Double { x * (180.0 / Double.pi) }
 
     /// Rule (a): text with surrounding whitespace removed, or nil when nothing is left.
     public static func text(_ s: String?) -> String? {

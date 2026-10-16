@@ -65,14 +65,16 @@ public func referenceText(_ ref: [String: Any], _ key: String) -> String? { ref[
 /// compares `dwellUS / 1e6` (RosettaSciIO divides the stored microseconds by 1e6); the stamp compares date + " " + time.
 public func referenceDifferences(_ m: AcquisitionMetadata, _ ref: [String: Any], strict: Set<String>) -> [String] {
     var out: [String] = []
+    let always: Set<String> = ["Stage.tilt_alpha", "Stage.tilt_beta", "Stage.rotation", "Stage.x", "Stage.y", "Stage.z", "beam_current",
+                               "working_distance", "Detector.EELS.collection_angle", "convergence_angle", "General.authors"]
     func number(_ key: String, _ got: Double?) {
         let want = referenceNumber(ref, key)
-        if want == nil, !strict.contains(key) { return }
+        if want == nil, !strict.contains(key), !always.contains(key) { return }
         if got != want { out.append("\(key): got \(String(describing: got)), RosettaSciIO \(String(describing: want))") }
     }
     func text(_ key: String, _ got: String?) {
         let want = referenceText(ref, key)
-        if want == nil, !strict.contains(key) { return }
+        if want == nil, !strict.contains(key), !always.contains(key) { return }
         if got != want { out.append("\(key): got \(String(describing: got)), RosettaSciIO \(String(describing: want))") }
     }
     number("beam_energy", m.highTensionKV?.value)
@@ -86,5 +88,17 @@ public func referenceDifferences(_ m: AcquisitionMetadata, _ ref: [String: Any],
     if want != nil || strict.contains("stamp"), m.acquired?.value != want {
         out.append("stamp: got \(String(describing: m.acquired?.value)), RosettaSciIO \(String(describing: want))")
     }
+    // The 0.3.1 fields: always strict (RosettaSciIO maps nothing for them, so the kit reads nothing).
+    number("Stage.tilt_alpha", m.stageTiltAlphaDeg?.value)
+    number("Stage.tilt_beta", m.stageTiltBetaDeg?.value)
+    number("Stage.rotation", m.stageRotationDeg?.value)
+    number("Stage.x", m.stageX?.value)
+    number("Stage.y", m.stageY?.value)
+    number("Stage.z", m.stageZ?.value)
+    number("beam_current", m.beamCurrentNA?.value)
+    number("working_distance", m.workingDistanceMM?.value)
+    number("Detector.EELS.collection_angle", m.collectionAngleMrad?.value)
+    number("convergence_angle", m.convergenceAngleMrad?.value)
+    text("General.authors", m.operatorName?.value)
     return out
 }
