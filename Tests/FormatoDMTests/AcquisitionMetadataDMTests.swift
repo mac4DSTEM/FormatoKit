@@ -18,7 +18,7 @@ import FormatoDM
 
     /// The generator hands the consumer's readers its own tag maps; they must be what the kit's walker returns for the file.
     @Test func testTheKitsTagMapsAreTheMapsThePinsWereMadeFrom() throws {
-        #expect(Self.cases.count == 31)
+        #expect(Self.cases.count == 32)
         for c in Self.cases {
             let object = try #require(try DM4Experiment.list(path: Self.fixtures.appendingPathComponent(c.name + ".dm4").path).first)
             #expect(object.imageTagNumbers == c.numbers, "\(c.name)")
@@ -116,6 +116,8 @@ import FormatoDM
         #expect(s.signalNumbers["Spectrometer.Grating.groove_density"] == nil)   // "bad" does not parse
         #expect(s.dwellUS?.value == 15)   // CL maps the DigiScan sample time as the dwell
         #expect(try ref("cl-other-mode").signalTexts["Detector.detector_type"] == nil)
+        // rsciio re-maps DataBar.Acquisition_Date/Time at the end of the CL branch: DataBar wins over the CL group.
+        #expect(try ref("cl-databar-wins").acquired?.value == "2016-08-27 20:54:33")
         let si = try ref("si-group")
         #expect(si.signalTexts.isEmpty && si.acquired?.value == "2021-01-02 10:11:12")   // the SI group maps its date and time for any image
         #expect(p.signalTexts["Spectrum_image.mode"]?.value == "Spectrum Imaging")

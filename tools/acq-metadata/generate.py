@@ -165,6 +165,8 @@ DM_CASES = {
                   ('CL.Acquisition.Dwell time (s)', 0.002), ('CL.Acquisition.Start wavelength (nm)', 300.), ('CL.Acquisition.Step-size (nm)', 1.5),
                   ('Acquisition.Monarc Spectrometer.PMT HV', 900.), ('Acquisition.Monarc Spectrometer.Grating', 'bad'), ('DigiScan.Sample Time', 15.)],
     'cl-other-mode': [('Meta Data.Signal', 'CL'), ('Meta Data.Acquisition Mode', 'Imaging')],
+    'cl-databar-wins': [('Meta Data.Signal', 'CL'), ('DataBar.Acquisition Date', '27.08.2016'), ('DataBar.Acquisition Time', '20:54:33'),
+                        ('CL.Acquisition.Date', '1/2/2020'), ('CL.Acquisition.Start time', '01:02:03')],
     'si-group': [(MI + 'Voltage', 200000.), ('SI.Acquisition.Date', '1/2/2021'), ('SI.Acquisition.Start time', '10:11:12'),
                  ('SI.Acquisition.SI Application Mode.Name', 'Spectrum Imaging'), ('SI.Acquisition.Artefact Correction.Spatial Drift.Periodicity', 20.),
                  ('SI.Acquisition.Artefact Correction.Spatial Drift.Units', 'seconds')],

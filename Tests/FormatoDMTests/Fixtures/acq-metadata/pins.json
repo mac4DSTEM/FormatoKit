@@ -960,6 +960,37 @@
   },
   {
    "app": {
+    "acquired": {
+     "note": "local time, zone not stored",
+     "otherCopy": null,
+     "value": "2016-08-27 20:54:33"
+    },
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "cl-databar-wins",
+   "numbers": {},
+   "reference": {
+    "General.date": "2016-08-27",
+    "General.time": "20:54:33"
+   },
+   "strings": {
+    "CL.Acquisition.Date": "1/2/2020",
+    "CL.Acquisition.Start time": "01:02:03",
+    "DataBar.Acquisition Date": "27.08.2016",
+    "DataBar.Acquisition Time": "20:54:33",
+    "Meta Data.Signal": "CL"
+   }
+  },
+  {
+   "app": {
     "acquired": null,
     "cameraLengthMM": null,
     "detector": null,

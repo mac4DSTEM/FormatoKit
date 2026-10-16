@@ -23,9 +23,10 @@
 //   Operator`, and for an EELS signal (`Meta Data.Signal` "EELS", or Orsay's `spim.eels` group, read on the direct tags) the collection and
 //   convergence semi-angles. The dwell and exposure follow the signal type as RosettaSciIO's chain does (EELS: its acquisition time as
 //   the dwell with DigiScan tags, else the exposure; X-ray: neither; CL: the DigiScan sample time). The EELS frame number,
-//   aperture and spectrometer, and the EDS and CL groups, stay unread.
+//   aperture and spectrometer, the X-ray (EDS) and CL groups and the SI group are read into `signalNumbers`/`signalTexts` under
+//   RosettaSciIO's own path names, and the date and time take the last source that parses (DataBar, SI, then the signal group; for CL DataBar again, as the mapping ends).
 //   Fields RosettaSciIO does not map (the detector) are read by the consumer's rule with `unvalidatedNote`. The
-//   signal-type specific mappings (EELS, EDS, CL, SI) are not applied: this reads an image object.
+//   signal-type mappings (EELS, X-ray, CL, SI) are applied from the tag maps (`Meta Data.Signal`), not from a signal object.
 //
 //  `.app` is the consumer's rule set (AcquisitionMetadata.swift, rules a to g), pinned to its source:
 //  - high tension `Microscope Info.Voltage` V -> kV; magnification `Indicated Magnification` (never "Actual"), not
@@ -330,6 +331,8 @@ extension AcquisitionMetadata {
         switch signalType {
         case "CL":
             dateSources += ["CL.Acquisition.Date", "CL.Acquisition.Acquisition begin"]; timeSources.append("CL.Acquisition.Start time")
+            // get_mapping ends the CL branch by re-mapping DataBar.Acquisition_Date/Time (_api.py ~1209-1216): DataBar wins again.
+            dateSources.append("DataBar.Acquisition Date"); timeSources.append("DataBar.Acquisition Time")
         case "EELS": dateSources.append("EELS.Acquisition.Date"); timeSources.append("EELS.Acquisition.Start time")
         case "EDS_TEM": dateSources.append("EDS.Acquisition.Date"); timeSources.append("EDS.Acquisition.Start time")
         default: break
