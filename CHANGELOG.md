@@ -2,6 +2,33 @@
 
 Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what each tag changed for a consumer) and `docs/status.md`.
 
+## 0.3.1 (2026-10-16)
+
+Acquisition metadata completed against RosettaSciIO 049e7d70: the Velox microscope and stage, and, for DM, MRC, TIFF FEI SEM and Velox, the stage, beam
+current, working distance, operator, specimen and the EELS, X-ray and CL groups. All additions are optional fields of `AcquisitionMetadata` and
+`VeloxMetadata`, read by `.rosettaSciIO` only; `.app` is unchanged. Coverage by format and field: `docs/parity.md`, "Acquisition metadata coverage".
+
+Added fields.
+- `VeloxMetadata`: `instrumentClass` (`Instrument.InstrumentClass`), `stageXMeters`, `stageYMeters`, `stageZMeters` (each `Stage.Position` coordinate alone).
+- `AcquisitionMetadata`: `instrumentModel`, `stageTiltAlphaDeg`, `stageTiltBetaDeg`, `stageRotationDeg`, `stageX`, `stageY`, `stageZ`, `beamCurrentNA`,
+  `workingDistanceMM`, `operatorName`, `sampleDescription`, `collectionAngleMrad`, `convergenceAngleMrad`, and the dictionaries `signalNumbers` /
+  `signalTexts` (keys are RosettaSciIO's metadata paths: `Detector.EELS.frame_number`, `.aperture_size`, `.spectrometer`; `Detector.EDS.azimuth_angle`,
+  `.elevation_angle`, `.solid_angle`, `.live_time`, `.real_time`; CL `Spectrometer.*` and `Detector.*` keys, `Signal.format`; `Spectrum_image.*`).
+  They are not in `AcquisitionMetadata.Field`. Helpers `pythonRound` and `numpyDegrees`.
+- Read per format: DM (stage, probe current, operator, specimen, EELS angles, EELS/X-ray/CL/SI groups, signal-group acquisition dates); MRC (FEI
+  128-byte header stage); TIFF FEI SEM (stage, rotation, working distance, beam current, user); Velox EMD and Velox TIFF XML (`InstrumentClass` as the
+  microscope, stage). Each reading's `note` names the unit conversion.
+
+Changed behaviour (`.rosettaSciIO`, the default).
+- Velox `instrument` (EMD and TIFF XML) is `InstrumentClass` (RosettaSciIO's microscope); the stored `InstrumentModel` is `instrumentModel`.
+- DM dwell and exposure follow RosettaSciIO's signal-type chain (EELS: its acquisition time; X-ray: neither; CL: the DigiScan sample time); the DM date
+  and time take the last source that parses (DataBar, SI, then the signal group; CL ends with DataBar again), as the mapping order has it.
+- Test pins: `tools/acq-metadata` regenerated; its oracle hands mapped functions HyperSpy's slugified keys; new synthetic fixtures.
+
+**Migration.** Additive: new optional fields, nothing removed. Two defaults move under `.rosettaSciIO`: the Velox `instrument` (use `instrumentModel` for
+the old value, or `.app`) and the DM dwell/exposure of an EELS, X-ray or CL image. Code that dumps `VeloxMetadata` by reflection gains four fields; the
+inherited golden `velox-tiny-reader.txt` went from 175 to 179 lines (`instrumentClass`, `stageX/Y/ZMeters`), updated on purpose in two commits of their own.
+
 ## 0.3.0 (2026-10-16)
 
 New readers: EMPAD, 4D HDF5 datacubes, Merlin MIB, a lazy 4D DM4 gather and the MRC image reader; acquisition metadata for DM, MRC, TIFF and Velox

@@ -41,7 +41,7 @@ nonisolated extension AcquisitionMetadata {
             out.magnification = MetadataReading(nominal, note: unvalidatedNote)
         }
         // The microscope is `Instrument.InstrumentClass` (`_get_mapping`, :947-950), as stored; the stored model is kept beside it.
-        out.instrument = text(m.instrumentClass).map { MetadataReading($0) }
+        out.instrument = m.instrumentClass.map { MetadataReading($0) }   // as stored, as RosettaSciIO passes it
         out.instrumentModel = text(m.instrumentModel).map { MetadataReading($0, note: veloxUnvalidated) }
         // Stage: tilts are radians in the file and degrees rounded to 3 decimals in the mapping (:951-960); the position
         // is metres as stored, rounded to 6 decimals (:961-972). Each position coordinate is read alone, as the mapping reads it.
