@@ -345,6 +345,7 @@ VELOX_IMAGES = {
               {'CustomProperties': {'StemMagnification': {'type': 'double', 'value': '225000'}},
                'Stage': {'AlphaTilt': '0.087266462599716', 'BetaTilt': '-0.0174532925199433',
                          'Position': {'x': '0.000123456789', 'y': '-5.55555555e-05', 'z': '1.5e-06'}}}),
+    'partial-stage': (0, 'HAADF', {'AccelerationVoltage': '200000'}, {'Stage': {'Position': {'x': '2.5e-05', 'z': '-1.25e-06'}}}),
     'zeros': (0, 'HAADF', {'AccelerationVoltage': '0', 'CameraLength': '0', 'NominalMagnification': '0'}, {}),
 }
 

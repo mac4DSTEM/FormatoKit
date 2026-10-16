@@ -23,7 +23,7 @@ extension VeloxEMDSerialized {
         }
 
         @Test func testAppConventionEqualsTheConsumersOutput() throws {
-            #expect(Self.cases.count == 3)
+            #expect(Self.cases.count == 4)
             let entries = try Self.entries()
             for c in Self.cases {
                 let m = AcquisitionMetadata.velox(try #require(entries[c.name]), timeZone: Self.utc, convention: .app)
@@ -69,6 +69,9 @@ extension VeloxEMDSerialized {
             #expect(haadf.stageTiltAlphaDeg?.value == 5.0 && haadf.stageTiltBetaDeg?.value == -1.0)
             #expect(haadf.stageX?.value == 0.000123 && haadf.stageY?.value == -5.6e-05 && haadf.stageZ?.value == 2e-06)
             #expect(haadf.stageX?.note == "metres as stored, rounded to 6 decimals, as RosettaSciIO")
+            // Each coordinate is read alone, as RosettaSciIO maps it.
+            let partial = AcquisitionMetadata.velox(try #require(entries["partial-stage"]), timeZone: Self.utc)
+            #expect(partial.stageX?.value == 2.5e-05 && partial.stageY == nil && partial.stageZ?.value == -1.25e-06)
             // An image with no Stage group reads none; the `.app` convention reads none of the 0.3.1 fields.
             let ceta = AcquisitionMetadata.velox(try #require(entries["ceta"]), timeZone: Self.utc)
             #expect(ceta.stageTiltAlphaDeg == nil && ceta.stageX == nil)

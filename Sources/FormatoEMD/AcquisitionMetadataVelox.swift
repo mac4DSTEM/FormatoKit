@@ -44,16 +44,14 @@ nonisolated extension AcquisitionMetadata {
         out.instrument = text(m.instrumentClass).map { MetadataReading($0) }
         out.instrumentModel = text(m.instrumentModel).map { MetadataReading($0, note: veloxUnvalidated) }
         // Stage: tilts are radians in the file and degrees rounded to 3 decimals in the mapping (:951-960); the position
-        // is metres as stored, rounded to 6 decimals (:961-972). The position needs all three coordinates (VeloxMetadata).
+        // is metres as stored, rounded to 6 decimals (:961-972). Each position coordinate is read alone, as the mapping reads it.
         let degreesNote = "degrees from the stored radians, rounded to 3 decimals, as RosettaSciIO"
         out.stageTiltAlphaDeg = m.stageAlphaRadians.map { MetadataReading(pythonRound(numpyDegrees($0), 3), note: degreesNote) }
         out.stageTiltBetaDeg = m.stageBetaRadians.map { MetadataReading(pythonRound(numpyDegrees($0), 3), note: degreesNote) }
         let metresNote = "metres as stored, rounded to 6 decimals, as RosettaSciIO"
-        if let p = m.stagePositionMeters {
-            out.stageX = MetadataReading(pythonRound(p.x, 6), note: metresNote)
-            out.stageY = MetadataReading(pythonRound(p.y, 6), note: metresNote)
-            out.stageZ = MetadataReading(pythonRound(p.z, 6), note: metresNote)
-        }
+        out.stageX = m.stageXMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
+        out.stageY = m.stageYMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
+        out.stageZ = m.stageZMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
         if let seconds = positive(m.exposureTimeSeconds) { out.exposureS = MetadataReading(seconds, note: unvalidatedNote) }
         if let mode = text(m.operatingMode) {
             out.mode = MetadataReading(mode, note: "the stored code, not decoded; " + unvalidatedNote)
