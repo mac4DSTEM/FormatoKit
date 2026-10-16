@@ -684,6 +684,7 @@
     "Microscope Info.Voltage": 200000.0
    },
    "reference": {
+    "Detector.EELS.frame_number": 4.0,
     "beam_energy": 200.0,
     "exposure": 1.0
    },
@@ -827,6 +828,83 @@
    },
    "strings": {
     "Meta Data.Signal": "CL"
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored; month-first order assumed",
+     "otherCopy": null,
+     "value": "2020-01-02 01:02:03"
+    },
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "eels-full",
+   "numbers": {
+    "EELS.Acquisition.Exposure (s)": 0.25,
+    "EELS.Acquisition.Number of frames": 4.0,
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "Detector.EELS.aperture_size": 2.5,
+    "Detector.EELS.frame_number": 4.0,
+    "Detector.EELS.spectrometer": "GIF Quantum",
+    "General.date": "2016-08-08",
+    "General.time": "16:26:37",
+    "beam_energy": 200.0,
+    "exposure": 1.0
+   },
+   "strings": {
+    "DataBar.Acquisition Date": "1/2/2020",
+    "DataBar.Acquisition Time": "01:02:03",
+    "EELS Spectrometer.Aperture label": "2.5 mm",
+    "EELS Spectrometer.Instrument name": "GIF Quantum",
+    "EELS.Acquisition.Date": "8/8/2016",
+    "EELS.Acquisition.Start time": "4:26:37 PM",
+    "Meta Data.Signal": "EELS"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "eels-aperture-unparseable",
+   "numbers": {
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "Detector.EELS.spectrometer": [],
+    "beam_energy": 200.0
+   },
+   "strings": {
+    "EELS Spectrometer.Aperture label": "open",
+    "EELS Spectrometer.Instrument name": "",
+    "Meta Data.Signal": "EELS"
    }
   },
   {

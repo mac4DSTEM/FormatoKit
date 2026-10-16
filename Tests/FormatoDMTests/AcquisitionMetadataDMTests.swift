@@ -18,7 +18,7 @@ import FormatoDM
 
     /// The generator hands the consumer's readers its own tag maps; they must be what the kit's walker returns for the file.
     @Test func testTheKitsTagMapsAreTheMapsThePinsWereMadeFrom() throws {
-        #expect(Self.cases.count == 23)
+        #expect(Self.cases.count == 25)
         for c in Self.cases {
             let object = try #require(try DM4Experiment.list(path: Self.fixtures.appendingPathComponent(c.name + ".dm4").path).first)
             #expect(object.imageTagNumbers == c.numbers, "\(c.name)")
@@ -73,6 +73,17 @@ import FormatoDM
         let c = try #require(Self.cases.first { $0.name == "stage-beam-operator" })
         let app = AcquisitionMetadata.dm(numbers: c.numbers, strings: c.strings, convention: .app)
         #expect(app.stageX == nil && app.beamCurrentNA == nil && app.operatorName == nil)
+    }
+
+    @Test func testTheEELSGroupIsReadAndItsDateOverridesTheDataBar() throws {
+        let c = try #require(Self.cases.first { $0.name == "eels-full" })
+        let m = AcquisitionMetadata.dm(numbers: c.numbers, strings: c.strings)
+        #expect(m.signalNumbers["Detector.EELS.frame_number"]?.value == 4 && m.signalNumbers["Detector.EELS.aperture_size"]?.value == 2.5)
+        #expect(m.signalTexts["Detector.EELS.spectrometer"]?.value == "GIF Quantum")
+        #expect(m.acquired?.value == "2016-08-08 16:26:37")   // the EELS stamp wins over the DataBar one, as the mapping order has it
+        let bad = try #require(Self.cases.first { $0.name == "eels-aperture-unparseable" })
+        let b = AcquisitionMetadata.dm(numbers: bad.numbers, strings: bad.strings)
+        #expect(b.signalNumbers["Detector.EELS.aperture_size"] == nil && b.signalTexts["Detector.EELS.spectrometer"]?.value == "")
     }
 
     @Test func testFromAnObjectEqualsFromItsMaps() throws {

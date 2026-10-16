@@ -255,6 +255,11 @@ extension AcquisitionMetadata {
             return numbers.keys.contains { $0.hasPrefix(group) } || strings.keys.contains { $0.hasPrefix(group) }
         }
         var meta = AcquisitionMetadata()
+        /// A mapping with no function: the tag as stored, a number or a text (an empty text is kept, as RosettaSciIO keeps it).
+        func raw(_ path: String, _ key: String) {
+            if let n = number(path) { meta.signalNumbers[key] = MetadataReading(n) }
+            else if let t = string(path) { meta.signalTexts[key] = MetadataReading(t) }
+        }
 
         if let volts = number("Microscope Info.Voltage") { meta.highTensionKV = MetadataReading(volts / 1e3) }
 
@@ -317,8 +322,16 @@ extension AcquisitionMetadata {
             }
         }
 
-        if let dateText = string("DataBar.Acquisition Date"), let timeText = string("DataBar.Acquisition Time"),
-           let date = DMDateTime.date(dateText), let time = DMDateTime.time(timeText) {
+        // The date and time: RosettaSciIO maps several sources to General.date and General.time, applied in mapping order, so
+        // the LAST source that parses wins (DataBar, then the SI group, then the signal type's own group).
+        var dateSources = ["DataBar.Acquisition Date"], timeSources = ["DataBar.Acquisition Time"]
+        switch signalType {
+        case "EELS": dateSources.append("EELS.Acquisition.Date"); timeSources.append("EELS.Acquisition.Start time")
+        default: break
+        }
+        let lastDate = dateSources.reversed().lazy.compactMap { string($0).flatMap(DMDateTime.date) }.first
+        let lastTime = timeSources.reversed().lazy.compactMap { string($0).flatMap(DMDateTime.time) }.first
+        if let date = lastDate, let time = lastTime {
             var notes = [localTimeNote]
             if date.orderAssumed { notes.append(DMNote.monthFirst) }
             meta.acquired = MetadataReading(DMDateTime.stamp(date, time), note: notes.joined(separator: "; "))
@@ -345,6 +358,13 @@ extension AcquisitionMetadata {
         if signalType == "EELS" {
             meta.collectionAngleMrad = reading("EELS.Experimental Conditions.Collection semi-angle (mrad)")
             meta.convergenceAngleMrad = reading("EELS.Experimental Conditions.Convergence semi-angle (mrad)")
+            raw("EELS.Acquisition.Number of frames", "Detector.EELS.frame_number")
+            // `Aperture_label` with "mm" removed, through `_parse_string(convert_to_float=True)` (a string tag only).
+            if let label = strings[prefix + "EELS Spectrometer.Aperture label"], !label.isEmpty,
+               let mm = formatoPythonFloat(label.replacingOccurrences(of: "mm", with: "")) {
+                meta.signalNumbers["Detector.EELS.aperture_size"] = MetadataReading(mm)
+            }
+            raw("EELS Spectrometer.Instrument name", "Detector.EELS.spectrometer")
         }
 
         // RosettaSciIO maps no detector: the camera name as stored, labelled.

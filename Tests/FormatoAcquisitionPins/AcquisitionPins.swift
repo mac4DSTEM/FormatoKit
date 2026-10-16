@@ -101,5 +101,19 @@ public func referenceDifferences(_ m: AcquisitionMetadata, _ ref: [String: Any],
     number("convergence_angle", m.convergenceAngleMrad?.value)
     text("General.authors", m.operatorName?.value)
     text("Sample.description", m.sampleDescription?.value)
+    // The signal-type groups: every pinned "Detector.*", "Spectrometer.*" and "Spectrum_image.*" key (the EELS angle and the
+    // renamed EELS dwell/exposure are compared above) must be in the kit's dictionaries, and the kit must hold no other.
+    let grouped = ["Detector.", "Spectrometer.", "Spectrum_image."]
+    let handled: Set<String> = ["Detector.EELS.collection_angle"]
+    var expected: Set<String> = []
+    for (key, value) in ref where grouped.contains(where: key.hasPrefix) && !handled.contains(key) {
+        expected.insert(key)
+        if let n = value as? NSNumber {
+            if m.signalNumbers[key]?.value != n.doubleValue { out.append("\(key): got \(String(describing: m.signalNumbers[key]?.value)), RosettaSciIO \(n)") }
+        } else if let t = value as? String {
+            if m.signalTexts[key]?.value != t { out.append("\(key): got \(String(describing: m.signalTexts[key]?.value)), RosettaSciIO \(t)") }
+        }
+    }
+    for key in Set(m.signalNumbers.keys).union(m.signalTexts.keys) where !expected.contains(key) { out.append("\(key): read, RosettaSciIO maps nothing") }
     return out
 }

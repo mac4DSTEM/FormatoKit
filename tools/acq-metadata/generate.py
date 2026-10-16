@@ -54,8 +54,9 @@ def reference(signal):
     # An SEM stage has one tilt: RosettaSciIO's `Stage.tilt` is read as the alpha tilt (Swift: stageTiltAlphaDeg).
     # An EELS signal's own dwell/exposure targets are read into the same fields (Swift: dwellUS / exposureS).
     renames = {'Stage.tilt': 'Stage.tilt_alpha', 'Detector.EELS.dwell_time': 'dwell_time', 'Detector.EELS.exposure': 'exposure'}
-    got = {renames.get(target_key(t), target_key(t)): v for t, v in apply_mapping(signal).items()}
-    return {k: (float(v) if isinstance(v, (int, float, np.floating)) else v) for k, v in got.items() if k in WANTED}
+    got = {renames.get(target_key(t), target_key(t)).replace('Acquisition_instrument.', ''): v for t, v in apply_mapping(signal).items()}
+    return {k: (float(v) if isinstance(v, (int, float, np.floating)) else v) for k, v in got.items()
+            if k in WANTED or k.startswith(('Detector.', 'Spectrometer.', 'Spectrum_image.'))}
 
 
 # ---------------------------------------------------------------------------------------------------------------- DM
@@ -150,6 +151,11 @@ DM_CASES = {
     'eels-scanning': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'EELS'), ('DigiScan.Sample Time', 15.), ('EELS.Acquisition.Exposure (s)', 0.5)],
     'xray-no-dwell': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'X-ray'), ('DigiScan.Sample Time', 15.)],
     'cl-dwell': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'CL'), ('DigiScan.Sample Time', 15.)],
+    'eels-full': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'EELS'), ('DataBar.Acquisition Date', '1/2/2020'), ('DataBar.Acquisition Time', '01:02:03'),
+                  ('EELS.Acquisition.Date', '8/8/2016'), ('EELS.Acquisition.Start time', '4:26:37 PM'), ('EELS.Acquisition.Number of frames', 4.),
+                  ('EELS.Acquisition.Exposure (s)', 0.25), ('EELS Spectrometer.Aperture label', '2.5 mm'), ('EELS Spectrometer.Instrument name', 'GIF Quantum')],
+    'eels-aperture-unparseable': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'EELS'), ('EELS Spectrometer.Aperture label', 'open'),
+                                  ('EELS Spectrometer.Instrument name', '')],
     'eels-orsay': [(MI + 'Voltage', 100000.), (MI + 'Illumination Mode', 'STEM'), ('spim.eels.Dummy', 1.),
                    ('EELS.Experimental Conditions.Collection semi-angle (mrad)', 25.)],
     'angles-without-eels-signal': [(MI + 'Voltage', 100000.), ('EELS.Experimental Conditions.Collection semi-angle (mrad)', 25.),

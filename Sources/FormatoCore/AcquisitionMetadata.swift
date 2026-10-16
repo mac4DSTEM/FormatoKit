@@ -90,6 +90,11 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     public var operatorName: MetadataReading<String>?
     /// The specimen description (RosettaSciIO's `Sample.description`).
     public var sampleDescription: MetadataReading<String>?
+    /// Signal-type groups of a DM file, keyed by RosettaSciIO's metadata path below `Acquisition_instrument.` (and below its
+    /// microscope key): "Detector.EELS.frame_number", "Detector.EDS.live_time", "Spectrometer.central_wavelength" ... Numbers and
+    /// texts as the tag holds them (RosettaSciIO's `None` mapping), or as its named function returns them (`docs/parity.md`).
+    public var signalNumbers: [String: MetadataReading<Double>] = [:]
+    public var signalTexts: [String: MetadataReading<String>] = [:]
     /// EELS collection semi-angle in mrad.
     public var collectionAngleMrad: MetadataReading<Double>?
     /// Convergence semi-angle in mrad.
