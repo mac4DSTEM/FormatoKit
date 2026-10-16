@@ -11,7 +11,7 @@ large, one SwiftPM product per module.
 | `FormatoCore` | the data model: arrays as stored, axes, units (Pint's compact units, ported), metadata with provenance, lazy signals; cancellation | reads |
 | `FormatoDM` | Gatan DigitalMicrograph `.dm3` / `.dm4` (little-endian): every object as a signal, the tag tree, EDS and EELS spectrum images; complex, RGB and bool images are refused by name | reads |
 | `FormatoEMD` | Thermo Fisher Velox `.emd`: images as signals in their stored type, titled as RosettaSciIO titles them; EDS and EELS spectrum images as signals (`VeloxSpectrumImageSignals`, with `VeloxSpectrumImageOptions` for RosettaSciIO's six options); the sparse spectrum streams. Not read: single spectra, NCEM / Berkeley EMD | reads |
-| `FormatoHDF5` | the process-wide HDF5 lock and quit barrier, the shipped libhdf5. Not read: hspy | support |
+| `FormatoHDF5` | `HDF5Datacube`: lazy rank-four numeric HDF5 / py4DSTEM EMD 1.0 hyperslabs in stored order, calibration axes, scalar metadata and lazy origin maps; the shared loader, lock and quit barrier. HSPY is not read | reads, pinned |
 | `FormatoTIFF` | the TIFF container with a public tag walker (any private tag as stored); FEI, Gatan DM, ImageJ and plain TIFF as signals. Compression, tiles and the other vendors' branches are refused by name | reads |
 | `FormatoMRC` | MRC / MRC2014 with FEI extended headers | empty |
 | `FormatoEMPAD` | EMPAD XML + raw, memory-mapped scan / image series with calibrations; 4D HDF5 later | reads, pinned |
@@ -89,6 +89,21 @@ The example executable prints every signal of a file (axes, units, metadata with
 ```sh
 swift run formato-info Tests/FormatoEMDTests/Fixtures/velox-titles-v6-image.emd
 ```
+
+A py4DSTEM EMD 1.0 datacube (select the numeric dataset explicitly; axes stay in stored order):
+
+```swift
+import FormatoHDF5
+
+let cube = try HDF5Datacube(path: "scan.h5", datasetPath: "/cube_root/cube/data")
+let frame = try cube.read(start: [0, 0, 0, 0], count: [1, 1, cube.shape[2], cube.shape[3]])
+let signal = cube.signal // lazy; signal.load() reads the complete cube
+```
+
+The file must stay unchanged while the reader or its signal exists. Compressed HDF5 uses hyperslab reads through
+HDF5 rather than memory mapping. `originMap(_:)` returns fitted/measured scan maps lazily. Scalar calibration datasets
+and legacy attributes are kept in `calibration`, with provenance; absent values use EMD dimension vectors, then pixel
+axes. Generic EMD fallback supports uniform coordinates; nonlinear coordinates throw a typed unsupported error. Rank-three promotion, dataset discovery, and app sidecar recognition are outside this API.
 
 ## Requirements
 

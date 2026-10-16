@@ -1,0 +1,105 @@
+{
+  "py4dstem_commit": "f050d207851f8accd3aa550365baaf1f38230428",
+  "py4dstem_version": "0.14.19",
+  "h5py_version": "3.11.0",
+  "numpy_version": "2.5.0",
+  "emdfile_version": "0.0.15",
+  "cases": [
+    {
+      "name": "float32",
+      "dataset": "/cube_root/cube/data",
+      "shape": [
+        4,
+        4,
+        16,
+        16
+      ],
+      "dtype": "float32",
+      "R_pixel_size": 1.25,
+      "R_pixel_units": "nm",
+      "Q_pixel_size": 0.03125,
+      "Q_pixel_units": "A^-1",
+      "QR_flip": true,
+      "QR_rotation": 0.125,
+      "scalars": {
+        "qx0_mean": 0.9375,
+        "qy0_mean": 1.9375,
+        "a": 1.5,
+        "b": 1.25,
+        "theta": -0.25,
+        "probe_semiangle": 20.5,
+        "QR_rotation_degrees": 7.16197243913529
+      },
+      "offsets": [
+        0.0,
+        0.0,
+        -0.22265625,
+        -0.2578125
+      ]
+    },
+    {
+      "name": "uint16",
+      "dataset": "/cube_root/cube/data",
+      "shape": [
+        4,
+        4,
+        16,
+        16
+      ],
+      "dtype": "uint16",
+      "R_pixel_size": 1.25,
+      "R_pixel_units": "nm",
+      "Q_pixel_size": 0.03125,
+      "Q_pixel_units": "A^-1",
+      "QR_flip": true,
+      "QR_rotation": 0.125,
+      "scalars": {
+        "qx0_mean": 0.9375,
+        "qy0_mean": 1.9375,
+        "a": 1.5,
+        "b": 1.25,
+        "theta": -0.25,
+        "probe_semiangle": 20.5,
+        "QR_rotation_degrees": 7.16197243913529
+      },
+      "offsets": [
+        0.0,
+        0.0,
+        -0.22265625,
+        -0.2578125
+      ]
+    },
+    {
+      "name": "singleton",
+      "dataset": "/cube_root/cube/data",
+      "shape": [
+        1,
+        4,
+        16,
+        16
+      ],
+      "dtype": "float32",
+      "R_pixel_size": 1.25,
+      "R_pixel_units": "nm",
+      "Q_pixel_size": 0.03125,
+      "Q_pixel_units": "A^-1",
+      "QR_flip": true,
+      "QR_rotation": 0.125,
+      "scalars": {
+        "qx0_mean": 0.1875,
+        "qy0_mean": 1.1875,
+        "a": 1.5,
+        "b": 1.25,
+        "theta": -0.25,
+        "probe_semiangle": 20.5,
+        "QR_rotation_degrees": 7.16197243913529
+      },
+      "offsets": [
+        0.0,
+        0.0,
+        -0.22265625,
+        -0.2578125
+      ]
+    }
+  ]
+}

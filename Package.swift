@@ -36,7 +36,7 @@ let package = Package(
         // The data model every reader returns: arrays, axes, units, metadata with provenance, lazy signals; cancellation.
         .target(name: "FormatoCore", swiftSettings: settings),
         // HDF5: the process-wide HDF5 lock and quit barrier (HDF5Serial), the shipped libhdf5. Later: hspy, the sidecar.
-        .target(name: "FormatoHDF5", resources: [.copy("Resources/hdf5")], swiftSettings: settings),
+        .target(name: "FormatoHDF5", dependencies: ["FormatoCore"], resources: [.copy("Resources/hdf5")], swiftSettings: settings),
         // Gatan DigitalMicrograph .dm3 / .dm4: DM4Experiment (inherited reader, registration step 1 §1.1) and the signal adapter.
         .target(name: "FormatoDM", dependencies: ["FormatoCore"], swiftSettings: settings),
         // EMD: Velox (inherited reader, registration step 1 §1.1) and its image adapter. Later: NCEM / Berkeley EMD.
@@ -59,7 +59,8 @@ let package = Package(
                     swiftSettings: settings),
         .testTarget(name: "FormatoEMDTests", dependencies: ["FormatoEMD", "FormatoCore", "FormatoHDF5"],
                     exclude: ["Fixtures"], swiftSettings: settings),
-        .testTarget(name: "FormatoHDF5Tests", dependencies: ["FormatoHDF5", "FormatoEMD", "FormatoHDF5ExitProbe"],
+        .testTarget(name: "FormatoHDF5Tests", dependencies: ["FormatoHDF5", "FormatoCore", "FormatoEMD", "FormatoHDF5ExitProbe"],
+                    exclude: ["Fixtures"],
                     swiftSettings: settings),
         // A child process for the quit-barrier tests (`exit` runs the atexit handlers, which a test cannot watch from inside
         // its own process). Not a product; FormatoHDF5Tests depends on it only so `swift test` builds it.

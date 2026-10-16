@@ -22,6 +22,7 @@ instruments and techniques, out of scope until someone asks.
 | MRC | mrc, ali | no | `FormatoMRC` | empty | B |
 | MRCZ | mrc, mrcz | yes | `FormatoMRC` | not read | C |
 | EMPAD | xml (+ raw) | no | `FormatoEMPAD` | **pinned**: mmap Float32 frames, footer removal, scan/series shapes, squeezed axes, both XML navigation calibrations, diffraction calibration and timestamp metadata; synthetic full-byte pins at 049e7d70 | A |
+| py4DSTEM / EMD 1.0 (py4DSTEM f050d207, h5py 3.11.0) | h5, hdf5, emd | — | `FormatoHDF5` | **pinned** for explicit rank-four numeric datasets: stored bytes and shape, hyperslabs, R/Q axes, flip, rotation, ellipse, probe semiangle, lazy origin maps. Compressed Float32 and big-endian UInt16 synthetic files; uniform generic dimension vectors and scalar attributes checked with h5py; nonlinear coordinates refused | A |
 | QuantumDetector (Merlin) | mib | no | `FormatoEMPAD` or its own | not read | B |
 | Arina (Dectris) | h5 | no | — | not read | B |
 | HSPY | hspy, hdf5 | yes | `FormatoHDF5` | not read; with the sidecar | B |

@@ -4,6 +4,12 @@ Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what e
 
 ## Unreleased
 
+- Add `FormatoHDF5.HDF5Datacube`: lazy rank-four numeric hyperslabs, py4DSTEM EMD 1.0 calibration axes,
+  scalar calibration with provenance, legacy calibration attributes, and lazy fitted/measured origin maps.
+  Float32 and UInt16 cubes are pinned bit for bit to py4DSTEM 0.14.19 (`f050d207`) and h5py 3.11.0.
+- Move the existing Velox dynamic bindings into FormatoHDF5 so both readers share one loader and exit barrier.
+  Add the `FormatoHDF5` product and select a dataset with `HDF5Datacube(path:datasetPath:)`.
+
 - Add `FormatoEMPAD.EMPADReader`: lazy memory-mapped Float32 EMPAD frames with footer rows dropped,
   XML scan shapes, image series, singleton squeezing, navigation and diffraction calibrations, optional
   `qCalibration`, and timestamp metadata with provenance. Malformed pairs throw `EMPADError`.

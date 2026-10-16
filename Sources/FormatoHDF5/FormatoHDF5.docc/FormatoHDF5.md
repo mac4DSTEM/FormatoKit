@@ -8,7 +8,19 @@ The readers that need HDF5, such as the Velox reader in ``FormatoEMD``, open the
 
 The article "The bundled HDF5 library" explains where the library is found and how to override it.
 
+``HDF5Datacube`` opens an explicitly selected rank-four numeric dataset. It exposes stored-order hyperslabs,
+calibration axes and scalar metadata through FormatoCore, with lazy fitted and measured origin maps. It supports
+py4DSTEM EMD 1.0 calibration, legacy scalar attributes, and uniform EMD dimension vectors. Dataset discovery and
+app-specific sidecar recognition belong to the consumer. Keep the source file unchanged while a reader exists.
+
 ## Topics
+
+### Datacubes
+
+- ``HDF5Datacube``
+- ``HDF5DatacubeError``
+- ``HDF5OriginComponent``
+
 
 ### The shipped library
 
