@@ -134,6 +134,11 @@
    "instrumentModel": "Talos F200X",
    "name": "haadf",
    "reference": {
+    "Stage.tilt_alpha": 5.0,
+    "Stage.tilt_beta": -1.0,
+    "Stage.x": 0.000123,
+    "Stage.y": -5.6e-05,
+    "Stage.z": 2e-06,
     "beam_energy": 300.0,
     "camera_length": 150.0,
     "magnification": 225000.0,

@@ -44,11 +44,15 @@ def target_key(target):
 
 
 WANTED = {'beam_energy', 'camera_length', 'magnification', 'dwell_time', 'exposure', 'acquisition_mode', 'microscope',
-          'General.date', 'General.time'}
+          'General.date', 'General.time',
+          # 0.3.1: the stage, beam current, SEM working distance, operator and EELS angles
+          'Stage.tilt_alpha', 'Stage.tilt_beta', 'Stage.rotation', 'Stage.x', 'Stage.y', 'Stage.z', 'beam_current', 'working_distance',
+          'General.authors', 'Detector.EELS.collection_angle', 'convergence_angle'}
 
 
 def reference(signal):
-    got = {target_key(t): v for t, v in apply_mapping(signal).items()}
+    # An SEM stage has one tilt: RosettaSciIO's `Stage.tilt` is read as the alpha tilt (Swift: stageTiltAlphaDeg).
+    got = {{'Stage.tilt': 'Stage.tilt_alpha'}.get(target_key(t), target_key(t)): v for t, v in apply_mapping(signal).items()}
     return {k: (float(v) if isinstance(v, (int, float, np.floating)) else v) for k, v in got.items() if k in WANTED}
 
 
@@ -283,7 +287,9 @@ VELOX_IMAGES = {
     'ceta': (8, 'BM-Ceta', {'AccelerationVoltage': '200000', 'NominalMagnification': '17500', 'CameraLength': '0.844', 'OperatingMode': '1', 'ProjectorMode': '2'},
              {'CustomProperties': {'StemMagnification': {'type': 'bool', 'value': '0'}}}),
     'haadf': (0, 'HAADF', {'AccelerationVoltage': '300000', 'CameraLength': '0.15', 'OperatingMode': '2', 'ProjectorMode': '1'},
-              {'CustomProperties': {'StemMagnification': {'type': 'double', 'value': '225000'}}}),
+              {'CustomProperties': {'StemMagnification': {'type': 'double', 'value': '225000'}},
+               'Stage': {'AlphaTilt': '0.087266462599716', 'BetaTilt': '-0.0174532925199433',
+                         'Position': {'x': '0.000123456789', 'y': '-5.55555555e-05', 'z': '1.5e-06'}}}),
     'zeros': (0, 'HAADF', {'AccelerationVoltage': '0', 'CameraLength': '0', 'NominalMagnification': '0'}, {}),
 }
 

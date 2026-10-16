@@ -8,7 +8,7 @@
 //  `CustomProperties.StemMagnification.value` as the magnification (Velox stores an unset bool as 0; it is returned as
 //  stored); no positivity rule. RosettaSciIO maps no detector, dwell, exposure, mode or date for an image; those are read
 //  by the consumer's rule with `unvalidatedNote`: the detector `BinaryResult.Detector`, the instrument
-//  `Instrument.InstrumentModel` (RosettaSciIO maps `InstrumentClass`, which the kit's `VeloxMetadata` does not expose), the dwell `Scan.DwellTime` only for a
+//  `Instrument.InstrumentModel` (`.app`; under `.rosettaSciIO` it is `instrumentModel`, and `instrument` is RosettaSciIO's `InstrumentClass`), the dwell `Scan.DwellTime` only for a
 //  ScanningDetector, the exposure of the detector the image names (`VeloxMetadata.exposureTimeSeconds`), the magnification
 //  `Optics.NominalMagnification` when no `StemMagnification` is stored, the mode `Optics.OperatingMode` as the stored
 //  code (an `.emd` stores a code, not a name), the start `Acquisition.AcquisitionStartDatetime` (Unix seconds shown on
@@ -39,6 +39,20 @@ nonisolated extension AcquisitionMetadata {
             out.magnification = MetadataReading(stem)
         } else if let nominal = positive(m.nominalMagnification) {
             out.magnification = MetadataReading(nominal, note: unvalidatedNote)
+        }
+        // The microscope is `Instrument.InstrumentClass` (`_get_mapping`, :947-950), as stored; the stored model is kept beside it.
+        out.instrument = text(m.instrumentClass).map { MetadataReading($0) }
+        out.instrumentModel = text(m.instrumentModel).map { MetadataReading($0, note: veloxUnvalidated) }
+        // Stage: tilts are radians in the file and degrees rounded to 3 decimals in the mapping (:951-960); the position
+        // is metres as stored, rounded to 6 decimals (:961-972). The position needs all three coordinates (VeloxMetadata).
+        let degreesNote = "degrees from the stored radians, rounded to 3 decimals, as RosettaSciIO"
+        out.stageTiltAlphaDeg = m.stageAlphaRadians.map { MetadataReading(pythonRound(numpyDegrees($0), 3), note: degreesNote) }
+        out.stageTiltBetaDeg = m.stageBetaRadians.map { MetadataReading(pythonRound(numpyDegrees($0), 3), note: degreesNote) }
+        let metresNote = "metres as stored, rounded to 6 decimals, as RosettaSciIO"
+        if let p = m.stagePositionMeters {
+            out.stageX = MetadataReading(pythonRound(p.x, 6), note: metresNote)
+            out.stageY = MetadataReading(pythonRound(p.y, 6), note: metresNote)
+            out.stageZ = MetadataReading(pythonRound(p.z, 6), note: metresNote)
         }
         if let seconds = positive(m.exposureTimeSeconds) { out.exposureS = MetadataReading(seconds, note: unvalidatedNote) }
         if let mode = text(m.operatingMode) {
