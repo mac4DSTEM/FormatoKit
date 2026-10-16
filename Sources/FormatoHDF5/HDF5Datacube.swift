@@ -117,11 +117,7 @@ private nonisolated final class CubeStorage: @unchecked Sendable {
     let file: hid_t
     init(path: String) throws {
         (h5, file) = try HDF5Serial.run {
-            let candidates = [ProcessInfo.processInfo.environment["FORMATO_HDF5_PATH"],
-                Bundle.main.privateFrameworksURL?.appendingPathComponent("libhdf5.dylib").path,
-                Bundle.main.executableURL?.deletingLastPathComponent().appendingPathComponent("../Frameworks/libhdf5.dylib").standardized.path,
-                FormatoHDF5Library.bundledLibraryPath, "libhdf5.dylib"].compactMap { $0 }
-            let lib = try SharedHDF5.load(candidates: candidates)
+            let lib = try SharedHDF5.loadStandard()
             let id = path.withCString { lib.h5fopen($0, 0, 0) }
             guard id >= 0 else { throw HDF5DatacubeError.cannotOpen(path) }
             return (lib, id)

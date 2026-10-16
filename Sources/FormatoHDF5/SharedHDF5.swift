@@ -27,6 +27,29 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
 
     package typealias H5Aopen = @convention(c) (hid_t, UnsafePointer<CChar>?, hid_t) -> hid_t
     package typealias H5Aread = @convention(c) (hid_t, hid_t, UnsafeMutableRawPointer?) -> herr_t
+    // Write-side symbols (FormatoKit Unreleased: BraggVectorsEMD). Same loader, same lock, same exit barrier.
+    package typealias H5Fcreate = @convention(c) (UnsafePointer<CChar>?, UInt32, hid_t, hid_t) -> hid_t
+    package typealias H5Gcreate2 = @convention(c) (hid_t, UnsafePointer<CChar>?, hid_t, hid_t, hid_t) -> hid_t
+    package typealias H5Dcreate2 = @convention(c) (hid_t, UnsafePointer<CChar>?, hid_t, hid_t, hid_t, hid_t, hid_t) -> hid_t
+    package typealias H5Dwrite = @convention(c) (hid_t, hid_t, hid_t, hid_t, hid_t, UnsafeRawPointer?) -> herr_t
+    package typealias H5Screate = @convention(c) (Int32) -> hid_t
+    package typealias H5Acreate2 = @convention(c) (hid_t, UnsafePointer<CChar>?, hid_t, hid_t, hid_t, hid_t) -> hid_t
+    package typealias H5Awrite = @convention(c) (hid_t, hid_t, UnsafeRawPointer?) -> herr_t
+    package typealias H5Aexists = @convention(c) (hid_t, UnsafePointer<CChar>?) -> Int32
+    package typealias H5Tcreate = @convention(c) (Int32, Int) -> hid_t
+    package typealias H5Tinsert = @convention(c) (hid_t, UnsafePointer<CChar>?, Int, hid_t) -> herr_t
+    package typealias H5TvlenCreate = @convention(c) (hid_t) -> hid_t
+    package typealias H5TsetSize = @convention(c) (hid_t, Int) -> herr_t
+    package typealias H5TsetCset = @convention(c) (hid_t, Int32) -> herr_t
+    package typealias H5TenumCreate = @convention(c) (hid_t) -> hid_t
+    package typealias H5TenumInsert = @convention(c) (hid_t, UnsafePointer<CChar>?, UnsafeRawPointer?) -> herr_t
+    package let h5fcreate: H5Fcreate, h5gcreate2: H5Gcreate2, h5dcreate2: H5Dcreate2, h5dwrite: H5Dwrite
+    package let h5screate: H5Screate, h5acreate2: H5Acreate2, h5awrite: H5Awrite, h5aexists: H5Aexists
+    package let h5tcreate: H5Tcreate, h5tinsert: H5Tinsert, h5tvlenCreate: H5TvlenCreate, h5tsetSize: H5TsetSize
+    package let h5tsetCset: H5TsetCset, h5tenumCreate: H5TenumCreate, h5tenumInsert: H5TenumInsert
+    /// `H5T_C_S1`: the C string type, copied and sized by the writer.
+    package let stringC1: hid_t
+
     package let h5aopen: H5Aopen, h5aread: H5Aread, h5aclose: H5Close
     package let h5agetSpace: H5DgetSpace, h5agetType: H5DgetType
     package let h5open: H5open, h5eSetAuto2: H5EsetAuto2, h5fopen: H5Fopen, h5fclose: H5Close
@@ -39,6 +62,16 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
     package let uint8: hid_t, uint16: hid_t, uint32: hid_t, uint64: hid_t, float32: hid_t
     /// FormatoKit step 3 (registration step 3 §1.1): the native types a stored-type image read needs beside the above.
     package let int8: hid_t, int16: hid_t, int32: hid_t, int64: hid_t, float64: hid_t
+
+    /// The standard lookup shared by the HDF5 readers and writers in this package: the `FORMATO_HDF5_PATH` override, the host
+    /// app's `Frameworks/libhdf5.dylib`, the copy FormatoKit ships, then the loader's search path. Call under `HDF5Serial`.
+    package static func loadStandard() throws -> SharedHDF5 {
+        let candidates = [ProcessInfo.processInfo.environment["FORMATO_HDF5_PATH"],
+            Bundle.main.privateFrameworksURL?.appendingPathComponent("libhdf5.dylib").path,
+            Bundle.main.executableURL?.deletingLastPathComponent().appendingPathComponent("../Frameworks/libhdf5.dylib").standardized.path,
+            FormatoHDF5Library.bundledLibraryPath, "libhdf5.dylib"].compactMap { $0 }
+        return try load(candidates: candidates)
+    }
 
     package static func load(candidates: [String]) throws -> SharedHDF5 {
         var failures: [String] = []
@@ -63,6 +96,15 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
         let auto = try symbol("H5Eset_auto2", as: H5EsetAuto2.self)
         _ = auto(0, nil, nil)     // a probe that finds nothing is an answer, not a stack dump
         return SharedHDF5(
+            h5fcreate: try symbol("H5Fcreate", as: H5Fcreate.self), h5gcreate2: try symbol("H5Gcreate2", as: H5Gcreate2.self),
+            h5dcreate2: try symbol("H5Dcreate2", as: H5Dcreate2.self),
+            h5dwrite: try symbol("H5Dwrite", as: H5Dwrite.self), h5screate: try symbol("H5Screate", as: H5Screate.self),
+            h5acreate2: try symbol("H5Acreate2", as: H5Acreate2.self), h5awrite: try symbol("H5Awrite", as: H5Awrite.self),
+            h5aexists: try symbol("H5Aexists", as: H5Aexists.self), h5tcreate: try symbol("H5Tcreate", as: H5Tcreate.self),
+            h5tinsert: try symbol("H5Tinsert", as: H5Tinsert.self), h5tvlenCreate: try symbol("H5Tvlen_create", as: H5TvlenCreate.self),
+            h5tsetSize: try symbol("H5Tset_size", as: H5TsetSize.self), h5tsetCset: try symbol("H5Tset_cset", as: H5TsetCset.self),
+            h5tenumCreate: try symbol("H5Tenum_create", as: H5TenumCreate.self), h5tenumInsert: try symbol("H5Tenum_insert", as: H5TenumInsert.self),
+            stringC1: try global("H5T_C_S1_g"),
             h5aopen: try symbol("H5Aopen", as: H5Aopen.self), h5aread: try symbol("H5Aread", as: H5Aread.self),
             h5aclose: try symbol("H5Aclose", as: H5Close.self),
             h5agetSpace: try symbol("H5Aget_space", as: H5DgetSpace.self), h5agetType: try symbol("H5Aget_type", as: H5DgetType.self),
