@@ -172,11 +172,25 @@ nonisolated extension AcquisitionMetadata {
             }
         }
         if let type = sections["System"]?["SystemType"] { out.instrument = MetadataReading(pythonText(type)) }
+        // The 0.3.1 fields (`mapping_fei` :1135-1158): the SEM stage as tifffile's `astype` made it, the working distance
+        // (m to mm) and beam current (A to nA) through `float()`, and the user.
+        if let x = sections["Stage"]?["StageX"]?.numberValue { out.stageX = MetadataReading(x, note: feiStored) }
+        if let y = sections["Stage"]?["StageY"]?.numberValue { out.stageY = MetadataReading(y, note: feiStored) }
+        if let z = sections["Stage"]?["StageZ"]?.numberValue { out.stageZ = MetadataReading(z, note: feiStored) }
+        if let r = sections["Stage"]?["StageR"]?.numberValue { out.stageRotationDeg = MetadataReading(r, note: feiStored) }
+        if let t = sections["Stage"]?["StageT"]?.numberValue {
+            out.stageTiltAlphaDeg = MetadataReading(t, note: "the SEM stage's single tilt; " + feiStored)
+        }
+        if let wd = sections["Stage"]?["WorkingDistance"]?.asFloat { out.workingDistanceMM = MetadataReading(wd * 1e3) }
+        if let current = sections["EBeam"]?["BeamCurrent"]?.asFloat { out.beamCurrentNA = MetadataReading(current * 1e9) }
+        if case .string(let user)? = sections["User"]?["User"] { out.operatorName = MetadataReading(user) }
         if case .string(let name)? = sections["Detectors"]?["Name"], let name = text(name) {
             out.detector = MetadataReading(name, note: unvalidatedNote)
         }
         return out
     }
+
+    private static let feiStored = "as stored in the INI, no conversion"
 
     /// `str(value)` of a value tifffile's `astype` made.
     private static func pythonText(_ value: FormatoPythonValue) -> String {
@@ -224,7 +238,8 @@ nonisolated extension AcquisitionMetadata {
             GuardedXML.bounded(text(element.elements(forName: name).first?.stringValue))
         }
         // A reading with the notes that apply: its own, then "unvalidated" unless a published reader maps its path.
-        let readByReference: Set<String> = ["Optics/AccelerationVoltage", "Optics/CameraLength"]
+        let readByReference: Set<String> = ["Optics/AccelerationVoltage", "Optics/CameraLength", "Instrument/InstrumentClass", "Stage/AlphaTilt",
+                                            "Stage/BetaTilt", "Stage/Position/x", "Stage/Position/y", "Stage/Position/z"]
         func reading<V: Sendable & Equatable>(_ value: V, _ path: String, note: String? = nil,
                                               otherCopy: V? = nil) -> MetadataReading<V> {
             MetadataReading(value, note: joined(note, readByReference.contains(path) ? nil : TIFFNote.unvalidated),
@@ -279,7 +294,24 @@ nonisolated extension AcquisitionMetadata {
             out.acquired = reading(start, "Acquisition/AcquisitionStartDatetime", note: localTimeNote,
                                    otherCopy: second == start ? nil : second)
         }
-        if let model = stored("Instrument/InstrumentModel") {
+        let model = stored("Instrument/InstrumentModel")
+        if referenceRules {
+            // The EMD mapping's microscope is `Instrument.InstrumentClass`; the stored model is kept beside it (0.3.1).
+            if let cls = stored("Instrument/InstrumentClass") { out.instrument = reading(cls, "Instrument/InstrumentClass") }
+            if let model { out.instrumentModel = reading(model, "Instrument/InstrumentModel") }
+            // The EMD mapping's stage (`_emd_velox.py:951-972`): radians to degrees rounded to 3 decimals; metres rounded to 6.
+            let degrees = "degrees from the stored radians, rounded to 3 decimals, as RosettaSciIO"
+            if let a = number(stored("Stage/AlphaTilt")) {
+                out.stageTiltAlphaDeg = reading(pythonRound(numpyDegrees(a), 3), "Stage/AlphaTilt", note: degrees)
+            }
+            if let b = number(stored("Stage/BetaTilt")) {
+                out.stageTiltBetaDeg = reading(pythonRound(numpyDegrees(b), 3), "Stage/BetaTilt", note: degrees)
+            }
+            let metres = "metres as stored, rounded to 6 decimals, as RosettaSciIO"
+            if let x = number(stored("Stage/Position/x")) { out.stageX = reading(pythonRound(x, 6), "Stage/Position/x", note: metres) }
+            if let y = number(stored("Stage/Position/y")) { out.stageY = reading(pythonRound(y, 6), "Stage/Position/y", note: metres) }
+            if let z = number(stored("Stage/Position/z")) { out.stageZ = reading(pythonRound(z, 6), "Stage/Position/z", note: metres) }
+        } else if let model {
             out.instrument = reading(model, "Instrument/InstrumentModel")
         }
         return out

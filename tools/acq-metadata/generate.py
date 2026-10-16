@@ -259,9 +259,9 @@ def ascii_tag(s): return (2, s.encode() + b'\0')
 
 def velox_xml(**o):
     d = dict(volts='200000', mag='17500', length='0.844', op='TEM', proj='Imaging', det='BM-Ceta', exposure='0.5',
-             start='2026-06-05T13:05:07.123', second='2026-06-05T13:05:07.123', model='Talos F200X')
+             start='2026-06-05T13:05:07.123', second='2026-06-05T13:05:07.123', model='Talos F200X', cls='Talos', stage='')
     d.update(o)
-    return ('<Metadata xmlns="http://schemas.fei.com/Metadata/v1/2013/07"><Instrument><InstrumentModel>%(model)s</InstrumentModel></Instrument>'
+    return ('<Metadata xmlns="http://schemas.fei.com/Metadata/v1/2013/07"><Instrument><InstrumentModel>%(model)s</InstrumentModel><InstrumentClass>%(cls)s</InstrumentClass></Instrument>%(stage)s'
             '<Optics><AccelerationVoltage>%(volts)s</AccelerationVoltage><NominalMagnification>%(mag)s</NominalMagnification>'
             '<CameraLength>%(length)s</CameraLength><OperatingMode>%(op)s</OperatingMode><ProjectorMode>%(proj)s</ProjectorMode></Optics>'
             '<BinaryResult><Detector>%(det)s</Detector></BinaryResult>'
@@ -271,9 +271,9 @@ def velox_xml(**o):
             '</Metadata>') % d
 
 
-def fei_ini(hv='5000', dwell='1e-05', date='06/05/2026', time='01:02:03 PM'):
+def fei_ini(hv='5000', dwell='1e-05', date='06/05/2026', time='01:02:03 PM', extra=''):
     return ('[User]\r\nDate=%s\r\nTime=%s\r\nUser=analyst\r\n[System]\r\nSystemType=Helios NanoLab" 660\r\n[Beam]\r\nHV=%s\r\n'
-            '[Scan]\r\nDwelltime=%s\r\nPixelWidth=1e-08\r\nPixelHeight=1e-08\r\n[Detectors]\r\nName=ETD\r\n') % (date, time, hv, dwell)
+            '[Scan]\r\nDwelltime=%s\r\nPixelWidth=1e-08\r\nPixelHeight=1e-08\r\n[Detectors]\r\nName=ETD\r\n%s') % (date, time, hv, dwell, extra)
 
 
 TIFF_CASES = {
@@ -281,7 +281,10 @@ TIFF_CASES = {
     'velox-diffraction-zero-voltage': {34683: ascii_tag(velox_xml(proj='Diffraction', volts='0', length='0.15', mag='0'))},
     'velox-stem': {34683: ascii_tag(velox_xml(op='STEM', proj='Imaging', length='0.2'))},
     'velox-zone-designator': {34683: ascii_tag(velox_xml(start='2026-06-05T13:05:07Z'))},
+    'velox-stage-class': {34683: ascii_tag(velox_xml(cls='Talos-X', stage='<Stage><AlphaTilt>0.087266462599716</AlphaTilt><BetaTilt>-0.0174532925199433</BetaTilt>'
+                                                    '<Position><x>0.000123456789</x><y>-5.55555555e-05</y><z>1.5e-06</z></Position></Stage>'))},
     'fei-helios': {34682: ascii_tag(fei_ini())},
+    'fei-stage-beam': {34682: ascii_tag(fei_ini(extra='[Stage]\r\nStageX=0.0125\r\nStageY=-0.005\r\nStageZ=0.0105\r\nStageR=45\r\nStageT=12.5\r\nWorkingDistance=0.00425\r\n[EBeam]\r\nBeamCurrent=2.5e-10\r\n'))},
     'fei-sfeg-zero': {34680: ascii_tag(fei_ini(hv='0', dwell='0'))},
     'fei-first-field-day': {34682: ascii_tag(fei_ini(date='25/12/2026', time='23:59:59'))},
     'dm-tag-65027': {65027: (1, dm4_file(DM_CASES['tem-image'], bare=True))},
@@ -544,7 +547,11 @@ def main():
                 import re
                 x = extra[34683][1].decode()
                 v = lambda tagname: re.search('<%s>([^<]*)</%s>' % (tagname, tagname), x).group(1)
-                ref = {'beam_energy': float(v('AccelerationVoltage')) / 1e3, 'camera_length': float(v('CameraLength')) * 1e3}
+                ref = {'beam_energy': float(v('AccelerationVoltage')) / 1e3, 'camera_length': float(v('CameraLength')) * 1e3,
+                       'microscope': v('InstrumentClass')}
+                if '<Stage>' in x:   # _emd_velox.py:951-972
+                    ref.update({'Stage.tilt_alpha': round(float(np.degrees(float(v('AlphaTilt')))), 3), 'Stage.tilt_beta': round(float(np.degrees(float(v('BetaTilt')))), 3),
+                                'Stage.x': round(float(v('x')), 6), 'Stage.y': round(float(v('y')), 6), 'Stage.z': round(float(v('z')), 6)})
             cases.append({'name': name, 'path': str(path), 'reference': ref})
         app = run_harness(exe, 'tiff', cases, td)
         for c in cases: c['app'] = app[c['name']]; del c['path']

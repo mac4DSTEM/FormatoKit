@@ -45,7 +45,8 @@
    "name": "velox-ceta-imaging",
    "reference": {
     "beam_energy": 200.0,
-    "camera_length": 844.0
+    "camera_length": 844.0,
+    "microscope": "Talos"
    }
   },
   {
@@ -88,7 +89,8 @@
    "name": "velox-diffraction-zero-voltage",
    "reference": {
     "beam_energy": 0.0,
-    "camera_length": 150.0
+    "camera_length": 150.0,
+    "microscope": "Talos"
    }
   },
   {
@@ -139,7 +141,8 @@
    "name": "velox-stem",
    "reference": {
     "beam_energy": 200.0,
-    "camera_length": 200.0
+    "camera_length": 200.0,
+    "microscope": "Talos"
    }
   },
   {
@@ -182,7 +185,61 @@
    "name": "velox-zone-designator",
    "reference": {
     "beam_energy": 200.0,
-    "camera_length": 844.0
+    "camera_length": 844.0,
+    "microscope": "Talos"
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored; unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "2026-06-05 13:05:07"
+    },
+    "cameraLengthMM": null,
+    "detector": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "BM-Ceta"
+    },
+    "dwellUS": null,
+    "exposureS": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 0.5
+    },
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "Talos F200X"
+    },
+    "magnification": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 17500
+    },
+    "mode": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "TEM"
+    },
+    "unread": []
+   },
+   "name": "velox-stage-class",
+   "reference": {
+    "Stage.tilt_alpha": 5.0,
+    "Stage.tilt_beta": -1.0,
+    "Stage.x": 0.000123,
+    "Stage.y": -5.6e-05,
+    "Stage.z": 2e-06,
+    "beam_energy": 200.0,
+    "camera_length": 844.0,
+    "microscope": "Talos-X"
    }
   },
   {
@@ -220,11 +277,62 @@
    },
    "name": "fei-helios",
    "reference": {
+    "General.authors": "analyst",
     "General.date": "2026-06-05",
     "General.time": "13:02:03",
     "beam_energy": 5.0,
     "dwell_time": 1e-05,
     "microscope": "Helios NanoLab\" 660"
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored",
+     "otherCopy": null,
+     "value": "2026-06-05 13:02:03"
+    },
+    "cameraLengthMM": null,
+    "detector": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "ETD"
+    },
+    "dwellUS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 10
+    },
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 5
+    },
+    "instrument": {
+     "note": null,
+     "otherCopy": null,
+     "value": "Helios NanoLab\" 660"
+    },
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "fei-stage-beam",
+   "reference": {
+    "General.authors": "analyst",
+    "General.date": "2026-06-05",
+    "General.time": "13:02:03",
+    "Stage.rotation": 45.0,
+    "Stage.tilt_alpha": 12.5,
+    "Stage.x": 0.0125,
+    "Stage.y": -0.005,
+    "Stage.z": 0.0105,
+    "beam_current": 0.25,
+    "beam_energy": 5.0,
+    "dwell_time": 1e-05,
+    "microscope": "Helios NanoLab\" 660",
+    "working_distance": 4.25
    }
   },
   {
@@ -254,6 +362,7 @@
    },
    "name": "fei-sfeg-zero",
    "reference": {
+    "General.authors": "analyst",
     "General.date": "2026-06-05",
     "General.time": "13:02:03",
     "beam_energy": 0.0,
@@ -296,6 +405,7 @@
    },
    "name": "fei-first-field-day",
    "reference": {
+    "General.authors": "analyst",
     "General.date": "2026-12-25",
     "General.time": "23:59:59",
     "beam_energy": 5.0,

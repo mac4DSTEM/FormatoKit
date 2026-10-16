@@ -21,7 +21,7 @@ import FormatoTIFF
     static func pin(_ name: String) throws -> AcquisitionPinCase { try #require(cases.first { $0.name == name }) }
 
     @Test func testAppConventionEqualsTheConsumersOutput() throws {
-        #expect(Self.cases.count == 9)
+        #expect(Self.cases.count == 11)
         for c in Self.cases where c.name != "dm-tag-65027" {   // the harness has no DM walker: see the DM tag stream test
             let m = try AcquisitionMetadata.tiff(data: Self.data(c.name), convention: .app)
             #expect(appDifferences(m, c.app) == [], "\(c.name)")
@@ -46,7 +46,7 @@ import FormatoTIFF
         for name in ["velox-ceta-imaging", "velox-diffraction-zero-voltage", "velox-stem", "velox-zone-designator"] {
             let c = try Self.pin(name)
             let m = try AcquisitionMetadata.tiff(data: Self.data(name))
-            #expect(referenceDifferences(m, c.reference, strict: ["beam_energy", "camera_length"]) == [], "\(name)")
+            #expect(referenceDifferences(m, c.reference, strict: ["beam_energy", "camera_length", "microscope"]) == [], "\(name)")
         }
         // Camera length: every mode (the mapping), against only a diffraction projector mode or STEM (rule c).
         let imaging = try Self.data("velox-ceta-imaging")
@@ -59,6 +59,21 @@ import FormatoTIFF
         #expect(m.acquired?.value == "2026-06-05 13:05:07")
         // A zone designator is another quantity: not recorded.
         #expect(try AcquisitionMetadata.tiff(data: Self.data("velox-zone-designator")).acquired == nil)
+    }
+
+    @Test func testTheStageBeamCurrentWorkingDistanceAndOperatorAreRead() throws {
+        // FEI SEM INI: mapping_fei :1135-1158 (the comparison with the pin is in the two tests above for the presence rule).
+        let c = try Self.pin("fei-stage-beam")
+        let m = try AcquisitionMetadata.tiff(data: Self.data("fei-stage-beam"))
+        #expect(referenceDifferences(m, c.reference, strict: ["beam_energy"]) == [])
+        #expect(m.stageX?.value == 0.0125 && m.stageRotationDeg?.value == 45 && m.stageTiltAlphaDeg?.value == 12.5)
+        #expect(m.workingDistanceMM?.value == 4.25 && m.beamCurrentNA?.value == 0.25 && m.operatorName?.value == "analyst")
+        // Velox XML: the EMD mapping's microscope (InstrumentClass) and stage; the model is kept beside it.
+        let v = try AcquisitionMetadata.tiff(data: Self.data("velox-stage-class"))
+        #expect(v.instrument == MetadataReading("Talos-X") && v.instrumentModel?.value == "Talos F200X")
+        #expect(v.stageTiltAlphaDeg?.value == 5.0 && v.stageZ?.value == 2e-06)
+        let app = try AcquisitionMetadata.tiff(data: Self.data("velox-stage-class"), convention: .app)
+        #expect(app.instrument?.value == "Talos F200X" && app.stageX == nil)
     }
 
     @Test func testTheDMTagStreamGoesThroughTheDMReaderWithTheSameConvention() throws {
