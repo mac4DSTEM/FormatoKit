@@ -85,6 +85,9 @@ Worktree: `_worktrees/FormatoKit-r2` under the suite root, based on main `74da29
   That test is unchanged. Final validation and review results follow below.
 - `FormatoMIB` (merged from `codex/mib-r3`): processed 1/6/12/24-bit Merlin frames, pinned to RosettaSciIO 049e7d70
   with the app's convention as a named option (`tools/mib/generate.py`). Packed raw R64 throws the reference refusal.
+- `DM4Datacube` (`codex/dm4-gather`): lazy mapped 4D DM4 gather, RosettaSciIO order by default, app layout as an option. Known
+  limits: no contiguous fast path (a full `load()` is slow), the contradictory-units path is untested, a file truncated
+  during a read can raise SIGBUS (inherent to mmap).
 - Process: the exact `git worktree add … main` command failed because main was already checked out; the worktree
   was created detached at main, then switched to `codex/hdf5-4d` from main. No app source was edited.
   The user authorized a Codex reviewer in place of unavailable Sonnet; no owner approval of scientific behavior is claimed.
