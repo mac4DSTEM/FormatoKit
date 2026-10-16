@@ -56,7 +56,7 @@ def reference(signal):
     renames = {'Stage.tilt': 'Stage.tilt_alpha', 'Detector.EELS.dwell_time': 'dwell_time', 'Detector.EELS.exposure': 'exposure'}
     got = {renames.get(target_key(t), target_key(t)).replace('Acquisition_instrument.', ''): v for t, v in apply_mapping(signal).items()}
     return {k: (float(v) if isinstance(v, (int, float, np.floating)) else v) for k, v in got.items()
-            if k in WANTED or k.startswith(('Detector.', 'Spectrometer.', 'Spectrum_image.'))}
+            if k in WANTED or k.startswith(('Detector.', 'Spectrometer.', 'Spectrum_image.', 'Signal.format'))}
 
 
 # ---------------------------------------------------------------------------------------------------------------- DM
@@ -153,6 +153,21 @@ DM_CASES = {
                  ('EDS.Detector Info.Azimuthal angle', 45.), ('EDS.Detector Info.Elevation angle', 22.), ('EDS.Solid angle', 0.7), ('EDS.Live time', 118.5),
                  ('EDS.Real time', 120.25)],
     'eds-text-values': [('Meta Data.Signal', 'X-ray'), ('EDS.Live time', '12 s'), ('EDS.Solid angle', '')],
+    'cl-parallel': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'CL'), ('Meta Data.Acquisition Mode', 'Parallel dispersive'), ('Meta Data.Format', 'Spectrum'),
+                    ('CL.Acquisition.Date', '27.08.2016'), ('CL.Acquisition.Start time', '20:54:33'), ('CL.Acquisition.Central wavelength (nm)', 550.),
+                    ('CL.Acquisition.Exposure (s)', 0.5), ('CL.Acquisition.Number of frames', 8.), ('CL.Acquisition.Saturation fraction', 0.02),
+                    ('CL.Acquisition.Dispersion grating (lines/mm)', 300.), ('Acquisition.Monarc Spectrometer.Grating', '150'),
+                    ('Acquisition.Monarc Spectrometer.Slit Width', 0.1), ('Acquisition.Monarc Spectrometer.Bandpass', 2.5),
+                    ('Acquisition.Parameters.High Level.Binning', 2.), ('Acquisition.Parameters.High Level.Processing', 'Dark Subtracted'),
+                    ('Acquisition.Device.CCD.Pixel Size (um)', 26.), ('SI.Acquisition.SI Application Mode.Name', 'Spectrum Imaging'),
+                    ('SI.Acquisition.Artefact Correction.Spatial Drift.Periodicity', 20.)],
+    'cl-serial': [('Meta Data.Signal', 'CL'), ('Meta Data.Acquisition Mode', 'Serial dispersive'), ('CL.Acquisition.Acquisition begin', '2/3/2020'),
+                  ('CL.Acquisition.Dwell time (s)', 0.002), ('CL.Acquisition.Start wavelength (nm)', 300.), ('CL.Acquisition.Step-size (nm)', 1.5),
+                  ('Acquisition.Monarc Spectrometer.PMT HV', 900.), ('Acquisition.Monarc Spectrometer.Grating', 'bad'), ('DigiScan.Sample Time', 15.)],
+    'cl-other-mode': [('Meta Data.Signal', 'CL'), ('Meta Data.Acquisition Mode', 'Imaging')],
+    'si-group': [(MI + 'Voltage', 200000.), ('SI.Acquisition.Date', '1/2/2021'), ('SI.Acquisition.Start time', '10:11:12'),
+                 ('SI.Acquisition.SI Application Mode.Name', 'Spectrum Imaging'), ('SI.Acquisition.Artefact Correction.Spatial Drift.Periodicity', 20.),
+                 ('SI.Acquisition.Artefact Correction.Spatial Drift.Units', 'seconds')],
     'xray-no-dwell': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'X-ray'), ('DigiScan.Sample Time', 15.)],
     'cl-dwell': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'CL'), ('DigiScan.Sample Time', 15.)],
     'eels-full': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'EELS'), ('DataBar.Acquisition Date', '1/2/2020'), ('DataBar.Acquisition Time', '01:02:03'),

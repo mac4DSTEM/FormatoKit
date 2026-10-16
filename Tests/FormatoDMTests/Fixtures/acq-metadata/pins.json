@@ -835,6 +835,168 @@
     "acquired": null,
     "cameraLengthMM": null,
     "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "cl-parallel",
+   "numbers": {
+    "Acquisition.Device.CCD.Pixel Size (um)": 26.0,
+    "Acquisition.Monarc Spectrometer.Bandpass": 2.5,
+    "Acquisition.Monarc Spectrometer.Slit Width": 0.1,
+    "Acquisition.Parameters.High Level.Binning": 2.0,
+    "CL.Acquisition.Central wavelength (nm)": 550.0,
+    "CL.Acquisition.Dispersion grating (lines/mm)": 300.0,
+    "CL.Acquisition.Exposure (s)": 0.5,
+    "CL.Acquisition.Number of frames": 8.0,
+    "CL.Acquisition.Saturation fraction": 0.02,
+    "Microscope Info.Voltage": 200000.0,
+    "SI.Acquisition.Artefact Correction.Spatial Drift.Periodicity": 20.0
+   },
+   "reference": {
+    "Detector.binning": 2.0,
+    "Detector.detector_type": "CCD",
+    "Detector.exposure_per_frame": 0.5,
+    "Detector.frames": 8.0,
+    "Detector.integration_time": 4.0,
+    "Detector.pixel_size": 26.0,
+    "Detector.processing": "Dark Subtracted",
+    "Detector.saturation_fraction": 0.02,
+    "General.date": "2016-08-27",
+    "General.time": "20:54:33",
+    "Signal.format": "Spectrum",
+    "Spectrometer.Grating.groove_density": 300.0,
+    "Spectrometer.acquisition_mode": "Parallel dispersive",
+    "Spectrometer.bandpass": 2.5,
+    "Spectrometer.central_wavelength": 550.0,
+    "Spectrometer.entrance_slit_width": 0.1,
+    "Spectrum_image.drift_correction_periodicity": 20.0,
+    "Spectrum_image.mode": "Spectrum Imaging",
+    "beam_energy": 200.0
+   },
+   "strings": {
+    "Acquisition.Monarc Spectrometer.Grating": "150",
+    "Acquisition.Parameters.High Level.Processing": "Dark Subtracted",
+    "CL.Acquisition.Date": "27.08.2016",
+    "CL.Acquisition.Start time": "20:54:33",
+    "Meta Data.Acquisition Mode": "Parallel dispersive",
+    "Meta Data.Format": "Spectrum",
+    "Meta Data.Signal": "CL",
+    "SI.Acquisition.SI Application Mode.Name": "Spectrum Imaging"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 15
+    },
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "cl-serial",
+   "numbers": {
+    "Acquisition.Monarc Spectrometer.PMT HV": 900.0,
+    "CL.Acquisition.Dwell time (s)": 0.002,
+    "CL.Acquisition.Start wavelength (nm)": 300.0,
+    "CL.Acquisition.Step-size (nm)": 1.5,
+    "DigiScan.Sample Time": 15.0
+   },
+   "reference": {
+    "Detector.detector_type": "PMT",
+    "Detector.integration_time": 0.002,
+    "Detector.pmt_voltage": 900.0,
+    "General.date": "2020-02-03",
+    "Spectrometer.acquisition_mode": "Serial dispersive",
+    "Spectrometer.start_wavelength": 300.0,
+    "Spectrometer.step_size": 1.5,
+    "dwell_time": 1.5e-05
+   },
+   "strings": {
+    "Acquisition.Monarc Spectrometer.Grating": "bad",
+    "CL.Acquisition.Acquisition begin": "2/3/2020",
+    "Meta Data.Acquisition Mode": "Serial dispersive",
+    "Meta Data.Signal": "CL"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "cl-other-mode",
+   "numbers": {},
+   "reference": {
+    "Spectrometer.acquisition_mode": "Imaging"
+   },
+   "strings": {
+    "Meta Data.Acquisition Mode": "Imaging",
+    "Meta Data.Signal": "CL"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "si-group",
+   "numbers": {
+    "Microscope Info.Voltage": 200000.0,
+    "SI.Acquisition.Artefact Correction.Spatial Drift.Periodicity": 20.0
+   },
+   "reference": {
+    "General.date": "2021-01-02",
+    "General.time": "10:11:12",
+    "beam_energy": 200.0
+   },
+   "strings": {
+    "SI.Acquisition.Artefact Correction.Spatial Drift.Units": "seconds",
+    "SI.Acquisition.Date": "1/2/2021",
+    "SI.Acquisition.SI Application Mode.Name": "Spectrum Imaging",
+    "SI.Acquisition.Start time": "10:11:12"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
     "dwellUS": {
      "note": null,
      "otherCopy": null,

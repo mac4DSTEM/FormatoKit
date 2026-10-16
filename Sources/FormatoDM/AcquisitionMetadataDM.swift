@@ -257,8 +257,9 @@ extension AcquisitionMetadata {
         var meta = AcquisitionMetadata()
         /// A mapping with no function: the tag as stored, a number or a text (an empty text is kept, as RosettaSciIO keeps it).
         func raw(_ path: String, _ key: String) {
-            if let n = number(path) { meta.signalNumbers[key] = MetadataReading(n) }
-            else if let t = string(path) { meta.signalTexts[key] = MetadataReading(t) }
+            // A later source replaces an earlier one of either kind.
+            if let n = number(path) { meta.signalTexts[key] = nil; meta.signalNumbers[key] = MetadataReading(n) }
+            else if let t = string(path) { meta.signalNumbers[key] = nil; meta.signalTexts[key] = MetadataReading(t) }
         }
 
         if let volts = number("Microscope Info.Voltage") { meta.highTensionKV = MetadataReading(volts / 1e3) }
@@ -325,7 +326,10 @@ extension AcquisitionMetadata {
         // The date and time: RosettaSciIO maps several sources to General.date and General.time, applied in mapping order, so
         // the LAST source that parses wins (DataBar, then the SI group, then the signal type's own group).
         var dateSources = ["DataBar.Acquisition Date"], timeSources = ["DataBar.Acquisition Time"]
+        if directGroup("SI") { dateSources.append("SI.Acquisition.Date"); timeSources.append("SI.Acquisition.Start time") }
         switch signalType {
+        case "CL":
+            dateSources += ["CL.Acquisition.Date", "CL.Acquisition.Acquisition begin"]; timeSources.append("CL.Acquisition.Start time")
         case "EELS": dateSources.append("EELS.Acquisition.Date"); timeSources.append("EELS.Acquisition.Start time")
         case "EDS_TEM": dateSources.append("EDS.Acquisition.Date"); timeSources.append("EDS.Acquisition.Start time")
         default: break
@@ -374,6 +378,47 @@ extension AcquisitionMetadata {
             raw("EDS.Solid angle", "Detector.EDS.solid_angle")
             raw("EDS.Live time", "Detector.EDS.live_time")
             raw("EDS.Real time", "Detector.EDS.real_time")
+        }
+
+        if signalType == "CL" {
+            raw("Meta Data.Acquisition Mode", "Spectrometer.acquisition_mode")
+            raw("Meta Data.Format", "Signal.format")
+            if hasGroup("Meta Data") {   // `_get_CL_detector_type` (:872-886)
+                switch string("Meta Data.Acquisition Mode") {
+                case "Parallel dispersive": meta.signalTexts["Detector.detector_type"] = MetadataReading("CCD")
+                case "Serial dispersive": meta.signalTexts["Detector.detector_type"] = MetadataReading("PMT")
+                default: break
+                }
+            }
+            // Monarc's grating is a text parsed to a number; the CL group's dispersion grating (mapped later) replaces it.
+            if let grating = strings[prefix + "Acquisition.Monarc Spectrometer.Grating"], !grating.isEmpty,
+               let value = formatoPythonFloat(grating) {
+                meta.signalNumbers["Spectrometer.Grating.groove_density"] = MetadataReading(value)
+            }
+            raw("CL.Acquisition.Dispersion grating (lines/mm)", "Spectrometer.Grating.groove_density")
+            raw("Acquisition.Monarc Spectrometer.Slit Width", "Spectrometer.entrance_slit_width")
+            raw("Acquisition.Monarc Spectrometer.Bandpass", "Spectrometer.bandpass")
+            raw("CL.Acquisition.Central wavelength (nm)", "Spectrometer.central_wavelength")
+            raw("CL.Acquisition.Exposure (s)", "Detector.exposure_per_frame")
+            raw("CL.Acquisition.Number of frames", "Detector.frames")
+            if let seconds = number("CL.Acquisition.Integration time (s)")
+                ?? number("CL.Acquisition.Exposure (s)").map({ $0 * (number("CL.Acquisition.Number of frames") ?? 1) }) {
+                meta.signalNumbers["Detector.integration_time"] = MetadataReading(seconds)
+            }
+            raw("CL.Acquisition.Saturation fraction", "Detector.saturation_fraction")
+            raw("Acquisition.Parameters.High Level.Binning", "Detector.binning")
+            raw("Acquisition.Parameters.High Level.CCD Read Area", "Detector.sensor_roi")
+            raw("Acquisition.Parameters.High Level.Processing", "Detector.processing")
+            raw("Acquisition.Device.CCD.Pixel Size (um)", "Detector.pixel_size")
+            raw("CL.Acquisition.Dwell time (s)", "Detector.integration_time")
+            raw("CL.Acquisition.Start wavelength (nm)", "Spectrometer.start_wavelength")
+            raw("CL.Acquisition.Step-size (nm)", "Spectrometer.step_size")
+            raw("Acquisition.Monarc Spectrometer.PMT HV", "Detector.pmt_voltage")
+        }
+        if signalType == "CL" {   // these three sit in the CL branch of the mapping (:1209-1230)
+            raw("SI.Acquisition.SI Application Mode.Name", "Spectrum_image.mode")
+            raw("SI.Acquisition.Artefact Correction.Spatial Drift.Periodicity", "Spectrum_image.drift_correction_periodicity")
+            raw("SI.Acquisition.Artefact Correction.Spatial Drift.Units", "Spectrum_image.drift_correction_units")
         }
 
         // RosettaSciIO maps no detector: the camera name as stored, labelled.

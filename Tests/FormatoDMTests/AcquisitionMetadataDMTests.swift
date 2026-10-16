@@ -18,7 +18,7 @@ import FormatoDM
 
     /// The generator hands the consumer's readers its own tag maps; they must be what the kit's walker returns for the file.
     @Test func testTheKitsTagMapsAreTheMapsThePinsWereMadeFrom() throws {
-        #expect(Self.cases.count == 27)
+        #expect(Self.cases.count == 31)
         for c in Self.cases {
             let object = try #require(try DM4Experiment.list(path: Self.fixtures.appendingPathComponent(c.name + ".dm4").path).first)
             #expect(object.imageTagNumbers == c.numbers, "\(c.name)")
@@ -99,6 +99,26 @@ import FormatoDM
         // The same tags in an image (no X-ray signal) map nothing.
         var strings = c.strings; strings["Meta Data.Signal"] = nil
         #expect(AcquisitionMetadata.dm(numbers: c.numbers, strings: strings).signalNumbers.isEmpty)
+    }
+
+    @Test func testTheCLAndSIGroupsAreRead() throws {
+        func ref(_ name: String) throws -> AcquisitionMetadata {
+            let c = try #require(Self.cases.first { $0.name == name })
+            return AcquisitionMetadata.dm(numbers: c.numbers, strings: c.strings)
+        }
+        let p = try ref("cl-parallel")
+        #expect(p.signalTexts["Detector.detector_type"]?.value == "CCD" && p.signalTexts["Signal.format"]?.value == "Spectrum")
+        // The CL dispersion grating replaces Monarc's text grating; the integration time is the exposure times the frames.
+        #expect(p.signalNumbers["Spectrometer.Grating.groove_density"]?.value == 300 && p.signalNumbers["Detector.integration_time"]?.value == 4)
+        #expect(p.acquired?.value == "2016-08-27 20:54:33")
+        let s = try ref("cl-serial")
+        #expect(s.signalTexts["Detector.detector_type"]?.value == "PMT" && s.signalNumbers["Detector.integration_time"]?.value == 0.002)
+        #expect(s.signalNumbers["Spectrometer.Grating.groove_density"] == nil)   // "bad" does not parse
+        #expect(s.dwellUS?.value == 15)   // CL maps the DigiScan sample time as the dwell
+        #expect(try ref("cl-other-mode").signalTexts["Detector.detector_type"] == nil)
+        let si = try ref("si-group")
+        #expect(si.signalTexts.isEmpty && si.acquired?.value == "2021-01-02 10:11:12")   // the SI group maps its date and time for any image
+        #expect(p.signalTexts["Spectrum_image.mode"]?.value == "Spectrum Imaging")
     }
 
     @Test func testFromAnObjectEqualsFromItsMaps() throws {

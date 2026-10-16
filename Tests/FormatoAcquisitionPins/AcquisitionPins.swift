@@ -103,7 +103,7 @@ public func referenceDifferences(_ m: AcquisitionMetadata, _ ref: [String: Any],
     text("Sample.description", m.sampleDescription?.value)
     // The signal-type groups: every pinned "Detector.*", "Spectrometer.*" and "Spectrum_image.*" key (the EELS angle and the
     // renamed EELS dwell/exposure are compared above) must be in the kit's dictionaries, and the kit must hold no other.
-    let grouped = ["Detector.", "Spectrometer.", "Spectrum_image."]
+    let grouped = ["Detector.", "Spectrometer.", "Spectrum_image.", "Signal.format"]
     let handled: Set<String> = ["Detector.EELS.collection_angle"]
     var expected: Set<String> = []
     for (key, value) in ref where grouped.contains(where: key.hasPrefix) && !handled.contains(key) {
