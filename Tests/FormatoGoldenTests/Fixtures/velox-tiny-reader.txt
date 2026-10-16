@@ -110,6 +110,7 @@ readSpectrumImage.metadata.pixelUnitY = nil
 readSpectrumImage.metadata.offset.x = 0000000000000000 0
 readSpectrumImage.metadata.offset.y = 0000000000000000 0
 readSpectrumImage.metadata.instrumentModel = "Talos"
+readSpectrumImage.metadata.instrumentClass = nil
 readSpectrumImage.metadata.acquisitionStartUnixTime = 41da798899800000 1776689766
 readSpectrumImage.metadata.scanTransformation.a11 = 3ff0000000000000 1
 readSpectrumImage.metadata.scanTransformation.a12 = 0000000000000000 0

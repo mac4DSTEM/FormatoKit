@@ -466,6 +466,8 @@ public nonisolated struct VeloxMetadata: Sendable {
     /// `BinaryResult.Offset`, as stored: x in `pixelUnit`, y in `pixelUnitY`. nil unless both coordinates parse.
     public let offset: (x: Double, y: Double)?
     public let instrumentModel: String?
+    /// `Instrument.InstrumentClass` as stored ("Talos"): what RosettaSciIO 049e7d70 maps as the microscope (`_emd_velox.py:947-950`).
+    public let instrumentClass: String?
     public let acquisitionStartUnixTime: Double?
     public let scanTransformation: VeloxScanTransformation?
     // The six below (added in the inherited reader's 0.2.0: five at a consumer's request of 2026-10-13, `stemMagnification` at another of
@@ -715,6 +717,7 @@ public nonisolated struct VeloxMetadata: Sendable {
             pixelUnit: binary?["PixelUnitX"] as? String, pixelUnitY: binary?["PixelUnitY"] as? String,
             offset: offsetTuple.map { (x: $0.0, y: $0.1) },
             instrumentModel: dict(root, "Instrument")?["InstrumentModel"] as? String,
+            instrumentClass: dict(root, "Instrument")?["InstrumentClass"] as? String,
             acquisitionStartUnixTime: jsonDouble(dict(dict(root, "Acquisition"), "AcquisitionStartDatetime")?["DateTime"]),
             scanTransformation: transformation,
             nominalMagnification: jsonDouble(optics?["NominalMagnification"]),

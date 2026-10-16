@@ -150,7 +150,7 @@ enum FormatoGolden {
     @Test func testVeloxReaderOutputsAreByteIdenticalToTheInheritedBaseline() throws {
         let text = try FormatoGolden.veloxTinyReader()
         let recorded = try String(contentsOf: FormatoGolden.fixtures.appendingPathComponent("velox-tiny-reader.txt"), encoding: .utf8)
-        #expect(recorded.split(separator: "\n").count == 175, "the fixture is the inherited 175 reader lines")
+        #expect(recorded.split(separator: "\n").count == 176, "the fixture is the inherited 175 reader lines plus the 0.3.1 instrumentClass line")
         if text == recorded { return }
         let a = text.split(separator: "\n", omittingEmptySubsequences: false), b = recorded.split(separator: "\n", omittingEmptySubsequences: false)
         let i = (0..<min(a.count, b.count)).first { a[$0] != b[$0] } ?? min(a.count, b.count)
