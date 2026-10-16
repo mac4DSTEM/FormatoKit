@@ -49,6 +49,18 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
     package let h5tsetCset: H5TsetCset, h5tenumCreate: H5TenumCreate, h5tenumInsert: H5TenumInsert
     /// `H5T_C_S1`: the C string type, copied and sized by the writer.
     package let stringC1: hid_t
+    // Sidecar-file symbols (FormatoKit Unreleased: HDF5RootAttributes): file-access properties with library-version bounds,
+    // string padding, the object header probe and the error stack. Optional ones are nil when the library lacks them.
+    package typealias H5Pcreate = @convention(c) (hid_t) -> hid_t
+    package typealias H5PsetLibverBounds = @convention(c) (hid_t, Int32, Int32) -> herr_t
+    package typealias H5TsetStrpad = @convention(c) (hid_t, Int32) -> herr_t
+    package typealias H5SgetNpoints = @convention(c) (hid_t) -> Int64
+    package typealias H5OgetNativeInfo = @convention(c) (hid_t, UnsafeMutableRawPointer?, UInt32) -> herr_t
+    package typealias H5Eprint2 = @convention(c) (hid_t, UnsafeMutablePointer<FILE>?) -> herr_t
+    package let h5pcreate: H5Pcreate, h5pclose: H5Close, h5psetLibverBounds: H5PsetLibverBounds, h5tsetStrpad: H5TsetStrpad
+    package let h5sgetNpoints: H5SgetNpoints, h5ogetNativeInfo: H5OgetNativeInfo, h5eprint2: H5Eprint2?
+    /// `H5P_CLS_FILE_ACCESS_ID_g`'s value: the file-access property class.
+    package let fileAccessClass: hid_t
 
     package let h5aopen: H5Aopen, h5aread: H5Aread, h5aclose: H5Close
     package let h5agetSpace: H5DgetSpace, h5agetType: H5DgetType
@@ -105,6 +117,13 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
             h5tsetSize: try symbol("H5Tset_size", as: H5TsetSize.self), h5tsetCset: try symbol("H5Tset_cset", as: H5TsetCset.self),
             h5tenumCreate: try symbol("H5Tenum_create", as: H5TenumCreate.self), h5tenumInsert: try symbol("H5Tenum_insert", as: H5TenumInsert.self),
             stringC1: try global("H5T_C_S1_g"),
+            h5pcreate: try symbol("H5Pcreate", as: H5Pcreate.self), h5pclose: try symbol("H5Pclose", as: H5Close.self),
+            h5psetLibverBounds: try symbol("H5Pset_libver_bounds", as: H5PsetLibverBounds.self),
+            h5tsetStrpad: try symbol("H5Tset_strpad", as: H5TsetStrpad.self),
+            h5sgetNpoints: try symbol("H5Sget_simple_extent_npoints", as: H5SgetNpoints.self),
+            h5ogetNativeInfo: try symbol("H5Oget_native_info", as: H5OgetNativeInfo.self),
+            h5eprint2: dlsym(handle, "H5Eprint2").map { unsafeBitCast($0, to: H5Eprint2.self) },
+            fileAccessClass: try global("H5P_CLS_FILE_ACCESS_ID_g"),
             h5aopen: try symbol("H5Aopen", as: H5Aopen.self), h5aread: try symbol("H5Aread", as: H5Aread.self),
             h5aclose: try symbol("H5Aclose", as: H5Close.self),
             h5agetSpace: try symbol("H5Aget_space", as: H5DgetSpace.self), h5agetType: try symbol("H5Aget_type", as: H5DgetType.self),

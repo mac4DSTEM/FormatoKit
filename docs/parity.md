@@ -164,3 +164,10 @@ cb6e164 and pinned. Pins: synthetic files written byte by byte (`generate.py`), 
 - **EMD, Velox object rule** `VeloxImageSelection` (consumer option; RosettaSciIO returns every image): `choose` and `axes(of:)` pinned to macTEM
   cb6e164 on 7 synthetic images and 5 subsets. Its axes differ from `VeloxImageSignals`: the y unit is `PixelUnitY` (RosettaSciIO uses `PixelUnitX`)
   and the origin is in pixels.
+
+## HDF5 root attributes (round 4)
+
+`HDF5RootAttributes` has no RosettaSciIO counterpart (RosettaSciIO's HSPY writer is a different layout). It is pinned by h5py 3.16.0
+(`tools/hdf5-write/generate.py`): files h5py writes (fixed-length UTF-8 and ASCII scalars, an empty text, 30 000 bytes) read back equal; files h5py
+writes that the reader must refuse (variable-length, array, integer, embedded NUL, non-UTF-8, dense storage, not HDF5) are refused by name; and h5py
+reads the golden file this writer produced as fixed-length, exactly as long as the text, character set UTF-8, null padding, scalar, no groups.

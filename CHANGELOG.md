@@ -4,6 +4,11 @@ Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what e
 
 ## Unreleased
 
+- Add `FormatoHDF5.HDF5RootAttributes`, `HDF5FileIdentity` and `HDF5FileError`: the file layer of a small HDF5 sidecar whose content is root-group
+  string attributes. Writes fixed-length UTF-8 null-padded scalars with library-version bounds (V18, LATEST); reads with named refusals (variable-length,
+  non-scalar, over the cap, non-UTF-8, embedded NUL, dense attribute storage, permission denied); publishes only over the file that was checked
+  (device and inode), by exclusive rename when nothing was there; builds its scratch file in the item-replacement directory. `SharedHDF5` gains the
+  file-access, string-padding, object-header and error-stack symbols (still the one loader). Round-trip and h5py pins (`tools/hdf5-write`).
 - Add `FormatoHDF5.BraggVectorsEMD`: write and read py4DSTEM `BraggVectors` in EMD 1.0 (vlen `{qx,qy,intensity}` float64 `_v_uncal` grid, `Rshape`/`Qshape`, calibration scalars). Peaks read from py4DSTEM 0.14.19 (`f050d207`) files bit for bit; py4DSTEM reads what Swift writes and h5py shows the same group/dataset/attribute structure (`tools/bragg-writer/generate.py`, `check.py`; check result pinned with the files' SHA-256). Atomic publish through a sibling temporary file and rename; a destination that is the source file is refused (`BraggVectorsEMDError.destinationIsSource`). `BraggAxisConvention.appImageXY` is mac4DSTEM's x = column, y = row, pinned to the app writer's swap. `extraAttributes` lets an app write its own string attributes (the app's `mac4dstem_*` attributes, sidecar model and lineage stay in the app). Malformed or truncated files throw typed `BraggVectorsEMDError`.
 - `SharedHDF5` gains the write symbols (create/write for files, groups, datasets, attributes, compound/vlen/enum types) and `loadStandard()`; `HDF5Datacube` uses it. There is still one loader.
 - Add `FormatoMRC.MRCReader` (lazy MRC / MRC2014 images and stacks as RosettaSciIO 049e7d70 reads them: little-endian header, nm axes, squeezed
