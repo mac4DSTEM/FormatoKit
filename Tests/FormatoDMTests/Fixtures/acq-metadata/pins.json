@@ -555,6 +555,7 @@
    },
    "reference": {
     "General.authors": "P. Operator ",
+    "Sample.description": "FIB lamella 3",
     "Stage.tilt_alpha": 12.5,
     "Stage.tilt_beta": -3.25,
     "Stage.x": 1.2345,
@@ -568,7 +569,8 @@
    },
    "strings": {
     "Microscope Info.Illumination Mode": "STEM",
-    "Session Info.Operator": "P. Operator "
+    "Session Info.Operator": "P. Operator ",
+    "Session Info.Specimen": "FIB lamella 3"
    }
   },
   {

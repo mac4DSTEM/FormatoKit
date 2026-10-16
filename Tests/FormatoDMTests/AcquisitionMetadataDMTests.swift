@@ -58,6 +58,7 @@ import FormatoDM
         #expect(full.stageX?.value == 1.2345 && full.stageY?.value == -0.06725 && full.stageZ?.value == 0.008125)
         #expect(full.stageX?.note == "stored value × 1e-3, as RosettaSciIO")
         #expect(full.beamCurrentNA == MetadataReading(0.125))
+        #expect(full.sampleDescription == MetadataReading("FIB lamella 3"))
         #expect(full.operatorName == MetadataReading("P. Operator "))   // untrimmed, as RosettaSciIO
         let sem = try ref("sem-stage")
         #expect(sem.stageTiltAlphaDeg?.value == 30 && sem.operatorName == nil)   // an empty operator maps nothing

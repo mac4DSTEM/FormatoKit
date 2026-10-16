@@ -66,7 +66,7 @@ public func referenceText(_ ref: [String: Any], _ key: String) -> String? { ref[
 public func referenceDifferences(_ m: AcquisitionMetadata, _ ref: [String: Any], strict: Set<String>) -> [String] {
     var out: [String] = []
     let always: Set<String> = ["Stage.tilt_alpha", "Stage.tilt_beta", "Stage.rotation", "Stage.x", "Stage.y", "Stage.z", "beam_current",
-                               "working_distance", "Detector.EELS.collection_angle", "convergence_angle", "General.authors"]
+                               "working_distance", "Detector.EELS.collection_angle", "convergence_angle", "General.authors", "Sample.description"]
     func number(_ key: String, _ got: Double?) {
         let want = referenceNumber(ref, key)
         if want == nil, !strict.contains(key), !always.contains(key) { return }
@@ -100,5 +100,6 @@ public func referenceDifferences(_ m: AcquisitionMetadata, _ ref: [String: Any],
     number("Detector.EELS.collection_angle", m.collectionAngleMrad?.value)
     number("convergence_angle", m.convergenceAngleMrad?.value)
     text("General.authors", m.operatorName?.value)
+    text("Sample.description", m.sampleDescription?.value)
     return out
 }

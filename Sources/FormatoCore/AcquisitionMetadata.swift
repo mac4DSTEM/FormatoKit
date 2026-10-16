@@ -88,6 +88,8 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     public var workingDistanceMM: MetadataReading<Double>?
     /// The operator (RosettaSciIO's `General.authors`).
     public var operatorName: MetadataReading<String>?
+    /// The specimen description (RosettaSciIO's `Sample.description`).
+    public var sampleDescription: MetadataReading<String>?
     /// EELS collection semi-angle in mrad.
     public var collectionAngleMrad: MetadataReading<Double>?
     /// Convergence semi-angle in mrad.

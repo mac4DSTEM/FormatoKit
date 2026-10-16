@@ -340,6 +340,7 @@ extension AcquisitionMetadata {
         }
         meta.beamCurrentNA = reading("Microscope Info.Probe Current (nA)")
         if let operatorText = string("Session Info.Operator"), !operatorText.isEmpty { meta.operatorName = MetadataReading(operatorText) }
+        if let specimen = string("Session Info.Specimen"), !specimen.isEmpty { meta.sampleDescription = MetadataReading(specimen) }
         // EELS angles, only for an EELS signal (`signal_type` :601-613 reads the DIRECT tags, even for a stack).
         if signalType == "EELS" {
             meta.collectionAngleMrad = reading("EELS.Experimental Conditions.Collection semi-angle (mrad)")

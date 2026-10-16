@@ -47,7 +47,7 @@ WANTED = {'beam_energy', 'camera_length', 'magnification', 'dwell_time', 'exposu
           'General.date', 'General.time',
           # 0.3.1: the stage, beam current, SEM working distance, operator and EELS angles
           'Stage.tilt_alpha', 'Stage.tilt_beta', 'Stage.rotation', 'Stage.x', 'Stage.y', 'Stage.z', 'beam_current', 'working_distance',
-          'General.authors', 'Detector.EELS.collection_angle', 'convergence_angle'}
+          'General.authors', 'Sample.description', 'Detector.EELS.collection_angle', 'convergence_angle'}
 
 
 def reference(signal):
@@ -137,7 +137,7 @@ DM_CASES = {
     'stage-beam-operator': [(MI + 'Voltage', 200000.), (MI + 'Illumination Mode', 'STEM'), (MI + 'STEM Camera Length', 100.),
                             (MI + 'Indicated Magnification', 1.0e6), (MI + 'Stage Position.Stage Alpha', 12.5), (MI + 'Stage Position.Stage Beta', -3.25),
                             (MI + 'Stage Position.Stage X', 1234.5), (MI + 'Stage Position.Stage Y', -67.25), (MI + 'Stage Position.Stage Z', 8.125),
-                            (MI + 'Probe Current (nA)', 0.125), ('Session Info.Operator', 'P. Operator ')],
+                            (MI + 'Probe Current (nA)', 0.125), ('Session Info.Operator', 'P. Operator '), ('Session Info.Specimen', 'FIB lamella 3')],
     'sem-stage': [(MI + 'Voltage', 5000.), (MI + 'Illumination Mode', 'SEM'), (MI + 'Stage Position.Stage Alpha', 30.), (MI + 'Probe Current (nA)', 2.0),
                   ('Session Info.Operator', '')],
     'eels-angles': [(MI + 'Voltage', 200000.), (MI + 'Illumination Mode', 'STEM'), (MI + 'STEM Camera Length', 48.), ('Meta Data.Signal', 'EELS'),
