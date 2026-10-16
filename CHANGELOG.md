@@ -4,6 +4,11 @@ Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what e
 
 ## Unreleased
 
+- Add `FormatoDM.DM4Datacube`: lazy memory-mapped 4D DM4 images gathered over `DM4Experiment.tagTree(path:)`.
+  The default keeps RosettaSciIO's stored order, type and calibrated axes; `.appCalibratedAxes` is the app's
+  scan-fastest inference with Float32 output. Bytes, shape and axes are pinned to 049e7d70 (`tools/dm4-gather`).
+  New `DM4Experiment.tagTree(path:options:)`.
+
 - Add `FormatoHDF5.HDF5Datacube`: lazy rank-four numeric hyperslabs, py4DSTEM EMD 1.0 calibration axes,
   scalar calibration with provenance, legacy calibration attributes, and lazy fitted/measured origin maps.
   Float32 and UInt16 cubes are pinned bit for bit to py4DSTEM 0.14.19 (`f050d207`) and h5py 3.11.0.

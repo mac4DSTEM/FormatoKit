@@ -3,8 +3,8 @@
 FormatoKit: the macEM suite's file-format library, the Mac counterpart of RosettaSciIO: readers (later writers) for the EM
 formats, one module per format over one data model, checked bit for bit against RosettaSciIO, imported by tagged version by
 SpectroKit, mac4DSTEM and macTEM. GPL-3.0 (README.md says which parts come from where). Modules: `FormatoCore` (the data
-model, units, cancellation), `FormatoDM`, `FormatoEMD`, `FormatoHDF5` (step 1), `FormatoTIFF` (step 2), and `FormatoMRC`,
-`FormatoEMPAD`, `FormatoMSA` (empty, their scope in a doc comment). Rules only here; state in `docs/status.md`.
+model, units, cancellation), `FormatoDM`, `FormatoEMD`, `FormatoHDF5` (step 1), `FormatoTIFF` (step 2), `FormatoMIB` (Merlin), `FormatoEMPAD`, and `FormatoMRC`,
+`FormatoMSA` (empty, their scope in a doc comment). Rules only here; state in `docs/status.md`.
 
 ## Read first
 
