@@ -1,13 +1,23 @@
 # ``FormatoEMPAD``
 
-Reads the raw 4D-STEM files of the EMPAD detector. The module has no public API yet: its format is not registered.
+Reads EMPAD XML headers and memory-mapped raw frames as FormatoCore signals.
 
 ## Overview
 
-The module is empty until its format is registered and its readers are written. The article <doc:Scope> says what it will read.
+```swift
+import FormatoEMPAD
+
+let reader = try EMPADReader(path: "scan.xml")
+let signal = reader.signal
+let pixels = try signal.array.read(start: [0, 0, 0, 0], count: [1, 1, 128, 128])
+```
+
+The example assumes both scan dimensions exceed one. Singleton axes are squeezed, as in RosettaSciIO.
+Keep the raw file unchanged while its reader or signal exists. Calibrations, supported headers and parity limits
+are described in <doc:Scope>.
 
 ## Topics
 
-### Scope
-
+- ``EMPADReader``
+- ``EMPADError``
 - <doc:Scope>

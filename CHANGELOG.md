@@ -2,6 +2,16 @@
 
 Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what each tag changed for a consumer) and `docs/status.md`.
 
+## Unreleased
+
+- Add `FormatoEMPAD.EMPADReader`: lazy memory-mapped Float32 EMPAD frames with footer rows dropped,
+  XML scan shapes, image series, singleton squeezing, navigation and diffraction calibrations, optional
+  `qCalibration`, and timestamp metadata with provenance. Malformed pairs throw `EMPADError`.
+- Complete bytes, axes and mapped metadata pinned against RosettaSciIO 049e7d70 on synthetic compressed fixtures.
+
+**Migration.** Add the `FormatoEMPAD` product and open an XML header with `EMPADReader(path:)`.
+Keep the raw file unchanged while its reader or lazy signal exists.
+
 ## 0.2.1
 
 - The platform floor drops to macOS 15 and iOS 18 (was macOS 27). The bundled HDF5 2.1.1, libsz and libaec are rebuilt with

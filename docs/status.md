@@ -39,8 +39,9 @@ What is live, one table; then the hand-off and what is unverified. Rules are in 
 | The owner's SI as a spectrum image | O1, `rebin_energy=4`, frames 100 to 200: equal to RosettaSciIO (926 x 215 x 4096 uint16, 1.6 GB; FormatoKit 1 to 4 s each) | `tools/step-4/owner-check.sh` on `4ac6df0` (log `.build/owner-step4/owner-check.log`) |
 | 0.2.0 generality pass | No app or project name in Sources, tests, README, Package.swift, the example or the consumer checks (`git grep` empty); `FORMATO_HDF5_PATH` (step 1 A8); FormatoKit's policies as parameters with 0.1.1's defaults (`VeloxReadPolicy`, `TIFFReadOptions`, `DMReadOptions`; registration 0.2.0 A1); DocC per module; README stands alone with a second consumer built from it; CI's type-check timeouts fixed (CI not yet re-run: needs a push); the Swift code measured green at macOS 15 and compiling for iOS 18, the declaration kept at 27 (the bundled dylibs need macOS 26) | `docs/registration-0.2.0.md`, `docs/consumers-0.2.0.md`; gate stamped at `4ed20e1` after the refuter's fixes |
 | 0.2.1 floor | `.macOS(.v15), .iOS(.v18)`; libhdf5 2.1.1, libsz, libaec rebuilt at `MACOSX_DEPLOYMENT_TARGET=15.0` (minos 15.0 by `otool -l`; recipe, source hashes and new sha256 in `NOTICE`); gate green with the rebuilt bundle, every pin unchanged, consumer check green; FormatoCore, DM, TIFF and EMD build for iOS 18 (EMD/HDF5 macOS-only at run time); CI on `macos-15` with Xcode 26.0 pinned. Measured on macOS 27 only: the floor is not run on a macOS 15 machine (CI is the first run there). On iOS, FormatoHDF5 still copies the macOS dylibs as a resource: an iOS app should not link FormatoHDF5 or FormatoEMD | `CHANGELOG.md`, `NOTICE` |
-| Empty modules | `FormatoMRC`, `FormatoEMPAD`, `FormatoMSA`: a scope statement each | their source file |
-| Tests | Swift Testing throughout (the owner's standard, 2026-10-15): 199 tests, the 121 moved names among them (3 renamed on purpose, A7); 0 failures, 0 warnings beyond the registered strip lines | `tools/test.sh`; `tools/step-1/names.sh` |
+| EMPAD | `EMPADReader`: mmap frames, footer removal, scan / series shapes, squeezed axes, XML and explicit calibrations, timestamp metadata; typed malformed-pair errors | `EMPADTests`; `tools/empad/generate.py`; RosettaSciIO 049e7d70 |
+| Empty modules | `FormatoMRC`, `FormatoMSA`: a scope statement each | their source file |
+| Tests | Swift Testing throughout: 206 tests (203 passed, 3 owner-data checks skipped), including 3 EMPAD tests over five oracle cases; 0 failures, 0 warnings beyond the registered strip lines | `tools/test.sh`; `tools/step-1/names.sh` |
 | Gate | `tools/test.sh` green and stamped on `40a1d7d` (the Gate B fixes; later commits are docs only); 0.0.3 is `8d647bd`, 0.1.0 `bc832ab` (refuses to stamp with an untracked file under Sources/Tests) | `.build/last-green`; `tools/last-green.sh` |
 
 Validation: none. Agreement with RosettaSciIO and recovery of planted files are what is claimed (registration §8).
@@ -53,7 +54,7 @@ The suite board's `lanes/formatokit` carries the next prompt. In order:
    registration 0.2.0 A2; gate stamped at `4ed20e1`).
 2. **0.2.1: macOS 15 and iOS 18.** Rebuild the three dylibs with MACOSX_DEPLOYMENT_TARGET=15 (HDF5 2.1.1, the same build,
    registered), declare `.macOS(.v15), .iOS(.v18)`, HDF5 and Velox macOS-only at run time; pin the Xcode version in CI.
-3. **Step 5**: EMPAD and the 4D HDF5 readers.
+3. **Step 5**: EMPAD is implemented on `codex/empad`; the 4D HDF5 readers remain next.
 
 ## Unverified
 

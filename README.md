@@ -14,7 +14,7 @@ large, one SwiftPM product per module.
 | `FormatoHDF5` | the process-wide HDF5 lock and quit barrier, the shipped libhdf5. Not read: hspy | support |
 | `FormatoTIFF` | the TIFF container with a public tag walker (any private tag as stored); FEI, Gatan DM, ImageJ and plain TIFF as signals. Compression, tiles and the other vendors' branches are refused by name | reads |
 | `FormatoMRC` | MRC / MRC2014 with FEI extended headers | empty |
-| `FormatoEMPAD` | EMPAD 4D-STEM raw data; 4D HDF5 files | empty |
+| `FormatoEMPAD` | EMPAD XML + raw, memory-mapped scan / image series with calibrations; 4D HDF5 later | reads, pinned |
 | `FormatoMSA` | EMSA/MAS spectra | empty |
 
 `docs/parity.md` is the checklist against RosettaSciIO's formats table and its reader options: what reads, what is pinned,

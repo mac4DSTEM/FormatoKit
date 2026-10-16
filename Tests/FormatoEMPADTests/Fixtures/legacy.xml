@@ -1,0 +1,2 @@
+<root><raw_file filename="scan_x3_y2.raw"/><pix_x>3</pix_x><pix_y>2</pix_y><timestamp><isoformat>2026-01-02T03:04:05</isoformat></timestamp><iom_measurements><optics><get_full_scan_field_of_view>[6e-9,
+12e-9]</get_full_scan_field_of_view></optics><calibrated_pixelsize>3.315e-10</calibrated_pixelsize></iom_measurements></root>

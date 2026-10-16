@@ -1,0 +1,283 @@
+{
+  "reference_commit": "049e7d7070e84779b499adaf3295beee9facb004",
+  "rsciio_version": "0.14.1.dev96+g049e7d707",
+  "cases": [
+    {
+      "name": "legacy",
+      "shape": [
+        2,
+        3,
+        128,
+        128
+      ],
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "scan_y",
+          "scale": 2.9999999999999996,
+          "offset": 0.0,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "scan_x",
+          "scale": 4.0,
+          "offset": 0.0,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "size": 128,
+          "index_in_array": 2,
+          "name": "height",
+          "scale": 0.3315,
+          "offset": -21.216,
+          "units": "1/nm",
+          "navigate": false
+        },
+        {
+          "size": 128,
+          "index_in_array": 3,
+          "name": "width",
+          "scale": 0.3315,
+          "offset": -21.216,
+          "units": "1/nm",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "legacy.xml",
+          "title": "legacy",
+          "date": "2026-01-02",
+          "time": "03:04:05"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        }
+      },
+      "options": {}
+    },
+    {
+      "name": "modern",
+      "shape": [
+        2,
+        3,
+        128,
+        128
+      ],
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "scan_y",
+          "scale": 10.0,
+          "offset": 0.0,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "scan_x",
+          "scale": 10.0,
+          "offset": 0.0,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "size": 128,
+          "index_in_array": 2,
+          "name": "height",
+          "scale": 1,
+          "offset": -64,
+          "units": null,
+          "navigate": false
+        },
+        {
+          "size": 128,
+          "index_in_array": 3,
+          "name": "width",
+          "scale": 1,
+          "offset": -64,
+          "units": null,
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "modern.xml",
+          "title": "modern",
+          "date": "2026-01-02",
+          "time": "03:04:05"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        }
+      },
+      "options": {}
+    },
+    {
+      "name": "override",
+      "shape": [
+        2,
+        3,
+        128,
+        128
+      ],
+      "axes": [
+        {
+          "size": 2,
+          "index_in_array": 0,
+          "name": "scan_y",
+          "scale": 1,
+          "offset": 0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 3,
+          "index_in_array": 1,
+          "name": "scan_x",
+          "scale": 1,
+          "offset": 0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 128,
+          "index_in_array": 2,
+          "name": "height",
+          "scale": 0.3315,
+          "offset": -21.216,
+          "units": "1/nm",
+          "navigate": false
+        },
+        {
+          "size": 128,
+          "index_in_array": 3,
+          "name": "width",
+          "scale": 0.3315,
+          "offset": -21.216,
+          "units": "1/nm",
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "override.xml",
+          "title": "override",
+          "date": "2026-01-02",
+          "time": "03:04:05"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        }
+      },
+      "options": {
+        "q_calibration": 0.3315
+      }
+    },
+    {
+      "name": "series",
+      "shape": [
+        6,
+        128,
+        128
+      ],
+      "axes": [
+        {
+          "size": 6,
+          "index_in_array": 0,
+          "name": "series_count",
+          "scale": 1,
+          "offset": 0,
+          "units": "ms",
+          "navigate": true
+        },
+        {
+          "size": 128,
+          "index_in_array": 1,
+          "name": "height",
+          "scale": 1,
+          "offset": -64,
+          "units": null,
+          "navigate": false
+        },
+        {
+          "size": 128,
+          "index_in_array": 2,
+          "name": "width",
+          "scale": 1,
+          "offset": -64,
+          "units": null,
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "series.xml",
+          "title": "series",
+          "date": "2026-01-02",
+          "time": "03:04:05"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        }
+      },
+      "options": {}
+    },
+    {
+      "name": "singleton",
+      "shape": [
+        6,
+        128,
+        128
+      ],
+      "axes": [
+        {
+          "size": 6,
+          "index_in_array": 0,
+          "name": "scan_y",
+          "scale": 1,
+          "offset": 0,
+          "units": "",
+          "navigate": true
+        },
+        {
+          "size": 128,
+          "index_in_array": 1,
+          "name": "height",
+          "scale": 1,
+          "offset": -64,
+          "units": null,
+          "navigate": false
+        },
+        {
+          "size": 128,
+          "index_in_array": 2,
+          "name": "width",
+          "scale": 1,
+          "offset": -64,
+          "units": null,
+          "navigate": false
+        }
+      ],
+      "metadata": {
+        "General": {
+          "original_filename": "singleton.xml",
+          "title": "singleton",
+          "date": "2026-01-02",
+          "time": "03:04:05"
+        },
+        "Signal": {
+          "signal_type": "electron_diffraction"
+        }
+      },
+      "options": {}
+    }
+  ]
+}

@@ -41,7 +41,7 @@ let package = Package(
         .target(name: "FormatoDM", dependencies: ["FormatoCore"], swiftSettings: settings),
         // EMD: Velox (inherited reader, registration step 1 §1.1) and its image adapter. Later: NCEM / Berkeley EMD.
         .target(name: "FormatoEMD", dependencies: ["FormatoCore", "FormatoHDF5"], swiftSettings: settings),
-        // Empty until registered; their scope is in their one source file's doc comment.
+        // Additional formats; EMPAD reads XML + memory-mapped raw frames.
         .target(name: "FormatoTIFF", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "FormatoMRC", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "FormatoEMPAD", dependencies: ["FormatoCore"], swiftSettings: settings),
@@ -68,6 +68,8 @@ let package = Package(
         // The Velox reader's part of the inherited golden baseline, byte for byte (registration §1.3).
         // Step 2 (docs/registration-step-2.md): the TIFF container and TIFF files as signals, against RosettaSciIO and tifffile.
         .testTarget(name: "FormatoTIFFTests", dependencies: ["FormatoTIFF", "FormatoCore"], exclude: ["Fixtures"],
+                    swiftSettings: settings),
+        .testTarget(name: "FormatoEMPADTests", dependencies: ["FormatoEMPAD", "FormatoCore"], exclude: ["Fixtures"],
                     swiftSettings: settings),
         .testTarget(name: "FormatoGoldenTests", dependencies: ["FormatoEMD", "FormatoCore"], exclude: ["Fixtures"],
                     swiftSettings: settings),

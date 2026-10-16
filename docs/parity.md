@@ -21,7 +21,7 @@ instruments and techniques, out of scope until someone asks.
 | TIA | ser, emi | no | `FormatoTIFF` or its own module | not read | B |
 | MRC | mrc, ali | no | `FormatoMRC` | empty | B |
 | MRCZ | mrc, mrcz | yes | `FormatoMRC` | not read | C |
-| EMPAD | xml (+ raw) | no | `FormatoEMPAD` | empty; with mac4DSTEM's 4D HDF5 readers when its session is ready | A |
+| EMPAD | xml (+ raw) | no | `FormatoEMPAD` | **pinned**: mmap Float32 frames, footer removal, scan/series shapes, squeezed axes, both XML navigation calibrations, diffraction calibration and timestamp metadata; synthetic full-byte pins at 049e7d70 | A |
 | QuantumDetector (Merlin) | mib | no | `FormatoEMPAD` or its own | not read | B |
 | Arina (Dectris) | h5 | no | — | not read | B |
 | HSPY | hspy, hdf5 | yes | `FormatoHDF5` | not read; with the sidecar | B |
@@ -68,6 +68,8 @@ instruments and techniques, out of scope until someone asks.
 | | `dataset_path`, `stack_group` (NCEM / Berkeley EMD) | no: NCEM EMD is not read |
 | TIFF | `lazy` | always lazy (L1) |
 | | `force_read_resolution`, `multipage_as_list`, `hamamatsu_streak_axis_type` | no: refused branches, or the default |
+| EMPAD | `lazy`, `q_calibration` | always memory-mapped; `EMPADReader(path:qCalibration:)`, XML calibration by default |
+| | `remove_nans` | default false only: preserves all stored Float32 bits |
 | Writers (EMD NCEM, TIFF) | `file_writer` | no writing yet |
 
 ## Inside the pinned formats: what is not yet equal
