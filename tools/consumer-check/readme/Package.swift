@@ -18,6 +18,7 @@ let package = Package(
             .product(name: "FormatoDM", package: formatoKit),
             .product(name: "FormatoEMD", package: formatoKit),
             .product(name: "FormatoTIFF", package: formatoKit),
+            .product(name: "FormatoHDF5", package: formatoKit),
         ]),
     ],
     swiftLanguageModes: [.v6]

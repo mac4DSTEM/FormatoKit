@@ -61,4 +61,20 @@ for n in tiff.series.indices {
 }
 check(!tiff.series.isEmpty, "block 3: the TIFF file has \(tiff.series.count) series")
 
-print("readme-check: all three README blocks ran")
+// README block 4 (the block opens "scan.h5": run it in a scratch folder where scan.h5 is the pinned py4DSTEM-written fixture)
+let scratch = FileManager.default.temporaryDirectory.appendingPathComponent("readme-check-\(UUID().uuidString)")
+try FileManager.default.createDirectory(at: scratch, withIntermediateDirectories: true)
+defer { try? FileManager.default.removeItem(at: scratch) }
+try FileManager.default.copyItem(at: testsFolder.appendingPathComponent("FormatoHDF5Tests/Fixtures/4d/float32.h5"),
+                                 to: scratch.appendingPathComponent("scan.h5"))
+guard FileManager.default.changeCurrentDirectoryPath(scratch.path) else { print("readme-check: cannot enter scratch"); exit(2) }
+
+import FormatoHDF5
+
+let cube = try HDF5Datacube(path: "scan.h5", datasetPath: "/cube_root/cube/data")
+let frame = try cube.read(start: [0, 0, 0, 0], count: [1, 1, cube.shape[2], cube.shape[3]])
+let signal = cube.signal // lazy; signal.load() reads the complete cube
+check(cube.shape.count == 4 && frame.bytes.count == cube.shape[2] * cube.shape[3] * 4, "block 4: the HDF5 datacube has shape \(cube.shape)")
+_ = signal
+
+print("readme-check: all four README blocks ran")
