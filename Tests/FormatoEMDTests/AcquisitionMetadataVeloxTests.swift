@@ -71,7 +71,7 @@ extension VeloxEMDSerialized {
             #expect(haadf.stageX?.note == "metres as stored, rounded to 6 decimals, as RosettaSciIO")
             // Each coordinate is read alone, as RosettaSciIO maps it.
             let partial = AcquisitionMetadata.velox(try #require(entries["partial-stage"]), timeZone: Self.utc)
-            #expect(partial.stageX?.value == 2.5e-05 && partial.stageY == nil && partial.stageZ?.value == -1.25e-06)
+            #expect(partial.stageX?.value == 2.5e-05 && partial.stageY == nil && partial.stageZ?.value == -1e-06)
             // An image with no Stage group reads none; the `.app` convention reads none of the 0.3.1 fields.
             let ceta = AcquisitionMetadata.velox(try #require(entries["ceta"]), timeZone: Self.utc)
             #expect(ceta.stageTiltAlphaDeg == nil && ceta.stageX == nil)
