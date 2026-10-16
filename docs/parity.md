@@ -2,7 +2,7 @@
 
 The checklist that makes "complete" a measured claim (suite ROADMAP, "Kits", phase 4). Started 2026-10-15 from RosettaSciIO
 049e7d70's own format list (its 38 `rsciio/*/specifications.yaml`, the source of its supported-formats table). Updated at
-every tag (last: 0.3.0, 2026-10-16). Since 0.2.0 FormatoKit's own refusals marked as policies (unconverted Velox
+every tag (last: 0.3.1, 2026-10-16). Since 0.2.0 FormatoKit's own refusals marked as policies (unconverted Velox
 units, the spectrum-image grid check, TIFF vendor branches, the DM string limit) are parameters (`docs/registration-0.2.0.md`). "Pinned" means a gate compares FormatoKit with RosettaSciIO bit for bit on that format's files; "read" means a
 reader exists without that gate.
 
@@ -56,7 +56,7 @@ instruments and techniques, out of scope until someone asks.
 | TriVista | tvf | no | — | not read | C |
 | USID | h5, hdf5 | yes | — | not read | C |
 
-Totals at 0.3.0 (42 rows: RosettaSciIO's plugins and formats, plus the two py4DSTEM rows): 8 pinned (DigitalMicrograph, Velox EMD, TIFF, MRC, EMPAD,
+Totals at 0.3.1 (42 rows: RosettaSciIO's plugins and formats, plus the two py4DSTEM rows): 8 pinned (DigitalMicrograph, Velox EMD, TIFF, MRC, EMPAD,
 py4DSTEM EMD 1.0, py4DSTEM BraggVectors, Merlin), 1 empty (MSA), 33 not read.
 
 ## Reader options (RosettaSciIO 049e7d70's `file_reader` arguments, for the formats FormatoKit holds)
@@ -152,8 +152,48 @@ cb6e164 and pinned. Pins: synthetic files written byte by byte (`generate.py`), 
 | DM (`AcquisitionMetadata.dm`) | beam energy, camera length, magnification, dwell, camera exposure, mode, microscope, date, time | a stack-builder image is read from `source.Tags at creation` instead of the direct tags; zero and negative values are kept; camera length is `STEM Camera Length` in every non-TEM mode (SEM included) and `Indicated Magnification` for TEM diffraction; the mode is STEM / SEM / TEM; the exposure is read only without DigiScan and has no second copy; the instrument is untrimmed. Date and time are joined into one stamp; dateutil's guessing is not ported (the layouts in the source header only). |
 | MRC (`.mrc`) | magnification and exposure of the 128-byte per-section FEI header (NEXT = 128 KiB) | `.app` reads the FEI1/FEI2 extended-header record by bitmask (HT, camera length, dwell, detector, date, instrument, mode); `.rosettaSciIO` reads neither (RosettaSciIO does not) and ignores the machine stamp. |
 | TIFF, FEI SEM INI (`tiff`) | `mapping_fei`: HV, dwell, date, time, system type | zero HV and dwell are kept; the date goes through the kit's dateutil port (day-first above 12 as the app); the detector is unmapped and labelled. |
-| TIFF, Velox XML (tag 34683) | none (no plugin reads the tag); the same schema's EMD mapping | acceleration voltage and camera length (every mode) are the EMD mapping's `float(x) / 1e3` and `* 1e3`, unguarded; the other values keep the app's rules and are labelled. |
-| EMD, Velox (`velox`) | beam energy, camera length (every mode), `StemMagnification` as magnification, `InstrumentClass` as microscope | magnification, camera length, exposure and mode are read (the app leaves them `unread`). RosettaSciIO's microscope is `InstrumentClass`, which `VeloxMetadata` does not expose; both conventions give `InstrumentModel`, labelled. **Known gap (accepted for 0.3.0):** `InstrumentClass` stays unread, so the `.rosettaSciIO` microscope differs from RosettaSciIO's where the two keys differ; closing it needs `VeloxMetadata` to expose the key and changes the 175-line inherited golden. |
+| TIFF, Velox XML (tag 34683) | none (no plugin reads the tag); the same schema's EMD mapping | acceleration voltage and camera length (every mode) are the EMD mapping's `float(x) / 1e3` and `* 1e3`, unguarded; from 0.3.1 the microscope is `Instrument/InstrumentClass` (the model in `instrumentModel`) and the stage is the EMD mapping's; the other values keep the app's rules and are labelled. |
+| EMD, Velox (`velox`) | beam energy, camera length (every mode), `StemMagnification` as magnification, `InstrumentClass` as microscope, stage tilts and position | `.rosettaSciIO`: the microscope is `InstrumentClass` (0.3.1; `VeloxMetadata.instrumentClass`), the stored model is `instrumentModel`, labelled; stage tilts (radians to degrees, 3 decimals) and position (6 decimals) as RosettaSciIO rounds them (position needs all three coordinates). Magnification, camera length, exposure and mode are read (the app leaves them `unread`); `.app` reads none of the 0.3.1 fields. |
+
+## Acquisition metadata coverage (0.3.1)
+
+For each format FormatoKit reads: what RosettaSciIO 049e7d70 maps into `metadata` (its `original_metadata` to `metadata` mapping, applied as HyperSpy
+applies it) against what `AcquisitionMetadata` (`.rosettaSciIO` convention) or the reader's own signal metadata exposes. **R** = read and pinned to
+RosettaSciIO; **N** = RosettaSciIO maps it, the file can carry it, FormatoKit does not read it; **-** = RosettaSciIO maps nothing for this format
+(or the file does not carry it); **L** = read by the consumer's rule and labelled `unvalidated`. EMPAD and MIB have no `AcquisitionMetadata`: their
+RosettaSciIO `metadata` is returned whole on the signal (pinned, `docs/parity.md` rows above). The 4D HDF5 (py4DSTEM EMD 1.0) reader has no
+RosettaSciIO plugin to compare with: its calibrations are the file's (`R/Q_pixel_size`, `probe_semiangle`), not acquisition metadata.
+
+| Field | DM | MRC (FEI 128 B) | TIFF FEI SEM | TIFF Velox | EMD Velox | EMPAD | MIB |
+|---|---|---|---|---|---|---|---|
+| beam energy | R | - | R | R | R | - | - |
+| magnification | R | R | - | L | R | - | - |
+| camera length | R | - | - | R | R | - | - |
+| convergence angle | R (EELS signal) | - | - | - | - | - | - |
+| collection angle | R (EELS signal) | - | - | - | - | - | - |
+| dwell time | R (image, CL, EELS scan) | - | R | L | L | - | R |
+| exposure time | R (image, EELS) | R | - | L | R | - | - |
+| microscope | R | - | R | R (`InstrumentClass`) | R (`InstrumentClass`) | - | - |
+| detector | L | - | L | L | L | - | - |
+| date, time | R | - | R | L | R (time zone: the Mac's) | R | R |
+| acquisition mode | R | - | - | L | R (code) | - | - |
+| stage tilt alpha, beta | R | R | R (`StageT` as alpha) | R | R | - | - |
+| stage x, y, z | R | R | R | R | R | - | - |
+| stage rotation | - | - | R | - | - | - | - |
+| working distance (SEM) | - | - | R | - | - | - | - |
+| beam current | R | - | R | - | - | - | - |
+| operator | R | - | R | - | - | - | - |
+| specimen description | R | - | - | - | - | - | - |
+| probe area | - | - | - | - | - | - | - |
+| EELS acquisition time, frame count, aperture, spectrometer | exposure/dwell R; **N** frame count, aperture, spectrometer | - | - | - | - | - | - |
+| EDS (TEM) elevation, azimuth, solid angle, live and real time; CL detector, grating, slit, wavelength | **N** | - | - | - | EDS elevation, gain, offset, azimuth, live and real time: read per detector by the spectrum-image readers | - | - |
+| Velox EDS number of frames, detector gain/offset | - | - | - | - | read by the spectrum-image readers (`VeloxSpectrumImageSignals`) | - | - |
+
+"Probe area" is mapped by none of the RosettaSciIO plugins compared here. The **N** cells are signal-type spectrometer and EDS/CL detector groups of
+DM files; no consumer needs them as acquisition metadata yet, and each can be added with a synthetic fixture on request. Conversions follow
+RosettaSciIO per format and are named in each reading's `note` (DM stage position stored value x 1e-3; Velox degrees to 3 decimals and metres to
+6; MRC and the FEI INI as stored): RosettaSciIO's own units are not uniform across formats. Known edge: a Velox `.emd` stage position needs
+all three coordinates (`VeloxMetadata.stagePositionMeters`), where RosettaSciIO maps each coordinate alone.
 
 ## Image readers (round 4)
 
