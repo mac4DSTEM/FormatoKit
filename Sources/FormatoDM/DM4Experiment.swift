@@ -232,6 +232,14 @@ public nonisolated enum DM4Experiment {
         try Walk(source: Source.data(data), maximumStringBytes: options.maximumStringBytes).objects
     }
 
+    /// Scalar and string tag maps from a complete DM file, using the same bounded, header-only walk as `list(path:)`.
+    /// Pixel blobs are skipped. Keys are rooted at the file (for example `ImageList.1.ImageData.Dimensions.0`).
+    /// - Throws: `DM4Error` if the file cannot be opened or its tag tree is malformed.
+    public static func tagTree(path: String, options: DMReadOptions = DMReadOptions()) throws -> (numbers: [String: Double], strings: [String: String]) {
+        let walk = try Walk(source: try Source.file(path), maximumStringBytes: options.maximumStringBytes)
+        return (walk.numbers, walk.strings)
+    }
+
     /// The tag tree of a BARE DM tag stream: a complete DM3/DM4 stream whose root group is an image's `ImageTags` themselves
     /// (no `ImageList`), as DigitalMicrograph stores it in private TIFF tag 65027. `list(data:)` returns [] on such a stream.
     /// The same walk as `list(data:)` (one parser), its two maps returned as `imageTagNumbers` / `imageTagStrings` hold

@@ -13,7 +13,7 @@ instruments and techniques, out of scope until someone asks.
 
 | RosettaSciIO plugin | Extensions | RosettaSciIO writes | FormatoKit module | State | Priority |
 |---|---|---|---|---|---|
-| DigitalMicrograph | dm3, dm4 | no | `FormatoDM` | **pinned** (step 1): every object as a signal; 106 public signals and the owner's 40 bit for bit; the moved `DM4Experiment` API | A |
+| DigitalMicrograph | dm3, dm4 | no | `FormatoDM` | **pinned** (step 1): every object as a signal; 106 public signals and the owner's 40 bit for bit; the moved `DM4Experiment` API; lazy 4D gather `DM4Datacube` (stored order and app layout, pinned) | A |
 | EMD, Velox | emd | no | `FormatoEMD` | **pinned** for images as signals (step 1; stored type and titles, step 3) and for spectrum images as signals (step 4: EDS from the streams and EELS, every option); the moved spectrum-stream API as SpectroKit uses it; the detectors in RosettaSciIO's order (0.0.3); single spectra (`Data/Spectrum`) not read | A |
 | EMD, NCEM / Berkeley | emd | yes | `FormatoEMD` | not read | B |
 | EMD, prismatic | emd | no | — | not read | C |

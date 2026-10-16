@@ -1,0 +1,983 @@
+{
+  "reference_commit": "049e7d7070e84779b499adaf3295beee9facb004",
+  "rsciio_version": "0.14.1.dev96+g049e7d707",
+  "app_commit": "c809679c8ee23a355da6af4f63665aaf64f90d0d",
+  "cases": [
+    {
+      "name": "detector-1",
+      "shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "dtype": "int16",
+      "axes": [
+        {
+          "name": null,
+          "size": 2,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 4,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 3,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "1/nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 5,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "1/nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "sha256": "2aca00a5b569d4cf2d8d9324d5b743fd80b6da16630a4b69eb2e9703d286e5e2"
+    },
+    {
+      "name": "scan-1",
+      "shape": [
+        5,
+        3,
+        2,
+        4
+      ],
+      "dtype": "int16",
+      "axes": [
+        {
+          "name": null,
+          "size": 5,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 3,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 2,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 4,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "sha256": "aa147ce187ae9ecbc922befe92468a114399f5914b6d44bca34b359a48b97bc2"
+    },
+    {
+      "name": "detector-2",
+      "shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "dtype": "float32",
+      "axes": [
+        {
+          "name": null,
+          "size": 2,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 4,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 3,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "1/nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 5,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "1/nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "sha256": "a9d2e1b5c126916d44b675fd3b5ebb23e33992d4d36a98ca72ad613a9428a4b5"
+    },
+    {
+      "name": "scan-2",
+      "shape": [
+        5,
+        3,
+        5,
+        8
+      ],
+      "dtype": "float32",
+      "axes": [
+        {
+          "name": null,
+          "size": 5,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 3,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 5,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 8,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        5,
+        8,
+        3,
+        5
+      ],
+      "permutation": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "sha256": "33517694998eccb8abaf95f7858d5d4bb4589bf7deb59e9e41c3f3913107161f"
+    },
+    {
+      "name": "detector-6",
+      "shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "dtype": "uint8",
+      "axes": [
+        {
+          "name": null,
+          "size": 2,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 4,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 3,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "1/nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 5,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "1/nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "sha256": "5ccf74abda91ac1e984a30ef555ebe1c27a9fae52541b1e62ef54e8fcde72c90"
+    },
+    {
+      "name": "scan-6",
+      "shape": [
+        5,
+        3,
+        2,
+        4
+      ],
+      "dtype": "uint8",
+      "axes": [
+        {
+          "name": null,
+          "size": 5,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 3,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 2,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 4,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "sha256": "a591cf73b582b12f7e638150555ea49b4bc8b484e99b2e8320954ea07095b8e7"
+    },
+    {
+      "name": "detector-7",
+      "shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "dtype": "int32",
+      "axes": [
+        {
+          "name": null,
+          "size": 2,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 4,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 3,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "1/nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 5,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "1/nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "sha256": "55ee480c189759fc5b688d61b6127fed1d521bf187a816d6fa72cab9c20d0256"
+    },
+    {
+      "name": "scan-7",
+      "shape": [
+        5,
+        3,
+        2,
+        4
+      ],
+      "dtype": "int32",
+      "axes": [
+        {
+          "name": null,
+          "size": 5,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 3,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 2,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 4,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "sha256": "77d1e562a3bcc0dbce92d8a1bff9feff4d87bd995d35c7ad67cf5b19d4938d61"
+    },
+    {
+      "name": "detector-9",
+      "shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "dtype": "int8",
+      "axes": [
+        {
+          "name": null,
+          "size": 2,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 4,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 3,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "1/nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 5,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "1/nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "sha256": "4104e95998a73dfc92a756da5f2753c7000b5ff009008d174e4a13cb312a9b23"
+    },
+    {
+      "name": "scan-9",
+      "shape": [
+        5,
+        3,
+        2,
+        4
+      ],
+      "dtype": "int8",
+      "axes": [
+        {
+          "name": null,
+          "size": 5,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 3,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 2,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 4,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "sha256": "d8f7722b3280c3433df90b234f7296a559afd53f418ab1ef941d4c661beead4b"
+    },
+    {
+      "name": "detector-10",
+      "shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "name": null,
+          "size": 2,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 4,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 3,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "1/nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 5,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "1/nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "sha256": "3c66a4d0cd9adf540b08cd7e3aad8867b50a22472786b3b5d415fe639115677f"
+    },
+    {
+      "name": "scan-10",
+      "shape": [
+        5,
+        3,
+        2,
+        4
+      ],
+      "dtype": "uint16",
+      "axes": [
+        {
+          "name": null,
+          "size": 5,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 3,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 2,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 4,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "sha256": "93085f44b83e7f8707c494c8614caaa1211087d09c08b033dd0edde7f35226a3"
+    },
+    {
+      "name": "detector-11",
+      "shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "dtype": "uint32",
+      "axes": [
+        {
+          "name": null,
+          "size": 2,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 4,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 3,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "1/nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 5,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "1/nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "sha256": "9a1f2c7903a230f6943249e5a56e6dea100075601476b27605c4da78dc238871"
+    },
+    {
+      "name": "scan-11",
+      "shape": [
+        5,
+        3,
+        2,
+        4
+      ],
+      "dtype": "uint32",
+      "axes": [
+        {
+          "name": null,
+          "size": 5,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 3,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 2,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 4,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "sha256": "77582c4e044202db56071d7c4de71ad11d558fd808c485f17ad1eedf5b970eef"
+    },
+    {
+      "name": "detector-12",
+      "shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "dtype": "float64",
+      "axes": [
+        {
+          "name": null,
+          "size": 2,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 4,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 3,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "1/nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 5,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "1/nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "sha256": "7c7434d38874814d5cf6e47e597b958f607a7767ab0ff2a719b92629419b8a23"
+    },
+    {
+      "name": "scan-12",
+      "shape": [
+        5,
+        3,
+        2,
+        4
+      ],
+      "dtype": "float64",
+      "axes": [
+        {
+          "name": null,
+          "size": 5,
+          "index_in_array": 0,
+          "scale": 0.03125,
+          "offset": -0.109375,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "z",
+          "size": 3,
+          "index_in_array": 1,
+          "scale": 0.0625,
+          "offset": -0.15625,
+          "units": "1/nm",
+          "navigate": true
+        },
+        {
+          "name": "y",
+          "size": 2,
+          "index_in_array": 2,
+          "scale": 0.125,
+          "offset": -0.1875,
+          "units": "nm",
+          "navigate": false
+        },
+        {
+          "name": "x",
+          "size": 4,
+          "index_in_array": 3,
+          "scale": 0.25,
+          "offset": -0.125,
+          "units": "nm",
+          "navigate": false
+        }
+      ],
+      "app_shape": [
+        2,
+        4,
+        3,
+        5
+      ],
+      "permutation": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "sha256": "78ec325c53d6fbfda45c6088da31aa089244b8ae39183829a1ddce2136e19fa4"
+    }
+  ]
+}
