@@ -31,6 +31,7 @@ import FormatoMRC
             // RosettaSciIO maps nothing else: no other field is read.
             var rest = m
             rest.magnification = nil; rest.exposureS = nil
+            rest.stageTiltAlphaDeg = nil; rest.stageTiltBetaDeg = nil; rest.stageX = nil; rest.stageY = nil; rest.stageZ = nil
             #expect(rest.isEmpty, "\(c.name)")
         }
     }
@@ -40,6 +41,9 @@ import FormatoMRC
         let m = try AcquisitionMetadata.mrc(data: Self.data("fei-128-sections"))
         #expect(m.magnification == MetadataReading(14500.0))
         #expect(m.exposureS == MetadataReading(Double(Float(0.3))))
+        // The stage of section 0 (float32 as stored): the tilts in degrees, the position unconverted.
+        #expect(m.stageTiltAlphaDeg?.value == 12.5 && m.stageTiltBetaDeg?.value == -3.25)
+        #expect(m.stageX?.value == 0x1p-13 && m.stageY?.value == -0x1p-12 && m.stageZ?.value == 0x1p-15)
         // The machine stamp is ignored, as RosettaSciIO ignores it (little-endian default).
         #expect(try AcquisitionMetadata.mrc(data: Self.data("fei-128-big-endian-stamp")) == m)
     }

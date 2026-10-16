@@ -333,6 +333,13 @@ extension AcquisitionMetadata {
         let start = data.startIndex + 1024
         let record = [UInt8](data[start ..< start + 128])
         func float(at offset: Int) -> Double { Double(Float(bitPattern: FEIRecord.word(record, at: offset, bigEndian: false))) }
+        // `fei_header` a_tilt, b_tilt, x_stage, y_stage, z_stage (offsets 0 ... 16, float32; mapping :711-716): as stored, no conversion.
+        let stored = "as stored in the FEI header (float32), no conversion"
+        out.stageTiltAlphaDeg = MetadataReading(float(at: 0), note: stored)
+        out.stageTiltBetaDeg = MetadataReading(float(at: 4), note: stored)
+        out.stageX = MetadataReading(float(at: 8), note: stored)
+        out.stageY = MetadataReading(float(at: 12), note: stored)
+        out.stageZ = MetadataReading(float(at: 16), note: stored)
         out.exposureS = MetadataReading(float(at: 32))
         out.magnification = MetadataReading(float(at: 48))
         return out

@@ -205,6 +205,7 @@ def mrc_file(header, ext, nx=4, ny=4):
 
 MRC_CASES = {}
 fei128 = bytearray(128 * 1024)
+struct.pack_into('<5f', fei128, 0, 12.5, -3.25, 2.0**-13, -2.0**-12, 2.0**-15)   # a_tilt, b_tilt, x_stage, y_stage, z_stage, record 0
 struct.pack_into('<f', fei128, 32, 0.3)       # exp_time (s), record 0
 struct.pack_into('<f', fei128, 48, 14500.0)   # magnification, record 0
 struct.pack_into('<f', fei128, 128 + 32, 9.0)
@@ -522,7 +523,7 @@ def main():
             ref = {}
             for t, v in apply_mapping(sig).items():
                 k = target_key(t)
-                if k in ('magnification', 'exposure'):
+                if k in ('magnification', 'exposure', 'Stage.tilt_alpha', 'Stage.tilt_beta', 'Stage.x', 'Stage.y', 'Stage.z'):
                     ref[k] = float(np.asarray(v).reshape(-1)[0])  # RosettaSciIO keeps one value per section; the first is read
             cases.append({'name': name, 'path': str(path), 'reference': ref})
         app = run_harness(exe, 'mrc', cases, td)

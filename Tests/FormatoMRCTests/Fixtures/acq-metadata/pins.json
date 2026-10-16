@@ -16,6 +16,11 @@
    },
    "name": "fei-128-sections",
    "reference": {
+    "Stage.tilt_alpha": 12.5,
+    "Stage.tilt_beta": -3.25,
+    "Stage.x": 0.0001220703125,
+    "Stage.y": -0.000244140625,
+    "Stage.z": 3.0517578125e-05,
     "exposure": 0.30000001192092896,
     "magnification": 14500.0
    }
@@ -35,6 +40,11 @@
    },
    "name": "fei-128-big-endian-stamp",
    "reference": {
+    "Stage.tilt_alpha": 12.5,
+    "Stage.tilt_beta": -3.25,
+    "Stage.x": 0.0001220703125,
+    "Stage.y": -0.000244140625,
+    "Stage.z": 3.0517578125e-05,
     "exposure": 0.30000001192092896,
     "magnification": 14500.0
    }
