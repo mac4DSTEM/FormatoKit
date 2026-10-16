@@ -2,7 +2,7 @@
 
 The checklist that makes "complete" a measured claim (suite ROADMAP, "Kits", phase 4). Started 2026-10-15 from RosettaSciIO
 049e7d70's own format list (its 38 `rsciio/*/specifications.yaml`, the source of its supported-formats table). Updated at
-every tag (last: the 0.2.0 candidate, 2026-10-15). Since 0.2.0 FormatoKit's own refusals marked as policies (unconverted Velox
+every tag (last: 0.3.0, 2026-10-16). Since 0.2.0 FormatoKit's own refusals marked as policies (unconverted Velox
 units, the spectrum-image grid check, TIFF vendor branches, the DM string limit) are parameters (`docs/registration-0.2.0.md`). "Pinned" means a gate compares FormatoKit with RosettaSciIO bit for bit on that format's files; "read" means a
 reader exists without that gate.
 
@@ -55,6 +55,9 @@ instruments and techniques, out of scope until someone asks.
 | Topspin | app5 | no | — | not read | C |
 | TriVista | tvf | no | — | not read | C |
 | USID | h5, hdf5 | yes | — | not read | C |
+
+Totals at 0.3.0 (42 rows: RosettaSciIO's plugins and formats, plus the two py4DSTEM rows): 8 pinned (DigitalMicrograph, Velox EMD, TIFF, MRC, EMPAD,
+py4DSTEM EMD 1.0, py4DSTEM BraggVectors, Merlin), 1 empty (MSA), 33 not read.
 
 ## Reader options (RosettaSciIO 049e7d70's `file_reader` arguments, for the formats FormatoKit holds)
 
@@ -120,7 +123,8 @@ instruments and techniques, out of scope until someone asks.
   magnification, instrument, stage, detector and EDS fields.
 - **Lazy reading:** registered equal to eager (gate L1) for DM (positioned reads) and Velox images (per frame). Not yet
   memory-mapped; no chunked HDF5 reads beyond the moved reader's blocks.
-- **Writing:** none.
+- **Writing:** none for RosettaSciIO's formats. FormatoKit writes only `BraggVectorsEMD` (py4DSTEM EMD 1.0), `HDF5RootAttributes` (a sidecar's root string
+  attributes) and `FormatoFileWrite` (a Foundation file replace helper); see the sections below.
 
 ## Merlin conventions
 
@@ -149,7 +153,7 @@ cb6e164 and pinned. Pins: synthetic files written byte by byte (`generate.py`), 
 | MRC (`.mrc`) | magnification and exposure of the 128-byte per-section FEI header (NEXT = 128 KiB) | `.app` reads the FEI1/FEI2 extended-header record by bitmask (HT, camera length, dwell, detector, date, instrument, mode); `.rosettaSciIO` reads neither (RosettaSciIO does not) and ignores the machine stamp. |
 | TIFF, FEI SEM INI (`tiff`) | `mapping_fei`: HV, dwell, date, time, system type | zero HV and dwell are kept; the date goes through the kit's dateutil port (day-first above 12 as the app); the detector is unmapped and labelled. |
 | TIFF, Velox XML (tag 34683) | none (no plugin reads the tag); the same schema's EMD mapping | acceleration voltage and camera length (every mode) are the EMD mapping's `float(x) / 1e3` and `* 1e3`, unguarded; the other values keep the app's rules and are labelled. |
-| EMD, Velox (`velox`) | beam energy, camera length (every mode), `StemMagnification` as magnification, `InstrumentClass` as microscope | magnification, camera length, exposure and mode are read (the app leaves them `unread`). RosettaSciIO's microscope is `InstrumentClass`, which `VeloxMetadata` does not expose; both conventions give `InstrumentModel`, labelled. |
+| EMD, Velox (`velox`) | beam energy, camera length (every mode), `StemMagnification` as magnification, `InstrumentClass` as microscope | magnification, camera length, exposure and mode are read (the app leaves them `unread`). RosettaSciIO's microscope is `InstrumentClass`, which `VeloxMetadata` does not expose; both conventions give `InstrumentModel`, labelled. **Known gap (accepted for 0.3.0):** `InstrumentClass` stays unread, so the `.rosettaSciIO` microscope differs from RosettaSciIO's where the two keys differ; closing it needs `VeloxMetadata` to expose the key and changes the 175-line inherited golden. |
 
 ## Image readers (round 4)
 
@@ -171,3 +175,9 @@ cb6e164 and pinned. Pins: synthetic files written byte by byte (`generate.py`), 
 (`tools/hdf5-write/generate.py`): files h5py writes (fixed-length UTF-8 and ASCII scalars, an empty text, 30 000 bytes) read back equal; files h5py
 writes that the reader must refuse (variable-length, array, integer, embedded NUL, non-UTF-8, dense storage, not HDF5) are refused by name; and h5py
 reads the golden file this writer produced as fixed-length, exactly as long as the text, character set UTF-8, null padding, scalar, no groups.
+
+The golden file `kit-written.h5` is compared with a fresh write by size, the HDF5 signature, the superblock version byte and the attributes read back
+(HDF5 stamps times into checksummed headers, so the bytes are not equal); the byte-level layout is pinned through h5py's reading of it
+(`kit-written.h5py.json`). To regenerate the golden on purpose (a changed layout), run
+`FORMATO_WRITE_GOLDEN=1 swift test --filter HDF5RootAttributesTests` and then `tools/hdf5-write/generate.py` for the h5py pins; the run that regenerates it compares the golden with itself, so
+run the suite again without the variable. The regenerated files are committed on their own with the reason.
