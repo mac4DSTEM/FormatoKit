@@ -1,0 +1,42 @@
+{
+ "attributes": {
+  "empty": {
+   "bytes_hex": "00",
+   "class": "string",
+   "cset": 1,
+   "rank": 0,
+   "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+   "size": 1,
+   "strpad": 1
+  },
+  "identity": {
+   "bytes_hex": "31",
+   "class": "string",
+   "cset": 1,
+   "rank": 0,
+   "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+   "size": 1,
+   "strpad": 1
+  },
+  "long": {
+   "bytes_hex": null,
+   "class": "string",
+   "cset": 1,
+   "rank": 0,
+   "sha256": "8a6d5f7b1061fefacb7509d5bf23a3227c8a3a6ecfe51dc9f666772c99b75b98",
+   "size": 30000,
+   "strpad": 1
+  },
+  "text": {
+   "bytes_hex": "c38520e697a5e69cac20f09f98802074657874",
+   "class": "string",
+   "cset": 1,
+   "rank": 0,
+   "sha256": "ed6ca87b947fb9b18c80e6ff920de0fb833bc0ad79ecab4bac1fbfb96eb1cf8d",
+   "size": 19,
+   "strpad": 1
+  }
+ },
+ "groups": 0,
+ "superblock_version": 2
+}

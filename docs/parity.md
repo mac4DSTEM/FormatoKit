@@ -127,3 +127,10 @@ instruments and techniques, out of scope until someone asks.
 `MIBReader` defaults to RosettaSciIO `file_reader` at 049e7d70: fastest-first `navigationShape`, Python frame slices, singleton squeezing then a flip of the penultimate axis, integer pixels and timestamp/exposure metadata. Malformed/trailing partial frames are refused rather than silently truncated. Timestamp inference accepts UTC timestamps with up to nine fractional digits. No writable mmap, dask chunks or raw unpacking.
 
 `MIBConvention.appScanXY` uses the original reader at c809679c: a required ScanX/ScanY companion, 1x1 / 2x2 / 2x2G assemblies, unsqueezed scan axes, no flip, and Float32 conversion (including UInt32 rounding). Slicing/explicit navigation are refused in this convention. Both references refuse raw R64. `tools/mib/generate.py` compiles the pinned app initializer and pixel reader with an identity crop/bin view, records its output bytes, and pins rsciio data, axes and mapped metadata. All fixtures are synthetic, compressed and under 1 MB together.
+
+## HDF5 root attributes (round 4)
+
+`HDF5RootAttributes` has no RosettaSciIO counterpart (RosettaSciIO's HSPY writer is a different layout). It is pinned by h5py 3.16.0
+(`tools/hdf5-write/generate.py`): files h5py writes (fixed-length UTF-8 and ASCII scalars, an empty text, 30 000 bytes) read back equal; files h5py
+writes that the reader must refuse (variable-length, array, integer, embedded NUL, non-UTF-8, dense storage, not HDF5) are refused by name; and h5py
+reads the golden file this writer produced as fixed-length, exactly as long as the text, character set UTF-8, null padding, scalar, no groups.

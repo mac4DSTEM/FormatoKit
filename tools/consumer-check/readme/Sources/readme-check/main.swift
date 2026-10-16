@@ -77,4 +77,14 @@ let signal = cube.signal // lazy; signal.load() reads the complete cube
 check(cube.shape.count == 4 && frame.bytes.count == cube.shape[2] * cube.shape[3] * 4, "block 4: the HDF5 datacube has shape \(cube.shape)")
 _ = signal
 
-print("readme-check: all four README blocks ran")
+// README block 5 (needs `peaks`: one array per scan position; runs in the same scratch folder)
+let peaks = (0..<4).map { [BraggPeak(qx: Double($0) + 0.5, qy: 2, intensity: 1)] }
+let shape = BraggGridShape(rows: 2, columns: 2), detector = BraggGridShape(rows: 256, columns: 256)
+try BraggVectorsEMD.write(peaks: peaks, scan: shape, detector: detector,
+                          calibration: BraggCalibration(qPixelSize: 0.01, qPixelUnits: "A^-1"),
+                          to: URL(fileURLWithPath: "vectors.h5"), sourcePath: "scan.h5") // never over the source
+let vectors = try BraggVectorsEMD.read(path: "vectors.h5") // py4DSTEM.read(...) opens the same file
+_ = vectors
+check(FileManager.default.fileExists(atPath: "vectors.h5"), "block 5: the BraggVectors file was written and read back")
+
+print("readme-check: all five README blocks ran")

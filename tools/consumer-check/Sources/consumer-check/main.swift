@@ -101,6 +101,19 @@ do {
     let frames = try VeloxSpectrumImageSignals(path: si, options: VeloxSpectrumImageOptions(sumFrames: false, rebinEnergy: 4, dataType: .float32)).signals
     check(frames.count == 1 && frames[0].data.shape == [3, 3, 4, 1024] && frames[0].axes.first?.name == "Time", "VeloxSpectrumImageOptions")
 } catch { check(false, "adapters: \(error)") }
+// HDF5 root attributes (round 4): write, read and publish a small sidecar-style file, public API only.
+do {
+    let dir = FileManager.default.temporaryDirectory.appendingPathComponent("formato-consumer-h5-\(UUID().uuidString)")
+    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: dir) }
+    let destination = dir.appendingPathComponent("a.h5")
+    let (temporary, scratch) = HDF5RootAttributes.temporaryURL(for: destination)
+    defer { if let scratch { try? FileManager.default.removeItem(at: scratch) } }
+    try HDF5RootAttributes.write([("identity", "1"), ("text", "Å")], to: temporary)
+    try HDF5RootAttributes.publish(temporary, onto: destination, replacing: HDF5FileIdentity(ofItemAt: destination.path))
+    let read = try HDF5RootAttributes.read(["identity", "text", "absent"], from: destination)
+    check(read == ["identity": "1", "text": "Å"], "HDF5RootAttributes write, publish and read")
+} catch { check(false, "HDF5RootAttributes: \(error)") }
 check(FormatoUnits.convertScaleUnits(1.5e-9, units: "m", factor: 100)?.units == "nm", "FormatoUnits")
 check(FormatoUnits.parse("µm")?.shortForm == "μm", "units parse")
 
