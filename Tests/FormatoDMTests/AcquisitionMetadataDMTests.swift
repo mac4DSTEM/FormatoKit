@@ -18,7 +18,7 @@ import FormatoDM
 
     /// The generator hands the consumer's readers its own tag maps; they must be what the kit's walker returns for the file.
     @Test func testTheKitsTagMapsAreTheMapsThePinsWereMadeFrom() throws {
-        #expect(Self.cases.count == 25)
+        #expect(Self.cases.count == 27)
         for c in Self.cases {
             let object = try #require(try DM4Experiment.list(path: Self.fixtures.appendingPathComponent(c.name + ".dm4").path).first)
             #expect(object.imageTagNumbers == c.numbers, "\(c.name)")
@@ -84,6 +84,21 @@ import FormatoDM
         let bad = try #require(Self.cases.first { $0.name == "eels-aperture-unparseable" })
         let b = AcquisitionMetadata.dm(numbers: bad.numbers, strings: bad.strings)
         #expect(b.signalNumbers["Detector.EELS.aperture_size"] == nil && b.signalTexts["Detector.EELS.spectrometer"]?.value == "")
+    }
+
+    @Test func testTheEDSGroupIsReadOnlyForAnXraySignal() throws {
+        let c = try #require(Self.cases.first { $0.name == "eds-full" })
+        let m = AcquisitionMetadata.dm(numbers: c.numbers, strings: c.strings)
+        #expect(m.signalNumbers["Detector.EDS.live_time"]?.value == 118.5 && m.signalNumbers["Detector.EDS.real_time"]?.value == 120.25)
+        #expect(m.signalNumbers["Detector.EDS.azimuth_angle"]?.value == 45 && m.signalNumbers["Detector.EDS.solid_angle"]?.value == 0.7)
+        #expect(m.acquired?.value == "2016-08-27 20:54:33" && m.dwellUS == nil)
+        // A text value is kept as a text, as RosettaSciIO's `None` mapping keeps it.
+        let t = try #require(Self.cases.first { $0.name == "eds-text-values" })
+        let text = AcquisitionMetadata.dm(numbers: t.numbers, strings: t.strings)
+        #expect(text.signalTexts["Detector.EDS.live_time"]?.value == "12 s" && text.signalTexts["Detector.EDS.solid_angle"]?.value == "")
+        // The same tags in an image (no X-ray signal) map nothing.
+        var strings = c.strings; strings["Meta Data.Signal"] = nil
+        #expect(AcquisitionMetadata.dm(numbers: c.numbers, strings: strings).signalNumbers.isEmpty)
     }
 
     @Test func testFromAnObjectEqualsFromItsMaps() throws {

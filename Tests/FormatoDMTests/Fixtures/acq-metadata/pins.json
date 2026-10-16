@@ -768,6 +768,73 @@
     "acquired": null,
     "cameraLengthMM": null,
     "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "eds-full",
+   "numbers": {
+    "EDS.Detector Info.Azimuthal angle": 45.0,
+    "EDS.Detector Info.Elevation angle": 22.0,
+    "EDS.Live time": 118.5,
+    "EDS.Real time": 120.25,
+    "EDS.Solid angle": 0.7,
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "Detector.EDS.azimuth_angle": 45.0,
+    "Detector.EDS.elevation_angle": 22.0,
+    "Detector.EDS.live_time": 118.5,
+    "Detector.EDS.real_time": 120.25,
+    "Detector.EDS.solid_angle": 0.7,
+    "General.date": "2016-08-27",
+    "General.time": "20:54:33",
+    "beam_energy": 200.0
+   },
+   "strings": {
+    "EDS.Acquisition.Date": "27.08.2016",
+    "EDS.Acquisition.Start time": "20:54:33",
+    "Meta Data.Signal": "X-ray"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "eds-text-values",
+   "numbers": {},
+   "reference": {
+    "Detector.EDS.live_time": "12 s",
+    "Detector.EDS.solid_angle": []
+   },
+   "strings": {
+    "EDS.Live time": "12 s",
+    "EDS.Solid angle": "",
+    "Meta Data.Signal": "X-ray"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
     "dwellUS": {
      "note": null,
      "otherCopy": null,

@@ -327,6 +327,7 @@ extension AcquisitionMetadata {
         var dateSources = ["DataBar.Acquisition Date"], timeSources = ["DataBar.Acquisition Time"]
         switch signalType {
         case "EELS": dateSources.append("EELS.Acquisition.Date"); timeSources.append("EELS.Acquisition.Start time")
+        case "EDS_TEM": dateSources.append("EDS.Acquisition.Date"); timeSources.append("EDS.Acquisition.Start time")
         default: break
         }
         let lastDate = dateSources.reversed().lazy.compactMap { string($0).flatMap(DMDateTime.date) }.first
@@ -365,6 +366,14 @@ extension AcquisitionMetadata {
                 meta.signalNumbers["Detector.EELS.aperture_size"] = MetadataReading(mm)
             }
             raw("EELS Spectrometer.Instrument name", "Detector.EELS.spectrometer")
+        }
+
+        if signalType == "EDS_TEM" {
+            raw("EDS.Detector Info.Azimuthal angle", "Detector.EDS.azimuth_angle")
+            raw("EDS.Detector Info.Elevation angle", "Detector.EDS.elevation_angle")
+            raw("EDS.Solid angle", "Detector.EDS.solid_angle")
+            raw("EDS.Live time", "Detector.EDS.live_time")
+            raw("EDS.Real time", "Detector.EDS.real_time")
         }
 
         // RosettaSciIO maps no detector: the camera name as stored, labelled.
