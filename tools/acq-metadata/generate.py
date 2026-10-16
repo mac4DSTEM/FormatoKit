@@ -52,7 +52,9 @@ WANTED = {'beam_energy', 'camera_length', 'magnification', 'dwell_time', 'exposu
 
 def reference(signal):
     # An SEM stage has one tilt: RosettaSciIO's `Stage.tilt` is read as the alpha tilt (Swift: stageTiltAlphaDeg).
-    got = {{'Stage.tilt': 'Stage.tilt_alpha'}.get(target_key(t), target_key(t)): v for t, v in apply_mapping(signal).items()}
+    # An EELS signal's own dwell/exposure targets are read into the same fields (Swift: dwellUS / exposureS).
+    renames = {'Stage.tilt': 'Stage.tilt_alpha', 'Detector.EELS.dwell_time': 'dwell_time', 'Detector.EELS.exposure': 'exposure'}
+    got = {renames.get(target_key(t), target_key(t)): v for t, v in apply_mapping(signal).items()}
     return {k: (float(v) if isinstance(v, (int, float, np.floating)) else v) for k, v in got.items() if k in WANTED}
 
 
@@ -132,6 +134,30 @@ DM_CASES = {
                             ('Acquisition.Parameters.Detector.exposure (s)', 1.0)],
     'ambiguous-date': [(MI + 'Voltage', 80000.), (MI + 'Illumination Mode', 'TEM'), ('DataBar.Acquisition Date', '03/04/2021'),
                        ('DataBar.Acquisition Time', '12:00:00 a.m.')],
+    'stage-beam-operator': [(MI + 'Voltage', 200000.), (MI + 'Illumination Mode', 'STEM'), (MI + 'STEM Camera Length', 100.),
+                            (MI + 'Indicated Magnification', 1.0e6), (MI + 'Stage Position.Stage Alpha', 12.5), (MI + 'Stage Position.Stage Beta', -3.25),
+                            (MI + 'Stage Position.Stage X', 1234.5), (MI + 'Stage Position.Stage Y', -67.25), (MI + 'Stage Position.Stage Z', 8.125),
+                            (MI + 'Probe Current (nA)', 0.125), ('Session Info.Operator', 'P. Operator ')],
+    'sem-stage': [(MI + 'Voltage', 5000.), (MI + 'Illumination Mode', 'SEM'), (MI + 'Stage Position.Stage Alpha', 30.), (MI + 'Probe Current (nA)', 2.0),
+                  ('Session Info.Operator', '')],
+    'eels-angles': [(MI + 'Voltage', 200000.), (MI + 'Illumination Mode', 'STEM'), (MI + 'STEM Camera Length', 48.), ('Meta Data.Signal', 'EELS'),
+                    ('EELS.Experimental Conditions.Collection semi-angle (mrad)', 20.), ('EELS.Experimental Conditions.Convergence semi-angle (mrad)', 30.),
+                    ('DigiScan.Sample Time', 15.)],
+    'eels-exposure-frames': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'EELS'), ('EELS.Acquisition.Exposure (s)', 0.25),
+                             ('EELS.Acquisition.Number of frames', 4.)],
+    'eels-integration': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'EELS'), ('EELS.Acquisition.Integration time (s)', 2.0),
+                         ('EELS.Acquisition.Exposure (s)', 0.5), ('Acquisition.Parameters.Detector.exposure (s)', 9.)],
+    'eels-scanning': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'EELS'), ('DigiScan.Sample Time', 15.), ('EELS.Acquisition.Exposure (s)', 0.5)],
+    'xray-no-dwell': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'X-ray'), ('DigiScan.Sample Time', 15.)],
+    'cl-dwell': [(MI + 'Voltage', 200000.), ('Meta Data.Signal', 'CL'), ('DigiScan.Sample Time', 15.)],
+    'eels-orsay': [(MI + 'Voltage', 100000.), (MI + 'Illumination Mode', 'STEM'), ('spim.eels.Dummy', 1.),
+                   ('EELS.Experimental Conditions.Collection semi-angle (mrad)', 25.)],
+    'angles-without-eels-signal': [(MI + 'Voltage', 100000.), ('EELS.Experimental Conditions.Collection semi-angle (mrad)', 25.),
+                                   ('EELS.Experimental Conditions.Convergence semi-angle (mrad)', 10.)],
+    'stack-stage': [(MI + 'Voltage', 100000.), ('source.Tags at creation.' + MI + 'Voltage', 200000.),
+                    ('source.Tags at creation.' + MI + 'Stage Position.Stage Alpha', 7.5), ('source.Tags at creation.Session Info.Operator', 'Stack Op'),
+                    ('Meta Data.Signal', 'EELS'),
+                    ('source.Tags at creation.EELS.Experimental Conditions.Collection semi-angle (mrad)', 11.)],
     'unparseable-date': [(MI + 'Voltage', 80000.), ('DataBar.Acquisition Date', '2021-03-04'), ('DataBar.Acquisition Time', '12:00:00')],
 }
 

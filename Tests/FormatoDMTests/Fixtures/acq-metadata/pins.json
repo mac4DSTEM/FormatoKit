@@ -515,6 +515,420 @@
   {
    "app": {
     "acquired": null,
+    "cameraLengthMM": {
+     "note": "mm (assumed)",
+     "otherCopy": null,
+     "value": 100
+    },
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": {
+     "note": null,
+     "otherCopy": null,
+     "value": 1000000
+    },
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "STEM"
+    },
+    "unread": []
+   },
+   "name": "stage-beam-operator",
+   "numbers": {
+    "Microscope Info.Indicated Magnification": 1000000.0,
+    "Microscope Info.Probe Current (nA)": 0.125,
+    "Microscope Info.STEM Camera Length": 100.0,
+    "Microscope Info.Stage Position.Stage Alpha": 12.5,
+    "Microscope Info.Stage Position.Stage Beta": -3.25,
+    "Microscope Info.Stage Position.Stage X": 1234.5,
+    "Microscope Info.Stage Position.Stage Y": -67.25,
+    "Microscope Info.Stage Position.Stage Z": 8.125,
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "General.authors": "P. Operator ",
+    "Stage.tilt_alpha": 12.5,
+    "Stage.tilt_beta": -3.25,
+    "Stage.x": 1.2345,
+    "Stage.y": -0.06725,
+    "Stage.z": 0.008125,
+    "acquisition_mode": "STEM",
+    "beam_current": 0.125,
+    "beam_energy": 200.0,
+    "camera_length": 100.0,
+    "magnification": 1000000.0
+   },
+   "strings": {
+    "Microscope Info.Illumination Mode": "STEM",
+    "Session Info.Operator": "P. Operator "
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 5
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "SEM"
+    },
+    "unread": []
+   },
+   "name": "sem-stage",
+   "numbers": {
+    "Microscope Info.Probe Current (nA)": 2.0,
+    "Microscope Info.Stage Position.Stage Alpha": 30.0,
+    "Microscope Info.Voltage": 5000.0
+   },
+   "reference": {
+    "Stage.tilt_alpha": 30.0,
+    "acquisition_mode": "SEM",
+    "beam_current": 2.0,
+    "beam_energy": 5.0
+   },
+   "strings": {
+    "Microscope Info.Illumination Mode": "SEM",
+    "Session Info.Operator": ""
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": {
+     "note": "mm (assumed)",
+     "otherCopy": null,
+     "value": 48
+    },
+    "detector": null,
+    "dwellUS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 15
+    },
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "STEM"
+    },
+    "unread": []
+   },
+   "name": "eels-angles",
+   "numbers": {
+    "DigiScan.Sample Time": 15.0,
+    "EELS.Experimental Conditions.Collection semi-angle (mrad)": 20.0,
+    "EELS.Experimental Conditions.Convergence semi-angle (mrad)": 30.0,
+    "Microscope Info.STEM Camera Length": 48.0,
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "Detector.EELS.collection_angle": 20.0,
+    "acquisition_mode": "STEM",
+    "beam_energy": 200.0,
+    "camera_length": 48.0,
+    "convergence_angle": 30.0
+   },
+   "strings": {
+    "Meta Data.Signal": "EELS",
+    "Microscope Info.Illumination Mode": "STEM"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "eels-exposure-frames",
+   "numbers": {
+    "EELS.Acquisition.Exposure (s)": 0.25,
+    "EELS.Acquisition.Number of frames": 4.0,
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "beam_energy": 200.0,
+    "exposure": 1.0
+   },
+   "strings": {
+    "Meta Data.Signal": "EELS"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 9
+    },
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "eels-integration",
+   "numbers": {
+    "Acquisition.Parameters.Detector.exposure (s)": 9.0,
+    "EELS.Acquisition.Exposure (s)": 0.5,
+    "EELS.Acquisition.Integration time (s)": 2.0,
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "beam_energy": 200.0,
+    "exposure": 2.0
+   },
+   "strings": {
+    "Meta Data.Signal": "EELS"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 15
+    },
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "eels-scanning",
+   "numbers": {
+    "DigiScan.Sample Time": 15.0,
+    "EELS.Acquisition.Exposure (s)": 0.5,
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "beam_energy": 200.0,
+    "dwell_time": 0.5
+   },
+   "strings": {
+    "Meta Data.Signal": "EELS"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 15
+    },
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "xray-no-dwell",
+   "numbers": {
+    "DigiScan.Sample Time": 15.0,
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "beam_energy": 200.0
+   },
+   "strings": {
+    "Meta Data.Signal": "X-ray"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 15
+    },
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "cl-dwell",
+   "numbers": {
+    "DigiScan.Sample Time": 15.0,
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "beam_energy": 200.0,
+    "dwell_time": 1.5e-05
+   },
+   "strings": {
+    "Meta Data.Signal": "CL"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 100
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "STEM"
+    },
+    "unread": []
+   },
+   "name": "eels-orsay",
+   "numbers": {
+    "EELS.Experimental Conditions.Collection semi-angle (mrad)": 25.0,
+    "Microscope Info.Voltage": 100000.0,
+    "spim.eels.Dummy": 1.0
+   },
+   "reference": {
+    "Detector.EELS.collection_angle": 25.0,
+    "acquisition_mode": "STEM",
+    "beam_energy": 100.0
+   },
+   "strings": {
+    "Microscope Info.Illumination Mode": "STEM"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 100
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "angles-without-eels-signal",
+   "numbers": {
+    "EELS.Experimental Conditions.Collection semi-angle (mrad)": 25.0,
+    "EELS.Experimental Conditions.Convergence semi-angle (mrad)": 10.0,
+    "Microscope Info.Voltage": 100000.0
+   },
+   "reference": {
+    "beam_energy": 100.0
+   },
+   "strings": {}
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 100
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "stack-stage",
+   "numbers": {
+    "Microscope Info.Voltage": 100000.0,
+    "source.Tags at creation.EELS.Experimental Conditions.Collection semi-angle (mrad)": 11.0,
+    "source.Tags at creation.Microscope Info.Stage Position.Stage Alpha": 7.5,
+    "source.Tags at creation.Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "Detector.EELS.collection_angle": 11.0,
+    "General.authors": "Stack Op",
+    "Stage.tilt_alpha": 7.5,
+    "beam_energy": 200.0
+   },
+   "strings": {
+    "Meta Data.Signal": "EELS",
+    "source.Tags at creation.Session Info.Operator": "Stack Op"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
     "cameraLengthMM": null,
     "detector": null,
     "dwellUS": null,

@@ -19,6 +19,11 @@
 //     DigiScan group; the exposure is `Acquisition.Parameters.Detector.exposure (s)` only when it has none;
 //   - the date and time are `DataBar.Acquisition Date` and `Time`, joined here into one stamp (RosettaSciIO keeps them
 //     apart); dateutil parses any layout and guesses, so only the layouts below are read and the rest are nil.
+//   Also read (0.3.1): the stage (`Stage Alpha`/`Beta` as stored, `Stage X`/`Y`/`Z` ×1e-3), `Probe Current (nA)`, `Session Info.
+//   Operator`, and for an EELS signal (`Meta Data.Signal` "EELS", or Orsay's `spim.eels` group, read on the direct tags) the collection and
+//   convergence semi-angles. The dwell and exposure follow the signal type as RosettaSciIO's chain does (EELS: its acquisition time as
+//   the dwell with DigiScan tags, else the exposure; X-ray: neither; CL: the DigiScan sample time). The EELS frame number,
+//   aperture and spectrometer, and the EDS and CL groups, stay unread.
 //   Fields RosettaSciIO does not map (the detector) are read by the consumer's rule with `unvalidatedNote`. The
 //   signal-type specific mappings (EELS, EDS, CL, SI) are not applied: this reads an image object.
 //
@@ -282,10 +287,34 @@ extension AcquisitionMetadata {
             }
         }
 
-        if hasGroup("DigiScan") {
+        // `signal_type` (:601-613) reads the DIRECT tags, even for a stack-builder image; the dwell and exposure follow it
+        // (:1025-1240): EELS maps its own acquisition group, X-ray (EDS_TEM) maps neither, CL maps the DigiScan sample time,
+        // and an image (no signal type) maps the DigiScan sample time, or else the detector exposure.
+        let signal = strings["Meta Data.Signal"]
+        func directGroup(_ name: String) -> Bool {
+            numbers.keys.contains { $0.hasPrefix(name + ".") } || strings.keys.contains { $0.hasPrefix(name + ".") }
+        }
+        let signalType = signal == "X-ray" ? "EDS_TEM"
+            : (signal == "CL" || directGroup("Acquisition.Monarc Spectrometer")) ? "CL"
+            : (signal == "EELS" || directGroup("spim.eels")) ? "EELS" : ""
+        switch signalType {
+        case "EELS":
+            // `_get_exposure_time` over the EELS.Acquisition group: the integration time, else the exposure × the frames.
+            let eelsSeconds: Double? = number("EELS.Acquisition.Integration time (s)")
+                ?? number("EELS.Acquisition.Exposure (s)").map { $0 * (number("EELS.Acquisition.Number of frames") ?? 1) }
+            if let seconds = eelsSeconds {
+                if hasGroup("DigiScan") { meta.dwellUS = MetadataReading(seconds * 1e6, note: "EELS acquisition time (s) × 1e6") }
+                else { meta.exposureS = MetadataReading(seconds, note: "EELS acquisition") }
+            }
+        case "EDS_TEM": break
+        case "CL":
             if let us = number("DigiScan.Sample Time") { meta.dwellUS = MetadataReading(us) }
-        } else if let seconds = number("Acquisition.Parameters.Detector.exposure (s)") {
-            meta.exposureS = MetadataReading(seconds)
+        default:
+            if hasGroup("DigiScan") {
+                if let us = number("DigiScan.Sample Time") { meta.dwellUS = MetadataReading(us) }
+            } else if let seconds = number("Acquisition.Parameters.Detector.exposure (s)") {
+                meta.exposureS = MetadataReading(seconds)
+            }
         }
 
         if let dateText = string("DataBar.Acquisition Date"), let timeText = string("DataBar.Acquisition Time"),
@@ -293,6 +322,28 @@ extension AcquisitionMetadata {
             var notes = [localTimeNote]
             if date.orderAssumed { notes.append(DMNote.monthFirst) }
             meta.acquired = MetadataReading(DMDateTime.stamp(date, time), note: notes.joined(separator: "; "))
+        }
+
+        // The 0.3.1 fields (`get_mapping` :911-960, unconditional on the Microscope Info group): the stage as the tags hold it
+        // (the position ×1e-3), the probe current in nA as stored, the operator (a non-empty text, untrimmed).
+        func reading(_ key: String, scale: Double = 1, note: String? = nil) -> MetadataReading<Double>? {
+            number(key).map { MetadataReading($0 * scale, note: note) }
+        }
+        let stagePath = "Microscope Info.Stage Position.Stage "
+        do {
+            meta.stageTiltAlphaDeg = reading(stagePath + "Alpha")
+            meta.stageTiltBetaDeg = reading(stagePath + "Beta")
+            let scaled = "stored value × 1e-3, as RosettaSciIO"
+            meta.stageX = reading(stagePath + "X", scale: 1e-3, note: scaled)
+            meta.stageY = reading(stagePath + "Y", scale: 1e-3, note: scaled)
+            meta.stageZ = reading(stagePath + "Z", scale: 1e-3, note: scaled)
+        }
+        meta.beamCurrentNA = reading("Microscope Info.Probe Current (nA)")
+        if let operatorText = string("Session Info.Operator"), !operatorText.isEmpty { meta.operatorName = MetadataReading(operatorText) }
+        // EELS angles, only for an EELS signal (`signal_type` :601-613 reads the DIRECT tags, even for a stack).
+        if signalType == "EELS" {
+            meta.collectionAngleMrad = reading("EELS.Experimental Conditions.Collection semi-angle (mrad)")
+            meta.convergenceAngleMrad = reading("EELS.Experimental Conditions.Convergence semi-angle (mrad)")
         }
 
         // RosettaSciIO maps no detector: the camera name as stored, labelled.

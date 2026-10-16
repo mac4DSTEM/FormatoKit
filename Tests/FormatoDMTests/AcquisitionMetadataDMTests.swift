@@ -18,7 +18,7 @@ import FormatoDM
 
     /// The generator hands the consumer's readers its own tag maps; they must be what the kit's walker returns for the file.
     @Test func testTheKitsTagMapsAreTheMapsThePinsWereMadeFrom() throws {
-        #expect(Self.cases.count == 12)
+        #expect(Self.cases.count == 23)
         for c in Self.cases {
             let object = try #require(try DM4Experiment.list(path: Self.fixtures.appendingPathComponent(c.name + ".dm4").path).first)
             #expect(object.imageTagNumbers == c.numbers, "\(c.name)")
@@ -46,6 +46,32 @@ import FormatoDM
         }
         let unparseable = try #require(Self.cases.first { $0.name == "unparseable-date" })
         #expect(AcquisitionMetadata.dm(numbers: unparseable.numbers, strings: unparseable.strings).acquired == nil)
+    }
+
+    @Test func testTheStageBeamCurrentOperatorAndEELSAnglesAreRead() throws {
+        func ref(_ name: String) throws -> AcquisitionMetadata {
+            let c = try #require(Self.cases.first { $0.name == name })
+            return AcquisitionMetadata.dm(numbers: c.numbers, strings: c.strings)
+        }
+        let full = try ref("stage-beam-operator")
+        #expect(full.stageTiltAlphaDeg == MetadataReading(12.5) && full.stageTiltBetaDeg == MetadataReading(-3.25))
+        #expect(full.stageX?.value == 1.2345 && full.stageY?.value == -0.06725 && full.stageZ?.value == 0.008125)
+        #expect(full.stageX?.note == "stored value × 1e-3, as RosettaSciIO")
+        #expect(full.beamCurrentNA == MetadataReading(0.125))
+        #expect(full.operatorName == MetadataReading("P. Operator "))   // untrimmed, as RosettaSciIO
+        let sem = try ref("sem-stage")
+        #expect(sem.stageTiltAlphaDeg?.value == 30 && sem.operatorName == nil)   // an empty operator maps nothing
+        // EELS angles need an EELS signal; the angle tags alone map nothing.
+        #expect(try ref("eels-angles").collectionAngleMrad?.value == 20 && (try ref("eels-angles")).convergenceAngleMrad?.value == 30)
+        #expect(try ref("eels-orsay").collectionAngleMrad?.value == 25)
+        #expect(try ref("angles-without-eels-signal").collectionAngleMrad == nil)
+        // A stack-builder image: the values come from the copy, the EELS gate from the direct tags.
+        let stack = try ref("stack-stage")
+        #expect(stack.stageTiltAlphaDeg?.value == 7.5 && stack.operatorName?.value == "Stack Op" && stack.collectionAngleMrad?.value == 11)
+        // The consumer's convention reads none of them.
+        let c = try #require(Self.cases.first { $0.name == "stage-beam-operator" })
+        let app = AcquisitionMetadata.dm(numbers: c.numbers, strings: c.strings, convention: .app)
+        #expect(app.stageX == nil && app.beamCurrentNA == nil && app.operatorName == nil)
     }
 
     @Test func testFromAnObjectEqualsFromItsMaps() throws {

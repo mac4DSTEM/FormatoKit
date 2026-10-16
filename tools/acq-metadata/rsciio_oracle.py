@@ -23,6 +23,18 @@ def lookup(tree, dotted):
     return node
 
 
+def with_slugs(value):
+    """A dict with every key also present slugified (HyperSpy's DictionaryTreeBrowser hands a mapped function slugified keys:
+    `"Integration_time_s" in tags.keys()`); the original keys stay, as `_get_microscope_name` looks them up by their DM names."""
+    if not isinstance(value, dict):
+        return value
+    out = {}
+    for k, v in value.items():
+        out[k] = with_slugs(v)
+        out.setdefault(slug(k), out[k])
+    return out
+
+
 def apply_mapping(signal):
     """{target: value} for every mapping entry whose source holds a value; a function that raises or returns None gives no entry."""
     out = {}
@@ -31,7 +43,7 @@ def apply_mapping(signal):
         if value is None:
             continue
         try:
-            value = func(Box(value, box_dots=True) if isinstance(value, dict) else value) if func else value
+            value = func(Box(with_slugs(value), box_dots=True) if isinstance(value, dict) else value) if func else value
         except Exception:
             continue
         if value is None:
