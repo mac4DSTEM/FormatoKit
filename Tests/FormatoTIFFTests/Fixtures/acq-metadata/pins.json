@@ -1,0 +1,341 @@
+{
+ "app_commit": "cb6e164f9227bf716185ed515bb6a2afb3a8841f",
+ "cases": [
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored; unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "2026-06-05 13:05:07"
+    },
+    "cameraLengthMM": null,
+    "detector": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "BM-Ceta"
+    },
+    "dwellUS": null,
+    "exposureS": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 0.5
+    },
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "Talos F200X"
+    },
+    "magnification": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 17500
+    },
+    "mode": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "TEM"
+    },
+    "unread": []
+   },
+   "name": "velox-ceta-imaging",
+   "reference": {
+    "beam_energy": 200.0,
+    "camera_length": 844.0
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored; unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "2026-06-05 13:05:07"
+    },
+    "cameraLengthMM": {
+     "note": null,
+     "otherCopy": null,
+     "value": 150
+    },
+    "detector": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "BM-Ceta"
+    },
+    "dwellUS": null,
+    "exposureS": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 0.5
+    },
+    "highTensionKV": null,
+    "instrument": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "Talos F200X"
+    },
+    "magnification": null,
+    "mode": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "TEM"
+    },
+    "unread": []
+   },
+   "name": "velox-diffraction-zero-voltage",
+   "reference": {
+    "beam_energy": 0.0,
+    "camera_length": 150.0
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored; unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "2026-06-05 13:05:07"
+    },
+    "cameraLengthMM": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "detector": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "BM-Ceta"
+    },
+    "dwellUS": null,
+    "exposureS": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 0.5
+    },
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "Talos F200X"
+    },
+    "magnification": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 17500
+    },
+    "mode": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "STEM"
+    },
+    "unread": []
+   },
+   "name": "velox-stem",
+   "reference": {
+    "beam_energy": 200.0,
+    "camera_length": 200.0
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "BM-Ceta"
+    },
+    "dwellUS": null,
+    "exposureS": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 0.5
+    },
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "Talos F200X"
+    },
+    "magnification": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 17500
+    },
+    "mode": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "TEM"
+    },
+    "unread": []
+   },
+   "name": "velox-zone-designator",
+   "reference": {
+    "beam_energy": 200.0,
+    "camera_length": 844.0
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored",
+     "otherCopy": null,
+     "value": "2026-06-05 13:02:03"
+    },
+    "cameraLengthMM": null,
+    "detector": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "ETD"
+    },
+    "dwellUS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 10
+    },
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 5
+    },
+    "instrument": {
+     "note": null,
+     "otherCopy": null,
+     "value": "Helios NanoLab\" 660"
+    },
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "fei-helios",
+   "reference": {
+    "General.date": "2026-06-05",
+    "General.time": "13:02:03",
+    "beam_energy": 5.0,
+    "dwell_time": 1e-05,
+    "microscope": "Helios NanoLab\" 660"
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored",
+     "otherCopy": null,
+     "value": "2026-06-05 13:02:03"
+    },
+    "cameraLengthMM": null,
+    "detector": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "ETD"
+    },
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": {
+     "note": null,
+     "otherCopy": null,
+     "value": "Helios NanoLab\" 660"
+    },
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "fei-sfeg-zero",
+   "reference": {
+    "General.date": "2026-06-05",
+    "General.time": "13:02:03",
+    "beam_energy": 0.0,
+    "dwell_time": 0.0,
+    "microscope": "Helios NanoLab\" 660"
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored",
+     "otherCopy": null,
+     "value": "2026-12-25 23:59:59"
+    },
+    "cameraLengthMM": null,
+    "detector": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "ETD"
+    },
+    "dwellUS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 10
+    },
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 5
+    },
+    "instrument": {
+     "note": null,
+     "otherCopy": null,
+     "value": "Helios NanoLab\" 660"
+    },
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "fei-first-field-day",
+   "reference": {
+    "General.date": "2026-12-25",
+    "General.time": "23:59:59",
+    "beam_energy": 5.0,
+    "dwell_time": 1e-05,
+    "microscope": "Helios NanoLab\" 660"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "dm-tag-65027",
+   "reference": {}
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "plain",
+   "reference": {}
+  }
+ ],
+ "reference_commit": "049e7d7070e84779b499adaf3295beee9facb004",
+ "rsciio_version": "0.14.1.dev96+g049e7d707"
+}

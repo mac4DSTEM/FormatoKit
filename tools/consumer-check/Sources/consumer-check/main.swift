@@ -5,7 +5,13 @@ import FormatoCore
 import FormatoDM
 import FormatoEMD
 import FormatoHDF5
+import FormatoMRC
+import FormatoTIFF
 
+func need<T>(_ value: T?) throws -> T {
+    guard let value else { throw FormatoReadError.unsupported("a value the check needs is missing") }
+    return value
+}
 nonisolated(unsafe) var checks = 0
 nonisolated(unsafe) var failed = 0
 func check(_ ok: @autoclosure () throws -> Bool, _ what: String) {
@@ -101,6 +107,39 @@ do {
     let frames = try VeloxSpectrumImageSignals(path: si, options: VeloxSpectrumImageOptions(sumFrames: false, rebinEnergy: 4, dataType: .float32)).signals
     check(frames.count == 1 && frames[0].data.shape == [3, 3, 4, 1024] && frames[0].axes.first?.name == "Time", "VeloxSpectrumImageOptions")
 } catch { check(false, "adapters: \(error)") }
+// Acquisition metadata (round 4): every format's reader and the FormatoCore pieces, public API only.
+do {
+    let acq = tests.appendingPathComponent("FormatoDMTests/Fixtures/acq-metadata/tem-image.dm4").path
+    let object = try need(DM4Experiment.list(path: acq).first)
+    let meta = AcquisitionMetadata.dm(object)
+    check(meta.highTensionKV?.value == 300 && meta.magnification?.value == 50000 && meta.exposureS?.value == 0.25, "AcquisitionMetadata.dm")
+    check(AcquisitionMetadata.dm(object, convention: .app).instrument?.value == "Tecnai", "AcquisitionMetadata.dm app convention")
+    let mrc = tests.appendingPathComponent("FormatoMRCTests/Fixtures/acq-metadata/fei-128-sections.mrc").path
+    check(try AcquisitionMetadata.mrc(path: mrc).magnification?.value == 14500, "AcquisitionMetadata.mrc")
+    let tif = tests.appendingPathComponent("FormatoTIFFTests/Fixtures/acq-metadata/fei-helios.tif").path
+    check(try AcquisitionMetadata.tiff(path: tif).highTensionKV?.value == 5, "AcquisitionMetadata.tiff")
+    let emd = tests.appendingPathComponent("FormatoEMDTests/Fixtures/acq-metadata/velox-acquisition.emd").path
+    let image = try need(VeloxEMDReader(path: emd).images().first { $0.id == "haadf" })
+    check(image.detectorType == "ScanningDetector" && AcquisitionMetadata.velox(image).cameraLengthMM?.value == 150, "AcquisitionMetadata.velox")
+    check(GuardedXML.document("<a><b>1</b></a>") != nil && GuardedXML.refusal("<a>") == .malformed, "GuardedXML")
+    let out = FileManager.default.temporaryDirectory.appendingPathComponent("formato-consumer-\(UUID().uuidString)")
+    try FormatoFileWrite.write(Data([7]), to: out)
+    check(try Data(contentsOf: out) == Data([7]), "FormatoFileWrite")
+    try? FileManager.default.removeItem(at: out)
+} catch { check(false, "acquisition metadata: \(error)") }
+// Image readers (round 4): the MRC reader, the Velox TIFF calibration option and the Velox object rule, public API only.
+do {
+    let mrcImage = tests.appendingPathComponent("FormatoMRCTests/Fixtures/image-readers/f32-3x2.mrc").path
+    let mrcSignal = try MRCReader(path: mrcImage).signal.load()
+    check(mrcSignal.data.shape == [2, 3] && mrcSignal.axes.map(\.units) == ["nm", "nm"], "MRCReader")
+    check(try MRCAppImage.read(path: mrcImage).x?.units == "Å", "MRCAppImage")
+    let velox = tests.appendingPathComponent("FormatoTIFFTests/Fixtures/image-readers/velox-nm.tif").path
+    let calibrated = try TIFFSignals(path: velox, options: TIFFReadOptions(veloxCalibration: true)).signal(series: 0)
+    check(calibrated.axes.contains { $0.units == "nm" && $0.scale == 0.25 }, "TIFFReadOptions.veloxCalibration")
+    check(TIFFVeloxCalibration.read(try TIFFFile(path: velox).directories[0]) != nil, "TIFFVeloxCalibration")
+    let objects = try VeloxEMDReader(path: tests.appendingPathComponent("FormatoEMDTests/Fixtures/image-readers/velox-objects.emd").path).images()
+    check(VeloxImageSelection.choose(objects)?.id == "c-haadf" && VeloxImageSelection.axes(of: objects[2]).x?.units == "m", "VeloxImageSelection")
+} catch { check(false, "image readers: \(error)") }
 check(FormatoUnits.convertScaleUnits(1.5e-9, units: "m", factor: 100)?.units == "nm", "FormatoUnits")
 check(FormatoUnits.parse("µm")?.shortForm == "μm", "units parse")
 

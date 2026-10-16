@@ -1,0 +1,535 @@
+{
+ "app_commit": "cb6e164f9227bf716185ed515bb6a2afb3a8841f",
+ "cases": [
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 2.5e-10,
+     "units": "m"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 2.5e-10,
+     "units": "m"
+    }
+   },
+   "name": "velox-agree",
+   "reference": {
+    "axes": [
+     {
+      "name": "height",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     },
+     {
+      "name": "width",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     }
+    ],
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "uncalibrated: the Velox XML and the resolution tags disagree"
+    ],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 uncalibrated: the Velox XML and the resolution tags disagree",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "velox-disagree",
+   "reference": {
+    "axes": [
+     {
+      "name": "height",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     },
+     {
+      "name": "width",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     }
+    ],
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 4.46168e-11,
+     "units": "m"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 4.46168e-11,
+     "units": "m"
+    }
+   },
+   "name": "velox-float32-rounded",
+   "reference": {
+    "axes": [
+     {
+      "name": "height",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     },
+     {
+      "name": "width",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     }
+    ],
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 2.5e-10,
+     "units": "m"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 2.5e-10,
+     "units": "m"
+    }
+   },
+   "name": "velox-xml-only",
+   "reference": {
+    "axes": [
+     {
+      "name": "height",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     },
+     {
+      "name": "width",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     }
+    ],
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 0.25,
+     "units": "nm"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 0.5,
+     "units": "nm"
+    }
+   },
+   "name": "velox-nm",
+   "reference": {
+    "axes": [
+     {
+      "name": "height",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     },
+     {
+      "name": "width",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     }
+    ],
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 2.5e-10,
+     "units": "m"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 0.5,
+     "units": "nm"
+    }
+   },
+   "name": "velox-mixed-units",
+   "reference": {
+    "axes": [
+     {
+      "name": "height",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     },
+     {
+      "name": "width",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     }
+    ],
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": {
+     "origin": 0,
+     "scale": 2.5e-10,
+     "units": "m"
+    }
+   },
+   "name": "velox-zero-x",
+   "reference": {
+    "axes": [
+     {
+      "name": "height",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     },
+     {
+      "name": "width",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     }
+    ],
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "velox-no-pixel-size",
+   "reference": {
+    "axes": [
+     {
+      "name": "height",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     },
+     {
+      "name": "width",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     }
+    ],
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "velox-refused-xml",
+   "reference": {
+    "axes": [
+     {
+      "name": "height",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     },
+     {
+      "name": "width",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     }
+    ],
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": 0,
+     "scale": 1e-08,
+     "units": "m"
+    },
+    "y": {
+     "origin": 0,
+     "scale": 1e-08,
+     "units": "m"
+    }
+   },
+   "name": "velox-and-fei",
+   "reference": {
+    "axes": [
+     {
+      "name": "height",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1e-08,
+      "size": 2,
+      "units": "m"
+     },
+     {
+      "name": "width",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1e-08,
+      "size": 2,
+      "units": "m"
+     }
+    ],
+    "shape": [
+     2,
+     2
+    ]
+   }
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "plain",
+   "reference": {
+    "axes": [
+     {
+      "name": "height",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     },
+     {
+      "name": "width",
+      "navigate": false,
+      "offset": 0.0,
+      "scale": 1.0,
+      "size": 2,
+      "units": ""
+     }
+    ],
+    "shape": [
+     2,
+     2
+    ]
+   }
+  }
+ ],
+ "reference_commit": "049e7d7070e84779b499adaf3295beee9facb004",
+ "rsciio_version": "0.14.1.dev96+g049e7d707"
+}

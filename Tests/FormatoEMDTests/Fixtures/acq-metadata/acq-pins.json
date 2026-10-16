@@ -1,0 +1,214 @@
+{
+ "app_commit": "cb6e164f9227bf716185ed515bb6a2afb3a8841f",
+ "cases": [
+  {
+   "accelerationVoltageVolts": 200000.0,
+   "acquisitionStartUnixTime": 1600000000.0,
+   "app": {
+    "acquired": {
+     "note": "a UTC instant, shown on this Mac's clock (GMT); the writer's zone is not stored",
+     "otherCopy": null,
+     "value": "2020-09-13 12:26:40"
+    },
+    "cameraLengthMM": null,
+    "detector": {
+     "note": "unvalidated: RosettaSciIO names some detectors from another field",
+     "otherCopy": null,
+     "value": "BM-Ceta"
+    },
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "Talos F200X"
+    },
+    "magnification": null,
+    "mode": null,
+    "unread": [
+     "cameraLength",
+     "exposure",
+     "magnification",
+     "mode"
+    ]
+   },
+   "binaryResultDetector": "BM-Ceta",
+   "detectorIndex": 8,
+   "detectorName": "BM-Ceta",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    }
+   ],
+   "dwellTimeSeconds": 1e-05,
+   "id": "ceta",
+   "instrumentModel": "Talos F200X",
+   "name": "ceta",
+   "reference": {
+    "beam_energy": 200.0,
+    "camera_length": 844.0,
+    "magnification": 0.0,
+    "microscope": "Talos"
+   },
+   "rsciio_title": "BM-Ceta"
+  },
+  {
+   "accelerationVoltageVolts": 300000.0,
+   "acquisitionStartUnixTime": 1600000000.0,
+   "app": {
+    "acquired": {
+     "note": "a UTC instant, shown on this Mac's clock (GMT); the writer's zone is not stored",
+     "otherCopy": null,
+     "value": "2020-09-13 12:26:40"
+    },
+    "cameraLengthMM": null,
+    "detector": {
+     "note": "unvalidated: RosettaSciIO names some detectors from another field",
+     "otherCopy": null,
+     "value": "HAADF"
+    },
+    "dwellUS": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 10
+    },
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 300
+    },
+    "instrument": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "Talos F200X"
+    },
+    "magnification": null,
+    "mode": null,
+    "unread": [
+     "cameraLength",
+     "exposure",
+     "magnification",
+     "mode"
+    ]
+   },
+   "binaryResultDetector": "HAADF",
+   "detectorIndex": 0,
+   "detectorName": "HAADF",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    }
+   ],
+   "dwellTimeSeconds": 1e-05,
+   "id": "haadf",
+   "instrumentModel": "Talos F200X",
+   "name": "haadf",
+   "reference": {
+    "beam_energy": 300.0,
+    "camera_length": 150.0,
+    "magnification": 225000.0,
+    "microscope": "Talos"
+   },
+   "rsciio_title": "HAADF"
+  },
+  {
+   "accelerationVoltageVolts": 0.0,
+   "acquisitionStartUnixTime": 1600000000.0,
+   "app": {
+    "acquired": {
+     "note": "a UTC instant, shown on this Mac's clock (GMT); the writer's zone is not stored",
+     "otherCopy": null,
+     "value": "2020-09-13 12:26:40"
+    },
+    "cameraLengthMM": null,
+    "detector": {
+     "note": "unvalidated: RosettaSciIO names some detectors from another field",
+     "otherCopy": null,
+     "value": "HAADF"
+    },
+    "dwellUS": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 10
+    },
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "Talos F200X"
+    },
+    "magnification": null,
+    "mode": null,
+    "unread": [
+     "cameraLength",
+     "exposure",
+     "magnification",
+     "mode"
+    ]
+   },
+   "binaryResultDetector": "HAADF",
+   "detectorIndex": 0,
+   "detectorName": "HAADF",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    }
+   ],
+   "dwellTimeSeconds": 1e-05,
+   "id": "zeros",
+   "instrumentModel": "Talos F200X",
+   "name": "zeros",
+   "reference": {
+    "beam_energy": 0.0,
+    "camera_length": 0.0,
+    "microscope": "Talos"
+   },
+   "rsciio_title": "HAADF"
+  }
+ ],
+ "reference_commit": "049e7d7070e84779b499adaf3295beee9facb004",
+ "rsciio_version": "0.14.1.dev96+g049e7d707"
+}

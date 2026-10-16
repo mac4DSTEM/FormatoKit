@@ -1,0 +1,613 @@
+{
+ "app_commit": "cb6e164f9227bf716185ed515bb6a2afb3a8841f",
+ "cases": [
+  {
+   "app": {
+    "axes": {
+     "a-edx": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     },
+     "b-df": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     },
+     "c-haadf": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 2.5e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 2.5e-10,
+       "units": "m"
+      }
+     },
+     "d-ceta-index-mismatch": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 4e-09,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 4e-09,
+       "units": "m"
+      }
+     },
+     "e-no-index": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     },
+     "f-offsets-units": {
+      "notes": [
+       "stored as int32, rounded to Float32"
+      ],
+      "voltage": 200000,
+      "x": {
+       "origin": -5,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 5,
+       "scale": 4e-10,
+       "units": "nm"
+      }
+     },
+     "g-zero-size": {
+      "notes": [],
+      "voltage": 200000,
+      "x": null,
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     }
+    },
+    "candidates": [
+     "b-df",
+     "c-haadf",
+     "d-ceta-index-mismatch",
+     "f-offsets-units",
+     "g-zero-size"
+    ],
+    "chosen": "c-haadf"
+   },
+   "ids": [
+    "a-edx",
+    "b-df",
+    "c-haadf",
+    "d-ceta-index-mismatch",
+    "e-no-index",
+    "f-offsets-units",
+    "g-zero-size"
+   ],
+   "name": "all"
+  },
+  {
+   "app": {
+    "axes": {
+     "a-edx": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     },
+     "b-df": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     },
+     "d-ceta-index-mismatch": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 4e-09,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 4e-09,
+       "units": "m"
+      }
+     },
+     "e-no-index": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     },
+     "f-offsets-units": {
+      "notes": [
+       "stored as int32, rounded to Float32"
+      ],
+      "voltage": 200000,
+      "x": {
+       "origin": -5,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 5,
+       "scale": 4e-10,
+       "units": "nm"
+      }
+     },
+     "g-zero-size": {
+      "notes": [],
+      "voltage": 200000,
+      "x": null,
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     }
+    },
+    "candidates": [
+     "b-df",
+     "d-ceta-index-mismatch",
+     "f-offsets-units",
+     "g-zero-size"
+    ],
+    "chosen": "b-df"
+   },
+   "ids": [
+    "a-edx",
+    "b-df",
+    "d-ceta-index-mismatch",
+    "e-no-index",
+    "f-offsets-units",
+    "g-zero-size"
+   ],
+   "name": "without-haadf"
+  },
+  {
+   "app": {
+    "axes": {
+     "a-edx": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     },
+     "e-no-index": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     }
+    },
+    "candidates": [],
+    "chosen": null
+   },
+   "ids": [
+    "a-edx",
+    "e-no-index"
+   ],
+   "name": "only-edx-and-unindexed"
+  },
+  {
+   "app": {
+    "axes": {
+     "a-edx": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     },
+     "b-df": {
+      "notes": [],
+      "voltage": 200000,
+      "x": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      },
+      "y": {
+       "origin": 0,
+       "scale": 2e-10,
+       "units": "m"
+      }
+     }
+    },
+    "candidates": [
+     "b-df"
+    ],
+    "chosen": "b-df"
+   },
+   "ids": [
+    "a-edx",
+    "b-df"
+   ],
+   "name": "edx-then-df"
+  },
+  {
+   "app": {
+    "axes": {},
+    "candidates": [],
+    "chosen": null
+   },
+   "ids": [],
+   "name": "none"
+  }
+ ],
+ "entries": [
+  {
+   "detectorIndex": 5,
+   "detectorName": "SuperXG21",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 3,
+     "name": "DF4",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    }
+   ],
+   "elementType": "uint16",
+   "height": 2,
+   "id": "a-edx",
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "pixelSize": [
+    2e-10,
+    2e-10
+   ],
+   "pixelUnit": "m",
+   "pixelUnitY": "m",
+   "voltage": 200000.0,
+   "width": 3
+  },
+  {
+   "detectorIndex": 3,
+   "detectorName": "DF4",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 3,
+     "name": "DF4",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    }
+   ],
+   "elementType": "uint16",
+   "height": 2,
+   "id": "b-df",
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "pixelSize": [
+    2e-10,
+    2e-10
+   ],
+   "pixelUnit": "m",
+   "pixelUnitY": "m",
+   "voltage": 200000.0,
+   "width": 3
+  },
+  {
+   "detectorIndex": 0,
+   "detectorName": "HAADF",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 3,
+     "name": "DF4",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    }
+   ],
+   "elementType": "uint16",
+   "height": 2,
+   "id": "c-haadf",
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "pixelSize": [
+    2.5e-10,
+    2.5e-10
+   ],
+   "pixelUnit": "m",
+   "pixelUnitY": "m",
+   "voltage": 200000.0,
+   "width": 3
+  },
+  {
+   "detectorIndex": 0,
+   "detectorName": "BM-Ceta",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 3,
+     "name": "DF4",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    }
+   ],
+   "elementType": "uint16",
+   "height": 2,
+   "id": "d-ceta-index-mismatch",
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "pixelSize": [
+    4e-09,
+    4e-09
+   ],
+   "pixelUnit": "m",
+   "pixelUnitY": "m",
+   "voltage": 200000.0,
+   "width": 3
+  },
+  {
+   "detectorIndex": null,
+   "detectorName": "HAADF",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 3,
+     "name": "DF4",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    }
+   ],
+   "elementType": "uint16",
+   "height": 2,
+   "id": "e-no-index",
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "pixelSize": [
+    2e-10,
+    2e-10
+   ],
+   "pixelUnit": "m",
+   "pixelUnitY": "m",
+   "voltage": 200000.0,
+   "width": 3
+  },
+  {
+   "detectorIndex": 3,
+   "detectorName": "DF4",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 3,
+     "name": "DF4",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    }
+   ],
+   "elementType": "int32",
+   "height": 2,
+   "id": "f-offsets-units",
+   "offset": [
+    1e-09,
+    -2e-09
+   ],
+   "pixelSize": [
+    2e-10,
+    4e-10
+   ],
+   "pixelUnit": "m",
+   "pixelUnitY": "nm",
+   "voltage": 200000.0,
+   "width": 3
+  },
+  {
+   "detectorIndex": 3,
+   "detectorName": "DF4",
+   "detectors": [
+    {
+     "index": 0,
+     "name": "HAADF",
+     "type": "ScanningDetector"
+    },
+    {
+     "index": 3,
+     "name": "DF4",
+     "type": "ImagingDetector"
+    },
+    {
+     "index": 5,
+     "name": "SuperXG21",
+     "type": "AnalyticalDetector"
+    },
+    {
+     "index": 8,
+     "name": "BM-Ceta",
+     "type": "ImagingDetector"
+    }
+   ],
+   "elementType": "uint16",
+   "height": 2,
+   "id": "g-zero-size",
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "pixelSize": [
+    0.0,
+    2e-10
+   ],
+   "pixelUnit": "m",
+   "pixelUnitY": "m",
+   "voltage": 200000.0,
+   "width": 3
+  }
+ ],
+ "reference_commit": "049e7d7070e84779b499adaf3295beee9facb004",
+ "rsciio_version": "0.14.1.dev96+g049e7d707"
+}

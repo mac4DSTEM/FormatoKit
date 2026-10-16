@@ -1,0 +1,549 @@
+{
+ "app_commit": "cb6e164f9227bf716185ed515bb6a2afb3a8841f",
+ "cases": [
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored",
+     "otherCopy": null,
+     "value": "2016-08-27 20:54:33"
+    },
+    "cameraLengthMM": {
+     "note": "mm (assumed)",
+     "otherCopy": null,
+     "value": 130
+    },
+    "detector": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "Orius"
+    },
+    "dwellUS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 15
+    },
+    "exposureS": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": 0.5
+    },
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": {
+     "note": null,
+     "otherCopy": null,
+     "value": "FEI Titan"
+    },
+    "magnification": {
+     "note": null,
+     "otherCopy": null,
+     "value": 2000000
+    },
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "STEM NANOPROBE \u00b7 IMAGING"
+    },
+    "unread": []
+   },
+   "name": "stem",
+   "numbers": {
+    "DataBar.Exposure Time (s)": 0.5,
+    "DigiScan.Sample Time": 15.0,
+    "Microscope Info.Actual Magnification": 2100000.0,
+    "Microscope Info.Indicated Magnification": 2000000.0,
+    "Microscope Info.STEM Camera Length": 130.0,
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "General.date": "2016-08-27",
+    "General.time": "20:54:33",
+    "acquisition_mode": "STEM",
+    "beam_energy": 200.0,
+    "camera_length": 130.0,
+    "dwell_time": 1.5e-05,
+    "magnification": 2000000.0,
+    "microscope": "FEI Titan"
+   },
+   "strings": {
+    "Acquisition.Device.Name": "Orius",
+    "DataBar.Acquisition Date": "27.08.2016",
+    "DataBar.Acquisition Time": "20:54:33",
+    "Microscope Info.Illumination Mode": "STEM NANOPROBE",
+    "Microscope Info.Imaging Mode": "IMAGING",
+    "Microscope Info.Microscope": "[]",
+    "Microscope Info.Name": "FEI Tecnai Remote",
+    "Session Info.Microscope": "FEI Titan"
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored; month-first order assumed",
+     "otherCopy": null,
+     "value": "2016-08-08 16:26:37"
+    },
+    "cameraLengthMM": null,
+    "detector": {
+     "note": "unvalidated: no published reader reads it",
+     "otherCopy": null,
+     "value": "K2"
+    },
+    "dwellUS": null,
+    "exposureS": {
+     "note": null,
+     "otherCopy": 0.26,
+     "value": 0.25
+    },
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 300
+    },
+    "instrument": {
+     "note": null,
+     "otherCopy": null,
+     "value": "Tecnai"
+    },
+    "magnification": {
+     "note": null,
+     "otherCopy": null,
+     "value": 50000
+    },
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "TEM \u00b7 IMAGING"
+    },
+    "unread": []
+   },
+   "name": "tem-image",
+   "numbers": {
+    "Acquisition.Parameters.Detector.exposure (s)": 0.25,
+    "DataBar.Exposure Time (s)": 0.26,
+    "Microscope Info.Indicated Magnification": 50000.0,
+    "Microscope Info.Voltage": 300000.0
+   },
+   "reference": {
+    "General.date": "2016-08-08",
+    "General.time": "16:26:37",
+    "acquisition_mode": "TEM",
+    "beam_energy": 300.0,
+    "exposure": 0.25,
+    "magnification": 50000.0,
+    "microscope": "Tecnai"
+   },
+   "strings": {
+    "Acquisition.Device.Name": "K2 ",
+    "DataBar.Acquisition Date": "8/8/2016",
+    "DataBar.Acquisition Time": "4:26:37 PM",
+    "Microscope Info.Illumination Mode": "TEM",
+    "Microscope Info.Imaging Mode": "IMAGING",
+    "Microscope Info.Name": "Tecnai"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": {
+     "note": "mm (assumed)",
+     "otherCopy": null,
+     "value": 680
+    },
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 200
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "TEM \u00b7 DIFFRACTION"
+    },
+    "unread": []
+   },
+   "name": "tem-diffraction",
+   "numbers": {
+    "Microscope Info.Indicated Magnification": 680.0,
+    "Microscope Info.STEM Camera Length": 99.0,
+    "Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "acquisition_mode": "TEM",
+    "beam_energy": 200.0,
+    "camera_length": 680.0
+   },
+   "strings": {
+    "Microscope Info.Illumination Mode": "TEM",
+    "Microscope Info.Imaging Mode": "DIFFRACTION"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 2
+    },
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 5
+    },
+    "instrument": null,
+    "magnification": {
+     "note": null,
+     "otherCopy": null,
+     "value": 1
+    },
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "SEM"
+    },
+    "unread": []
+   },
+   "name": "sem",
+   "numbers": {
+    "DigiScan.Sample Time": 2.0,
+    "Microscope Info.Indicated Magnification": 1.0,
+    "Microscope Info.STEM Camera Length": 0.0,
+    "Microscope Info.Voltage": 5000.0
+   },
+   "reference": {
+    "acquisition_mode": "SEM",
+    "beam_energy": 5.0,
+    "camera_length": 0.0,
+    "dwell_time": 2e-06,
+    "magnification": 1.0
+   },
+   "strings": {
+    "Microscope Info.Illumination Mode": "SEM"
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored",
+     "otherCopy": null,
+     "value": "2020-01-31 23:59:58"
+    },
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 100
+    },
+    "instrument": null,
+    "magnification": {
+     "note": null,
+     "otherCopy": null,
+     "value": 1000
+    },
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "TEM"
+    },
+    "unread": []
+   },
+   "name": "stack-builder",
+   "numbers": {
+    "Microscope Info.Indicated Magnification": 1000.0,
+    "Microscope Info.Voltage": 100000.0,
+    "source.Tags at creation.Microscope Info.Indicated Magnification": 500000.0,
+    "source.Tags at creation.Microscope Info.STEM Camera Length": 100.0,
+    "source.Tags at creation.Microscope Info.Voltage": 200000.0
+   },
+   "reference": {
+    "General.date": "2020-01-31",
+    "General.time": "23:59:58",
+    "acquisition_mode": "STEM",
+    "beam_energy": 200.0,
+    "camera_length": 100.0,
+    "magnification": 500000.0
+   },
+   "strings": {
+    "Microscope Info.Illumination Mode": "TEM",
+    "source.Tags at creation.DataBar.Acquisition Date": "1/31/2020",
+    "source.Tags at creation.DataBar.Acquisition Time": "23:59:58",
+    "source.Tags at creation.Microscope Info.Illumination Mode": "STEM"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 120
+    },
+    "instrument": null,
+    "magnification": {
+     "note": null,
+     "otherCopy": null,
+     "value": 700
+    },
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "TEM"
+    },
+    "unread": []
+   },
+   "name": "stack-fallback",
+   "numbers": {
+    "Microscope Info.Indicated Magnification": 700.0,
+    "source.Tags at creation.Microscope Info.Voltage": 120000.0
+   },
+   "reference": {
+    "acquisition_mode": "TEM",
+    "beam_energy": 120.0
+   },
+   "strings": {
+    "source.Tags at creation.Microscope Info.Illumination Mode": "TEM"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": null,
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "STEM"
+    },
+    "unread": []
+   },
+   "name": "zeros",
+   "numbers": {
+    "DigiScan.Sample Time": 0.0,
+    "Microscope Info.Indicated Magnification": 0.0,
+    "Microscope Info.STEM Camera Length": 0.0,
+    "Microscope Info.Voltage": 0.0
+   },
+   "reference": {
+    "acquisition_mode": "STEM",
+    "beam_energy": 0.0,
+    "camera_length": 0.0,
+    "dwell_time": 0.0,
+    "magnification": 0.0
+   },
+   "strings": {
+    "Microscope Info.Illumination Mode": "STEM"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": {
+     "note": null,
+     "otherCopy": null,
+     "value": 10
+    },
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "TEM"
+    },
+    "unread": []
+   },
+   "name": "negative-voltage",
+   "numbers": {
+    "Microscope Info.Indicated Magnification": 10.0,
+    "Microscope Info.Voltage": -200000.0
+   },
+   "reference": {
+    "acquisition_mode": "TEM",
+    "beam_energy": -200.0,
+    "magnification": 10.0
+   },
+   "strings": {
+    "Microscope Info.Illumination Mode": "TEM"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": null,
+    "instrument": {
+     "note": null,
+     "otherCopy": null,
+     "value": "Titan"
+    },
+    "magnification": {
+     "note": null,
+     "otherCopy": null,
+     "value": 100
+    },
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "TEM \u00b7 IMAGING"
+    },
+    "unread": []
+   },
+   "name": "whitespace-names",
+   "numbers": {
+    "Microscope Info.Indicated Magnification": 100.0
+   },
+   "reference": {
+    "acquisition_mode": "TEM",
+    "magnification": 100.0,
+    "microscope": "  "
+   },
+   "strings": {
+    "Acquisition.Device.Name": "  ",
+    "Microscope Info.Illumination Mode": "TEM",
+    "Microscope Info.Imaging Mode": "IMAGING",
+    "Microscope Info.Name": "Titan ",
+    "Session Info.Microscope": "  "
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored; month-first order assumed",
+     "otherCopy": null,
+     "value": "2020-01-02 01:02:03"
+    },
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": {
+     "note": null,
+     "otherCopy": null,
+     "value": 1
+    },
+    "highTensionKV": null,
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "no-microscope-group",
+   "numbers": {
+    "Acquisition.Parameters.Detector.exposure (s)": 1.0
+   },
+   "reference": {
+    "General.date": "2020-01-02",
+    "General.time": "01:02:03",
+    "exposure": 1.0
+   },
+   "strings": {
+    "DataBar.Acquisition Date": "1/2/2020",
+    "DataBar.Acquisition Time": "01:02:03"
+   }
+  },
+  {
+   "app": {
+    "acquired": {
+     "note": "local time, zone not stored; month-first order assumed",
+     "otherCopy": null,
+     "value": "2021-03-04 00:00:00"
+    },
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 80
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": {
+     "note": null,
+     "otherCopy": null,
+     "value": "TEM"
+    },
+    "unread": []
+   },
+   "name": "ambiguous-date",
+   "numbers": {
+    "Microscope Info.Voltage": 80000.0
+   },
+   "reference": {
+    "General.date": "2021-03-04",
+    "General.time": "00:00:00",
+    "acquisition_mode": "TEM",
+    "beam_energy": 80.0
+   },
+   "strings": {
+    "DataBar.Acquisition Date": "03/04/2021",
+    "DataBar.Acquisition Time": "12:00:00 a.m.",
+    "Microscope Info.Illumination Mode": "TEM"
+   }
+  },
+  {
+   "app": {
+    "acquired": null,
+    "cameraLengthMM": null,
+    "detector": null,
+    "dwellUS": null,
+    "exposureS": null,
+    "highTensionKV": {
+     "note": null,
+     "otherCopy": null,
+     "value": 80
+    },
+    "instrument": null,
+    "magnification": null,
+    "mode": null,
+    "unread": []
+   },
+   "name": "unparseable-date",
+   "numbers": {
+    "Microscope Info.Voltage": 80000.0
+   },
+   "reference": {
+    "General.date": "2021-03-04",
+    "General.time": "12:00:00",
+    "beam_energy": 80.0
+   },
+   "strings": {
+    "DataBar.Acquisition Date": "2021-03-04",
+    "DataBar.Acquisition Time": "12:00:00"
+   }
+  }
+ ],
+ "reference_commit": "049e7d7070e84779b499adaf3295beee9facb004",
+ "rsciio_version": "0.14.1.dev96+g049e7d707"
+}

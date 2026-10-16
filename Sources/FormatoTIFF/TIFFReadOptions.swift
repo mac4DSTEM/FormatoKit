@@ -19,8 +19,13 @@ public nonisolated enum TIFFVendorBranches: Sendable, Equatable {
 /// The options of `TIFFSignals.init(path:options:)`. The defaults give exactly the behaviour of `TIFFSignals.init(path:)`.
 public nonisolated struct TIFFReadOptions: Sendable, Equatable {
     public var vendorBranches: TIFFVendorBranches
+    /// Read the pixel size of a Velox TIFF from its XML (tag 34683, ``TIFFVeloxCalibration``), as the first consumer does.
+    /// RosettaSciIO reads no such calibration, so the default (false) leaves the axes uncalibrated, as it does. A refused
+    /// or disagreeing calibration leaves the default axes and adds the metadata entry `FormatoKit.policy.velox_calibration`.
+    public var veloxCalibration: Bool
 
-    public init(vendorBranches: TIFFVendorBranches = .refuse) {
+    public init(vendorBranches: TIFFVendorBranches = .refuse, veloxCalibration: Bool = false) {
         self.vendorBranches = vendorBranches
+        self.veloxCalibration = veloxCalibration
     }
 }

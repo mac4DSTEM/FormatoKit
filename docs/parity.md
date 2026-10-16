@@ -19,7 +19,7 @@ instruments and techniques, out of scope until someone asks.
 | EMD, prismatic | emd | no | — | not read | C |
 | TIFF | tif, tiff | yes | `FormatoTIFF` | **pinned** (step 2) for FEI, Gatan DM tags, ImageJ and plain files, uncompressed strips: 31 public and planted series and the owner's 6 Ceta TIFFs bit for bit; the tag walker equal to tifffile; Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu streak, compression and tiles refused by name | A |
 | TIA | ser, emi | no | `FormatoTIFF` or its own module | not read | B |
-| MRC | mrc, ali | no | `FormatoMRC` | empty | B |
+| MRC | mrc, ali | no | `FormatoMRC` | **pinned**: `MRCReader` (lazy; modes 0 uint8, 1, 2, 6; header little-endian whatever the stamp; nm axes; size-1 axes squeezed; FEI 128-byte pixel size in float32; complex64 and float16 refused: no `FormatoDataType`), bit for bit at 049e7d70 on synthetic files; `MRCAppImage` is the named consumer option (signed mode 0, stamp honoured, Angstrom, stacks refused, Float32) pinned to macTEM cb6e164; acquisition metadata: see the section below | B |
 | MRCZ | mrc, mrcz | yes | `FormatoMRC` | not read | C |
 | EMPAD | xml (+ raw) | no | `FormatoEMPAD` | **pinned**: mmap Float32 frames, footer removal, scan/series shapes, squeezed axes, both XML navigation calibrations, diffraction calibration and timestamp metadata; synthetic full-byte pins at 049e7d70 | A |
 | py4DSTEM / EMD 1.0 (py4DSTEM f050d207, h5py 3.11.0) | h5, hdf5, emd | — | `FormatoHDF5` | **pinned** for explicit rank-four numeric datasets: stored bytes and shape, hyperslabs, R/Q axes, flip, rotation, ellipse, probe semiangle, lazy origin maps. Compressed Float32 and big-endian UInt16 synthetic files; uniform generic dimension vectors and scalar attributes checked with h5py; nonlinear coordinates refused | A |
@@ -127,3 +127,40 @@ instruments and techniques, out of scope until someone asks.
 `MIBReader` defaults to RosettaSciIO `file_reader` at 049e7d70: fastest-first `navigationShape`, Python frame slices, singleton squeezing then a flip of the penultimate axis, integer pixels and timestamp/exposure metadata. Malformed/trailing partial frames are refused rather than silently truncated. Timestamp inference accepts UTC timestamps with up to nine fractional digits. No writable mmap, dask chunks or raw unpacking.
 
 `MIBConvention.appScanXY` uses the original reader at c809679c: a required ScanX/ScanY companion, 1x1 / 2x2 / 2x2G assemblies, unsqueezed scan axes, no flip, and Float32 conversion (including UInt32 rounding). Slicing/explicit navigation are refused in this convention. Both references refuse raw R64. `tools/mib/generate.py` compiles the pinned app initializer and pixel reader with an identity crop/bin view, records its output bytes, and pins rsciio data, axes and mapped metadata. All fixtures are synthetic, compressed and under 1 MB together.
+
+## Acquisition metadata and file writing (FormatoCore)
+
+`AcquisitionMetadata` / `MetadataReading` carry high tension, magnification, camera length, detector, dwell, exposure,
+date, instrument and mode with rules (a) to (g) stated in the source header. They are not a RosettaSciIO structure:
+each format reader compares its values with rsciio's metadata (see the DM, MRC, TIFF and Velox rows) and states where
+the nil and unit rules differ. `GuardedXML` has no rsciio counterpart (rsciio parses unguarded); `FormatoFileWrite.write`
+is a Foundation helper. `formatoDisplayFileName` equals the app's `displayFileName` (test `testDisplayFileNameEqualsTheAppsCopy`).
+
+## Acquisition metadata (round 4, `tools/acq-metadata`)
+
+Every reader below takes a convention. **`.rosettaSciIO`** (default): RosettaSciIO 049e7d70's `mapping` applied the way HyperSpy applies
+it, for every field it maps (no positivity rule, its tag choices and mode tests, its unit arithmetic); a field it does not map is read by
+the consumer's rule and labelled `AcquisitionMetadata.unvalidatedNote`. **`.app`**: the consumer's reader, compiled unchanged from macTEM
+cb6e164 and pinned. Pins: synthetic files written byte by byte (`generate.py`), RosettaSciIO's returned mapping, the consumer's output.
+
+| Format | RosettaSciIO maps | `.rosettaSciIO` differs from `.app` by |
+|---|---|---|
+| DM (`AcquisitionMetadata.dm`) | beam energy, camera length, magnification, dwell, camera exposure, mode, microscope, date, time | a stack-builder image is read from `source.Tags at creation` instead of the direct tags; zero and negative values are kept; camera length is `STEM Camera Length` in every non-TEM mode (SEM included) and `Indicated Magnification` for TEM diffraction; the mode is STEM / SEM / TEM; the exposure is read only without DigiScan and has no second copy; the instrument is untrimmed. Date and time are joined into one stamp; dateutil's guessing is not ported (the layouts in the source header only). |
+| MRC (`.mrc`) | magnification and exposure of the 128-byte per-section FEI header (NEXT = 128 KiB) | `.app` reads the FEI1/FEI2 extended-header record by bitmask (HT, camera length, dwell, detector, date, instrument, mode); `.rosettaSciIO` reads neither (RosettaSciIO does not) and ignores the machine stamp. |
+| TIFF, FEI SEM INI (`tiff`) | `mapping_fei`: HV, dwell, date, time, system type | zero HV and dwell are kept; the date goes through the kit's dateutil port (day-first above 12 as the app); the detector is unmapped and labelled. |
+| TIFF, Velox XML (tag 34683) | none (no plugin reads the tag); the same schema's EMD mapping | acceleration voltage and camera length (every mode) are the EMD mapping's `float(x) / 1e3` and `* 1e3`, unguarded; the other values keep the app's rules and are labelled. |
+| EMD, Velox (`velox`) | beam energy, camera length (every mode), `StemMagnification` as magnification, `InstrumentClass` as microscope | magnification, camera length, exposure and mode are read (the app leaves them `unread`). RosettaSciIO's microscope is `InstrumentClass`, which `VeloxMetadata` does not expose; both conventions give `InstrumentModel`, labelled. |
+
+## Image readers (round 4)
+
+- **MRC** `MRCReader` equals RosettaSciIO's `file_reader` (data bytes, dtype, shape, axes names, sizes, scales and offsets bit for bit) on 17
+  synthetic files (`tools/acq-metadata/generate.py`): float32/int16/uint16/uint8 images, a stack, origins, zero cell lengths and samplings, a squeezed
+  y axis (the axes shift as RosettaSciIO's do), an FEI header, a non-FEI extended header; mode 3, a big-endian file read as little-endian and a
+  truncated file raise in both. Not read: modes 4 and 12 (read by RosettaSciIO; the data model has no complex or float16 type), the DE movie
+  files, `navigation_shape`, `metadata_file`. `MRCAppImage` is the consumer's option.
+- **TIFF, Velox pixel size** `TIFFReadOptions.veloxCalibration` (default off): RosettaSciIO reads no calibration from tag 34683, so the default
+  axes equal its (uncalibrated) axes on all 11 pinned files; with the option the Velox XML pixel size is read as the consumer reads it
+  (unit attributes as stored, cross-checked against tags 65450-65452, FEI SEM tags first, a refused XML falls through). Pinned to macTEM cb6e164.
+- **EMD, Velox object rule** `VeloxImageSelection` (consumer option; RosettaSciIO returns every image): `choose` and `axes(of:)` pinned to macTEM
+  cb6e164 on 7 synthetic images and 5 subsets. Its axes differ from `VeloxImageSignals`: the y unit is `PixelUnitY` (RosettaSciIO uses `PixelUnitX`)
+  and the origin is in pixels.
