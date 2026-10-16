@@ -83,8 +83,8 @@ Worktree: `_worktrees/FormatoKit-r2` under the suite root, based on main `74da29
 - Tests: baseline full `swift test -c release --jobs 4` failed only
   `HDF5ExitBarrierTests.testTheVeloxLoaderInstallsTheBarrierAfterHDF5sOwnTeardownHandler` (unset `FORMATO_HDF5_PATH`).
   That test is unchanged. Final validation and review results follow below.
-- `FormatoMIB` (merged from `codex/mib-r3`): raw 1/6/12/24-bit and non-raw Merlin frames, pinned to RosettaSciIO 049e7d70
-  with the app's convention as a named option (`tools/mib/generate.py`). R64 stays refused by name.
+- `FormatoMIB` (merged from `codex/mib-r3`): processed 1/6/12/24-bit Merlin frames, pinned to RosettaSciIO 049e7d70
+  with the app's convention as a named option (`tools/mib/generate.py`). Packed raw R64 throws the reference refusal.
 - Process: the exact `git worktree add … main` command failed because main was already checked out; the worktree
   was created detached at main, then switched to `codex/hdf5-4d` from main. No app source was edited.
   The user authorized a Codex reviewer in place of unavailable Sonnet; no owner approval of scientific behavior is claimed.
