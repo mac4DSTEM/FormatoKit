@@ -8,7 +8,7 @@ abstract: >-
   RosettaSciIO and is checked against it.
 authors:
   - name: "mac4DSTEM contributors"
-license: GPL-3.0-or-later
+license: GPL-3.0
 repository-code: "https://github.com/mac4DSTEM/FormatoKit"
 keywords:
   - electron microscopy
