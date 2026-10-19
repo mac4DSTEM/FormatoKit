@@ -9,10 +9,12 @@ cd $here
 unset FORMATO_HDF5_PATH
 mkdir -p .build
 log=.build/consumer-check-build.log
-swift build -c debug > $log 2>&1 || { grep -E "error" $log | head -20 >&2; print -u2 "consumer-check: BUILD FAILED ($here/$log)"; exit 1 }
+# --disable-dependency-cache: SwiftPM's shared repository cache can print a 'skipping cache' warning on a CI runner,
+# which the warning count would take for the kit's own (DiffractoKit 0.4.1's CI).
+swift build --disable-dependency-cache -c debug > $log 2>&1 || { grep -E "error" $log | head -20 >&2; print -u2 "consumer-check: BUILD FAILED ($here/$log)"; exit 1 }
 warnings=$(grep -c "warning:" $log || true)
 (( warnings == 0 )) || { grep "warning:" $log | head >&2; print -u2 "consumer-check: $warnings warning(s)"; exit 1 }
-bin=$(swift build -c debug --show-bin-path)
+bin=$(swift build --disable-dependency-cache -c debug --show-bin-path)
 $bin/consumer-check $root/Tests
 
 # The second consumer: the README's own Swift blocks, pasted verbatim (every non-empty line of a ```swift block must still be in
@@ -28,10 +30,10 @@ done < <(awk '/^```swift$/{on=1; next} /^```$/{on=0} on' $root/README.md)
 cd $readme
 mkdir -p .build
 rlog=.build/readme-check-build.log
-swift build -c debug -j 2 > $rlog 2>&1 || { grep -E "error" $rlog | head -20 >&2; print -u2 "consumer-check: README BUILD FAILED ($readme/$rlog)"; exit 1 }
+swift build --disable-dependency-cache -c debug -j 2 > $rlog 2>&1 || { grep -E "error" $rlog | head -20 >&2; print -u2 "consumer-check: README BUILD FAILED ($readme/$rlog)"; exit 1 }
 rwarnings=$(grep -c "warning:" $rlog || true)
 (( rwarnings == 0 )) || { grep "warning:" $rlog | head >&2; print -u2 "consumer-check: README check: $rwarnings warning(s)"; exit 1 }
-$(swift build -c debug --show-bin-path)/readme-check $root/Tests
+$(swift build --disable-dependency-cache -c debug --show-bin-path)/readme-check $root/Tests
 print "consumer-check: README snippets built verbatim and ran on the planted fixtures, Debug build, no warnings, libhdf5 from the package"
 
 print "consumer-check: all passed through the public API only, Debug build, no warnings, libhdf5 from the package (FormatoKit $(git -C $root rev-parse --short HEAD))"
