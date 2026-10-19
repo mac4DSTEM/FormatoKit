@@ -8,9 +8,12 @@
 // the settings below enable, no unsafe flags (a versioned dependency cannot carry them): a consumer builds the kit optimised itself,
 // and tools/test.sh runs this package's tests with `-c release`. One product per module. What one module needs from
 // another is `package`, never `public`; what a consumer reads is `public` and is guarded by tools/consumer-check.
-// libhdf5 ships inside FormatoHDF5 as a resource (the readers dlopen it): `swift build` and `swift test` need no setup.
-// macOS 15 / iOS 18 (0.2.1). The shipped dylibs are arm64 with minos 15. FormatoHDF5 and FormatoEMD load libhdf5 at run time and
-// are macOS-only in practice: on iOS they build, but a Velox read refuses (no libhdf5 for iOS). The other modules are pure Swift.
+// libhdf5 ships as three binary targets (FormatoLibHDF5, FormatoLibSZ, FormatoLibAEC: dynamic-framework XCFrameworks, arm64 macOS, minos 15),
+// so an app that embeds the kit gets them embedded and signed with its own identity at archive time. The readers still dlopen libhdf5.
+// Built by tools/xcframework/build.sh; the release assets are the zips it writes (the checksums below are its checksums.txt).
+// With FORMATO_LOCAL_XCFRAMEWORKS set (tools/test.sh, CI and the consumer check set it) the targets are the local build in dist/xcframeworks.
+// macOS 15 / iOS 18 (0.2.1). FormatoHDF5 and FormatoEMD load libhdf5 at run time and are macOS-only in practice: on iOS they
+// build (the binary targets are macOS-only and conditional), but a Velox read refuses (no libhdf5 for iOS). The other modules are pure Swift.
 import PackageDescription
 
 let settings: [SwiftSetting] = [
@@ -18,6 +21,23 @@ let settings: [SwiftSetting] = [
     .enableUpcomingFeature("InferIsolatedConformances"),
     .enableUpcomingFeature("MemberImportVisibility"),
 ]
+
+// The release the three zips are attached to, and their SwiftPM checksums (written by a release run of tools/xcframework/build.sh).
+let xcframeworkRelease = "0.4.0"
+let xcframeworks: [(name: String, checksum: String)] = [
+    ("FormatoLibHDF5", "8b6b74bc65088e4ba28e6bb5c897ef85e5f17a24ad3ab6ce0dae18531788d236"),
+    ("FormatoLibSZ", "52388745a16c0856d162a8ed7efc1befa23f8274cdb7b169ee320e10d8f0a28d"),
+    ("FormatoLibAEC", "bef7dd2368f3caf3c8d878ddd30784f1f4bf2570820a2384c693e0f5d6d28518"),
+]
+let useLocalXCFrameworks = Context.environment["FORMATO_LOCAL_XCFRAMEWORKS"] != nil
+let binaryTargets: [Target] = xcframeworks.map { framework in
+    useLocalXCFrameworks
+        ? .binaryTarget(name: framework.name, path: "dist/xcframeworks/\(framework.name).xcframework")
+        : .binaryTarget(
+            name: framework.name,
+            url: "https://github.com/mac4DSTEM/FormatoKit/releases/download/\(xcframeworkRelease)/\(framework.name).xcframework.zip",
+            checksum: framework.checksum)
+}
 
 let package = Package(
     name: "FormatoKit",
@@ -33,11 +53,13 @@ let package = Package(
         .library(name: "FormatoMIB", targets: ["FormatoMIB"]),
         .library(name: "FormatoMSA", targets: ["FormatoMSA"]),
     ],
-    targets: [
+    targets: binaryTargets + [
         // The data model every reader returns: arrays, axes, units, metadata with provenance, lazy signals; cancellation.
         .target(name: "FormatoCore", swiftSettings: settings),
         // HDF5: the process-wide HDF5 lock and quit barrier (HDF5Serial), the shipped libhdf5. Later: hspy, the sidecar.
-        .target(name: "FormatoHDF5", dependencies: ["FormatoCore"], resources: [.copy("Resources/hdf5")], swiftSettings: settings),
+        .target(name: "FormatoHDF5",
+                dependencies: ["FormatoCore"] + xcframeworks.map { .target(name: $0.name, condition: .when(platforms: [.macOS])) },
+                swiftSettings: settings),
         // Gatan DigitalMicrograph .dm3 / .dm4: DM4Experiment (inherited reader, registration step 1 §1.1) and the signal adapter.
         .target(name: "FormatoDM", dependencies: ["FormatoCore"], swiftSettings: settings),
         // EMD: Velox (inherited reader, registration step 1 §1.1) and its image adapter. Later: NCEM / Berkeley EMD.

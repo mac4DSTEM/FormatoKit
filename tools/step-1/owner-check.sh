@@ -19,5 +19,7 @@ if [[ ! -s $out/owner-pins.json || $out/owner-pins.json -ot $out/files-abs.txt &
   tr '\n' '\0' < $out/files-abs.txt | xargs -0 ../tools/memcap.sh -- References/rsciio-venv/bin/python -I -B tools/step-1/pins.py --work $out --out $out/owner-pins.json --owner
 fi
 export FORMATO_OWNER_PINS=$out/owner-pins.json FORMATO_OWNER_FILES=$out/files-abs.txt
-export FORMATO_HDF5_PATH=${FORMATO_HDF5_PATH:-$PWD/Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib}
+[[ -d dist/xcframeworks/FormatoLibHDF5.xcframework ]] || tools/xcframework/build.sh --local > /dev/null 2>&1
+export FORMATO_LOCAL_XCFRAMEWORKS=1
+export FORMATO_HDF5_PATH=${FORMATO_HDF5_PATH:-$PWD/dist/xcframeworks/FormatoLibHDF5.xcframework/macos-arm64/FormatoLibHDF5.framework/Versions/A/FormatoLibHDF5}
 swift test -c release --filter PinsTests.testOwnerFilesAgreeWithRosettaSciIO 2>&1 | tee $out/owner-check.log | grep -E "OwnerPins:|error|Executed .* tests" | tail -8

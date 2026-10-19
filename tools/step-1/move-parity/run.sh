@@ -105,7 +105,9 @@ fi
 print "built both in $(( EPOCHSECONDS - T0 )) s"
 
 # libhdf5: SpectroKit 0.3.0 ships none; FormatoKit's own copy serves both.
-export FORMATO_HDF5_PATH=$FKC/Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib
+export FORMATO_LOCAL_XCFRAMEWORKS=1
+ln -sfn "$FK/dist" "$FKC/dist"   # the local XCFrameworks (tools/xcframework/build.sh)
+export FORMATO_HDF5_PATH=$FK/dist/xcframeworks/FormatoLibHDF5.xcframework/macos-arm64/FormatoLibHDF5.framework/Versions/A/FormatoLibHDF5
 [[ -f $FORMATO_HDF5_PATH ]] || { print -u2 "missing $FORMATO_HDF5_PATH"; exit 3 }
 export MAC4DSTEM_HDF5_PATH=$FORMATO_HDF5_PATH   # the original package's side still reads its own name
 

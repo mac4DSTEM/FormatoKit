@@ -44,7 +44,7 @@ The file list (`files.tsv` in the scratch folder):
    FormatoKit root), read in place, never copied.
 
 libhdf5: both runs export `MAC4DSTEM_HDF5_PATH` as the copy FormatoKit ships (the HEAD copy's
-`Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib`); SpectroKit 0.3.0 has no bundled one.
+`dist/xcframeworks/FormatoLibHDF5.xcframework/macos-arm64/FormatoLibHDF5.framework/Versions/A/FormatoLibHDF5`); SpectroKit 0.3.0 has no bundled one.
 
 ## What is normalised
 

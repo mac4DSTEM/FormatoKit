@@ -20,5 +20,7 @@ if [[ ! -s $out/owner-pins.json || ${OWNER_REUSE_PINS:-0} == 0 ]]; then
   /usr/bin/time -p ../tools/memcap.sh -- References/rsciio-venv/bin/python -I -B tools/step-4/pins.py --owner "${f:A}" --out $out/owner-pins.json --options O1,O4,O11 2>&1 | grep -v WARNING
 fi
 export FORMATO_OWNER_SI_PINS=$out/owner-pins.json FORMATO_OWNER_SI_FILE=${f:A}
-export FORMATO_HDF5_PATH=${FORMATO_HDF5_PATH:-$PWD/Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib}
+[[ -d dist/xcframeworks/FormatoLibHDF5.xcframework ]] || tools/xcframework/build.sh --local > /dev/null 2>&1
+export FORMATO_LOCAL_XCFRAMEWORKS=1
+export FORMATO_HDF5_PATH=${FORMATO_HDF5_PATH:-$PWD/dist/xcframeworks/FormatoLibHDF5.xcframework/macos-arm64/FormatoLibHDF5.framework/Versions/A/FormatoLibHDF5}
 swift test -c release --filter SpectrumImagePinsTests.testOwnerSpectrumImages 2>&1 | tee $out/owner-check.log | grep -E "OwnerSI:|error|issue|passed after|failed after" | tail -8

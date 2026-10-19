@@ -123,7 +123,10 @@ def main():
     refs = copy / "References"
     if not refs.exists():
         refs.symlink_to(ROOT / "References")
-    env = dict(os.environ, FORMATO_HDF5_PATH=str(copy / "Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib"))
+    if not (copy / "dist").exists():
+        (copy / "dist").symlink_to(ROOT / "dist")   # the local XCFrameworks (tools/xcframework/build.sh)
+    env = dict(os.environ, FORMATO_LOCAL_XCFRAMEWORKS="1",
+               FORMATO_HDF5_PATH=str(ROOT / "dist/xcframeworks/FormatoLibHDF5.xcframework/macos-arm64/FormatoLibHDF5.framework/Versions/A/FormatoLibHDF5"))
     # The public zips the pins read, unzipped as tools/test.sh does (into the copy's .build).
     subprocess.run(["zsh", "-c", "set -e; d=.build/rsciio-unzipped/emd; rm -rf .build/rsciio-unzipped; mkdir -p $d; "
                     "for z in fei_emd_files.zip velox_EELS_EDS.zip velox_emd_v11_elementSelection.zip velox_emd_version11.zip; do "

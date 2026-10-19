@@ -7,6 +7,8 @@ here=${0:A:h}
 root=${here:h:h}
 cd $here
 unset FORMATO_HDF5_PATH
+[[ -d $root/dist/xcframeworks/FormatoLibHDF5.xcframework ]] || $root/tools/xcframework/build.sh --local > /dev/null 2>&1
+export FORMATO_LOCAL_XCFRAMEWORKS=1   # the binary targets from the local build until the release asset exists
 mkdir -p .build
 log=.build/consumer-check-build.log
 # --disable-dependency-cache: SwiftPM's shared repository cache can print a 'skipping cache' warning on a CI runner,

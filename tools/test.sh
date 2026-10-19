@@ -4,20 +4,23 @@
 # Release, as the sibling kits' gates: the manifest carries no Debug `-O` (a versioned dependency cannot carry
 # unsafe flags) and Debug at -Onone is many times slower on the stream decode; a consumer builds the kit optimised itself.
 #
-# libhdf5: the package ships it (Sources/FormatoHDF5/Resources/hdf5, docs/registration-step-1.md §5), so no setup is needed.
-# FORMATO_HDF5_PATH is still exported, to that shipped copy, unless already set: the quit-barrier probe asks the loaded
-# image for H5atclose by that path (RTLD_NOLOAD). The consumer check proves the shipped copy is found with it unset (gate H1).
+# libhdf5: the package ships it as three binary targets (FormatoLibHDF5, FormatoLibSZ, FormatoLibAEC; tools/xcframework/build.sh). The
+# release asset may not exist yet, so the gate builds them into dist/xcframeworks when missing and sets FORMATO_LOCAL_XCFRAMEWORKS
+# (Package.swift then takes the local build). FORMATO_HDF5_PATH is still exported, to that framework's binary, unless already set: the
+# quit-barrier probe asks the loaded image for H5atclose by that path (RTLD_NOLOAD). The consumer check proves the shipped copy is
+# found with it unset (gate H1).
 #
 # Warnings: the build must have none, with ONE named exception: in release, Swift Build reports "not stripping binary
-# because it is signed" for each of the three shipped dylibs it copies (named by their source path, or, on a fresh build,
-# by their place in the built FormatoKit_FormatoHDF5.bundle; Gate B F6) (they are ad-hoc signed and must stay byte-identical
-# to the vendored upstream files). Exactly those three lines are allowed; any other warning fails the gate.
+# because it is signed" for the shipped frameworks it copies (FormatoLibHDF5, FormatoLibSZ, FormatoLibAEC; they are ad-hoc signed and
+# Xcode re-signs them in an app). Only those lines are allowed; any other warning fails the gate.
 #
 # Stamp: a full run (no arguments) that passes, on a tree whose Sources/, Tests/, Package.swift and Package.resolved are
 # clean and hold no untracked file, writes .build/last-green (HEAD sha, UTC time, libhdf5). Any argument or a dirty tree writes nothing and says why.
 set -euo pipefail
 cd "${0:A:h}/.."
-export FORMATO_HDF5_PATH=${FORMATO_HDF5_PATH:-$PWD/Sources/FormatoHDF5/Resources/hdf5/libhdf5.dylib}
+[[ -d dist/xcframeworks/FormatoLibHDF5.xcframework ]] || tools/xcframework/build.sh --local > /dev/null 2>&1
+export FORMATO_LOCAL_XCFRAMEWORKS=1
+export FORMATO_HDF5_PATH=${FORMATO_HDF5_PATH:-$PWD/dist/xcframeworks/FormatoLibHDF5.xcframework/macos-arm64/FormatoLibHDF5.framework/Versions/A/FormatoLibHDF5}
 print -u2 "tools/test.sh: libhdf5 = $FORMATO_HDF5_PATH"
 mkdir -p .build
 # The public RosettaSciIO zips the pins read (registration §2): each checked against the pinned clone's registry.txt, then
@@ -52,7 +55,7 @@ swift test -c release "$@" 2>&1 | tee $log
 rc=${pipestatus[1]}
 set -e
 (( rc == 0 )) || { print -u2 "tools/test.sh: swift test failed (exit $rc)"; exit $rc }
-other=$(grep "warning:" $log | grep -vE "warning: not stripping binary because it is signed: .*(/Sources/FormatoHDF5/Resources/hdf5|/FormatoKit_FormatoHDF5\.bundle/Contents/Resources/hdf5)/(libhdf5\.dylib|libsz\.2\.dylib|libaec\.0\.dylib)" || true)
+other=$(grep "warning:" $log | grep -vE "warning: not stripping binary because it is signed: .*/FormatoLib(HDF5|SZ|AEC)\.framework" || true)
 if [[ -n $other ]]; then print -u2 "tools/test.sh: green, but the build warned:"; print -u2 -r -- "$other"; exit 1; fi
 if (( $# > 0 )); then
   print -u2 "tools/test.sh: green, but arguments were given (not a full run): no stamp"
