@@ -1,6 +1,6 @@
 # The bundled HDF5 library
 
-FormatoKit ships HDF5 2.1.1 with its compression libraries, libsz and libaec. The three arm64 dylibs are a resource of the module, so a package that depends on FormatoKit reads HDF5 files with nothing installed and no variable set.
+FormatoKit ships HDF5 2.1.1 with its compression libraries, libsz and libaec. The three arm64 libraries are dynamic-framework XCFrameworks, binary targets of the package (`FormatoLibHDF5`, `FormatoLibSZ`, `FormatoLibAEC`), so a package that depends on FormatoKit reads HDF5 files with nothing installed and no variable set. An app that embeds them has Xcode embed and sign them with the app's own identity at archive time, so they pass Hardened Runtime and notarisation.
 
 The readers open the library at run time. They never link it, so the copy they use can be replaced without rebuilding them.
 
@@ -11,16 +11,16 @@ The Velox reader looks for libhdf5 in this order, and uses the first copy it can
 1. The path in the `FORMATO_HDF5_PATH` environment variable, when it is set.
 2. The host's own `libhdf5.dylib` in its private frameworks folder.
 3. A `libhdf5.dylib` in the `Frameworks` folder beside the executable.
-4. The copy that ships with FormatoKit, given by ``FormatoHDF5Library/bundledLibraryPath``.
+4. The copy that ships with FormatoKit, given by ``FormatoHDF5Library/bundledLibraryPath``: the `FormatoLibHDF5` framework the process has loaded, or one in the host's `Frameworks` folder or beside the executable.
 5. The loader's own search path.
 
-Set `FORMATO_HDF5_PATH` in the process environment before the process starts reading files. A host that embeds its own copy and removes the resource bundle gets nil from ``FormatoHDF5Library/bundledLibraryPath``, not a crash, and the search goes on to the next candidate.
+The libraries are macOS-only (arm64, macOS 15 or later); on iOS the package builds and a read refuses. Set `FORMATO_HDF5_PATH` in the process environment before the process starts reading files. A host that embeds its own copy and leaves out the framework gets nil from ``FormatoHDF5Library/bundledLibraryPath``, not a crash, and the search goes on to the next candidate.
 
 ```swift
 import FormatoHDF5
 
 if let path = FormatoHDF5Library.bundledLibraryPath {
-    print("Bundled libhdf5 at \(path)")
+    print("Shipped libhdf5 at \(path)")
 }
 ```
 

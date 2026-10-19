@@ -179,7 +179,7 @@ For each image `VeloxEMDReader.images()` lists (name order, as h5py iterates and
 
 ## 5. libhdf5 inside the package; the platform floor
 
-- `FormatoHDF5` carries HDF5 2.1.1 with libsz and libaec as a resource (`Sources/FormatoHDF5/Resources/hdf5/`): the three
+- `FormatoHDF5` carries HDF5 2.1.1 with libsz and libaec as a resource (`Sources/FormatoHDF5/Resources/hdf5/`; superseded by amendment A-XCF at the end of this file): the three
   arm64 dylibs mac4DSTEM vendors, read with `git show 5ba712a0:<file>` (sha256 in `NOTICE`), their licences in
   `Licenses/`. The Velox reader `dlopen`s libhdf5 (it never linked it), so a resource is enough: `swift build` and
   `swift test` work with nothing installed and no variable set (gate H1). Rejected: a SwiftPM C target building HDF5
@@ -399,3 +399,13 @@ every path that asks for the scan grid, default included); and the DM walk's num
 (type 4), which the default always keeps as a string below 4096 bytes, so a smaller `DMReadOptions.maximumStringBytes` leaves
 such an array absent instead of turning it into numbers. Both byte-identical on every file seen; the 121 names and the golden
 unchanged.
+
+### Amendment A-XCF (2026-10-19, 0.4.0): section 5's resource is now a binary XCFramework
+
+Section 5 rejected a binary XCFramework because "its embedding of a bare dylib is not tested here". The reason for the change is the
+other half of that sentence: an app that embeds the kit got the resource-bundled dylibs ad-hoc signed, and a Developer ID release build
+fails Hardened Runtime on them. Dynamic frameworks in XCFrameworks are embedded and signed by Xcode with the app's identity. Three
+binary targets (`FormatoLibHDF5`, `FormatoLibSZ`, `FormatoLibAEC`) built by `tools/xcframework/build.sh` from the same three vendored
+dylibs (`tools/xcframework/vendored/`, sha256 in `NOTICE`); the readers still `dlopen` and the lookup order is unchanged;
+`FormatoHDF5Library.bundledLibraryPath` finds the loaded framework. Gate H1 (a separate package reads Velox with the variable unset)
+holds unchanged: `tools/consumer-check/run.sh`.

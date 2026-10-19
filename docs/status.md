@@ -19,7 +19,7 @@ What is live, one table; then the hand-off and what is unverified. Rules are in 
 | Pins against RosettaSciIO | 128 public files: 106 signals bit-identical (data, shape, every axis field, signal type, metadata with source), 47 refused by name | `PinsTests`; `tools/step-1/pins.py` |
 | Lazy = eager (L1) | every pinned signal's seeded slabs equal the eager array's; the file array on planted slabs | `PinsTests`, `ArrayTests` |
 | The owner's files | Re-run after the Gate B fixes on `59a6bef`, unchanged: 18 files (14 DM4 under `eels/`, three Ceta `.emd`, the 1.7 GB Velox SI's images): 51 signals bit-identical to RosettaSciIO, the 1.2 to 1.5 GB EELS spectrum images included; RosettaSciIO 15 s, FormatoKit 7 s | `tools/step-1/owner-check.sh` on `70c6222` (log: `.build/owner/owner-check.log`) |
-| libhdf5 (H1) | HDF5 2.1.1 + libsz + libaec ship as a `FormatoHDF5` resource; found after the host's copies; a separate package reads Velox with no variable set | `BundledLibraryTests`; `tools/consumer-check/run.sh` |
+| libhdf5 (H1) | HDF5 2.1.1 + libsz + libaec ship as three binary-target XCFrameworks (0.4.0, registration step 1 A-XCF; until 0.3.1 a `FormatoHDF5` resource); found after the host's copies; a separate package reads Velox with no variable set | `BundledLibraryTests`; `tools/consumer-check/run.sh` |
 | Consumer check | 39 checks (0.0.3: both values of each flag, the detector order; step 3: a stored type and a title, a refusal where RosettaSciIO raises; step 4: a spectrum image, defaults and options) through the public API, Debug, 0 warnings, `MAC4DSTEM_HDF5_PATH` unset | `tools/consumer-check/run.sh` |
 | Break-once proof | 16 of 16 planned mutants red on a copy of `db9e14a` (XCTest) and again on `59a6bef` (Swift Testing, after the Gate B fixes; mutant 10 re-aimed at the fixed line) | `tools/step-1/mutants.py` |
 | Gate B refuter | One refuter on `3391460`: F1 (a units trap), F2 and F3 (Velox defaults where RosettaSciIO raises), F6 (the gate's allow-list) fixed in `dee9e58` with 11 of its files pinned; F4, F5, F7, F8 and F2's DM half registered as named deviations | registration A5; `PinsTests.testRefuterFilesAgreeOrAreRefused` |
@@ -52,14 +52,12 @@ Validation: none. Agreement with RosettaSciIO and recovery of planted files are 
 
 ## Hand-off
 
-0.3.0 is released in the changelog (2026-10-16); the maintainer tags. Not in 0.3.0: the libhdf5 XCFramework (the asset upload is pending; libhdf5
-stays the bundled resource). Next: close the Velox `InstrumentClass` gap (expose the key in `VeloxMetadata`, which moves the 175-line golden), then the
-XCFramework, then the formats in `docs/parity.md` by priority. `swift test` fails only `HDF5ExitBarrierTests` where `FORMATO_HDF5_PATH` is unset.
+0.3.0 is released in the changelog (2026-10-16); the maintainer tags. The libhdf5 XCFrameworks are in the 0.4.0 changelog entry (unreleased): the owner uploads the three zips from `dist/xcframeworks` to the release, then tags (the `gh` commands are in the header of `tools/xcframework/build.sh`; run it without `--local` first, which writes the zips' checksums into `Package.swift`). Next: close the Velox `InstrumentClass` gap (expose the key in `VeloxMetadata`, which moves the 175-line golden), then the formats in `docs/parity.md` by priority. `swift test` fails only `HDF5ExitBarrierTests` where `FORMATO_HDF5_PATH` is unset.
 
 ## Unverified
 
-- The resource-bundled dylibs inside a signed, notarised app (the apps embed their own; the bundle's copies are ad-hoc
-  signed): not tried. An owner decision on the board.
+- The three XCFrameworks embedded and signed by Xcode in a Developer ID archive of an app: not tried here (no signing identity on this
+  session). mac4DSTEM's release build is the first proof. The frameworks are checked here only through `swift test` and the consumer check (SwiftPM).
 - Big-endian DM files: none exists to test; not detected.
 - `References/` is still a folder here (moving it to `../References/FormatoKit` with a link was refused by this session's
   permission check: the owner's command is on the board).

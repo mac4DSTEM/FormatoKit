@@ -96,7 +96,7 @@ tools/step-1/pint_factors.py.
 HDF5, libaec and libsz (shipped)
 ================================================================================
 
-Sources/FormatoHDF5/Resources/hdf5/ carries HDF5 2.1.1 with libaec 1.1.7 and libsz, arm64, minos 15.0 (otool -l), rebuilt
+tools/xcframework/vendored/ carries HDF5 2.1.1 with libaec 1.1.7 and libsz, arm64, minos 15.0 (otool -l), rebuilt
 for 0.2.1 (until 0.2.0 they were mac4DSTEM's Homebrew builds, commit 5ba712a0, minos 26):
 
     libhdf5.dylib   sha256 d3789c224e6664cd487016a7ef5e71005984f8a04f69a7f643fcdf0332a33491
@@ -120,6 +120,9 @@ The recipe (2026-10-15, Apple clang from Xcode 27, cmake from Homebrew, scratch 
              -DHDF5_ENABLE_NONSTANDARD_FEATURE_FLOAT16=OFF      (Homebrew's flags, C library only)
     fix-up   install_name_tool on libhdf5: -id @rpath/libhdf5.dylib; libsz and libaec as @loader_path/...; its rpaths
              replaced by @loader_path/../lib; then codesign -s - (ad hoc) on all three, as the earlier copies.
+    package  from 0.4.0 tools/xcframework/build.sh repackages the three files, code untouched, as dynamic frameworks
+             FormatoLibHDF5, FormatoLibSZ, FormatoLibAEC (install names @rpath/<Name>.framework/Versions/A/<Name>, the three
+             load commands between them rewritten to match, ad-hoc signed; Xcode re-signs on embed) in XCFrameworks, released as zips.
     check    otool -l: minos 15.0 in all three; no load command names an absolute path (libz is /usr/lib/libz.1.dylib).
     note     libhdf5's build stamp ("Installation point") names the scratch prefix of the build.
 

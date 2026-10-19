@@ -123,11 +123,11 @@ attributes to the file, root or BraggVectors group.
 ## Requirements
 
 macOS 15 or later on Apple silicon, iOS 18 or later, Swift 6.2 tools (Xcode 26 or later). The pure-Swift modules (FormatoCore, FormatoDM,
-FormatoTIFF, FormatoMRC/EMPAD/MSA) build for iOS 18. FormatoHDF5 and FormatoEMD load the bundled arm64 macOS libhdf5 at run time: they
+FormatoTIFF, FormatoMRC/EMPAD/MSA) build for iOS 18. FormatoHDF5 and FormatoEMD load the shipped arm64 macOS libhdf5 at run time: they
 are macOS-only in practice (on iOS they compile, and a Velox read refuses).
-**libhdf5 is inside the package** (HDF5 2.1.1 with libsz and libaec, arm64, as a resource of `FormatoHDF5`), so `swift build`
+**libhdf5 is inside the package** (HDF5 2.1.1 with libsz and libaec, arm64, as three binary-target XCFrameworks that Xcode embeds and signs in an app), so `swift build`
 and `swift test` need nothing installed. The Velox reader looks for libhdf5 in this order: the path in the
-`FORMATO_HDF5_PATH` environment variable, the host app's `Frameworks` folder, the bundled copy, then the loader's path.
+`FORMATO_HDF5_PATH` environment variable, the host app's `Frameworks` folder, the shipped copy (the `FormatoLibHDF5` framework), then the loader's path.
 
 ## Licence
 

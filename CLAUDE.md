@@ -27,7 +27,7 @@ model, units, cancellation), `FormatoDM`, `FormatoEMD`, `FormatoHDF5` (step 1), 
   golden's 175 lines change only on purpose.
 - **The gate is `tools/test.sh`** (`swift test -c release "$@"`, warning-checked). Never `swift build --build-tests -c
   release` (fails on this toolchain). The only allowed warning is Swift Build's "not stripping binary because it is signed"
-  for the three shipped dylibs in release.
+  for the shipped frameworks in release.
 - **Green stamp**: a full, passing `tools/test.sh` on a clean tracked tree writes `.build/last-green`; `tools/last-green.sh`
   prints it and whether HEAD equals it.
 - **Hook**: `.claude/settings.json` runs `tools/hooks/no-sleep-poll.sh` before every Bash call (no sleep of 30 s or more, no
@@ -38,8 +38,9 @@ model, units, cancellation), `FormatoDM`, `FormatoEMD`, `FormatoHDF5` (step 1), 
   h5py 3.16.0, Pint 0.26.1, tifffile 2026.9.20; `References/rsciio-venv-freeze.txt`). Oracles run as `References/rsciio-venv/bin/python -I -B`.
   Pins are generated before the Swift code that reads them (`tools/step-1/pins.py`, `tools/step-2/pins.py`, `tools/step-3/pins.py`); a difference is a failure of the port,
   never a tolerance to widen. Agreement with RosettaSciIO is agreement, not truth: truth is a planted file.
-- **libhdf5 ships inside** `FormatoHDF5` (mac4DSTEM's vendored 2.1.1 at `5ba712a0`, sha256 in `NOTICE`): change it only with a
-  registration, the three files together.
+- **libhdf5 ships inside** `FormatoHDF5` as three binary-target XCFrameworks built from `tools/xcframework/vendored/` (mac4DSTEM's
+  2.1.1 at `5ba712a0`, sha256 in `NOTICE`) by `tools/xcframework/build.sh`: change them only with a registration, the three files
+  together, and update the checksums in `Package.swift`. `FORMATO_LOCAL_XCFRAMEWORKS=1` builds against `dist/xcframeworks` (the gate does).
 - **Public API only, no app types.** What a consumer reads is `public`; what one module needs from another is `package`.
   Nothing names an app type; error messages never say "mac4DSTEM", "macTEM" or "ACOM".
 - **Tests are Swift Testing** (the owner's standard for the kits, 2026-10-15): `import Testing`, `@Test`, `#expect`; never XCTest.

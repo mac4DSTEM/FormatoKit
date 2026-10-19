@@ -2,6 +2,27 @@
 
 Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what each tag changed for a consumer) and `docs/status.md`.
 
+## 0.4.0 (unreleased)
+
+libhdf5 (HDF5 2.1.1 with libsz and libaec) is now three binary targets, dynamic-framework XCFrameworks, instead of a bundled resource folder. An app
+that embeds the kit gets them embedded and signed with its own Developer ID by Xcode at archive time; the resource copy stayed ad-hoc signed and failed
+Hardened Runtime in a release build. The binaries are the same vendored arm64 files (sha256 in `NOTICE`), with only install names and the load commands
+between them rewritten. The readers still `dlopen` libhdf5 and the search order is unchanged.
+
+- Add binary targets `FormatoLibHDF5`, `FormatoLibSZ`, `FormatoLibAEC` (`FormatoHDF5` depends on them, macOS only). Release assets: the three
+  `<Name>.xcframework.zip` files of `tools/xcframework/build.sh`, attached to the release `0.4.0`; their checksums are in `Package.swift` (written by a release run of the script). A consumer that links with `-dead_strip_dylibs` loses the framework's load command; `bundledLibraryPath` then falls back to the host's `Frameworks` folder.
+- `FormatoHDF5Library.bundledLibraryPath` returns the binary inside `FormatoLibHDF5.framework` (the loaded image, else the host's `Frameworks` folder
+  or the folder of the executable); nil when the framework is not found.
+- Remove the `Resources/hdf5` resource (and the `FormatoKit_FormatoHDF5` resource bundle). The vendored files moved to `tools/xcframework/vendored/`.
+- `FORMATO_LOCAL_XCFRAMEWORKS=1` (set by `tools/test.sh` and the consumer check) points the binary targets at `dist/xcframeworks`, built by `tools/xcframework/build.sh`.
+
+**Migration.** An app that embeds FormatoKit: link `FormatoHDF5` (or `FormatoEMD`, which depends on it) as before; Xcode now also embeds
+`FormatoLibHDF5.framework`, `FormatoLibSZ.framework` and `FormatoLibAEC.framework` in `Contents/Frameworks` and signs them with the app's identity (check
+that their Embed setting is "Embed & Sign" and remove any build phase that copies `FormatoKit_FormatoHDF5.bundle`). An app that ships its own
+`Frameworks/libhdf5.dylib` still has it found first. A package consumer is unchanged except that resolving the package downloads the three zips from the
+release; nothing in the public API changed apart from the path `bundledLibraryPath` returns (it no longer ends in `hdf5/libhdf5.dylib`). The libraries
+are macOS-only: on iOS the package builds and a Velox read refuses, as before.
+
 ## 0.3.1 (2026-10-16)
 
 Acquisition metadata completed against RosettaSciIO 049e7d70: the Velox microscope and stage, and, for DM, MRC, TIFF FEI SEM and Velox, the stage, beam
