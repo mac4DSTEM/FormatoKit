@@ -1,9 +1,8 @@
-# Swift Package Index: which modules get hosted DocC documentation. Written 2026-10-15 (0.0.3); listing on the Index is the
-# owner's, once the repository is public. The package declares macOS 15 / iOS 18 (0.2.1; the shipped libhdf5 is
-# arm64 macOS), so the docs build on the Index's macOS SwiftPM builder. The empty format modules (FormatoMRC, FormatoEMPAD, FormatoMSA) are
-# left out until they hold API.
+# Swift Package Index: which modules get hosted DocC documentation. The package declares macOS 15 / iOS 18 (the shipped
+# libhdf5 is arm64 macOS), so the docs build on the Index's macOS SwiftPM builder. FormatoMSA is left out until it holds API
+# (it is an empty placeholder today).
 version: 1
 builder:
   configs:
     - platform: macos-spm
-      documentation_targets: [FormatoCore, FormatoDM, FormatoEMD, FormatoHDF5, FormatoTIFF]
+      documentation_targets: [FormatoCore, FormatoDM, FormatoEMD, FormatoHDF5, FormatoTIFF, FormatoMRC, FormatoEMPAD, FormatoMIB]

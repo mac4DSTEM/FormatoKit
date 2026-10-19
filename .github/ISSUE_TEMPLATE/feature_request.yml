@@ -1,0 +1,20 @@
+name: Feature request
+description: Ask for a file format or an option
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What would you like FormatoKit to do
+      description: For a new format, name it, the file extensions and the instrument or software that writes it.
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: Reference
+      description: Does RosettaSciIO read this? Link its documentation or a public sample file if you know one.
+  - type: textarea
+    id: use
+    attributes:
+      label: What you need it for

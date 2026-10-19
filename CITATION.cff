@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use FormatoKit in your work, please cite it using the metadata below."
+title: "FormatoKit"
+type: software
+abstract: >-
+  FormatoKit is a Swift library for reading electron microscopy file formats (Gatan DigitalMicrograph,
+  Velox EMD, TIFF, MRC, EMPAD, Merlin MIB and py4DSTEM-style HDF5) on macOS and iOS. It follows
+  RosettaSciIO and is checked against it.
+authors:
+  - name: "mac4DSTEM contributors"
+license: GPL-3.0-or-later
+repository-code: "https://github.com/mac4DSTEM/FormatoKit"
+keywords:
+  - electron microscopy
+  - file formats
+  - Swift
+  - RosettaSciIO
+references:
+  - type: software
+    title: "RosettaSciIO"
+    authors:
+      - name: "The HyperSpy developers"
+    repository-code: "https://github.com/hyperspy/rosettasciio"
+    license: GPL-3.0-or-later
+    notes: "The reference implementation FormatoKit follows and is checked against."
