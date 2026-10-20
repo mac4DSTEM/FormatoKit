@@ -2,7 +2,7 @@
 
 Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what each tag changed for a consumer) and `docs/status.md`.
 
-## 0.4.0 (unreleased)
+## 0.4.0 (2026-10-20)
 
 libhdf5 (HDF5 2.1.1 with libsz and libaec) is now three binary targets, dynamic-framework XCFrameworks, instead of a bundled resource folder. An app
 that embeds the kit gets them embedded and signed with its own Developer ID by Xcode at archive time; the resource copy stayed ad-hoc signed and failed

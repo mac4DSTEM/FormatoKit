@@ -52,7 +52,7 @@ Validation: none. Agreement with RosettaSciIO and recovery of planted files are 
 
 ## Hand-off
 
-0.3.0 is released in the changelog (2026-10-16); the maintainer tags. The libhdf5 XCFrameworks are in the 0.4.0 changelog entry (unreleased): the owner uploads the three zips from `dist/xcframeworks` to the release, then tags (the `gh` commands are in the header of `tools/xcframework/build.sh`; run it without `--local` first, which writes the zips' checksums into `Package.swift`). Next: close the Velox `InstrumentClass` gap (expose the key in `VeloxMetadata`, which moves the 175-line golden), then the formats in `docs/parity.md` by priority. `swift test` fails only `HDF5ExitBarrierTests` where `FORMATO_HDF5_PATH` is unset.
+0.4.0 is released (2026-10-20): the GitHub release `0.4.0` carries the three zips from `dist/xcframeworks` whose checksums are in `Package.swift` (a rebuild with `tools/xcframework/build.sh` changes them: never rebuild for this tag). Next: the formats in `docs/parity.md` by priority. `swift test` fails only `HDF5ExitBarrierTests` where `FORMATO_HDF5_PATH` is unset.
 
 ## Unverified
 

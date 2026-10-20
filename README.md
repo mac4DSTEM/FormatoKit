@@ -23,8 +23,8 @@ what is next.
 
 ## The first ten minutes
 
-Add the package to your `Package.swift`, from the 0.3.1 tag of the FormatoKit repository
-(`.package(url: <the repository URL>, from: "0.3.1")`, or `.package(path: "../FormatoKit")` for a clone), and the products
+Add the package to your `Package.swift`, from the 0.4.0 tag of the FormatoKit repository
+(`.package(url: <the repository URL>, from: "0.4.0")`, or `.package(path: "../FormatoKit")` for a clone), and the products
 you need (`FormatoDM`, `FormatoEMD`, `FormatoTIFF`; each brings `FormatoCore`).
 
 To try it on files you have in hand, use the ones in this repository: planted files made for the tests, under
