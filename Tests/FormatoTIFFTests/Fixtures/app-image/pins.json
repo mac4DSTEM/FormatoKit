@@ -1,0 +1,3239 @@
+{
+ "app_commit": "cb6e164f9227bf716185ed515bb6a2afb3a8841f",
+ "cases": [
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1065353216,
+     1073741824,
+     1123942400,
+     1124073472,
+     1124139008,
+     1128792064,
+     1132331008,
+     1132396544,
+     1099431936,
+     1120272384,
+     1077936128
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-u8-II"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1065353216,
+     1132396544,
+     1132462080,
+     1191181824,
+     1191182336,
+     1199570688,
+     1148846080,
+     1073741824,
+     1167171584,
+     1194052864,
+     1088421888
+    ],
+    "source": "TIFF \u00b7 uint16",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-u16-II"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1065353216,
+     1266679808,
+     1266679808,
+     1266679810,
+     1325400064,
+     1325400064,
+     1333788672,
+     1301390004,
+     1084227584,
+     1333788672,
+     1290500515
+    ],
+    "source": "TIFF \u00b7 uint32",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-u32-II"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     3271557120,
+     3271426048,
+     3212836864,
+     0,
+     1065353216,
+     1123811328,
+     1123942400,
+     3263168512,
+     1084227584,
+     3231711232,
+     1120403456,
+     3267887104
+    ],
+    "source": "TIFF \u00b7 int8",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-i8-II"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     3338665984,
+     3338665472,
+     3212836864,
+     0,
+     1065353216,
+     1132396544,
+     3279945728,
+     1191181824,
+     1150959616,
+     3298443264,
+     1073741824,
+     3221225472
+    ],
+    "source": "TIFF \u00b7 int16",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-i16-II"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     3472883712,
+     3472883712,
+     3414163456,
+     3414163456,
+     3212836864,
+     0,
+     1065353216,
+     1266679808,
+     1325400064,
+     1301390004,
+     3448873652,
+     1088421888
+    ],
+    "source": "TIFF \u00b7 int32",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-i32-II"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     2147483648,
+     1069547520,
+     3222274048,
+     2139095039,
+     8388608,
+     1,
+     2139095040,
+     4286578688,
+     2143289345,
+     1036831949,
+     1206984804
+    ],
+    "source": "TIFF \u00b7 float32",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-f32-II"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     2147483648,
+     1036831949,
+     1051372203,
+     2139095040,
+     4286578688,
+     0,
+     2139095040,
+     1065353216,
+     1065353218,
+     2139095040,
+     2143289344
+    ],
+    "source": "TIFF \u00b7 float64",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-f64-II"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1065353216,
+     1073741824,
+     1123942400,
+     1124073472,
+     1124139008,
+     1128792064,
+     1132331008,
+     1132396544,
+     1099431936,
+     1120272384,
+     1077936128
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-u8-MM"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1065353216,
+     1132396544,
+     1132462080,
+     1191181824,
+     1191182336,
+     1199570688,
+     1148846080,
+     1073741824,
+     1167171584,
+     1194052864,
+     1088421888
+    ],
+    "source": "TIFF \u00b7 uint16",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-u16-MM"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1065353216,
+     1266679808,
+     1266679808,
+     1266679810,
+     1325400064,
+     1325400064,
+     1333788672,
+     1301390004,
+     1084227584,
+     1333788672,
+     1290500515
+    ],
+    "source": "TIFF \u00b7 uint32",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-u32-MM"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     3271557120,
+     3271426048,
+     3212836864,
+     0,
+     1065353216,
+     1123811328,
+     1123942400,
+     3263168512,
+     1084227584,
+     3231711232,
+     1120403456,
+     3267887104
+    ],
+    "source": "TIFF \u00b7 int8",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-i8-MM"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     3338665984,
+     3338665472,
+     3212836864,
+     0,
+     1065353216,
+     1132396544,
+     3279945728,
+     1191181824,
+     1150959616,
+     3298443264,
+     1073741824,
+     3221225472
+    ],
+    "source": "TIFF \u00b7 int16",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-i16-MM"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     3472883712,
+     3472883712,
+     3414163456,
+     3414163456,
+     3212836864,
+     0,
+     1065353216,
+     1266679808,
+     1325400064,
+     1301390004,
+     3448873652,
+     1088421888
+    ],
+    "source": "TIFF \u00b7 int32",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-i32-MM"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     2147483648,
+     1069547520,
+     3222274048,
+     2139095039,
+     8388608,
+     1,
+     2139095040,
+     4286578688,
+     2143289345,
+     1036831949,
+     1206984804
+    ],
+    "source": "TIFF \u00b7 float32",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-f32-MM"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     2147483648,
+     1036831949,
+     1051372203,
+     2139095040,
+     4286578688,
+     0,
+     2139095040,
+     1065353216,
+     1065353218,
+     2139095040,
+     2143289344
+    ],
+    "source": "TIFF \u00b7 float64",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "sample-f64-MM"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "grey-no-photometric"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "grey-planar2-single-sample"
+  },
+  {
+   "app": {
+    "height": 5,
+    "notes": [],
+    "pixels": [
+     0,
+     1149952000,
+     1158340608,
+     1162891264,
+     1166729216,
+     1169004544,
+     1171279872,
+     1173555200,
+     1175117824,
+     1176255488,
+     1177393152,
+     1178530816,
+     1179668480,
+     1180806144,
+     1181943808,
+     1182937600,
+     1183506432,
+     1184075264,
+     1184644096,
+     1185212928
+    ],
+    "source": "TIFF \u00b7 uint16",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "multistrip-u16-II"
+  },
+  {
+   "app": {
+    "height": 5,
+    "notes": [],
+    "pixels": [
+     0,
+     1149952000,
+     1158340608,
+     1162891264,
+     1166729216,
+     1169004544,
+     1171279872,
+     1173555200,
+     1175117824,
+     1176255488,
+     1177393152,
+     1178530816,
+     1179668480,
+     1180806144,
+     1181943808,
+     1182937600,
+     1183506432,
+     1184075264,
+     1184644096,
+     1185212928
+    ],
+    "source": "TIFF \u00b7 uint16",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "multistrip-reversed-in-file-II"
+  },
+  {
+   "app": {
+    "height": 5,
+    "notes": [],
+    "pixels": [
+     0,
+     1149952000,
+     1158340608,
+     1162891264,
+     1166729216,
+     1169004544,
+     1171279872,
+     1173555200,
+     1175117824,
+     1176255488,
+     1177393152,
+     1178530816,
+     1179668480,
+     1180806144,
+     1181943808,
+     1182937600,
+     1183506432,
+     1184075264,
+     1184644096,
+     1185212928
+    ],
+    "source": "TIFF \u00b7 uint16",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "multistrip-u16-MM"
+  },
+  {
+   "app": {
+    "height": 5,
+    "notes": [],
+    "pixels": [
+     0,
+     1149952000,
+     1158340608,
+     1162891264,
+     1166729216,
+     1169004544,
+     1171279872,
+     1173555200,
+     1175117824,
+     1176255488,
+     1177393152,
+     1178530816,
+     1179668480,
+     1180806144,
+     1181943808,
+     1182937600,
+     1183506432,
+     1184075264,
+     1184644096,
+     1185212928
+    ],
+    "source": "TIFF \u00b7 uint16",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "multistrip-reversed-in-file-MM"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "strip-padding-longer-than-needed"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "strip-one-row-each"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "8-bit render, not counts"
+    ],
+    "pixels": [
+     1077936128,
+     1110179840,
+     1118175232,
+     1123418112,
+     1126367232,
+     1128988672
+    ],
+    "source": "TIFF \u00b7 RGB render \u00b7 8-bit render, not counts",
+    "voltage": null,
+    "width": 3,
+    "x": null,
+    "y": null
+   },
+   "name": "rgb-grey-II"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "8-bit render, not counts"
+    ],
+    "pixels": [
+     1077936128,
+     1110179840,
+     1118175232,
+     1123418112,
+     1126367232,
+     1128988672
+    ],
+    "source": "TIFF \u00b7 RGB render \u00b7 8-bit render, not counts",
+    "voltage": null,
+    "width": 3,
+    "x": null,
+    "y": null
+   },
+   "name": "rgb-grey-MM"
+  },
+  {
+   "app": {
+    "error": "unequalChannels(row: 1, column: 2)"
+   },
+   "name": "rgb-unequal-blue-row1-col2"
+  },
+  {
+   "app": {
+    "error": "unequalChannels(row: 0, column: 0)"
+   },
+   "name": "rgb-unequal-red-first-pixel"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"3 sample(s) per pixel, photometric 2, planar 2\")"
+   },
+   "name": "rgb-planar2"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"3 sample(s) per pixel, photometric 2, planar 1\")"
+   },
+   "name": "rgb-16bit"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"4 sample(s) per pixel, photometric 2, planar 1\")"
+   },
+   "name": "rgb-4-samples"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"3 sample(s) per pixel, photometric 2, planar 1\")"
+   },
+   "name": "rgb-signed"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"3 sample(s) per pixel, photometric 6, planar 1\")"
+   },
+   "name": "rgb-photometric-ycbcr"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"mixed sample sizes or formats\")"
+   },
+   "name": "rgb-mixed-bits"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"1 sample(s) per pixel, photometric 0, planar 1\")"
+   },
+   "name": "white-is-zero"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"1 sample(s) per pixel, photometric 3, planar 1\")"
+   },
+   "name": "palette"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"1-bit samples of format 1\")"
+   },
+   "name": "bits-1"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"64-bit samples of format 1\")"
+   },
+   "name": "bits-64-unsigned"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"mixed sample sizes or formats\")"
+   },
+   "name": "mixed-sample-format"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"16-bit samples of format 3\")"
+   },
+   "name": "float16"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"no image width or height\")"
+   },
+   "name": "no-width"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"no image width or height\")"
+   },
+   "name": "zero-height"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"no strips\")"
+   },
+   "name": "no-strips"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"no strips\")"
+   },
+   "name": "strip-count-mismatch"
+  },
+  {
+   "app": {
+    "error": "compressed(scheme: 5)"
+   },
+   "name": "compressed-lzw"
+  },
+  {
+   "app": {
+    "error": "compressed(scheme: 32773)"
+   },
+   "name": "compressed-packbits"
+  },
+  {
+   "app": {
+    "error": "compressed(scheme: 8)"
+   },
+   "name": "compressed-and-tiled"
+  },
+  {
+   "app": {
+    "error": "tiled"
+   },
+   "name": "tiled"
+  },
+  {
+   "app": {
+    "error": "multiPage"
+   },
+   "name": "second-page"
+  },
+  {
+   "app": {
+    "error": "multiPage"
+   },
+   "name": "second-page-MM"
+  },
+  {
+   "app": {
+    "error": "multiPage"
+   },
+   "name": "second-page-pointer-outside"
+  },
+  {
+   "app": {
+    "error": "multiPage"
+   },
+   "name": "imagej-stack-images"
+  },
+  {
+   "app": {
+    "error": "multiPage"
+   },
+   "name": "imagej-stack-slices-frames"
+  },
+  {
+   "app": {
+    "error": "multiPage"
+   },
+   "name": "imagej-stack-channels"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "imagej-one-image"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "imagej-zero-planes"
+  },
+  {
+   "app": {
+    "error": "notTIFF"
+   },
+   "name": "not-tiff-letters"
+  },
+  {
+   "app": {
+    "error": "notTIFF"
+   },
+   "name": "too-short"
+  },
+  {
+   "app": {
+    "error": "notTIFF"
+   },
+   "name": "wrong-magic"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"BigTIFF\")"
+   },
+   "name": "bigtiff-II"
+  },
+  {
+   "app": {
+    "error": "sampleFormat(\"BigTIFF\")"
+   },
+   "name": "bigtiff-MM"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "ifd-offset-outside"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "ifd-cut-in-table"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "strips-at-end"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "strips-cut-short"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "strips-cut-by-one"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "multistrip-last-strip-cut"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "strip-offset-outside"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "strip-count-too-short"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "strip-offset-negative-signed"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "huge-width-overflow"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "huge-width-one-row"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "huge-rgb-claim"
+  },
+  {
+   "app": {
+    "error": "truncated"
+   },
+   "name": "huge-float64-claim"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "tag-value-outside-file"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3e45798ee2308c3a",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3e45798ee2308c3a",
+     "units": "m"
+    }
+   },
+   "name": "fei-square"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3e45798ee2308c3a",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3e45798ee2308c3a",
+     "units": "m"
+    }
+   },
+   "name": "fei-square-34680"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3e25798ee2308c3a",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3e35798ee2308c3a",
+     "units": "m"
+    }
+   },
+   "name": "fei-non-square"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3e25798ee2308c3a",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3e35798ee2308c3a",
+     "units": "m"
+    }
+   },
+   "name": "fei-non-square-MM-34680"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3e29c511dc3a41df",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3e3e1094d643f784",
+     "units": "m"
+    }
+   },
+   "name": "fei-lf-only"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3e29c511dc3a41df",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3e212e0be826d695",
+     "units": "m"
+    }
+   },
+   "name": "fei-34680-then-34682-replaces"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3eb3a92a30553261",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3eb179ec9cbd821e",
+     "units": "m"
+    }
+   },
+   "name": "fei-irbeam-fallback"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3eb0c6f7a0b5ed8d",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3eb0c6f7a0b5ed8d",
+     "units": "m"
+    }
+   },
+   "name": "fei-irbeam-fallback-square"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "fei-irbeam-nonnumeric"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "fei-irbeam-resolution-missing"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": {
+     "origin": "0",
+     "scale": "3eb179ec9cbd821e",
+     "units": "m"
+    }
+   },
+   "name": "fei-irbeam-zero-resolution"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "fei-scan-nonnumeric"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "fei-scan-nonnumeric-beats-irbeam"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3eb0c6f7a0b5ed8d",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3eb0c6f7a0b5ed8d",
+     "units": "m"
+    }
+   },
+   "name": "fei-scan-partial-falls-to-irbeam"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": {
+     "origin": "0",
+     "scale": "3e45798ee2308c3a",
+     "units": "m"
+    }
+   },
+   "name": "fei-zero-pixelwidth"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3e45798ee2308c3a",
+     "units": "m"
+    },
+    "y": null
+   },
+   "name": "fei-negative-pixelheight"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "fei-no-pixel-keys"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3e45798ee2308c3a",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3e45798ee2308c3a",
+     "units": "m"
+    }
+   },
+   "name": "fei-beats-dm-and-imagej"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3e212e0be826d695",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3e312e0be826d695",
+     "units": "m"
+    }
+   },
+   "name": "fei-beats-velox"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "4028000000000000",
+     "scale": "3fd0000000000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "c020000000000000",
+     "scale": "3fe0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "dm-scale-offset-units"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "4028000000000000",
+     "scale": "3fd0000000000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "c020000000000000",
+     "scale": "3fe0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "dm-scale-offset-units-MM"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3fb999999999999a",
+     "units": "\u00b5m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3fb999999999999a",
+     "units": "\u00b5m"
+    }
+   },
+   "name": "dm-latin1-micro"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "4000000000000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "4008000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "dm-units-undefined-type"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "c02dfffff8800002",
+     "scale": "3fb99999a0000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "c028fffff9c00002",
+     "scale": "3fc99999a0000000",
+     "units": "nm"
+    }
+   },
+   "name": "dm-scale-float32"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "bffaaaaaaaaaaaab",
+     "scale": "4008000000000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "bff8000000000000",
+     "scale": "4010000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "dm-scale-integer"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "c010000000000000",
+     "scale": "3fc0000000000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "c008000000000000",
+     "scale": "3fd0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "dm-scale-rational"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": {
+     "origin": "0",
+     "scale": "3fe0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "dm-scale-zero"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "dm-scale-zero-offset"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": {
+     "origin": "0",
+     "scale": "3fe0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "dm-scale-negative"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": {
+     "origin": "0",
+     "scale": "3fe0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "dm-scale-infinite"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "dm-no-units"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "dm-empty-units"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "nm"
+    },
+    "y": null
+   },
+   "name": "dm-units-only-x"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3ff0000000000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3ff0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "dm-units-no-scale"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3fe0000000000000",
+     "units": "1/nm"
+    }
+   },
+   "name": "dm-mixed-units"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "bff0000000000000",
+     "scale": "3ff0000000000000",
+     "units": "nm"
+    },
+    "y": null
+   },
+   "name": "dm-offset-only-tag"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "dm-other-private-tag-only"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "dm-tag-65027-only"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "\u00b5m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "\u00b5m"
+    }
+   },
+   "name": "imagej-micron"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "\u00b5m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "\u00b5m"
+    }
+   },
+   "name": "imagej-micron-MM"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "\u00b5m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3fc0000000000000",
+     "units": "\u00b5m"
+    }
+   },
+   "name": "imagej-micron-non-square"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "4002aaaaaaaaaaab",
+     "units": "\u00b5m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3fd45d1745d1745d",
+     "units": "\u00b5m"
+    }
+   },
+   "name": "imagej-micron-fractional"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "imagej-nm"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "imagej-pixel"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "imagej-no-unit"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "\u00b5m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "\u00b5m"
+    }
+   },
+   "name": "imagej-unit-spaced"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "imagej-unit-no-resolution"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "imagej-unit-only-x-resolution"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "imagej-zero-numerator"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "\u00b5m"
+    }
+   },
+   "name": "imagej-zero-denominator"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "c010000000000000",
+     "scale": "3fd0000000000000",
+     "units": "\u00b5m"
+    },
+    "y": {
+     "origin": "c010000000000000",
+     "scale": "3fd0000000000000",
+     "units": "\u00b5m"
+    }
+   },
+   "name": "imagej-micron-over-dm"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "c010000000000000",
+     "scale": "3fd0000000000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "c020000000000000",
+     "scale": "3fd0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "imagej-nm-keeps-dm-units"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3fe0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "imagej-no-unit-keeps-dm"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 ImageJ",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "imagej-unit-no-resolution-drops-dm"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "scifio-description-not-imagej"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    }
+   },
+   "name": "velox-agree"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "uncalibrated: the Velox XML and the resolution tags disagree"
+    ],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 uncalibrated: the Velox XML and the resolution tags disagree",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "velox-disagree"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": "0",
+     "scale": "3dc88741a17e72fe",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3dc88741a17e72fe",
+     "units": "m"
+    }
+   },
+   "name": "velox-float32-rounded"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    }
+   },
+   "name": "velox-xml-only"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3fe0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "velox-nm"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3fe0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "velox-mixed-units"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    }
+   },
+   "name": "velox-zero-x"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "velox-no-pixel-size"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "velox-refused-xml"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 FEI metadata",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": "0",
+     "scale": "3e45798ee2308c3a",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3e45798ee2308c3a",
+     "units": "m"
+    }
+   },
+   "name": "velox-and-fei"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "plain"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    }
+   },
+   "name": "velox-srational-resolution-tag"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "uncalibrated: the Velox XML and the resolution tags disagree"
+    ],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 uncalibrated: the Velox XML and the resolution tags disagree",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "velox-undefined-resolution-unit"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "uncalibrated: the Velox XML and the resolution tags disagree"
+    ],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 uncalibrated: the Velox XML and the resolution tags disagree",
+    "voltage": null,
+    "width": 2,
+    "x": null,
+    "y": null
+   },
+   "name": "velox-undefined-resolution-tag"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "4000000000000000",
+     "units": "pm"
+    },
+    "y": null
+   },
+   "name": "duplicate-tag-last-wins"
+  },
+  {
+   "app": {
+    "height": 2,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     1065353216,
+     1073741824,
+     1077936128,
+     1082130432
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 2,
+    "x": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    }
+   },
+   "name": "velox-resolution-unit-not-cm"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [
+     "scale unvalidated (one acquisition)"
+    ],
+    "pixels": [
+     0,
+     1140457472,
+     1148846080,
+     1153138688,
+     1157234688,
+     1159479296,
+     1161527296,
+     1163575296,
+     1165623296,
+     1166843904,
+     1167867904,
+     1168891904
+    ],
+    "source": "TIFF \u00b7 uint16 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3df12e0be826d695",
+     "units": "m"
+    }
+   },
+   "name": "velox-MM-u16"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [
+     "uncalibrated: the Velox XML and the resolution tags disagree"
+    ],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 uncalibrated: the Velox XML and the resolution tags disagree",
+    "voltage": null,
+    "width": 4,
+    "x": null,
+    "y": null
+   },
+   "name": "velox-MM-disagree"
+  },
+  {
+   "app": {
+    "height": 3,
+    "notes": [],
+    "pixels": [
+     0,
+     1092616192,
+     1101004800,
+     1106247680,
+     1109393408,
+     1112014848,
+     1114636288,
+     1116471296,
+     1117782016,
+     1119092736,
+     1120403456,
+     1121714176
+    ],
+    "source": "TIFF \u00b7 uint8 \u00b7 Digital Micrograph tags",
+    "voltage": null,
+    "width": 4,
+    "x": {
+     "origin": "0",
+     "scale": "3fd0000000000000",
+     "units": "nm"
+    },
+    "y": {
+     "origin": "0",
+     "scale": "3fe0000000000000",
+     "units": "nm"
+    }
+   },
+   "name": "velox-xml-then-dm-fallthrough"
+  }
+ ],
+ "reference_commit": "049e7d7070e84779b499adaf3295beee9facb004",
+ "rsciio_version": "0.14.1.dev96+g049e7d707"
+}

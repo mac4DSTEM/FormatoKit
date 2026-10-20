@@ -267,10 +267,10 @@ def tiff_file(extra):
     layout = {}
     for code, (typ, payload) in sorted(entries.items()):
         if len(payload) <= 4:
-            layout[code] = (typ, len(payload) // {3: 2, 4: 4, 5: 8}.get(typ, 1), payload.ljust(4, b'\0'))
+            layout[code] = (typ, len(payload) // {3: 2, 4: 4, 5: 8, 10: 8}.get(typ, 1), payload.ljust(4, b'\0'))
         else:
             if len(blob) % 2: blob += b'\0'
-            layout[code] = (typ, len(payload) // {3: 2, 4: 4, 5: 8}.get(typ, 1), struct.pack('<I', data_at + len(blob)))
+            layout[code] = (typ, len(payload) // {3: 2, 4: 4, 5: 8, 10: 8}.get(typ, 1), struct.pack('<I', data_at + len(blob)))
             blob += payload
     layout[273] = (4, 1, struct.pack('<I', data_at))
     out = bytearray(b'II*\0' + struct.pack('<I', 8) + struct.pack('<H', len(layout)))
@@ -527,6 +527,302 @@ def images_part(exe, td, pins):
     (d / 'pins.json').write_text(json.dumps({**pins, 'cases': cases, 'entries': entries}, indent=1, sort_keys=True) + '\n')
 
 
+# ---------------------------------------------------------------------------------------------------------------- app image
+# The `app-image` pass: TIFFAppImage (FormatoTIFF) against the consumer's TIFFImageReader, compiled unchanged. Synthetic TIFFs
+# are written byte by byte (both byte orders, every sample type, every refusal, every calibration convention); the harness's
+# `tiffimagebits` mode dumps each reading with floats as bit patterns. New directory, so no existing pin moves.
+
+class W:
+    """Tag payloads in one byte order: each returns (TIFF type, count, bytes)."""
+    def __init__(s, order): s.order = order; s.e = '<' if order == 'II' else '>'
+    def p(s, fmt, *v): return struct.pack(s.e + fmt, *v)
+    def byte(s, *v): return (1, len(v), bytes(v))
+    def short(s, *v): return (3, len(v), s.p('%dH' % len(v), *v))
+    def sshort(s, *v): return (8, len(v), s.p('%dh' % len(v), *v))
+    def long(s, *v): return (4, len(v), s.p('%dI' % len(v), *v))
+    def slong(s, *v): return (9, len(v), s.p('%di' % len(v), *v))
+    def rat(s, n, d=1): return (5, 1, s.p('II', n, d))
+    def srat(s, n, d=1): return (10, 1, s.p('ii', n, d))
+    def flt(s, v): return (11, 1, s.p('f', v))
+    def dbl(s, v): return (12, 1, s.p('d', v))
+    def asc(s, text): return (2, len(text) + 1, (text.encode() if isinstance(text, str) else text) + b'\0')
+    def und(s, b): return (7, len(b), b)
+    def samples(s, values, dtype): return np.array(values, dtype=np.dtype(dtype).newbyteorder(s.e)).tobytes()
+
+
+def tiff_bytes(w, entries, strips, pages=1, strip_order=None, strips_last=False):
+    """A classic TIFF: header, strips, tag values, then `pages` identical directories chained. StripOffsets and StripByteCounts
+    are added unless given. `strip_order` places the strips in the file in that order (the offsets still list row order)."""
+    if strips_last:   # the strips after the directories, so a cut file loses pixels and keeps its tags
+        dummy = tiff_bytes(w, entries, [b''] * len(strips), pages)
+        return _strips_last(w, entries, strips, pages, len(dummy))
+    blob = bytearray()
+    offsets = {}
+    for i in (strip_order or range(len(strips))):
+        if len(blob) % 2: blob += b'\0'
+        offsets[i] = 8 + len(blob); blob += strips[i]
+    ents = list(entries.items()) if isinstance(entries, dict) else list(entries)   # a list may repeat a tag
+    for code, value in ((273, w.long(*[offsets[i] for i in range(len(strips))])), (279, w.long(*[len(x) for x in strips]))):
+        if code not in [c for c, _ in ents]: ents.append((code, value))
+    placed = []
+    for code, (typ, count, payload) in sorted(ents, key=lambda kv: kv[0]):
+        if len(payload) <= 4: placed.append((code, (typ, count, payload.ljust(4, b'\0'))))
+        else:
+            if len(blob) % 2: blob += b'\0'
+            placed.append((code, (typ, count, w.p('I', 8 + len(blob))))); blob += payload
+    if len(blob) % 2: blob += b'\0'
+    ifd_at = 8 + len(blob)
+    size = 2 + 12 * len(placed) + 4
+    out = bytearray(w.order.encode() + w.p('H', 42) + w.p('I', ifd_at)) + blob
+    for k in range(pages):
+        out += w.p('H', len(placed))
+        for code, (typ, count, value) in placed: out += w.p('HHI', code, typ, count) + value
+        out += w.p('I', ifd_at + (k + 1) * size if k + 1 < pages else 0)
+    return bytes(out)
+
+
+def _strips_last(w, entries, strips, pages, start):
+    offsets, at = [], start
+    for x in strips: offsets.append(at); at += len(x)
+    out = tiff_bytes(w, {**dict(entries), 273: w.long(*offsets)}, [b''] * len(strips), pages)
+    assert len(out) == start
+    return out + b''.join(strips)
+
+
+def grey_entries(w, width, height, bits, fmt=1, rps=None, **over):
+    e = {256: w.short(width), 257: w.short(height), 258: w.short(bits), 259: w.short(1), 262: w.short(1), 277: w.short(1),
+         278: w.short(rps or height)}
+    if fmt != 1: e[339] = w.short(fmt)
+    e.update(over)
+    return e
+
+
+def f32_bits(bits): return np.array(bits, dtype='<u4').view('<f4')
+
+
+SAMPLE_VALUES = {
+    ('u8', 'u1', 8, 1): [0, 1, 2, 127, 128, 129, 200, 254, 255, 17, 99, 3],
+    ('u16', 'u2', 16, 1): [0, 1, 255, 256, 32767, 32768, 65535, 1000, 2, 4660, 43981, 7],
+    ('u32', 'u4', 32, 1): [0, 1, 16777216, 16777217, 16777219, 2147483647, 2147483648, 4294967295, 305419896, 5, 4294967294, 123456789],
+    ('i8', 'i1', 8, 2): [-128, -127, -1, 0, 1, 126, 127, -64, 5, -5, 100, -100],
+    ('i16', 'i2', 16, 2): [-32768, -32767, -1, 0, 1, 255, -256, 32767, 1234, -1234, 2, -2],
+    ('i32', 'i4', 32, 2): [-2147483648, -2147483647, -16777217, -16777216, -1, 0, 1, 16777217, 2147483647, 305419896, -305419896, 7],
+    ('f32', 'f4', 32, 3): f32_bits([0x00000000, 0x80000000, 0x3fc00000, 0xc0100000, 0x7f7fffff, 0x00800000, 0x00000001, 0x7f800000,
+                                    0xff800000, 0x7fc00001, 0x3dcccccd, 0x47f12064]),
+    ('f64', 'f8', 64, 3): [0.0, -0.0, 0.1, 1 / 3, 1e300, -1e300, 1e-300, 3.4028235677973366e38, 1 + 2 ** -24, 1 + 3 * 2 ** -24,
+                           float('inf'), float('nan')],
+}
+
+
+def fei_text(scan="PixelWidth=1e-08\r\nPixelHeight=1e-08\r\n", extra='', nl='\r\n'):
+    t = '[User]\r\nUser=analyst\r\n[Beam]\r\nHV=5000\r\n[Scan]\r\nDwelltime=1e-05\r\n' + scan + extra
+    return t.replace('\r\n', nl)
+
+
+def dm_tags(w, xu=None, yu=None, xs=None, ys=None, xo=None, yo=None, kind='d'):
+    t = {}
+    if xu is not None: t[65003] = w.asc(xu)
+    if yu is not None: t[65004] = w.asc(yu)
+    num = {'d': w.dbl, 'f': w.flt, 'i': lambda v: w.long(int(v)), 'r': lambda v: w.rat(int(v * 1000), 1000)}[kind]
+    if xs is not None: t[65009] = num(xs)
+    if ys is not None: t[65010] = num(ys)
+    if xo is not None: t[65006] = num(xo)
+    if yo is not None: t[65007] = num(yo)
+    return t
+
+
+def app_image_cases():
+    cases = {}
+    II, MM = W('II'), W('MM')
+    base = lambda w, extra=None, vals=None, bits=8: {**grey_entries(w, 4, 3, bits), **(extra or {})}
+    u8 = lambda w, vals=range(12): w.samples(list(vals), 'u1')
+    pix = lambda w: u8(w, [10 * i for i in range(12)])
+
+    # every sample type, both byte orders
+    for w in (II, MM):
+        for (tag, code, bits, fmt), vals in SAMPLE_VALUES.items():
+            cases[f'sample-{tag}-{w.order}'] = tiff_bytes(w, grey_entries(w, 4, 3, bits, fmt), [w.samples(vals, code)])
+    # photometric absent reads as grey
+    e = grey_entries(II, 4, 3, 8); del e[262]
+    cases['grey-no-photometric'] = tiff_bytes(II, e, [pix(II)])
+    cases['grey-planar2-single-sample'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {284: II.short(2)}, [pix(II)])
+    # strips
+    u16 = [i * 1111 for i in range(20)]
+    for w in (II, MM):
+        rows = [w.samples(u16[r * 4:(r + 1) * 4], 'u2') for r in range(5)]
+        strips = [rows[0] + rows[1], rows[2] + rows[3], rows[4]]
+        cases[f'multistrip-u16-{w.order}'] = tiff_bytes(w, grey_entries(w, 4, 5, 16, rps=2), strips)
+        cases[f'multistrip-reversed-in-file-{w.order}'] = tiff_bytes(w, grey_entries(w, 4, 5, 16, rps=2), strips, strip_order=[2, 1, 0])
+    cases['strip-padding-longer-than-needed'] = tiff_bytes(II, grey_entries(II, 4, 3, 8), [pix(II) + b'\xff' * 5])
+    cases['strip-one-row-each'] = tiff_bytes(II, grey_entries(II, 4, 3, 8, rps=1), [pix(II)[i * 4:(i + 1) * 4] for i in range(3)])
+    # colour
+    def rgb(w, grey=True, bad=None, bits=(8, 8, 8), samples=3, extra=None, photometric=2):
+        px = bytearray()
+        for i in range(6):
+            v = 40 * i + 3
+            px += bytes([v, v, v])
+        if bad is not None: px[bad] ^= 0x10
+        e = {256: w.short(3), 257: w.short(2), 258: w.short(*bits), 259: w.short(1), 262: w.short(photometric), 277: w.short(samples),
+             278: w.short(2), 284: w.short(1)}
+        e.update(extra or {})
+        return tiff_bytes(w, e, [bytes(px)])
+    cases['rgb-grey-II'] = rgb(II); cases['rgb-grey-MM'] = rgb(MM)
+    cases['rgb-unequal-blue-row1-col2'] = rgb(II, bad=3 * 5 + 2)
+    cases['rgb-unequal-red-first-pixel'] = rgb(II, bad=0)
+    cases['rgb-planar2'] = rgb(II, extra={284: II.short(2)})
+    cases['rgb-16bit'] = rgb(II, bits=(16, 16, 16))
+    cases['rgb-4-samples'] = rgb(II, samples=4, bits=(8, 8, 8, 8))
+    cases['rgb-signed'] = rgb(II, extra={339: II.short(2, 2, 2)})
+    cases['rgb-photometric-ycbcr'] = rgb(II, photometric=6)
+    cases['rgb-mixed-bits'] = rgb(II, bits=(8, 8, 16))
+    # refused layouts
+    cases['white-is-zero'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {262: II.short(0)}, [pix(II)])
+    cases['palette'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {262: II.short(3), 320: II.short(*range(768))}, [pix(II)])
+    cases['bits-1'] = tiff_bytes(II, grey_entries(II, 4, 3, 1), [pix(II)])
+    cases['bits-64-unsigned'] = tiff_bytes(II, grey_entries(II, 4, 3, 64), [II.samples(range(12), 'u8')])
+    cases['mixed-sample-format'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {339: II.short(1, 3)}, [pix(II)])
+    cases['float16'] = tiff_bytes(II, grey_entries(II, 4, 3, 16, 3), [II.samples(range(12), 'u2')])
+    cases['no-width'] = tiff_bytes(II, {k: v for k, v in grey_entries(II, 4, 3, 8).items() if k != 256}, [pix(II)])
+    cases['zero-height'] = tiff_bytes(II, grey_entries(II, 4, 0, 8), [pix(II)])
+    cases['no-strips'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {273: II.long(), 279: II.long()}, [pix(II)])
+    cases['strip-count-mismatch'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {279: II.long(6, 6)}, [pix(II)])
+    cases['compressed-lzw'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {259: II.short(5)}, [pix(II)])
+    cases['compressed-packbits'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {259: II.short(32773)}, [pix(II)])
+    cases['compressed-and-tiled'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {259: II.short(8), 322: II.short(16)}, [pix(II)])
+    cases['tiled'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {322: II.short(16), 323: II.short(16), 324: II.long(8), 325: II.long(12)}, [pix(II)])
+    # pages and stacks
+    cases['second-page'] = tiff_bytes(II, grey_entries(II, 4, 3, 8), [pix(II)], pages=2)
+    cases['second-page-MM'] = tiff_bytes(MM, grey_entries(MM, 4, 3, 8), [pix(MM)], pages=3)
+    cases['second-page-pointer-outside'] = tiff_bytes(II, grey_entries(II, 4, 3, 8), [pix(II)])[:-4] + struct.pack('<I', 0x7fff0000)
+    ij = lambda w, text, extra=None: tiff_bytes(w, grey_entries(w, 4, 3, 8) | {270: w.asc(text)} | (extra or {}), [pix(w)])
+    cases['imagej-stack-images'] = ij(II, 'ImageJ=1.53t\nimages=3\nslices=3\nunit=micron\n')
+    cases['imagej-stack-slices-frames'] = ij(II, 'ImageJ=1.53t\nslices=2\nframes=2\n')
+    cases['imagej-stack-channels'] = ij(MM, 'ImageJ=1.53t\nchannels=2\n')
+    cases['imagej-one-image'] = ij(II, 'ImageJ=1.53t\nimages=1\nslices=1\n')
+    cases['imagej-zero-planes'] = ij(II, 'ImageJ=1.53t\nimages=0\nslices=-3\n')
+    # corrupt and truncated
+    full = tiff_bytes(II, grey_entries(II, 4, 3, 8), [pix(II)])
+    cases['not-tiff-letters'] = b'XXXXXXXXXXXXXXXX'
+    cases['too-short'] = full[:7]
+    cases['wrong-magic'] = full[:2] + struct.pack('<H', 41) + full[4:]
+    cases['bigtiff-II'] = b'II' + struct.pack('<HHHQ', 43, 8, 0, 16) + struct.pack('<Q', 0) + struct.pack('<Q', 0)
+    cases['bigtiff-MM'] = b'MM' + struct.pack('>HHHQ', 43, 8, 0, 16) + struct.pack('>Q', 0) + struct.pack('>Q', 0)
+    cases['ifd-offset-outside'] = full[:4] + struct.pack('<I', 0xFFFFFF) + full[8:]
+    cases['ifd-cut-in-table'] = full[:len(full) - 30]
+    tail = tiff_bytes(II, grey_entries(II, 4, 3, 8), [pix(II)], strips_last=True)
+    cases['strips-at-end'] = tail
+    cases['strips-cut-short'] = tail[:-6]
+    cases['strips-cut-by-one'] = tail[:-1]
+    cases['multistrip-last-strip-cut'] = tiff_bytes(II, grey_entries(II, 4, 3, 8, rps=1), [pix(II)[i * 4:(i + 1) * 4] for i in range(3)], strips_last=True)[:-2]
+    cases['strip-offset-outside'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {273: II.long(100000)}, [pix(II)])
+    cases['strip-count-too-short'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {279: II.long(11)}, [pix(II)])
+    cases['strip-offset-negative-signed'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {273: II.slong(-5)}, [pix(II)])
+    cases['huge-width-overflow'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {256: II.long(0xFFFFFFFF), 257: II.long(0xFFFFFFFF)}, [pix(II)])
+    cases['huge-width-one-row'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {256: II.long(0xFFFFFFFF), 257: II.long(1)}, [pix(II)])
+    cases['huge-rgb-claim'] = rgb(II, extra={256: II.long(0x7FFFFFFF), 257: II.long(0x7FFFFFFF)})
+    cases['huge-float64-claim'] = tiff_bytes(II, grey_entries(II, 4, 3, 64, 3) | {256: II.long(0x40000000), 257: II.long(0x40000000)}, [pix(II)])
+    # a tag value that lies outside the file: the consumer's walker reads it as absent, the kit's TIFFFile refuses the file
+    cases['tag-value-outside-file'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {65009: II.dbl(0.5)}, [pix(II)])
+    raw = bytearray(cases['tag-value-outside-file'])
+    ifd = struct.unpack('<I', raw[4:8])[0]; n = struct.unpack('<H', raw[ifd:ifd + 2])[0]
+    for k in range(n):
+        at = ifd + 2 + 12 * k
+        if struct.unpack('<H', raw[at:at + 2])[0] == 65009: raw[at + 8:at + 12] = struct.pack('<I', 0x7ffff000)
+    cases['tag-value-outside-file'] = bytes(raw)
+    # FEI SEM
+    fei = lambda w, text, code=34682, extra=None: tiff_bytes(w, grey_entries(w, 4, 3, 8) | {code: w.asc(text)} | (extra or {}), [pix(w)])
+    cases['fei-square'] = fei(II, fei_text())
+    cases['fei-square-34680'] = fei(II, fei_text(), 34680)
+    cases['fei-non-square'] = fei(II, fei_text("PixelWidth=2.5e-09\r\nPixelHeight=5e-09\r\n"))
+    cases['fei-non-square-MM-34680'] = fei(MM, fei_text("PixelWidth=2.5e-09\r\nPixelHeight=5e-09\r\n"), 34680)
+    cases['fei-lf-only'] = fei(II, fei_text("PixelWidth=3e-09\nPixelHeight=7e-09\n", nl='\n'))
+    cases['fei-34680-then-34682-replaces'] = fei(II, fei_text("PixelWidth=3e-09\r\nPixelHeight=2e-09\r\n"), 34682,
+                                                 {34680: II.asc(fei_text("PixelWidth=1e-08\r\nPixelHeight=1e-08\r\n", '[Image]\r\nResolutionX=2\r\n'))})
+    ir = lambda hfw='1.2e-03', vfw='0.8e-03', rx='1024', ry='768': fei_text("", '[IRBeam]\r\nHFW=%s\r\nVFW=%s\r\n[Image]\r\nResolutionX=%s\r\nResolutionY=%s\r\n' % (hfw, vfw, rx, ry))
+    cases['fei-irbeam-fallback'] = fei(II, ir())
+    cases['fei-irbeam-fallback-square'] = fei(II, ir('1.024e-03', '0.768e-03'))
+    cases['fei-irbeam-nonnumeric'] = fei(II, ir(hfw='wide'))
+    cases['fei-irbeam-resolution-missing'] = fei(II, fei_text("", '[IRBeam]\r\nHFW=1e-3\r\nVFW=1e-3\r\n'))
+    cases['fei-irbeam-zero-resolution'] = fei(II, ir(rx='0'))
+    cases['fei-scan-nonnumeric'] = fei(II, fei_text("PixelWidth=abc\r\nPixelHeight=1e-08\r\n"))
+    cases['fei-scan-nonnumeric-beats-irbeam'] = fei(II, fei_text("PixelWidth=abc\r\nPixelHeight=1e-08\r\n", '[IRBeam]\r\nHFW=1e-3\r\nVFW=1e-3\r\n[Image]\r\nResolutionX=4\r\nResolutionY=4\r\n'))
+    cases['fei-scan-partial-falls-to-irbeam'] = fei(II, fei_text("PixelWidth=1e-08\r\n", '[IRBeam]\r\nHFW=4e-6\r\nVFW=3e-6\r\n[Image]\r\nResolutionX=4\r\nResolutionY=3\r\n'))
+    cases['fei-zero-pixelwidth'] = fei(II, fei_text("PixelWidth=0\r\nPixelHeight=1e-08\r\n"))
+    cases['fei-negative-pixelheight'] = fei(II, fei_text("PixelWidth=1e-08\r\nPixelHeight=-1e-08\r\n"))
+    cases['fei-no-pixel-keys'] = fei(II, fei_text(""))
+    cases['fei-beats-dm-and-imagej'] = fei(II, fei_text(), 34682, dm_tags(II, 'nm', 'nm', 0.25, 0.5) | {270: II.asc('ImageJ=1\nunit=micron\n'), 282: II.rat(4), 283: II.rat(4)})
+    cases['fei-beats-velox'] = fei(II, fei_text("PixelWidth=2e-09\r\nPixelHeight=4e-09\r\n"), 34682, {34683: II.asc(velox_pixel_xml()), 65450: II.rat(40000000), 65451: II.rat(40000000), 65452: II.short(3)})
+    # Digital Micrograph tags
+    dm = lambda w, t, extra=None: tiff_bytes(w, grey_entries(w, 4, 3, 8) | t | (extra or {}), [pix(w)])
+    cases['dm-scale-offset-units'] = dm(II, dm_tags(II, 'nm', 'nm', 0.25, 0.5, -3.0, 4.0))
+    cases['dm-scale-offset-units-MM'] = dm(MM, dm_tags(MM, 'nm', 'nm', 0.25, 0.5, -3.0, 4.0))
+    cases['dm-latin1-micro'] = dm(II, dm_tags(II, b'\xb5m', b'\xb5m', 0.1, 0.1))
+    cases['dm-units-undefined-type'] = dm(II, {65003: II.und(b'nm'), 65004: II.und(b'nm'), 65009: II.dbl(2.0), 65010: II.dbl(3.0)})
+    cases['dm-scale-float32'] = dm(II, dm_tags(II, 'nm', 'nm', 0.1, 0.2, 1.5, 2.5, kind='f'))
+    cases['dm-scale-integer'] = dm(II, dm_tags(II, 'nm', 'nm', 3, 4, 5, 6, kind='i'))
+    cases['dm-scale-rational'] = dm(II, dm_tags(II, 'nm', 'nm', 0.125, 0.25, 0.5, 0.75, kind='r'))
+    cases['dm-scale-zero'] = dm(II, dm_tags(II, 'nm', 'nm', 0.0, 0.5))
+    cases['dm-scale-zero-offset'] = dm(II, dm_tags(II, 'nm', 'nm', 0.0, 0.0, 2.0, 0.0))
+    cases['dm-scale-negative'] = dm(II, dm_tags(II, 'nm', 'nm', -0.5, 0.5))
+    cases['dm-scale-infinite'] = dm(II, dm_tags(II, 'nm', 'nm', float('inf'), 0.5))
+    cases['dm-no-units'] = dm(II, dm_tags(II, None, None, 0.25, 0.5))
+    cases['dm-empty-units'] = dm(II, dm_tags(II, '', '', 0.25, 0.5))
+    cases['dm-units-only-x'] = dm(II, dm_tags(II, 'nm', None, 0.25, 0.5))
+    cases['dm-units-no-scale'] = dm(II, dm_tags(II, 'nm', 'nm'))
+    cases['dm-mixed-units'] = dm(II, dm_tags(II, 'nm', '1/nm', 0.25, 0.5))
+    cases['dm-offset-only-tag'] = dm(II, {65006: II.dbl(1.0), 65003: II.asc('nm')})
+    cases['dm-other-private-tag-only'] = dm(II, {65025: II.dbl(1.0)})
+    cases['dm-tag-65027-only'] = dm(II, {65027: II.und(b'x' * 8)})
+    # ImageJ calibration
+    ijc = lambda w, text, rx=(4, 1), ry=(4, 1), extra=None: tiff_bytes(
+        w, grey_entries(w, 4, 3, 8) | {270: w.asc(text)} | ({282: w.rat(*rx)} if rx else {}) | ({283: w.rat(*ry)} if ry else {}) | (extra or {}), [pix(w)])
+    cases['imagej-micron'] = ijc(II, 'ImageJ=1.53t\nunit=micron\n')
+    cases['imagej-micron-MM'] = ijc(MM, 'ImageJ=1.53t\nunit=micron\n')
+    cases['imagej-micron-non-square'] = ijc(II, 'ImageJ=1.53t\nunit=micron\n', (4, 1), (8, 1))
+    cases['imagej-micron-fractional'] = ijc(II, 'ImageJ=1.53t\nunit=micron\n', (3, 7), (22, 7))
+    cases['imagej-nm'] = ijc(II, 'ImageJ=1.53t\nunit=nm\n')
+    cases['imagej-pixel'] = ijc(II, 'ImageJ=1.53t\nunit=pixel\n')
+    cases['imagej-no-unit'] = ijc(II, 'ImageJ=1.53t\nimages=1\n')
+    cases['imagej-unit-spaced'] = ijc(II, 'ImageJ=1.53t\nunit = micron \n')
+    cases['imagej-unit-no-resolution'] = ijc(II, 'ImageJ=1.53t\nunit=micron\n', None, None)
+    cases['imagej-unit-only-x-resolution'] = ijc(II, 'ImageJ=1.53t\nunit=micron\n', (4, 1), None)
+    cases['imagej-zero-numerator'] = ijc(II, 'ImageJ=1.53t\nunit=micron\n', (0, 1), (4, 1))
+    cases['imagej-zero-denominator'] = ijc(II, 'ImageJ=1.53t\nunit=micron\n', (4, 0), (4, 1))
+    cases['imagej-micron-over-dm'] = ijc(II, 'ImageJ=1.53t\nunit=micron\n', extra=dm_tags(II, 'nm', 'nm', 9.0, 9.0, 1.0, 1.0))
+    cases['imagej-nm-keeps-dm-units'] = ijc(II, 'ImageJ=1.53t\nunit=nm\n', extra=dm_tags(II, 'nm', 'nm', 9.0, 9.0, 1.0, 2.0))
+    cases['imagej-no-unit-keeps-dm'] = ijc(II, 'ImageJ=1.53t\n', extra=dm_tags(II, 'nm', 'nm', 0.25, 0.5))
+    cases['imagej-unit-no-resolution-drops-dm'] = ijc(II, 'ImageJ=1.53t\nunit=micron\n', None, None, dm_tags(II, 'nm', 'nm', 0.25, 0.5))
+    cases['scifio-description-not-imagej'] = ijc(II, 'SCIFIO=1\nunit=micron\n')
+    # the existing Velox cases (2 x 2 uint8, little-endian), and two more
+    for name, extra in TIFF_IMAGE_CASES.items():
+        cases['velox-' + name if not name.startswith(('velox', 'plain')) else name] = tiff_file(extra)
+    cases['velox-srational-resolution-tag'] = tiff_file({34683: ascii_tag(velox_pixel_xml()), 65450: (10, struct.pack('<ii', 1, 1)), 65452: short_tag(3)})
+    cases['velox-undefined-resolution-unit'] = tiff_file({34683: ascii_tag(velox_pixel_xml()), 65450: rational_tag(1), 65452: (7, b'\x03')})
+    cases['velox-undefined-resolution-tag'] = tiff_file({34683: ascii_tag(velox_pixel_xml()), 65450: (7, b'\x07'), 65452: short_tag(3)})
+    cases['duplicate-tag-last-wins'] = tiff_bytes(II, list(grey_entries(II, 4, 3, 8).items()) + [(65003, II.asc('nm')), (65003, II.asc('pm')), (65009, II.dbl(0.5)), (65009, II.dbl(2.0)), (65010, II.dbl(1.0))], [pix(II)])
+    cases['velox-resolution-unit-not-cm'] = tiff_file({34683: ascii_tag(velox_pixel_xml()), 65450: rational_tag(1), 65452: short_tag(2)})
+    cases['velox-MM-u16'] = tiff_bytes(MM, grey_entries(MM, 4, 3, 16) | {34683: MM.asc(velox_pixel_xml()), 65450: MM.rat(40000000), 65451: MM.rat(40000000), 65452: MM.short(3)},
+                                       [MM.samples([i * 500 for i in range(12)], 'u2')])
+    cases['velox-MM-disagree'] = tiff_bytes(MM, grey_entries(MM, 4, 3, 8) | {34683: MM.asc(velox_pixel_xml()), 65450: MM.rat(1), 65451: MM.rat(40000000), 65452: MM.short(3)}, [pix(MM)])
+    cases['velox-xml-then-dm-fallthrough'] = tiff_bytes(II, grey_entries(II, 4, 3, 8) | {34683: II.asc('<Metadata><BinaryResult/></Metadata>')} | dm_tags(II, 'nm', 'nm', 0.25, 0.5), [pix(II)])
+    return cases
+
+
+def app_image_part(exe, td, pins):
+    d = ROOT / 'Tests/FormatoTIFFTests/Fixtures/app-image'
+    if d.exists():
+        for old in d.glob('*.tif'): old.unlink()
+    d.mkdir(parents=True, exist_ok=True)
+    cases = []
+    for name, data in app_image_cases().items():
+        path = d / f'{name}.tif'
+        path.write_bytes(data)
+        cases.append({'name': name, 'path': str(path)})
+    app = run_harness(exe, 'tiffimagebits', cases, td)
+    for c in cases: c['app'] = app[c['name']]; del c['path']
+    (d / 'pins.json').write_text(json.dumps({**pins, 'cases': cases}, indent=1, sort_keys=True) + '\n')
+
+
 def main():
     pins = {'rsciio_version': rsciio.__version__, 'reference_commit': PIN, 'app_commit': APP}
     with tempfile.TemporaryDirectory() as tmp:
@@ -608,6 +904,13 @@ def main():
         (OUT['FormatoEMD'] / 'acq-pins.json').write_text(json.dumps({**pins, 'cases': cases}, indent=1, sort_keys=True) + '\n')
 
         images_part(exe, td, pins)
+        app_image_part(exe, td, pins)
 
 
-main()
+if sys.argv[1:] == ['app-image']:   # only the TIFFAppImage pass: python generate.py app-image
+    pins = {'rsciio_version': rsciio.__version__, 'reference_commit': PIN, 'app_commit': APP}
+    with tempfile.TemporaryDirectory() as tmp:
+        td = pathlib.Path(tmp)
+        app_image_part(build_harness(td), td, pins)
+else:
+    main()

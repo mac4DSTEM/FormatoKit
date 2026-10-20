@@ -62,6 +62,17 @@ func dumpImage(_ i: CalibratedImage) -> [String: Any] {
      "source": i.source, "voltage": i.voltage ?? NSNull(), "notes": i.notes]
 }
 
+/// The same image with every float as its bit pattern (UInt32 pixels, hex-string UInt64 axis fields), so inf, NaN, -0.0 and
+/// every last bit of an axis survive the JSON.
+func dumpImageBits(_ i: CalibratedImage) -> [String: Any] {
+    func bits(_ a: ImageAxis?) -> Any {
+        guard let a else { return NSNull() }
+        return ["origin": String(a.origin.bitPattern, radix: 16), "scale": String(a.scale.bitPattern, radix: 16), "units": a.units] as [String: Any]
+    }
+    return ["width": i.width, "height": i.height, "pixels": i.pixels.map { Int($0.bitPattern) }, "x": bits(i.x), "y": bits(i.y),
+            "source": i.source, "voltage": i.voltage ?? NSNull(), "notes": i.notes]
+}
+
 /// A Velox entry from the generator's JSON (keys: id, detectorName, detectorIndex, detectors, pixelSize, units, offset, ...).
 func entry(_ c: [String: Any]) -> VeloxImageInfo {
     var e = VeloxImageInfo()
@@ -102,6 +113,9 @@ func entry(_ c: [String: Any]) -> VeloxImageInfo {
             case "tiffimage":
                 let data = try Data(contentsOf: URL(fileURLWithPath: c["path"] as! String))
                 do { out[name] = dumpImage(try TIFFImageReader.read(data: data, fileName: "x.tif")) } catch { out[name] = ["error": "\(error)"] }
+            case "tiffimagebits":
+                let data = try Data(contentsOf: URL(fileURLWithPath: c["path"] as! String))
+                do { out[name] = dumpImageBits(try TIFFImageReader.read(data: data, fileName: "x.tif")) } catch { out[name] = ["error": "\(error)"] }
             case "mrcimage":
                 let data = try Data(contentsOf: URL(fileURLWithPath: c["path"] as! String))
                 do { out[name] = dumpImage(try MRCImageReader.read(data: data, fileName: "x.mrc")) } catch { out[name] = ["error": "\(error)"] }
