@@ -1,0 +1,85 @@
+{
+ "files": {
+  "mactem-inserted.png": {
+   "checks": {
+    "crc_valid": true,
+    "idat_equal": true,
+    "ihdr_equal": true,
+    "pixels_equal": true,
+    "text_equal": true
+   },
+   "sha256": "c4914ab7ddf222331877c5ceabcc5509a6fe60aa690d1ff663d951e0f9df13d0"
+  },
+  "swift-gray16.png": {
+   "checks": {
+    "crc_valid": true,
+    "idat_equal": true,
+    "ihdr_equal": true,
+    "pixels_equal": true,
+    "text_equal": true
+   },
+   "sha256": "ce9c62a1ef7b6eb092e5dd006479932f863394e6bb1e27a595e1d85de5533634"
+  },
+  "swift-gray8.png": {
+   "checks": {
+    "crc_valid": true,
+    "idat_equal": true,
+    "ihdr_equal": true,
+    "pixels_equal": true,
+    "text_equal": true
+   },
+   "sha256": "3d9d1737f073df0a4eb26d2761f6f4d1e2e4a3a3de37ef5bc8869769d23d7137"
+  },
+  "swift-rgb8-hashed.png": {
+   "checks": {
+    "crc_valid": true,
+    "idat_equal": true,
+    "ihdr_equal": true,
+    "pixels_equal": true,
+    "text_equal": true
+   },
+   "sha256": "4e0341f70bf2b284105272c9e6cee6a0bfe5e67bbcb4550bfd344e6e3b83a309"
+  },
+  "swift-rgb8-large.png": {
+   "checks": {
+    "crc_valid": true,
+    "idat_equal": true,
+    "ihdr_equal": true,
+    "pixels_equal": true,
+    "text_equal": true
+   },
+   "sha256": "0a1addf1da2cda53e82184516a0827e63160450a709446a829d3b8baab299604"
+  },
+  "swift-rgb8-stored.png": {
+   "checks": {
+    "crc_valid": true,
+    "idat_equal": true,
+    "ihdr_equal": true,
+    "pixels_equal": true,
+    "text_equal": true
+   },
+   "sha256": "f8afa1e92dff41ff15f473ff0be5b4c48b8be0599b87f1504bfcb6535c46ba27"
+  },
+  "swift-rgb8.png": {
+   "checks": {
+    "crc_valid": true,
+    "idat_equal": true,
+    "ihdr_equal": true,
+    "pixels_equal": true,
+    "text_equal": true
+   },
+   "sha256": "98917b85cb8168078ab8898280edc382c786aeabc02cbfc2b7743a8a32186280"
+  },
+  "swift-rgba8.png": {
+   "checks": {
+    "crc_valid": true,
+    "idat_equal": true,
+    "ihdr_equal": true,
+    "pixels_equal": true,
+    "text_equal": true
+   },
+   "sha256": "04f07c5600fe5d3abab5c7efd47933cd55e00d412fb7f970fe6cc787e60d2898"
+  }
+ },
+ "pillow_version": "12.3.0"
+}
