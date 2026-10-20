@@ -4,7 +4,7 @@
 //  files and (owner-check.sh only) the owner's Ceta TIFFs against Fixtures/step-2-pins.json (tools/step-2/pins.py,
 //  RosettaSciIO's file_reader over tifffile 2026.9.20): page 0's tags as tifffile decodes them (code, type, count, the raw
 //  bytes' sha256, the decoded value), and for each series in scope the data's sha256, shape, element type, every axis
-//  field bit for bit and the metadata with its source; a file out of scope or one RosettaSciIO raises on is refused by
+//  field exactly and the metadata with its source; a file out of scope or one RosettaSciIO raises on is refused by
 //  name. L2: seeded slabs of each lazy array equal the eager one.
 //
 

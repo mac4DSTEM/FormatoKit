@@ -3,10 +3,10 @@
 //  Gate P4 and the kernel pins of docs/registration-step-4.md: every (file, option set) of Fixtures/step-4-pins.json
 //  (tools/step-4/pins.py: RosettaSciIO 049e7d70's `file_reader(select_type="spectrum_image", lazy=False)` with sparse and
 //  numba) against `VeloxSpectrumImageSignals`: where RosettaSciIO raises, FormatoKit refuses; where it reads, the signals in
-//  order are equal in type, shape, data sha256, every axis field bit for bit, title, signal type and metadata with source.
+//  order are equal in type, shape, data sha256, every axis field exactly, title, signal type and metadata with source.
 //  The registered deviations (registration §3.3, §3.5, §3.6) are refused by name: the pins' `deviations`, and the runs whose
 //  axes RosettaSciIO leaves without a number or of another size than the data. And RosettaSciIO's `stream_to_array` on the
-//  synthetic streams of the kernel pins, byte for byte.
+//  synthetic streams of the kernel pins, exactly.
 //
 
 import CryptoKit

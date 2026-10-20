@@ -45,7 +45,7 @@ A change after code starts is a dated amendment at the end (§11).
      dwell time, beam current (`* 1e9`), microscope, date and time (`dateutil.parser`'s parse of `User.Date` and
      `User.Time`: ported for the formats the pins hold, refused otherwise), authors.
 3. **Lazy = eager** (step 1's L1): `TIFFFile`'s lazy array reads a slab's rows by positioned reads within the strips; it
-   equals the eager array bit for bit on every pinned signal.
+   equals the eager array exactly on every pinned signal.
 4. **What step 2 does not claim.** Velox XML 34683 and TIA's tags are read as stored by the tag walker, not interpreted:
    RosettaSciIO does not interpret them, so they have no oracle here; macTEM's walker keeps interpreting them until a
    registration with its own reference moves that. TIA's `.ser`/`.emi` files are RosettaSciIO's `tia` plugin, another

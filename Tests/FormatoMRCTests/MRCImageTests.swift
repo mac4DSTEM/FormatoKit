@@ -1,6 +1,6 @@
 //
 //  MRCImageTests.swift
-//  MRCReader against RosettaSciIO 049e7d70 `mrc` (data bytes, dtype, shape, axes bit for bit) and MRCAppImage against the
+//  MRCReader against RosettaSciIO 049e7d70 `mrc` (data bytes, dtype, shape, axes exact) and MRCAppImage against the
 //  consumer's reader (macTEM cb6e164 MRCImageReader.swift, compiled unchanged), on files written byte by byte by
 //  tools/acq-metadata/generate.py.
 //

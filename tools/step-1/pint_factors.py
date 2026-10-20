@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Writes Sources/FormatoCore/FormatoUnitsFactors.swift: Pint 0.26.1's conversion factors between the SI-prefixed forms of
-a base unit, for powers +1 and -1, as Pint computes them (`Quantity(1.0, src).to(dst).magnitude`), bit for bit.
+a base unit, for powers +1 and -1, as Pint computes them (`Quantity(1.0, src).to(dst).magnitude`) (D12: tolerance allowed; the output is exact today).
 
     References/rsciio-venv/bin/python -I -B tools/step-1/pint_factors.py
 

@@ -3,7 +3,7 @@
 The checklist that makes "complete" a measured claim (suite ROADMAP, "Kits", phase 4). Started 2026-10-15 from RosettaSciIO
 049e7d70's own format list (its 38 `rsciio/*/specifications.yaml`, the source of its supported-formats table). Updated at
 every tag (last: 0.4.0, 2026-10-20). Since 0.2.0 FormatoKit's own refusals marked as policies (unconverted Velox
-units, the spectrum-image grid check, TIFF vendor branches, the DM string limit) are parameters (`docs/registration-0.2.0.md`). "Pinned" means a gate compares FormatoKit with RosettaSciIO bit for bit on that format's files; "read" means a
+units, the spectrum-image grid check, TIFF vendor branches, the DM string limit) are parameters (`docs/registration-0.2.0.md`). "Pinned" means a gate compares FormatoKit with RosettaSciIO on that format's files (D12: readers, axes and metadata exact; unit arithmetic may carry a written tolerance, and is compared exactly today); "read" means a
 reader exists without that gate.
 
 ## The formats

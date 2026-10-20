@@ -55,7 +55,7 @@ extension VeloxEMDSerialized {
         // MARK: P2, the grid
 
         /// `.firstImage` is RosettaSciIO's own reading: on the planted grid file (first image 3 x 4, ScanSize x ScanArea 4 x 3)
-        /// option sets O1 to O8 of step-4-pins.json equal its records bit for bit; O9 and O10 raise there and here. The default
+        /// option sets O1 to O8 of step-4-pins.json equal its records exactly; O9 and O10 raise there and here. The default
         /// refuses on that file (§3.3).
         @Test func testFirstImageEqualsRosettaSciIOOnThePlantedGrid() throws {
             let doc = try #require(try JSONSerialization.jsonObject(with: Data(contentsOf: Self.pins)) as? [String: Any])
@@ -180,7 +180,7 @@ extension VeloxEMDSerialized {
             #expect(signal.metadata[Self.prefix + "units"]?.value.text == "px")
         }
 
-        /// A handled unit never reaches the policy: the signals equal the default's, bit for bit, with no policy key.
+        /// A handled unit never reaches the policy: the signals equal the default's, exactly, with no policy key.
         @Test func testKeepAsWrittenLeavesAHandledUnitAlone() throws {
             let keep = VeloxReadPolicy(unconvertedUnits: .keepAsWritten)
             for name in ["si-planted-v9.emd", "si-planted-v11.emd", "si-planted-eels.emd"] {
@@ -244,7 +244,7 @@ extension VeloxEMDSerialized {
 
         // MARK: P8, the block size
 
-        /// Blocks of 1 and 3 values read the same arrays as the default block, bit for bit, on a file whose last frame stops
+        /// Blocks of 1 and 3 values read the same arrays as the default block, exactly, on a file whose last frame stops
         /// early, one whose frames the markers count, and four streams.
         @Test func testBlockSizeChangesNoResult() throws {
             for name in ["si-planted-v9.emd", "si-planted-endframe.emd", "sk-4streams-2frames.emd"] {

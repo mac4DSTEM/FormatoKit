@@ -105,7 +105,7 @@ starts is a dated amendment at the end (section 12) with its reason; nothing abo
   with its byte size. A file type outside the list is refused by name (complex, RGB, bool), not converted.
 - `FormatoArray`: `dataType`, `shape` (C order, slowest first: RosettaSciIO's array shape), and `bytes`, the values in C
   order as **little-endian** bytes, the file's own bytes where the file stores them that way. Two arrays are equal when
-  all three are equal; that is the bit-for-bit claim.
+  all three are equal; that is the exact-equality claim (D12: readers are tested exact).
 - `FormatoAxis`: `name` (optional), `size`, `scale`, `offset`, `units`, `navigate`; uniform (`value(i) = offset + i *
   scale`). The axes list is in array order (axis k describes dimension k of `shape`), as RosettaSciIO's `index_in_array`.
 - `FormatoMetadata`: an ordered list of entries `key` (RosettaSciIO's metadata path, e.g.
@@ -116,14 +116,14 @@ starts is a dated amendment at the end (section 12) with its reason; nothing abo
 - `FormatoSignal`: `title`, `signalType`, `axes`, `metadata`, `data: FormatoArray`.
 - **Lazy.** `FormatoLazyArray` (protocol): `dataType`, `shape`, `read(start:count:) throws -> FormatoArray`, a hyperslab
   in C order. `FormatoLazySignal` carries the same fields as `FormatoSignal` with a lazy array and `load()`.
-  **Registered equal:** `load()` equals `read(start: zeros, count: shape)` equals the eager reading bit for bit, and every
+  **Registered equal:** `load()` equals `read(start: zeros, count: shape)` equals the eager reading exactly, and every
   hyperslab equals the same slice of the eager array (gate L1). A lazy read touches only the bytes of its slab (DM: file
   reads at computed offsets; never the whole file).
 - **Units.** Strings as the reference writes them (`"nm"`, `"µm"` with U+00B5, `"1/nm"`, `"eV"`, `""`). `FormatoUnits`
   ports exactly what the adapters need: RosettaSciIO Velox's `_convert_scale_units` (Pint's `to_compact` with the
   `factor` trick) and `convert_units` for the units the files carry (length: m and its SI prefixes; time: s and its
-  prefixes; anything else is passed through unconverted, and a test names the cases). Bit for bit against Pint 0.26.1 on
-  the files and on a seeded sweep of values (gate U1).
+  prefixes; anything else is passed through unconverted, and a test names the cases). Against Pint 0.26.1 on
+  the files and on a seeded sweep of values (gate U1): D12: a written tolerance is allowed (the gate compares exactly today).
 - `FormatoCancelled`, `FormatoCancellation` (`task`, `check`) and `formatoDisplayFileName`: section 1.1.
 
 ### 3.2 FormatoDM: a DM3 or DM4 file as signals (RosettaSciIO `digitalmicrograph/_api.py` at the pin)
@@ -154,13 +154,13 @@ order:
 For each image `VeloxEMDReader.images()` lists (name order, as h5py iterates and RosettaSciIO reads them):
 - `shape` = `(frames, y, x)`, or `(y, x)` for one frame (RosettaSciIO squeezes a single frame).
 - data: **step 1 reads Float32** through the moved `readImageFrame` (its documented deviation: exact for int8, int16,
-  uint8, uint16 and float32 storage). The pins compare the reference array converted with `astype('<f4')` bit for bit,
+  uint8, uint16 and float32 storage). The pins compare the reference array converted with `astype('<f4')` exactly,
   and a file whose stored type does not convert exactly is named in the pins (`float32_exact: false`) and compared the
   same way. Stored-dtype reading is step 2's (`docs/parity.md`).
 - axes: a stack adds `Time` (navigate), `scale` and units from `_convert_scale_units(FrameTime or the detector's
   ExposureTime, "s", 2 * frames)`; then `y` and `x` (signal), `scale_x, units` = `_convert_scale_units(PixelSize.width,
   PixelUnitX, width)`, `scale_y` = `convert_units(PixelSize.height, PixelUnitX, units)`, offsets the same
-  `convert_units` of `Offset.x`, `Offset.y`. Bit for bit (gate P1).
+  `convert_units` of `Offset.x`, `Offset.y`. D12: a written tolerance is allowed (gate P1 compares exactly today).
 - `title` = the detector name; metadata at step 1: `General.title`, `General.original_filename`,
   `Acquisition_instrument.TEM.beam_energy` from `Optics.AccelerationVoltage / 1000`, with their JSON paths.
 - Velox spectrum images keep their moved API (`readSpectrumImage`, the CSR store); as a FormatoSignal they are step 2's.

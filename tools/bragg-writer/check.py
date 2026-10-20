@@ -4,7 +4,7 @@ test wrote swift-*.h5 into the fixtures folder) with References/CuboKit/py4dstem
   FORMATO_BRAGG_FIXTURE_DIR=$PWD/Tests/FormatoHDF5Tests/Fixtures/bragg swift test -c release --jobs 4 --filter BraggVectorsTests
   MACEM_SUITE=... MPLCONFIGDIR=$PWD/.build/matplotlib tools/memcap.sh -- .../python -I -B tools/bragg-writer/check.py
 
-For each swift-*.h5: py4DSTEM.read returns a BraggVectors whose peaks equal the py4DSTEM-written pins bit for bit, its
+For each swift-*.h5: py4DSTEM.read returns a BraggVectors whose peaks equal the py4DSTEM-written pins exactly, its
 calibration equals the pins, and the h5py group/dataset/attribute structure equals the py4DSTEM-written file's (extra attributes
 the caller asked for excepted, and named). Writes check-result.json, which the Swift tests pin together with each file's SHA-256.
 """

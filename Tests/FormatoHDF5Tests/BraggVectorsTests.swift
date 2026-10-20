@@ -1,6 +1,6 @@
 //
 //  BraggVectorsTests.swift
-//  py4DSTEM BraggVectors in EMD 1.0: the reader against py4DSTEM-written files (bit for bit), the writer against py4DSTEM
+//  py4DSTEM BraggVectors in EMD 1.0: the reader against py4DSTEM-written files (exact), the writer against py4DSTEM
 //  and h5py (tools/bragg-writer/check.py, result pinned here with each file's SHA-256), the app's axis convention, refusals,
 //  and the atomic publish. Fixtures: tools/bragg-writer/generate.py (py4DSTEM f050d207, 0.14.19).
 //

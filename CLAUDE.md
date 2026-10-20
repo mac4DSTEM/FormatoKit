@@ -1,10 +1,18 @@
 # CLAUDE.md — start here
 
 FormatoKit: the macEM suite's file-format library, the Mac counterpart of RosettaSciIO: readers (later writers) for the EM
-formats, one module per format over one data model, checked bit for bit against RosettaSciIO, imported by tagged version by
+formats, one module per format over one data model, checked against RosettaSciIO under the numerical testing policy (D12 below), imported by tagged version by
 SpectroKit, mac4DSTEM and macTEM. GPL-3.0 (README.md says which parts come from where). Modules: `FormatoCore` (the data
 model, units, cancellation), `FormatoDM`, `FormatoEMD`, `FormatoHDF5` (step 1), `FormatoTIFF` (step 2), `FormatoMIB` (Merlin), `FormatoEMPAD`, and `FormatoMRC`,
 `FormatoMSA` (empty, their scope in a doc comment). Rules only here; state in `docs/status.md`.
+
+## Numerical testing policy
+
+D12, Paul 2026-10-19: readers, I/O, indices and metadata are tested exact. Numerics are compared against the pinned Python
+reference within a tolerance written per function (assert_allclose style: about 1e-7 relative for float64, 1e-5 for
+float32), never widened to hide a bug. During an app-to-kit switch, bit for bit is only a quick check that nothing moved by
+accident; if it fails, verify against the Python reference within tolerance and do not block. A moved pinned number gets its
+own commit with the reason.
 
 ## Read first
 
