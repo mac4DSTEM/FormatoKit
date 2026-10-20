@@ -151,24 +151,38 @@ public nonisolated final class HDF5WriteSession {
     ///     unlinked first (its space stays in the file); an existing group is never replaced (`alreadyExists`: use `deleteLink`).
     ///     Everything that can fail is checked before the old dataset is unlinked.
     public func writeDataset(_ path: String, _ array: FormatoArray, chunk: [Int]? = nil, replace: Bool = false) throws {
+        try makeDataset(path, dataType: array.dataType, shape: array.shape, chunk: chunk, replace: replace, bytes: array.bytes)
+    }
+
+    /// Creates a dataset of `dataType` and `shape` at `path` with no data written (HDF5 allocates a chunked dataset lazily, so
+    /// a very large one costs nothing until `writeSlab` fills it; unwritten elements read back as zero). The same rules as
+    /// `writeDataset` for missing groups, `chunk` and `replace`. For a file built a tile at a time.
+    public func createDataset(_ path: String, dataType: FormatoDataType, shape: [Int], chunk: [Int]? = nil,
+                              replace: Bool = false) throws {
+        try makeDataset(path, dataType: dataType, shape: shape, chunk: chunk, replace: replace, bytes: nil)
+    }
+
+    private func makeDataset(_ path: String, dataType: FormatoDataType, shape: [Int], chunk: [Int]?, replace: Bool,
+                             bytes: Data?) throws {
         let parts = try HDF5Ops.components(path)
         guard !parts.isEmpty else { throw HDF5FileError.invalidPath(path) }
-        guard let nativeType = HDF5Ops.native(h5, array.dataType) else {
-            throw HDF5FileError.invalidArgument("the \(array.dataType.rawValue) type cannot be written")
+        guard let nativeType = HDF5Ops.native(h5, dataType) else {
+            throw HDF5FileError.invalidArgument("the \(dataType.rawValue) type cannot be written")
         }
+        guard shape.allSatisfy({ $0 >= 0 }) else { throw HDF5FileError.invalidArgument("shape \(shape) is negative") }
         if let chunk {
-            guard !array.shape.isEmpty, chunk.count == array.shape.count,
-                  zip(chunk, array.shape).allSatisfy({ $0 >= 1 && $0 <= $1 }) else {
-                throw HDF5FileError.invalidArgument("chunk \(chunk) does not fit shape \(array.shape)")
+            guard !shape.isEmpty, chunk.count == shape.count,
+                  zip(chunk, shape).allSatisfy({ $0 >= 1 && $0 <= $1 }) else {
+                throw HDF5FileError.invalidArgument("chunk \(chunk) does not fit shape \(shape)")
             }
-            var bytes = array.dataType.byteSize
+            var chunkBytes = dataType.byteSize
             for extent in chunk {
-                let (product, overflow) = bytes.multipliedReportingOverflow(by: extent)
+                let (product, overflow) = chunkBytes.multipliedReportingOverflow(by: extent)
                 guard !overflow, product < (1 << 32) else { throw HDF5FileError.invalidArgument("chunk \(chunk) is over 4 GiB") }
-                bytes = product
+                chunkBytes = product
             }
         }
-        guard array.shape.count <= HDF5Ops.maximumRank else { throw HDF5FileError.limitExceeded("rank \(array.shape.count)") }
+        guard shape.count <= HDF5Ops.maximumRank else { throw HDF5FileError.limitExceeded("rank \(shape.count)") }
         try open { file in
             try checkParents(Array(parts.dropLast()), file, path)
             if HDF5Ops.linkExists(h5, file, parts) {
@@ -179,7 +193,7 @@ public nonisolated final class HDF5WriteSession {
                 }
             }
             try makeGroups(Array(parts.dropLast()), file, path)
-            let dims = array.shape.map(UInt64.init)
+            let dims = shape.map(UInt64.init)
             let space = dims.isEmpty ? h5.h5screate(0) : h5.h5screateSimple(Int32(dims.count), dims, nil)
             guard space >= 0 else { throw HDF5RootAttributes.failure("making the space of \(path)", h5) }
             defer { _ = h5.h5sclose(space) }
@@ -196,10 +210,97 @@ public nonisolated final class HDF5WriteSession {
             let dataset = HDF5Ops.absolute(parts).withCString { h5.h5dcreate2(file, $0, nativeType, space, 0, properties, 0) }
             guard dataset >= 0 else { throw HDF5RootAttributes.failure("creating \(path)", h5) }
             defer { _ = h5.h5dclose(dataset) }
-            if !array.bytes.isEmpty {
-                guard array.bytes.withUnsafeBytes({ h5.h5dwrite(dataset, nativeType, 0, 0, 0, $0.baseAddress) }) >= 0 else {
+            if let bytes, !bytes.isEmpty {
+                guard bytes.withUnsafeBytes({ h5.h5dwrite(dataset, nativeType, 0, 0, 0, $0.baseAddress) }) >= 0 else {
                     throw HDF5RootAttributes.failure("writing \(path)", h5)
                 }
+            }
+        }
+    }
+
+    /// Writes `array` into the existing numeric dataset at `path`, with its first element at `start` (one index per dimension;
+    /// the array has the dataset's rank and its elements' type). `invalidArgument` when the type differs from the dataset's
+    /// stored type or the slab leaves the dataset; `notFound` / `wrongKind` for a missing or non-dataset path. For a dataset
+    /// built by `createDataset` a tile at a time.
+    public func writeSlab(_ path: String, start: [Int], _ array: FormatoArray) throws {
+        let parts = try HDF5Ops.components(path)
+        guard let nativeType = HDF5Ops.native(h5, array.dataType) else {
+            throw HDF5FileError.invalidArgument("the \(array.dataType.rawValue) type cannot be written")
+        }
+        try open { file in
+            try HDF5Ops.withDataset(h5, file, path, parts) { dataset in
+                let found = try HDF5Ops.info(h5, dataset, path)
+                guard case .numeric(let stored) = found.type, stored == array.dataType else {
+                    throw HDF5FileError.invalidArgument("\(path) does not store \(array.dataType.rawValue): \(found.type)")
+                }
+                guard start.count == found.shape.count, array.shape.count == found.shape.count else {
+                    throw HDF5FileError.invalidArgument("rank \(array.shape.count) at \(start) into \(path) of shape \(found.shape)")
+                }
+                do { try FormatoArray.checkSlab(start: start, count: array.shape, shape: found.shape) } catch {
+                    throw HDF5FileError.invalidArgument("slab \(start) of \(array.shape) is outside \(path) of shape \(found.shape)")
+                }
+                guard !array.bytes.isEmpty else { return }
+                if found.shape.isEmpty {
+                    guard array.bytes.withUnsafeBytes({ h5.h5dwrite(dataset, nativeType, 0, 0, 0, $0.baseAddress) }) >= 0 else {
+                        throw HDF5RootAttributes.failure("writing \(path)", h5)
+                    }
+                    return
+                }
+                let fileSpace = h5.h5dgetSpace(dataset)
+                guard fileSpace >= 0 else { throw HDF5RootAttributes.failure("opening the space of \(path)", h5) }
+                defer { _ = h5.h5sclose(fileSpace) }
+                let starts = start.map(UInt64.init), counts = array.shape.map(UInt64.init)
+                guard h5.h5sselectHyperslab(fileSpace, 0, starts, nil, counts, nil) >= 0 else {      // H5S_SELECT_SET
+                    throw HDF5RootAttributes.failure("selecting the slab of \(path)", h5)
+                }
+                let memorySpace = h5.h5screateSimple(Int32(counts.count), counts, nil)
+                guard memorySpace >= 0 else { throw HDF5RootAttributes.failure("making the memory space for \(path)", h5) }
+                defer { _ = h5.h5sclose(memorySpace) }
+                guard array.bytes.withUnsafeBytes({ h5.h5dwrite(dataset, nativeType, memorySpace, fileSpace, 0, $0.baseAddress) }) >= 0 else {
+                    throw HDF5RootAttributes.failure("writing the slab of \(path)", h5)
+                }
+            }
+        }
+    }
+
+    /// Writes a scalar text dataset at `path` (missing groups above it are created), stored as variable-length text, the way
+    /// h5py writes a Python `str` and the way py4DSTEM's metadata strings are stored. `utf8: false` stores it as ASCII (the
+    /// text must then be ASCII). A NUL byte throws `embeddedNUL`. `replace` as in `writeDataset`.
+    public func writeText(_ path: String, _ text: String, utf8: Bool = true, replace: Bool = false) throws {
+        let parts = try HDF5Ops.components(path)
+        guard !parts.isEmpty else { throw HDF5FileError.invalidPath(path) }
+        guard !text.utf8.contains(0) else { throw HDF5FileError.embeddedNUL(path) }
+        guard utf8 || text.utf8.allSatisfy({ $0 < 0x80 }) else { throw HDF5FileError.invalidArgument("\(path) is not ASCII") }
+        try open { file in
+            try prepareScalar(parts, file, path, replace: replace)
+            let type = try variableLengthTextType(utf8: utf8, for: path)
+            defer { _ = h5.h5tclose(type) }
+            try createScalar(parts, file, path, type: type) { dataset in
+                text.withCString { characters -> herr_t in
+                    var pointer: UnsafePointer<CChar>? = characters
+                    return withUnsafePointer(to: &pointer) { h5.h5dwrite(dataset, type, 0, 0, 0, $0) }
+                }
+            }
+        }
+    }
+
+    /// Writes a scalar boolean dataset at `path` as h5py stores a NumPy `bool`: an 8-bit enumeration {FALSE = 0, TRUE = 1}.
+    public func writeBool(_ path: String, _ value: Bool, replace: Bool = false) throws {
+        let parts = try HDF5Ops.components(path)
+        guard !parts.isEmpty else { throw HDF5FileError.invalidPath(path) }
+        try open { file in
+            try prepareScalar(parts, file, path, replace: replace)
+            let type = h5.h5tenumCreate(h5.int8)
+            guard type >= 0 else { throw HDF5RootAttributes.failure("making the bool type of \(path)", h5) }
+            defer { _ = h5.h5tclose(type) }
+            var no: Int8 = 0, yes: Int8 = 1
+            guard "FALSE".withCString({ h5.h5tenumInsert(type, $0, &no) }) >= 0,
+                  "TRUE".withCString({ h5.h5tenumInsert(type, $0, &yes) }) >= 0 else {
+                throw HDF5RootAttributes.failure("defining the bool type of \(path)", h5)
+            }
+            var stored: Int8 = value ? 1 : 0
+            try createScalar(parts, file, path, type: type) { dataset in
+                withUnsafePointer(to: &stored) { h5.h5dwrite(dataset, type, 0, 0, 0, $0) }
             }
         }
     }
@@ -234,6 +335,32 @@ public nonisolated final class HDF5WriteSession {
                 case .integers(let v): try writeNumbers(name, v, scalar: false, type: h5.int64, on: object)
                 case .real(let v): try writeNumbers(name, [v], scalar: true, type: h5.float64, on: object)
                 case .reals(let v): try writeNumbers(name, v, scalar: false, type: h5.float64, on: object)
+                }
+            }
+        }
+    }
+
+    /// Sets the text attribute `name` on the object at `path` as variable-length text (UTF-8), the way h5py writes a Python
+    /// `str` attribute and py4DSTEM / emdfile's group attributes are stored; `setAttribute(_:on:_:)` stores fixed-length text.
+    /// Replaces an existing attribute (deleted first). A NUL byte throws `embeddedNUL`.
+    public func setVariableLengthTextAttribute(_ name: String, on path: String, _ text: String) throws {
+        let parts = try HDF5Ops.components(path)
+        guard !name.isEmpty, !name.utf8.contains(0) else { throw HDF5FileError.invalidPath(name) }
+        guard !text.utf8.contains(0) else { throw HDF5FileError.embeddedNUL(name) }
+        try open { file in
+            try HDF5Ops.withObject(h5, file, path, parts) { object in
+                let exists = name.withCString { h5.h5aexists(object, $0) }
+                guard exists >= 0 else { throw HDF5RootAttributes.failure("looking for the \(name) attribute", h5) }
+                if exists > 0, name.withCString({ h5.h5adelete(object, $0) }) < 0 {
+                    throw HDF5RootAttributes.failure("replacing the \(name) attribute", h5)
+                }
+                let type = try variableLengthTextType(utf8: true, for: name)
+                defer { _ = h5.h5tclose(type) }
+                try store(name, type: type, count: 1, scalar: true, on: object) { attribute in
+                    text.withCString { characters -> herr_t in
+                        var pointer: UnsafePointer<CChar>? = characters
+                        return withUnsafePointer(to: &pointer) { h5.h5awrite(attribute, type, $0) }
+                    }
                 }
             }
         }
@@ -275,6 +402,41 @@ public nonisolated final class HDF5WriteSession {
             guard group >= 0 else { throw HDF5RootAttributes.failure("creating the group \(HDF5Ops.absolute(prefix))", h5) }
             _ = h5.h5oclose(group)
         }
+    }
+
+    private func variableLengthTextType(utf8: Bool, for name: String) throws -> hid_t {
+        let type = h5.h5tcopy(h5.stringC1)
+        guard type >= 0 else { throw HDF5RootAttributes.failure("making the text type for \(name)", h5) }
+        // H5T_VARIABLE is (size_t)-1; H5T_CSET_UTF8 = 1, H5T_CSET_ASCII = 0.
+        guard h5.h5tsetSize(type, -1) >= 0, h5.h5tsetCset(type, utf8 ? 1 : 0) >= 0 else {
+            _ = h5.h5tclose(type)
+            throw HDF5RootAttributes.failure("making the variable-length text type for \(name)", h5)
+        }
+        return type
+    }
+
+    /// The checks and unlinking shared by the scalar dataset writers (all under `open`).
+    private func prepareScalar(_ parts: [String], _ file: hid_t, _ path: String, replace: Bool) throws {
+        try checkParents(Array(parts.dropLast()), file, path)
+        if HDF5Ops.linkExists(h5, file, parts) {
+            guard replace else { throw HDF5FileError.alreadyExists(path) }
+            guard HDF5Ops.kind(h5, file, parts) != .group else { throw HDF5FileError.alreadyExists("\(path) (a group; use deleteLink)") }
+            guard HDF5Ops.absolute(parts).withCString({ h5.h5ldelete(file, $0, 0) }) >= 0 else {
+                throw HDF5RootAttributes.failure("unlinking \(path)", h5)
+            }
+        }
+        try makeGroups(Array(parts.dropLast()), file, path)
+    }
+
+    private func createScalar(_ parts: [String], _ file: hid_t, _ path: String, type: hid_t,
+                              write: (hid_t) -> herr_t) throws {
+        let space = h5.h5screate(0)
+        guard space >= 0 else { throw HDF5RootAttributes.failure("making the space of \(path)", h5) }
+        defer { _ = h5.h5sclose(space) }
+        let dataset = HDF5Ops.absolute(parts).withCString { h5.h5dcreate2(file, $0, type, space, 0, 0, 0) }
+        guard dataset >= 0 else { throw HDF5RootAttributes.failure("creating \(path)", h5) }
+        defer { _ = h5.h5dclose(dataset) }
+        guard write(dataset) >= 0 else { throw HDF5RootAttributes.failure("writing \(path)", h5) }
     }
 
     private func writeStrings(_ name: String, _ texts: [String], on object: hid_t) throws {

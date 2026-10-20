@@ -62,6 +62,9 @@ public nonisolated enum HDF5FileError: Error, Sendable, Equatable, LocalizedErro
     case limitExceeded(String)
     /// An argument the call refuses (a slab outside the dataset, a chunk that does not fit, a type that cannot be written).
     case invalidArgument(String)
+    /// The destination of a write is the file the content was read from (by file identity, so a symbolic link or another
+    /// spelling counts); nothing was written.
+    case destinationIsSource(String)
 
     public var errorDescription: String? {
         switch self {
@@ -83,6 +86,7 @@ public nonisolated enum HDF5FileError: Error, Sendable, Equatable, LocalizedErro
         case .unsupportedType(let path, let type): "\(path) has the stored type \(type), which is not taken."
         case .limitExceeded(let detail): "over a limit (\(detail))."
         case .invalidArgument(let detail): "invalid argument (\(detail))."
+        case .destinationIsSource(let path): "the destination is the source file (\(path)); the source is never changed."
         }
     }
 }
