@@ -2,6 +2,23 @@
 
 Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what each tag changed for a consumer) and `docs/status.md`.
 
+## 0.6.0 (unreleased)
+
+The format-level half of the apps' session files and exports moved into the kit: the EMD "scientific bundle" writers and the
+PNG with text chunks. What an app stamps into a file (its schema keys, a map's provenance, its lineage) stays the app's and is
+passed in as attributes. Design: `docs/session-bundle.md`.
+
+- Add to `HDF5WriteSession`: `setVariableLengthTextAttribute`, `writeText` (scalar variable-length text dataset, UTF-8 or ASCII), `writeBool` (h5py's bool enum), `createDataset` (no data written, for a file filled by slabs) and `writeSlab` (a hyperslab into an existing numeric dataset).
+- Add `HDF5NewFile.write` and `HDF5PendingFile`: build a new HDF5 file under a scratch name and publish it by atomic rename over the item that was checked; a destination that is the source is refused (`HDF5FileError.destinationIsSource`). The pending form is kept across `await`s with no handle or lock held between calls.
+- Add the EMD 1.0 (py4DSTEM) writers, on a session: `writeEMDFileHeader`, `createEMDRoot`, `writeEMDCalibration` (`EMDCalibration`, with origin maps, rotation convention, `_target_paths`; `EMDBooleanStorage`: h5py enum by default, the first consumer's uint8 as an option), `writeEMDScalarMap` (`RealSlice`) and `writeEMDRGBAMap` (`Array`) with caller-supplied group attributes and metadata entries.
+- Add `EMDDatacubeWriter`: a float32 4D `DataCube` written a band of scan rows at a time (or whole), chunked one pattern per chunk, with a calibration, axes and the caller's attributes.
+- Add `FormatoPNG` (FormatoCore): `encode` (8-bit gray, 16-bit gray, RGB, RGBA, with `tEXt` / `iTXt` chunks), `inserting` (text chunks into a PNG another encoder made), `textEntries` (read back, CRCs checked), `crc32`.
+- Pinned: the first consumer's own output (mac4DSTEM Core c47a2b7a at its kit pins, run offline by `tools/emd-bundle/oracle/run.sh`; macTEM 53f612a `PNGChunks` by `tools/png/oracle.sh`) equals the kit's objects, attributes and dataset bytes; h5py and py4DSTEM 0.14.19 (`tools/emd-bundle/check.py`), Pillow 12.3.0 and zlib (`tools/png/check.py`) read the kit's files.
+- `HDF5FileError` gains `destinationIsSource`.
+- Not moved, with reasons in the design note: the two apps' session lineage / marks records (two different formats, not one shared), macTEM's source identity, the datacube export's reduction and calibration re-reference.
+
+**Migration.** Source-breaking only for an exhaustive `switch` over `HDF5FileError` (already needs a `default` since 0.5.0). Otherwise additive. mac4DSTEM can replace `writeCalibratedDataCubeFile`, `writeScientificBundle`, `writeCalibration`, `writeResultMap`, `writeRGBAResultMap` and its private HDF5 write library with these calls (its reduction, re-reference and `mac4dstem_*` keys stay and become attributes); a result save becomes `HDF5AppendWriter.append` with `replace: true` instead of rebuilding the file. macTEM's `PNGChunks` becomes `FormatoPNG.inserting`. Pass `EMDBooleanStorage.uint8` to keep the app's `QR_flip` bytes; integer attributes are int64 and `UUID` / `authoring_user` are optional in `EMDFileHeader`.
+
 ## 0.5.0 (unreleased)
 
 - Add `HDF5Reader` (FormatoHDF5): low-level read of any HDF5 file through the shared loader and `HDF5Serial`: `exists`, `kind(of:)`, `children(of:)`, `attributeNames(of:)`, `attribute(_:of:)`, `datasetInfo`, `readDataset` (hyperslab, as `FormatoArray`), `readStrings`. Compound, enum, array and vlen data, references, float16 datasets and attributes of rank 2 or more are refused by name. Pinned exact to h5py 3.16.0 (`tools/hdf5-append/generate.py`).
