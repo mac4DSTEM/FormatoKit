@@ -1,0 +1,47 @@
+name: Bug report
+description: A file reads wrongly, fails to read, or crashes
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: FormatoKit version
+      description: A release tag or a commit.
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Format
+      options:
+        - DigitalMicrograph (dm3, dm4)
+        - Velox EMD
+        - TIFF
+        - MRC
+        - EMPAD
+        - Merlin MIB
+        - HDF5 / py4DSTEM
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected and what you got. Include the full error message.
+    validations:
+      required: true
+  - type: textarea
+    id: comparison
+    attributes:
+      label: RosettaSciIO result
+      description: If you can, what RosettaSciIO returns for the same file (shape, axes, a few values).
+  - type: input
+    id: system
+    attributes:
+      label: macOS and Xcode versions
+  - type: textarea
+    id: file
+    attributes:
+      label: Example file
+      description: A link to the file or a trimmed copy, if you may share it.
