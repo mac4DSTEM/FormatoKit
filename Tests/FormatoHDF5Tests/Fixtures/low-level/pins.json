@@ -1,0 +1,1010 @@
+{
+ "files": {
+  "assorted.h5": {
+   "absent": [
+    "/nope",
+    "/a/nope/deeper",
+    "/a/data/f64/inside"
+   ],
+   "objects": {
+    "/": {
+     "attrs": {
+      "big_endian": {
+       "type": "integers",
+       "value": [
+        258,
+        3
+       ]
+      },
+      "compound": {
+       "name": "compound",
+       "type": "unsupported"
+      },
+      "count": {
+       "type": "integer",
+       "value": 7
+      },
+      "empty_vlen": {
+       "type": "text",
+       "value": ""
+      },
+      "flag": {
+       "name": "enum",
+       "type": "unsupported"
+      },
+      "half": {
+       "type": "real",
+       "value": "0x1.0000000000000p-1"
+      },
+      "ids": {
+       "type": "integers",
+       "value": [
+        1,
+        -2,
+        3
+       ]
+      },
+      "matrix": {
+       "name": "rank 2",
+       "type": "unsupported"
+      },
+      "names_fixed": {
+       "type": "texts",
+       "value": [
+        "ab",
+        "cde",
+        ""
+       ]
+      },
+      "names_vlen": {
+       "type": "texts",
+       "value": [
+        "x",
+        "\u00c5",
+        "yy"
+       ]
+      },
+      "neg": {
+       "type": "integer",
+       "value": -300
+      },
+      "note": {
+       "type": "text",
+       "value": "\u00c5 \u65e5\u672c \ud83d\ude00 variable"
+      },
+      "scale": {
+       "type": "real",
+       "value": "0x1.999999999999ap-4"
+      },
+      "single": {
+       "type": "real",
+       "value": "0x1.8000000000000p+0"
+      },
+      "small": {
+       "type": "integer",
+       "value": 200
+      },
+      "title": {
+       "type": "text",
+       "value": "assorted fixture"
+      },
+      "uids": {
+       "type": "integers",
+       "value": [
+        1,
+        1099511627776
+       ]
+      },
+      "weights": {
+       "type": "reals",
+       "value": [
+        "0x1.0000000000000p-1",
+        "0x1.8000000000000p+0",
+        "-0x1.2000000000000p+1"
+       ]
+      }
+     },
+     "children": [
+      "a",
+      "dangling",
+      "edge",
+      "link",
+      "strings",
+      "\u00dcn\u00ef code"
+     ],
+     "kind": "group"
+    },
+    "/a": {
+     "attrs": {
+      "kind": {
+       "type": "text",
+       "value": "group a"
+      }
+     },
+     "children": [
+      "b",
+      "data"
+     ],
+     "kind": "group"
+    },
+    "/a/b": {
+     "attrs": {},
+     "children": [
+      "c"
+     ],
+     "kind": "group"
+    },
+    "/a/b/c": {
+     "attrs": {
+      "depth": {
+       "type": "integer",
+       "value": 3
+      }
+     },
+     "children": [],
+     "kind": "group"
+    },
+    "/a/data": {
+     "attrs": {},
+     "children": [
+      "be_f8",
+      "be_i2",
+      "chunked",
+      "empty",
+      "f16",
+      "f32",
+      "f64",
+      "flags",
+      "i16",
+      "i32",
+      "i64",
+      "i8",
+      "rank1",
+      "rec",
+      "rgb",
+      "scalar_f8",
+      "scalar_i4",
+      "u16",
+      "u32",
+      "u64",
+      "u8"
+     ],
+     "kind": "group"
+    },
+    "/a/data/be_f8": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "3667fa2ea422875ad81ce8ced9ece4bbe71a6f87cac8d660ea52ff067cd07c06",
+     "shape": [
+      3
+     ],
+     "slab": {
+      "count": [
+       1
+      ],
+      "sha256": "5bc207030769575235ed5e474ccf77f234e5dedd9da53d2ea0f557022c41b3a4",
+      "start": [
+       1
+      ]
+     },
+     "type": "numeric:float64"
+    },
+    "/a/data/be_i2": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "99b795fbf519427579dc2406e15c8d8faface4d50b0bf2dab3a59fc51446186c",
+     "shape": [
+      2,
+      3
+     ],
+     "slab": {
+      "count": [
+       1,
+       1
+      ],
+      "sha256": "6f205f9131db211d2185ebfe87815b7e905439b5d48afe799d1c727906ebbc37",
+      "start": [
+       1,
+       1
+      ]
+     },
+     "type": "numeric:int16"
+    },
+    "/a/data/chunked": {
+     "attrs": {},
+     "chunks": [
+      2,
+      3,
+      7
+     ],
+     "compression": "gzip",
+     "kind": "dataset",
+     "sha256": "4c23e39709c2318725555e43310d82acc0ca0b57854be1fb379719711d8d3e29",
+     "shape": [
+      5,
+      6,
+      7
+     ],
+     "slab": {
+      "count": [
+       2,
+       3,
+       3
+      ],
+      "sha256": "57a0908f705dd34c8efe108f9736ce21f974ef95474f863b1315ea2d42318d3e",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:uint16"
+    },
+    "/a/data/empty": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "shape": [
+      0,
+      3
+     ],
+     "type": "numeric:float32"
+    },
+    "/a/data/f16": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "shape": [
+      2
+     ],
+     "type": "unsupported:float16"
+    },
+    "/a/data/f32": {
+     "attrs": {
+      "dtype": {
+       "type": "text",
+       "value": "<f4"
+      }
+     },
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "771741a9398112275928f1db0383427a870f8750132020df505e3482caa05610",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "slab": {
+      "count": [
+       1,
+       1,
+       2
+      ],
+      "sha256": "aad03500cfce74c460cecd999972528343cc65a1abf0f3f3da92cada7b25ca0d",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:float32"
+    },
+    "/a/data/f64": {
+     "attrs": {
+      "dtype": {
+       "type": "text",
+       "value": "<f8"
+      }
+     },
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "eee06f9d3b50f15fe3e1e29a703d9c63b506ee44d0b157676b6b36c986f43f4b",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "slab": {
+      "count": [
+       1,
+       1,
+       2
+      ],
+      "sha256": "98bb6fc580a99863291d5a58ef8ede69efa3c8298601e1a486a0e36c2e993b2e",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:float64"
+    },
+    "/a/data/flags": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "shape": [
+      3
+     ],
+     "type": "unsupported:enum"
+    },
+    "/a/data/i16": {
+     "attrs": {
+      "dtype": {
+       "type": "text",
+       "value": "<i2"
+      }
+     },
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "4a9b22dc8a6dff5fdb4b8439dc09bc8d51d1fe6ad9a56c86f9b6f0b42c23ae5f",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "slab": {
+      "count": [
+       1,
+       1,
+       2
+      ],
+      "sha256": "3c50f395ef14982df0ef8a16033199d3e00a409beb3645dcb4e81c8aef611486",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:int16"
+    },
+    "/a/data/i32": {
+     "attrs": {
+      "dtype": {
+       "type": "text",
+       "value": "<i4"
+      }
+     },
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "6b3174c283840a0b74300cd30be98412fa3ec124ee59900b6f0b0f2cc7f0bf8b",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "slab": {
+      "count": [
+       1,
+       1,
+       2
+      ],
+      "sha256": "aaf2b96df653fe1ad7bba9a3a981f56ff104dc921cab259faa5eff173d66a298",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:int32"
+    },
+    "/a/data/i64": {
+     "attrs": {
+      "dtype": {
+       "type": "text",
+       "value": "<i8"
+      }
+     },
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "32b2031a74cd096eedae2fd696fb8d39f622981ee6c9e116c0e1c2ce55021876",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "slab": {
+      "count": [
+       1,
+       1,
+       2
+      ],
+      "sha256": "1d2e8ff4cf5bf197850ae5056e60c1b543501f4e2265254ff1b52babfa921af4",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:int64"
+    },
+    "/a/data/i8": {
+     "attrs": {
+      "dtype": {
+       "type": "text",
+       "value": "<i1"
+      }
+     },
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "441d7588da8f3ef8223fa3f0a03b43525314aecde8db0e6108c82b1e53a410e6",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "slab": {
+      "count": [
+       1,
+       1,
+       2
+      ],
+      "sha256": "c2d8da42bc8946d43af119c616d25744a5cf549837c5ee6cab4e0669a1a5cafe",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:int8"
+    },
+    "/a/data/rank1": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "f0552784a8c8aa31a1f50071b2cfc0a35264691eb979cceb2dc96e621eb41453",
+     "shape": [
+      11
+     ],
+     "slab": {
+      "count": [
+       5
+      ],
+      "sha256": "0e6565593c3f1cd367b6ec2615a5d38952c47350e795ac2eb2a29b519c6a1a1d",
+      "start": [
+       1
+      ]
+     },
+     "type": "numeric:float64"
+    },
+    "/a/data/rec": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "shape": [
+      2
+     ],
+     "type": "unsupported:compound"
+    },
+    "/a/data/rgb": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "shape": [
+      2,
+      3
+     ],
+     "type": "unsupported:compound"
+    },
+    "/a/data/scalar_f8": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "b084f39eda8626830f0da93e237409eadcb6558d500c155a438c4dba38d4ba98",
+     "shape": [],
+     "type": "numeric:float64"
+    },
+    "/a/data/scalar_i4": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "eaa5b40ab91b172d8cda0ad20f74051143bf0954e9d66b76e39cda97e818f5f0",
+     "shape": [],
+     "type": "numeric:int32"
+    },
+    "/a/data/u16": {
+     "attrs": {
+      "dtype": {
+       "type": "text",
+       "value": "<u2"
+      }
+     },
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "98ed66a0058e0ceaa9b6fa800515f9672e3618788fa19093e1c8b02014485472",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "slab": {
+      "count": [
+       1,
+       1,
+       2
+      ],
+      "sha256": "cf04c7e554fd28443275437693f76fdbca8b0fdee4a032f875fd08d5a805cd0a",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:uint16"
+    },
+    "/a/data/u32": {
+     "attrs": {
+      "dtype": {
+       "type": "text",
+       "value": "<u4"
+      }
+     },
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "8463e693536ea5f86474e10e141e995565ee896930990d0b7e88dfa782618700",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "slab": {
+      "count": [
+       1,
+       1,
+       2
+      ],
+      "sha256": "b637ac409122dfe4d77fde1019678f04764f9372909cf03fb5fffa09dcbebd1c",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:uint32"
+    },
+    "/a/data/u64": {
+     "attrs": {
+      "dtype": {
+       "type": "text",
+       "value": "<u8"
+      }
+     },
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "14ff02a2142f236a6d0215ad47e801232cbd54dbbf5ff7fc7803dbd49e7264ac",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "slab": {
+      "count": [
+       1,
+       1,
+       2
+      ],
+      "sha256": "e6eebac60a7fb6a7b7331a2d8557b2f4bf8fc58e3287da95a76d924a976bbe3f",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:uint64"
+    },
+    "/a/data/u8": {
+     "attrs": {
+      "dtype": {
+       "type": "text",
+       "value": "<u1"
+      }
+     },
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "24aa805c989405994ae1af7d4a46afd78c423818bd7ede0b93dfac002878915a",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "slab": {
+      "count": [
+       1,
+       1,
+       2
+      ],
+      "sha256": "4726a4573e775e7a67735f95da5e138ce91fd998870081aacf40e57dda6425db",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:uint8"
+    },
+    "/dangling": {
+     "kind": "other"
+    },
+    "/edge": {
+     "attrs": {
+      "i64min": {
+       "type": "integer",
+       "value": -9223372036854775808
+      },
+      "u64fits": {
+       "type": "integer",
+       "value": 9223372036854775807
+      },
+      "u64max": {
+       "type": "limit"
+      }
+     },
+     "children": [],
+     "kind": "group"
+    },
+    "/link": {
+     "attrs": {
+      "dtype": {
+       "type": "text",
+       "value": "<f8"
+      }
+     },
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "eee06f9d3b50f15fe3e1e29a703d9c63b506ee44d0b157676b6b36c986f43f4b",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "slab": {
+      "count": [
+       1,
+       1,
+       2
+      ],
+      "sha256": "98bb6fc580a99863291d5a58ef8ede69efa3c8298601e1a486a0e36c2e993b2e",
+      "start": [
+       1,
+       1,
+       1
+      ]
+     },
+     "type": "numeric:float64"
+    },
+    "/strings": {
+     "attrs": {},
+     "children": [
+      "fixed",
+      "fixed_utf8",
+      "long",
+      "scalar_vlen",
+      "variable"
+     ],
+     "kind": "group"
+    },
+    "/strings/fixed": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "shape": [
+      3
+     ],
+     "strings": [
+      "abc",
+      "de",
+      ""
+     ],
+     "type": "string:fixed"
+    },
+    "/strings/fixed_utf8": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "shape": [
+      2
+     ],
+     "strings": [
+      "\u00c5\u65e5",
+      "x"
+     ],
+     "type": "string:fixed"
+    },
+    "/strings/long": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "shape": [
+      1
+     ],
+     "strings": [
+      "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+     ],
+     "type": "string:variable"
+    },
+    "/strings/scalar_vlen": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "shape": [],
+     "strings": [
+      "scalar text"
+     ],
+     "type": "string:variable"
+    },
+    "/strings/variable": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "shape": [
+      2,
+      2
+     ],
+     "strings": [
+      "one",
+      "\u00c5two",
+      "",
+      "\u65e5\u672c\u8a9e three"
+     ],
+     "type": "string:variable"
+    },
+    "/\u00dcn\u00ef code": {
+     "attrs": {},
+     "children": [
+      "with space"
+     ],
+     "kind": "group"
+    },
+    "/\u00dcn\u00ef code/with space": {
+     "attrs": {
+      "ok": {
+       "type": "integer",
+       "value": 1
+      }
+     },
+     "children": [],
+     "kind": "group"
+    }
+   }
+  },
+  "latest.h5": {
+   "absent": [
+    "/nope",
+    "/a/nope/deeper",
+    "/a/data/f64/inside"
+   ],
+   "objects": {
+    "/": {
+     "attrs": {
+      "v": {
+       "type": "text",
+       "value": "latest"
+      }
+     },
+     "children": [
+      "dense"
+     ],
+     "kind": "group"
+    },
+    "/dense": {
+     "attrs": {
+      "a00": {
+       "type": "integer",
+       "value": 0
+      },
+      "a01": {
+       "type": "integer",
+       "value": 1
+      },
+      "a02": {
+       "type": "integer",
+       "value": 2
+      },
+      "a03": {
+       "type": "integer",
+       "value": 3
+      },
+      "a04": {
+       "type": "integer",
+       "value": 4
+      },
+      "a05": {
+       "type": "integer",
+       "value": 5
+      },
+      "a06": {
+       "type": "integer",
+       "value": 6
+      },
+      "a07": {
+       "type": "integer",
+       "value": 7
+      },
+      "a08": {
+       "type": "integer",
+       "value": 8
+      },
+      "a09": {
+       "type": "integer",
+       "value": 9
+      },
+      "a10": {
+       "type": "integer",
+       "value": 10
+      },
+      "a11": {
+       "type": "integer",
+       "value": 11
+      },
+      "a12": {
+       "type": "integer",
+       "value": 12
+      },
+      "a13": {
+       "type": "integer",
+       "value": 13
+      },
+      "a14": {
+       "type": "integer",
+       "value": 14
+      },
+      "a15": {
+       "type": "integer",
+       "value": 15
+      },
+      "a16": {
+       "type": "integer",
+       "value": 16
+      },
+      "a17": {
+       "type": "integer",
+       "value": 17
+      },
+      "a18": {
+       "type": "integer",
+       "value": 18
+      },
+      "a19": {
+       "type": "integer",
+       "value": 19
+      },
+      "a20": {
+       "type": "integer",
+       "value": 20
+      },
+      "a21": {
+       "type": "integer",
+       "value": 21
+      },
+      "a22": {
+       "type": "integer",
+       "value": 22
+      },
+      "a23": {
+       "type": "integer",
+       "value": 23
+      },
+      "a24": {
+       "type": "integer",
+       "value": 24
+      },
+      "a25": {
+       "type": "integer",
+       "value": 25
+      },
+      "a26": {
+       "type": "integer",
+       "value": 26
+      },
+      "a27": {
+       "type": "integer",
+       "value": 27
+      },
+      "a28": {
+       "type": "integer",
+       "value": 28
+      },
+      "a29": {
+       "type": "integer",
+       "value": 29
+      },
+      "a30": {
+       "type": "integer",
+       "value": 30
+      },
+      "a31": {
+       "type": "integer",
+       "value": 31
+      },
+      "a32": {
+       "type": "integer",
+       "value": 32
+      },
+      "a33": {
+       "type": "integer",
+       "value": 33
+      },
+      "a34": {
+       "type": "integer",
+       "value": 34
+      },
+      "a35": {
+       "type": "integer",
+       "value": 35
+      },
+      "a36": {
+       "type": "integer",
+       "value": 36
+      },
+      "a37": {
+       "type": "integer",
+       "value": 37
+      },
+      "a38": {
+       "type": "integer",
+       "value": 38
+      },
+      "a39": {
+       "type": "integer",
+       "value": 39
+      }
+     },
+     "children": [
+      "x"
+     ],
+     "kind": "group"
+    },
+    "/dense/x": {
+     "attrs": {},
+     "chunks": null,
+     "compression": null,
+     "kind": "dataset",
+     "sha256": "143de3a0e04132658d3c3d7087e2b201facebd593af25fd77b2f3508baa8a6b9",
+     "shape": [
+      10
+     ],
+     "slab": {
+      "count": [
+       5
+      ],
+      "sha256": "0f0fcd7ac25b46f0b354529ced3e25ccbecce8a2303030a929c224c8a60a3a2e",
+      "start": [
+       1
+      ]
+     },
+     "type": "numeric:float32"
+    }
+   }
+  }
+ },
+ "h5py_version": "3.16.0"
+}

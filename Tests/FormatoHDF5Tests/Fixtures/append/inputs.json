@@ -1,0 +1,355 @@
+{
+ "scenarios": [
+  {
+   "name": "appended",
+   "base": true,
+   "file": "swift-appended.h5",
+   "ops": [
+    {
+     "op": "group",
+     "path": "/new/deep/er"
+    },
+    {
+     "op": "group",
+     "path": "/grp1"
+    },
+    {
+     "op": "dataset",
+     "path": "/new/deep/er/u8",
+     "dtype": "|u1",
+     "shape": [
+      2,
+      3,
+      4
+     ],
+     "hex": "000a141e28323c46505a646e78828c96a0aab4bec8d2dce6",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/new/f32",
+     "dtype": "<f4",
+     "shape": [
+      4,
+      5
+     ],
+     "hex": "000080bf000060bf000040bf000020bf000000bf0000c0be000080be000000be000000000000003e0000803e0000c03e0000003f0000203f0000403f0000603f0000803f0000903f0000a03f0000b03f",
+     "chunk": [
+      2,
+      5
+     ],
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/new/i64",
+     "dtype": "<i8",
+     "shape": [
+      3
+     ],
+     "hex": "00000000000000800000000000000000ffffffffffffff7f",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/new/scalar",
+     "dtype": "<f8",
+     "shape": [],
+     "hex": "9a9999999999b93f",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/new/empty",
+     "dtype": "<f4",
+     "shape": [
+      0,
+      3
+     ],
+     "hex": "",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/types/i8",
+     "dtype": "|i1",
+     "shape": [
+      7
+     ],
+     "hex": "807f0304050607",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/types/i16",
+     "dtype": "<i2",
+     "shape": [
+      7
+     ],
+     "hex": "0080ff7f03000400050006000700",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/types/i32",
+     "dtype": "<i4",
+     "shape": [
+      7
+     ],
+     "hex": "00000080ffffff7f0300000004000000050000000600000007000000",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/types/u16",
+     "dtype": "<u2",
+     "shape": [
+      7
+     ],
+     "hex": "0000ffff03000400050006000700",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/types/u32",
+     "dtype": "<u4",
+     "shape": [
+      7
+     ],
+     "hex": "00000000ffffffff0300000004000000050000000600000007000000",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/types/u64",
+     "dtype": "<u8",
+     "shape": [
+      7
+     ],
+     "hex": "0000000000000000ffffffffffffffff03000000000000000400000000000000050000000000000006000000000000000700000000000000",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/types/f64",
+     "dtype": "<f8",
+     "shape": [
+      7
+     ],
+     "hex": "000000000000008059f3f8c21f6ea501182d4454fb2109406957148b0abf05c0ffffffffffffef7f01000000000000009a9999999999b93f",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "dataset",
+     "path": "/grp1/sub/extra",
+     "dtype": "<f4",
+     "shape": [
+      2,
+      2
+     ],
+     "hex": "0000803f000000400000404000008040",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "attr",
+     "on": "/new",
+     "name": "text",
+     "type": "text",
+     "value": "\u00c5 \u65e5\u672c \ud83d\ude00"
+    },
+    {
+     "op": "attr",
+     "on": "/new",
+     "name": "empty",
+     "type": "text",
+     "value": ""
+    },
+    {
+     "op": "attr",
+     "on": "/grp1/data",
+     "name": "scale",
+     "type": "real",
+     "value": "0x1.999999999999ap-4"
+    },
+    {
+     "op": "attr",
+     "on": "/grp1/data",
+     "name": "offsets",
+     "type": "reals",
+     "value": [
+      "0x1.8000000000000p+0",
+      "-0x1.0000000000000p+1",
+      "0x1.12e0be826d695p-30"
+     ]
+    },
+    {
+     "op": "attr",
+     "on": "/grp1/data",
+     "name": "ids",
+     "type": "integers",
+     "value": [
+      1,
+      2,
+      3,
+      -9223372036854775808
+     ]
+    },
+    {
+     "op": "attr",
+     "on": "/grp1/data",
+     "name": "texts",
+     "type": "texts",
+     "value": [
+      "a",
+      "bcd",
+      ""
+     ]
+    },
+    {
+     "op": "attr",
+     "on": "/grp1/data",
+     "name": "units",
+     "type": "text",
+     "value": "replaced counts, longer"
+    },
+    {
+     "op": "attr",
+     "on": "/grp1/data",
+     "name": "old",
+     "type": "integer",
+     "value": 9
+    },
+    {
+     "op": "attr",
+     "on": "/",
+     "name": "flag",
+     "type": "integer",
+     "value": 1
+    },
+    {
+     "op": "attr",
+     "on": "/",
+     "name": "version",
+     "type": "integer",
+     "value": 4
+    },
+    {
+     "op": "attr",
+     "on": "/",
+     "name": "title",
+     "type": "text",
+     "value": "a longer base title"
+    },
+    {
+     "op": "attr",
+     "on": "/new/f32",
+     "name": "tag",
+     "type": "real",
+     "value": "0x1.4000000000000p+1"
+    }
+   ]
+  },
+  {
+   "name": "replaced",
+   "base": true,
+   "file": "swift-replaced.h5",
+   "ops": [
+    {
+     "op": "dataset",
+     "path": "/grp1/data",
+     "dtype": "<f8",
+     "shape": [
+      2,
+      2
+     ],
+     "hex": "000000000000f83f00000000000004400000000000000cc00000000000001240",
+     "chunk": null,
+     "replace": true
+    },
+    {
+     "op": "delete",
+     "path": "/orphan"
+    },
+    {
+     "op": "delete",
+     "path": "/grp1/sub"
+    },
+    {
+     "op": "dataset",
+     "path": "/keep2",
+     "dtype": "|u1",
+     "shape": [
+      3
+     ],
+     "hex": "010203",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "delete",
+     "path": "/keep2"
+    },
+    {
+     "op": "dataset",
+     "path": "/strs2",
+     "dtype": "<u4",
+     "shape": [
+      1
+     ],
+     "hex": "05000000",
+     "chunk": null,
+     "replace": false
+    }
+   ]
+  },
+  {
+   "name": "new",
+   "base": false,
+   "file": "swift-new.h5",
+   "ops": [
+    {
+     "op": "dataset",
+     "path": "/data/a",
+     "dtype": "<i4",
+     "shape": [
+      2,
+      2
+     ],
+     "hex": "01000000feffffff03000000fcffffff",
+     "chunk": null,
+     "replace": false
+    },
+    {
+     "op": "group",
+     "path": "/g/h"
+    },
+    {
+     "op": "attr",
+     "on": "/",
+     "name": "created_by",
+     "type": "text",
+     "value": "swift"
+    },
+    {
+     "op": "attr",
+     "on": "/g",
+     "name": "pi",
+     "type": "real",
+     "value": "0x1.921fb54442d18p+1"
+    }
+   ]
+  }
+ ]
+}

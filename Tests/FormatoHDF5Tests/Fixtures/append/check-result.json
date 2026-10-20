@@ -1,0 +1,23 @@
+{
+ "files": {
+  "swift-appended.h5": {
+   "equals_base_plus_operations": true,
+   "h5py_opens": true,
+   "objects": 26,
+   "sha256": "c82f57692ca4a69592369a1cd2824a874688446677f91796a1790bd633cd60d0"
+  },
+  "swift-new.h5": {
+   "equals_base_plus_operations": true,
+   "h5py_opens": true,
+   "objects": 5,
+   "sha256": "51d8efedc0a671ab38a27111b92172079dc798b05e2197a99824fbab84074cc3"
+  },
+  "swift-replaced.h5": {
+   "equals_base_plus_operations": true,
+   "h5py_opens": true,
+   "objects": 7,
+   "sha256": "504e1289a6f4e04074e94da7965bab37375551a434d0b572a60fa9342841cbf2"
+  }
+ },
+ "h5py_version": "3.16.0"
+}

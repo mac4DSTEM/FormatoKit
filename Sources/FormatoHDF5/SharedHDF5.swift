@@ -74,6 +74,19 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
     package let uint8: hid_t, uint16: hid_t, uint32: hid_t, uint64: hid_t, float32: hid_t
     /// FormatoKit step 3 (registration step 3 §1.1): the native types a stored-type image read needs beside the above.
     package let int8: hid_t, int16: hid_t, int32: hid_t, int64: hid_t, float64: hid_t
+    // Low-level access and append symbols (FormatoKit Unreleased: HDF5Reader, HDF5AppendWriter).
+    package typealias H5Ldelete = @convention(c) (hid_t, UnsafePointer<CChar>?, hid_t) -> herr_t
+    package typealias H5Lexists = @convention(c) (hid_t, UnsafePointer<CChar>?, hid_t) -> Int32
+    package typealias H5IgetType = @convention(c) (hid_t) -> Int32
+    package typealias H5Literate2 = @convention(c) (hid_t, Int32, Int32, UnsafeMutablePointer<hsize_t>?, H5Literate, UnsafeMutableRawPointer?) -> herr_t
+    package typealias H5Aoperator = @convention(c) (hid_t, UnsafePointer<CChar>?, UnsafeRawPointer?, UnsafeMutableRawPointer?) -> herr_t
+    package typealias H5Aiterate2 = @convention(c) (hid_t, Int32, Int32, UnsafeMutablePointer<hsize_t>?, H5Aoperator, UnsafeMutableRawPointer?) -> herr_t
+    package typealias H5Adelete = @convention(c) (hid_t, UnsafePointer<CChar>?) -> herr_t
+    package typealias H5PsetChunk = @convention(c) (hid_t, Int32, UnsafePointer<hsize_t>?) -> herr_t
+    package let h5ldelete: H5Ldelete, h5lexists: H5Lexists, h5igetType: H5IgetType, h5literate2: H5Literate2
+    package let h5aiterate2: H5Aiterate2, h5adelete: H5Adelete, h5psetChunk: H5PsetChunk
+    /// `H5P_CLS_DATASET_CREATE_ID_g`'s value: the dataset-creation property class.
+    package let datasetCreateClass: hid_t
 
     /// The standard lookup shared by the HDF5 readers and writers in this package: the `FORMATO_HDF5_PATH` override, the host
     /// app's `Frameworks/libhdf5.dylib`, the copy FormatoKit ships, then the loader's search path. Call under `HDF5Serial`.
@@ -148,7 +161,12 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
             float32: try global("H5T_NATIVE_FLOAT_g"),
             int8: try global("H5T_NATIVE_INT8_g"), int16: try global("H5T_NATIVE_INT16_g"),
             int32: try global("H5T_NATIVE_INT32_g"), int64: try global("H5T_NATIVE_INT64_g"),
-            float64: try global("H5T_NATIVE_DOUBLE_g"))
+            float64: try global("H5T_NATIVE_DOUBLE_g"),
+            h5ldelete: try symbol("H5Ldelete", as: H5Ldelete.self), h5lexists: try symbol("H5Lexists", as: H5Lexists.self),
+            h5igetType: try symbol("H5Iget_type", as: H5IgetType.self), h5literate2: try symbol("H5Literate2", as: H5Literate2.self),
+            h5aiterate2: try symbol("H5Aiterate2", as: H5Aiterate2.self), h5adelete: try symbol("H5Adelete", as: H5Adelete.self),
+            h5psetChunk: try symbol("H5Pset_chunk", as: H5PsetChunk.self),
+            datasetCreateClass: try global("H5P_CLS_DATASET_CREATE_ID_g"))
     }
 }
 

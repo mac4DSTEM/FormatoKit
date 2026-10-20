@@ -48,6 +48,20 @@ public nonisolated enum HDF5FileError: Error, Sendable, Equatable, LocalizedErro
     case embeddedNUL(String)
     /// A write failed while `operation`; nothing was changed.
     case cannotWrite(operation: String, detail: String)
+    /// A path that names no object (or whose parent does not exist) in the file.
+    case notFound(String)
+    /// A path that names an object of another kind than the call needs (`expected`: "group" or "dataset").
+    case wrongKind(path: String, expected: String)
+    /// A path that already names something, and the call was not asked to replace it.
+    case alreadyExists(String)
+    /// A path that is empty, holds a NUL byte, or has a `.` or `..` component.
+    case invalidPath(String)
+    /// A dataset or attribute whose stored type this layer does not take, named (for example `compound`, `enum`, `float16`).
+    case unsupportedType(path: String, type: String)
+    /// A rank, size or count over the limit for one read, or an element count that overflows.
+    case limitExceeded(String)
+    /// An argument the call refuses (a slab outside the dataset, a chunk that does not fit, a type that cannot be written).
+    case invalidArgument(String)
 
     public var errorDescription: String? {
         switch self {
@@ -62,6 +76,13 @@ public nonisolated enum HDF5FileError: Error, Sendable, Equatable, LocalizedErro
         case .denseAttributeStorage: "its attributes are stored in HDF5 dense attribute storage, which is not read."
         case .embeddedNUL(let name): "the \(name) text holds a NUL byte, which a stored string cannot."
         case .cannotWrite(let operation, let detail): "the write failed while \(operation) (\(detail)); nothing was changed."
+        case .notFound(let path): "there is nothing at \(path)."
+        case .wrongKind(let path, let expected): "\(path) is not a \(expected)."
+        case .alreadyExists(let path): "\(path) already exists."
+        case .invalidPath(let path): "\(path) is not a valid HDF5 path."
+        case .unsupportedType(let path, let type): "\(path) has the stored type \(type), which is not taken."
+        case .limitExceeded(let detail): "over a limit (\(detail))."
+        case .invalidArgument(let detail): "invalid argument (\(detail))."
         }
     }
 }
@@ -185,7 +206,7 @@ public nonisolated enum HDF5RootAttributes {
         }
     }
 
-    private static func openForReading(_ url: URL, _ h5: SharedHDF5) throws -> hid_t {
+    static func openForReading(_ url: URL, _ h5: SharedHDF5) throws -> hid_t {
         guard url.isFileURL else { throw HDF5FileError.cannotOpen("not a file URL") }
         // The open HDF5 would make, made first, only to tell a denied read from a file that is not HDF5: HDF5's error stack does
         // not keep errno. A missing file is left to HDF5 (`cannotOpen`).
@@ -252,7 +273,7 @@ public nonisolated enum HDF5RootAttributes {
         return text
     }
 
-    private static func writeString(_ name: String, _ value: String, on file: hid_t, _ h5: SharedHDF5) throws {
+    static func writeString(_ name: String, _ value: String, on file: hid_t, _ h5: SharedHDF5) throws {
         let stored = value.isEmpty ? [UInt8(0)] : Array(value.utf8)
         let type = h5.h5tcopy(h5.stringC1)
         guard type >= 0 else { throw failure("making the text type for \(name)", h5) }
@@ -272,11 +293,11 @@ public nonisolated enum HDF5RootAttributes {
         }
     }
 
-    private static func hdf5Failure(_ operation: String, _ h5: SharedHDF5) -> HDF5FileError {
+    static func hdf5Failure(_ operation: String, _ h5: SharedHDF5) -> HDF5FileError {
         .hdf5(operation: operation, detail: errorStack(h5) ?? "HDF5 gave no reason")
     }
 
-    private static func failure(_ operation: String, _ h5: SharedHDF5) -> HDF5FileError {
+    static func failure(_ operation: String, _ h5: SharedHDF5) -> HDF5FileError {
         .cannotWrite(operation: operation, detail: errorStack(h5) ?? "HDF5 gave no reason")
     }
 
