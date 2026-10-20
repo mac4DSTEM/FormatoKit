@@ -2,6 +2,15 @@
 
 Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what each tag changed for a consumer) and `docs/status.md`.
 
+## 0.5.0 (unreleased)
+
+- Add `HDF5Reader` (FormatoHDF5): low-level read of any HDF5 file through the shared loader and `HDF5Serial`: `exists`, `kind(of:)`, `children(of:)`, `attributeNames(of:)`, `attribute(_:of:)`, `datasetInfo`, `readDataset` (hyperslab, as `FormatoArray`), `readStrings`. Compound, enum, array and vlen data, references, float16 datasets and attributes of rank 2 or more are refused by name. Pinned exact to h5py 3.16.0 (`tools/hdf5-append/generate.py`).
+- Add `HDF5AppendWriter.append(to:mode:body:)` with `HDF5WriteSession` (`createGroup`, `writeDataset` with `chunk` and `replace`, `setAttribute`, `deleteLink`, `exists`). Default `.atomicCopy` copies the file, writes the copy and publishes it over the checked original (any failure leaves the original byte-identical); `.inPlace` is not atomic. Unrelated content is unchanged; h5py reads the appended files equal to base plus operations. No compression filters, resizing or space reclamation. Note: `.inPlace` `replace: true` unlinks the old dataset before the new one is written.
+- Add `TIFFAppImage` (FormatoTIFF): the first consumer's reading of one 2D TIFF as a Float32 calibrated image, the named option beside `TIFFSignals`. Calibration order FEI SEM (PixelWidth on x, where tifffile swaps non-square axes), Velox, Digital Micrograph tags, ImageJ; BigTIFF, extra pages, stacks, compression, tiles, WhiteIsZero, palettes and unequal colour channels are refused by name. Pinned bit for bit to macTEM cb6e164's reader on 149 byte-built files. Known difference: a tag whose value lies outside the file, or of an unknown type, throws `truncated` here where the consumer ignores it.
+- `HDF5FileError` gains `notFound`, `wrongKind`, `alreadyExists`, `invalidPath`, `unsupportedType`, `limitExceeded`, `invalidArgument`.
+
+**Migration.** Source-breaking only for an exhaustive `switch` over `HDF5FileError`: add a `default` case. Otherwise additive. mac4DSTEM can move `H5Reader` and the sidecar append onto `HDF5Reader` / `HDF5AppendWriter`; macTEM's `TIFFImageReader` becomes `TIFFAppImage.read`. Float16 attributes are read; float16 datasets are not.
+
 ## 0.4.0 (2026-10-20)
 
 libhdf5 (HDF5 2.1.1 with libsz and libaec) is now three binary targets, dynamic-framework XCFrameworks, instead of a bundled resource folder. An app

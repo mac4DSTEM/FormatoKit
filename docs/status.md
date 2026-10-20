@@ -1,6 +1,6 @@
 # Status
 
-**Hand-off 2026-10-20:** done: 0.4.0 released 2026-10-20 (the three XCFramework zips, checksums re-verified after upload), D12 wording (1ef6738); next: consumers re-pin to 0.4.0, then the formats in `docs/parity.md` by priority.
+**Hand-off 2026-10-20 (evening):** done: `HDF5Reader`, `HDF5AppendWriter` and `TIFFAppImage` on local main, unreleased (CHANGELOG 0.5.0, gate green, h5py and macTEM cb6e164 pins); next: owner pushes and tags 0.5.0, then mac4DSTEM re-pins and moves `H5Reader`/sidecar append, macTEM `TIFFImageReader`.
 
 What is live, one table; then the hand-off and what is unverified. Rules are in `CLAUDE.md`; the registrations in
 `docs/registration-step-1.md` to `docs/registration-step-4.md` (amendments A1 onward); what each consumer changes in
