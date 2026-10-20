@@ -2,6 +2,7 @@
  "files": {
   "swift-bundle.h5": {
    "checks": {
+    "chunks_equal": true,
     "data_equal": true,
     "py4dstem_equal": true,
     "py4dstem_reads": true,
@@ -12,30 +13,33 @@
     "result_rotation_21ac415f": "RealSlice",
     "result_strain_exx_42329a38": "RealSlice"
    },
-   "sha256": "9d540edd19111c165c20b49633e2c855b71ed565c3a513024d14b82a077086fd"
+   "sha256": "a35c4d08cde831b5a0a84f3818662a3cbe3580727e9e66744d28186c65d06d92"
   },
   "swift-datacube-default.h5": {
    "checks": {
+    "chunks_equal": true,
     "data_equal": true,
     "py4dstem_equal": true,
     "py4dstem_reads": true,
     "structure_equal": true
    },
    "py4dstem_class": "DataCube",
-   "sha256": "1847b3fe06cca982c21e0907f29834963464f997b3e1fd945f538278a2577ada"
+   "sha256": "cadc6bacd19ae2d35e1ca7e116a9380104471c40344ec49d66e8b1e1d7dfb3b4"
   },
   "swift-datacube.h5": {
    "checks": {
+    "chunks_equal": true,
     "data_equal": true,
     "py4dstem_equal": true,
     "py4dstem_reads": true,
     "structure_equal": true
    },
    "py4dstem_class": "DataCube",
-   "sha256": "b79b2efbcb8a9e330616d39469b6ac01fee91cb53694a8f3d33706d4f41934cf"
+   "sha256": "5259bb4aa03daec03dbb96c750694dda2c896c96d37ee72688b6e7552be33fe9"
   },
   "swift-sidecar.h5": {
    "checks": {
+    "chunks_equal": true,
     "data_equal": true,
     "py4dstem_equal": true,
     "py4dstem_reads": true,
@@ -47,7 +51,7 @@
     "result_orientation_map_da0dee04": "Array",
     "result_strain_exx_42329a38": "RealSlice"
    },
-   "sha256": "8dc2d59f0c521c0014689133b201f0043a9a5a0e63dfa3320dc62a93b6135ddf"
+   "sha256": "b1055f692ebfa2774922ea4d77c4f3a9c8ad840649fbc8c858c98e72373946da"
   }
  },
  "h5py_version": "3.11.0",

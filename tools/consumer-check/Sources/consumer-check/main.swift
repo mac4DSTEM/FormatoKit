@@ -153,6 +153,31 @@ do {
     let read = try HDF5RootAttributes.read(["identity", "text", "absent"], from: destination)
     check(read == ["identity": "1", "text": "Å"], "HDF5RootAttributes write, publish and read")
 } catch { check(false, "HDF5RootAttributes: \(error)") }
+// EMD scientific bundle and PNG text chunks (0.6.0): public API only.
+do {
+    let dir = FileManager.default.temporaryDirectory.appendingPathComponent("formato-consumer-emd-\(UUID().uuidString)")
+    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: dir) }
+    let cube = dir.appendingPathComponent("cube.h5")
+    let layout = EMDDatacubeLayout(shape: [2, 2, 3, 3], header: EMDFileHeader(authoringProgram: "consumer-check"),
+                                   calibration: EMDCalibration(qPixelSize: 0.5, qPixelUnits: "1/A", rPixelSize: 2, rPixelUnits: "nm"),
+                                   rootAttributes: ["app_key": .text("kept")])
+    try EMDDatacubeWriter.write((0..<36).map(Float.init), layout: layout, to: cube)
+    let reader = try HDF5Reader(url: cube)
+    check(try reader.readDataset("/datacube_root/datacube/data").shape == [2, 2, 3, 3], "EMDDatacubeWriter shape")
+    check(try reader.attribute("app_key", of: "/datacube_root") == .text("kept"), "EMDDatacubeWriter caller attribute")
+    let bundle = dir.appendingPathComponent("bundle.h5")
+    try HDF5NewFile.write(to: bundle) { session in
+        try session.writeEMDFileHeader(EMDFileHeader(authoringProgram: "consumer-check"))
+        try session.createEMDRoot("bundle_root")
+        try session.writeEMDCalibration(EMDCalibration(rPixelSize: 1), inRoot: "/bundle_root")
+        try session.writeEMDScalarMap(EMDScalarMap(nodeName: "map", width: 2, height: 1, values: [1, 2]), inRoot: "/bundle_root")
+        try session.writeEMDRGBAMap(EMDRGBAMap(nodeName: "rgba", width: 1, height: 1, rgba: [1, 2, 3, 4]), inRoot: "/bundle_root")
+    }
+    check(try HDF5Reader(url: bundle).exists("/bundle_root/map/metadatabundle/metadata") && HDF5Reader(url: bundle).exists("/bundle_root/rgba/data"), "EMD maps")
+    let png = try FormatoPNG.encode(width: 2, height: 1, format: .gray8, pixels: Data([1, 2]), text: [PNGTextEntry(keyword: "Title", value: "t")])
+    check(try FormatoPNG.textEntries(in: png) == [PNGTextEntry(keyword: "Title", value: "t")], "FormatoPNG text round trip")
+} catch { check(false, "EMD bundle and PNG: \(error)") }
 check(FormatoUnits.convertScaleUnits(1.5e-9, units: "m", factor: 100)?.units == "nm", "FormatoUnits")
 check(FormatoUnits.parse("µm")?.shortForm == "μm", "units parse")
 

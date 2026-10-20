@@ -96,7 +96,7 @@ import FormatoHDF5
         let (layout, pixels) = try cubeLayout()
         try EMDDatacubeWriter.write(pixels, layout: layout, to: out)
         try expectSame(out, app("app-datacube.h5"))
-        #expect(try FileManager.default.contentsOfDirectory(atPath: dir.path).sorted().filter { $0.hasSuffix(".h5") || $0.hasPrefix(".") } == ["whole.h5"])
+        #expect(try FileManager.default.contentsOfDirectory(atPath: dir.path).sorted() == ["whole.h5"])
     }
 
     @Test func defaultBooleanIsTheH5pyEnumAndNothingElseChanges() throws {
@@ -156,13 +156,14 @@ import FormatoHDF5
         try Data("old".utf8).write(to: existing)
         let writer = try EMDDatacubeWriter(destination: existing, layout: layout)
         #expect(throws: HDF5FileError.self) { try writer.write(rows: 3, values: [Float](repeating: 0, count: 12)) }
+        #expect(throws: HDF5FileError.self) { try writer.write(rows: Int.max, values: []) }
         #expect(throws: FormatoArrayError.self) { try writer.write(rows: 1, values: [1, 2, 3]) }
         try writer.write(rows: 1, values: [1, 2, 3, 4])
         #expect(throws: HDF5FileError.self) { try writer.publish() }
         #expect(try Data(contentsOf: existing) == Data("old".utf8))
         writer.cancel()
         #expect(try Data(contentsOf: existing) == Data("old".utf8))
-        #expect(try FileManager.default.contentsOfDirectory(atPath: dir.path).filter { $0.contains("formato") }.isEmpty)
+        #expect(!FileManager.default.fileExists(atPath: writer.pending.scratch.path))
         // A cancellation between bands leaves the destination as it was.
         #expect(throws: FormatoCancelled.self) {
             try EMDDatacubeWriter.write([Float](repeating: 1, count: 8), layout: layout, to: existing, cancelled: { true })
@@ -174,9 +175,35 @@ import FormatoHDF5
         try late.write(rows: 2, values: [Float](repeating: 2, count: 8))
         try Data("appeared".utf8).write(to: racing)
         #expect(throws: HDF5FileError.self) { try late.publish() }
+        #expect(!FileManager.default.fileExists(atPath: late.pending.scratch.path))
         #expect(try Data(contentsOf: racing) == Data("appeared".utf8))
         try EMDDatacubeWriter.write([Float](repeating: 3, count: 8), layout: layout, to: existing)
         #expect(floats(try HDF5Reader(url: existing).readDataset("/datacube_root/datacube/data")) == [Float](repeating: 3, count: 8))
+    }
+
+    @Test func datacubeIsChunkedOnePatternPerChunkAndCalibrationRefusesToMerge() throws {
+        let dir = try scratch(); defer { cleanup(dir) }
+        let out = dir.appendingPathComponent("chunks.h5")
+        let (layout, pixels) = try cubeLayout()
+        try EMDDatacubeWriter.write(pixels, layout: layout, to: out)
+        // The chunk shape is not visible through HDF5Reader; read it from the file's object header via h5py's pin in
+        // check.py (swift-datacube.h5 chunks == (1, 1, 8, 9)); here, that a pattern slab reads back whole.
+        #expect(floats(try HDF5Reader(url: out).readDataset("/datacube_root/datacube/data", start: [3, 4, 0, 0], count: [1, 1, 8, 9]))
+            == Array(pixels[(3 * 5 + 4) * 72..<(3 * 5 + 5) * 72]))
+        try HDF5AppendWriter.append(to: out) { session in
+            #expect(throws: HDF5FileError.alreadyExists("/datacube_root/metadatabundle/calibration")) {
+                try session.writeEMDCalibration(EMDCalibration(rPixelSize: 9), inRoot: "/datacube_root")
+            }
+        }
+        // A pending file ends at the first failing body, and its scratch goes.
+        struct Stop: Error {}
+        let pending = try HDF5PendingFile(destination: dir.appendingPathComponent("p.h5"))
+        #expect(throws: Stop.self) { try pending.append { _ in throw Stop() } }
+        #expect(throws: HDF5FileError.self) { try pending.append { _ in } }
+        #expect(throws: HDF5FileError.self) { try pending.publish() }
+        #expect(!FileManager.default.fileExists(atPath: pending.scratch.path))
+        let empty = try HDF5PendingFile(destination: dir.appendingPathComponent("q.h5"))
+        #expect(throws: HDF5FileError.invalidArgument("nothing was written to the pending file")) { try empty.publish() }
     }
 
     // MARK: The session sidecar: BraggVectors + calibration + maps

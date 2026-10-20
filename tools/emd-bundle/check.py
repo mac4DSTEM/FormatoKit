@@ -10,6 +10,7 @@ app-*.h5 are mac4DSTEM's own writers' output on the same inputs (tools/emd-bundl
                     and values as the app's file (the UUID and authoring attributes excepted). swift-datacube-default.h5 stores
                     QR_flip as h5py's bool enum (the py4DSTEM way) where the app stores uint8: that one dataset's dtype is the
                     only allowed difference, and py4DSTEM must read the same flip from both.
+  chunks_equal      every dataset has the app's chunk layout (the datacube: one pattern per chunk).
   data_equal        every numeric dataset equal to the app's, bit for bit.
   py4dstem_reads    py4DSTEM.read opens the file as the same class it opens the app's file as (DataCube, BraggVectors; the
                     bundle has no py4DSTEM class: both files must give the same outcome).
@@ -41,6 +42,13 @@ def read_class(path):
         return got, type(got).__name__
     except Exception as e:                      # the bundle has no py4DSTEM class to return
         return None, 'error:' + type(e).__name__
+
+
+def chunk_layout(path):
+    out = {}
+    with h5py.File(path) as f:
+        f.visititems(lambda n, o: out.__setitem__('/' + n, o.chunks) if isinstance(o, h5py.Dataset) else None)
+    return out
 
 
 def datasets(path):
@@ -96,6 +104,7 @@ for fname, appname, allowed in FILES:
     da, db = datasets(swift), datasets(app)
     data_equal = set(da) == set(db) and all(da[k].shape == db[k].shape and da[k].tobytes() == db[k].tobytes() for k in da if k not in allowed) \
         and all(np.array_equal(da[k].astype(np.uint8), db[k].astype(np.uint8)) for k in allowed if k in da and k in db)
+    chunks_equal = chunk_layout(swift) == chunk_layout(app)
     obj_a, cls_a = read_class(swift); obj_b, cls_b = read_class(app)
     reads = cls_a == cls_b
     equal = True
@@ -107,7 +116,7 @@ for fname, appname, allowed in FILES:
             equal = ca == cb and len(ca) > 0
             entry['py4dstem_objects'] = {k: v[0] for k, v in sorted(ca.items())}
     entry['py4dstem_class'] = cls_a
-    entry['checks'] = dict(structure_equal=bool(structure_equal), data_equal=bool(data_equal), py4dstem_reads=bool(reads), py4dstem_equal=bool(equal))
+    entry['checks'] = dict(structure_equal=bool(structure_equal), data_equal=bool(data_equal), chunks_equal=bool(chunks_equal), py4dstem_reads=bool(reads), py4dstem_equal=bool(equal))
     result['files'][fname] = entry
     failures += [fname + ':' + k for k, v in entry['checks'].items() if not v]
 (FIX / 'check-result.json').write_text(json.dumps(result, indent=1, sort_keys=True) + '\n')

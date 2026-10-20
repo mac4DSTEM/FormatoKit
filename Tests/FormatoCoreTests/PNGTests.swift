@@ -11,6 +11,7 @@
 import Foundation
 import Testing
 import CryptoKit
+import Compression
 import FormatoCore
 
 @Suite(.serialized) struct PNGTests {
@@ -76,6 +77,37 @@ import FormatoCore
         }
         #expect(throws: PNGError.self) { _ = try FormatoPNG.encode(width: 0, height: 2, format: .gray8, pixels: Data()) }
         #expect(throws: PNGError.self) { _ = try FormatoPNG.encode(width: 70_000, height: 1, format: .gray8, pixels: Data(count: 70_000)) }
+    }
+
+    @Test func slicesTruncationAndLargeStoredStreams() throws {
+        let png = try fixture("input.png")
+        // A slice that does not start at index 0 reads as the same PNG.
+        let padded = Data(repeating: 7, count: 5) + png
+        let slice = padded.dropFirst(5)
+        #expect(slice.startIndex == 5)
+        #expect(try FormatoPNG.inserting([title], into: slice) == (try FormatoPNG.inserting([title], into: png)))
+        #expect(try FormatoPNG.textEntries(in: slice) == [])
+        // A cut partway into the IDAT is refused, not inserted into.
+        let idat = png.range(of: Data("IDAT".utf8))!.lowerBound
+        #expect(throws: PNGError.self) { _ = try FormatoPNG.inserting([title], into: png.prefix(idat + 6)) }
+        // A hostile chunk length is refused.
+        var hostile = png
+        hostile.replaceSubrange((idat - 4)..<idat, with: [0xFF, 0xFF, 0xFF, 0xFF])
+        #expect(throws: PNGError.self) { _ = try FormatoPNG.inserting([title], into: hostile) }
+        #expect(throws: PNGError.self) { _ = try FormatoPNG.textEntries(in: hostile) }
+        // A NUL in a value is refused.
+        #expect(throws: PNGError.self) { _ = try FormatoPNG.inserting([PNGTextEntry(keyword: "K", value: "a\0b")], into: png) }
+        // Stored blocks over 65 535 bytes decompress to the input (Compression's raw deflate inflates them).
+        for count in [0, 1, 65_535, 65_536, 140_000] {
+            let raw = (0..<count).map { UInt8(truncatingIfNeeded: $0 &* 31) }
+            let stream = FormatoPNG.zlibStored(raw)
+            #expect(stream.prefix(2) == [0x78, 0x01])
+            let body = Array(stream.dropFirst(2).dropLast(4))
+            var out = [UInt8](repeating: 0, count: count + 16)
+            let n = body.withUnsafeBufferPointer { src in out.withUnsafeMutableBufferPointer { dst in
+                compression_decode_buffer(dst.baseAddress!, dst.count, src.baseAddress!, src.count, nil, COMPRESSION_ZLIB) } }
+            #expect(n == count && Array(out.prefix(n)) == raw, "stored \(count)")
+        }
     }
 
     @Test func encoderOutputIsStructurallyAPNG() throws {

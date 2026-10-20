@@ -198,15 +198,18 @@ extension HDF5WriteSession {
     /// whose shape and counts disagree are not written (not an error: the scalars still are).
     ///
     /// - Parameters:
-    ///   - targetPath: the EMD object this calibration describes, relative to the file (for example `/datacube`); when
+    ///   - targetPath: the EMD object this calibration describes, relative to the root group (for example `/datacube`); when
     ///     given, `_root_treepath` (empty) and `_target_paths` (a list of one) are written, which is how py4DSTEM attaches
     ///     the calibration to the object. Nil leaves them out.
-    ///   - replace: delete an existing calibration group first.
+    ///   - replace: delete an existing calibration group first; without it an existing one throws `alreadyExists`.
     public func writeEMDCalibration(_ calibration: EMDCalibration, inRoot root: String, targetPath: String? = nil,
                                     booleanStorage: EMDBooleanStorage = .h5pyEnum, replace: Bool = false) throws {
         let bundle = try Self.child(root, "metadatabundle")
         let group = try Self.child(bundle, "calibration")
-        if replace, try exists(group) { try deleteLink(group) }
+        if try exists(group) {
+            guard replace else { throw HDF5FileError.alreadyExists(group) }
+            try deleteLink(group)
+        }
         try createGroup(bundle)
         try setVariableLengthTextAttribute("emd_group_type", on: bundle, "metadatabundle")
         try createGroup(group)
@@ -249,8 +252,8 @@ extension HDF5WriteSession {
 
         var maps: EMDOriginMaps?
         if let candidate = calibration.originMaps, candidate.shape.count == 2, candidate.shape.allSatisfy({ $0 > 0 }) {
-            let count = candidate.shape[0] * candidate.shape[1]
-            if count == candidate.fittedQX.count, count == candidate.fittedQY.count { maps = candidate }
+            let (count, overflow) = candidate.shape[0].multipliedReportingOverflow(by: candidate.shape[1])
+            if !overflow, count == candidate.fittedQX.count, count == candidate.fittedQY.count { maps = candidate }
         }
         let qxMean = calibration.qx0Mean ?? maps.map { $0.fittedQX.reduce(0, +) / Double($0.fittedQX.count) }
         let qyMean = calibration.qy0Mean ?? maps.map { $0.fittedQY.reduce(0, +) / Double($0.fittedQY.count) }
@@ -285,7 +288,7 @@ extension HDF5WriteSession {
     /// the annotations' group attributes and its `metadatabundle/<metadataName>` group. `replace` deletes an existing node of
     /// that name first; without it an existing one throws `alreadyExists`.
     public func writeEMDScalarMap(_ map: EMDScalarMap, inRoot root: String, replace: Bool = false) throws {
-        guard map.width > 0, map.height > 0, map.values.count == map.width * map.height else {
+        guard map.width > 0, map.height > 0, map.width.multipliedReportingOverflow(by: map.height) == (map.values.count, false) else {
             throw HDF5FileError.invalidArgument("the scalar map \(map.nodeName) holds \(map.values.count) values for \(map.width) x \(map.height)")
         }
         let node = try beginEMDMap(map.nodeName, in: root, pythonClass: "RealSlice", annotations: map.annotations, replace: replace)
@@ -300,7 +303,7 @@ extension HDF5WriteSession {
     /// Writes an RGBA8 map as the EMD node `root/<map.nodeName>`: python class `Array`, `data` (`height x width x 4` uint8,
     /// `units = "rgba8"`), `dim0` and `dim1` as for a scalar map and `dim2` (`[0, 1]`, name `RGBA`, units `channel`).
     public func writeEMDRGBAMap(_ map: EMDRGBAMap, inRoot root: String, replace: Bool = false) throws {
-        guard map.width > 0, map.height > 0, map.rgba.count == map.width * map.height * 4 else {
+        guard map.width > 0, map.height > 0, map.width <= Int.max / 4 / map.height, map.rgba.count == map.width * map.height * 4 else {
             throw HDF5FileError.invalidArgument("the RGBA map \(map.nodeName) holds \(map.rgba.count) bytes for \(map.width) x \(map.height) x 4")
         }
         let node = try beginEMDMap(map.nodeName, in: root, pythonClass: "Array", annotations: map.annotations, replace: replace)
@@ -362,7 +365,8 @@ extension HDF5WriteSession {
                              replace: Bool) throws -> String {
         try Self.refuse(annotations.groupAttributes.keys, owned: ownedGroupAttributes)
         let node = try Self.child(root, name)
-        guard !annotations.metadataName.isEmpty else { throw HDF5FileError.invalidPath(annotations.metadataName) }
+        _ = try Self.child(node, annotations.metadataName)
+        for key in annotations.metadata.keys { _ = try Self.child(node, key) }
         if try exists(node) {
             guard replace else { throw HDF5FileError.alreadyExists(node) }
             try deleteLink(node)

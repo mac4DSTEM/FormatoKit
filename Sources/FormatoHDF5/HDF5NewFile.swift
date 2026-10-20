@@ -17,13 +17,14 @@ import Darwin
 /// A new HDF5 file under construction. Not thread-safe: one caller at a time (the typical caller awaits between calls).
 public nonisolated final class HDF5PendingFile: @unchecked Sendable {
     public let destination: URL
-    private let scratch: URL
+    /// The scratch file's URL (the tests check it is gone after a publish, a discard or a failure).
+    package let scratch: URL
     private let scratchDirectory: URL?
     private let checked: HDF5FileIdentity?
     private var finished = false
 
-    /// Starts a new file for `destination`. Throws `destinationIsSource` when `sourcePath` is the same file (by identity),
-    /// `cannotWrite` when the scratch cannot be made. The scratch file itself is created by the first `append`.
+    /// Starts a new file for `destination`. Throws `destinationIsSource` when `sourcePath` is the same file (by identity).
+    /// The scratch file itself is created by the first `append`.
     public init(destination: URL, sourcePath: String? = nil) throws {
         guard destination.isFileURL else { throw HDF5FileError.cannotOpen("not a file URL") }
         if let sourcePath, Self.sameFile(destination.path, sourcePath) {
@@ -37,14 +38,18 @@ public nonisolated final class HDF5PendingFile: @unchecked Sendable {
     deinit { if !finished { removeScratch() } }
 
     /// Runs `body` on the scratch file (created by the first call), in place; the session is valid only inside the call.
-    /// A throwing body leaves the scratch as it was left; call `discard` to abandon the file.
+    /// A throwing body ends the file: the pending file is abandoned (scratch removed) and every later call throws, because a
+    /// failed first body leaves no file and a failed later one leaves a half-written one.
     public func append(_ body: (HDF5WriteSession) throws -> Void) throws {
         guard !finished else { throw HDF5FileError.invalidArgument("the pending file was already published or discarded") }
-        try HDF5AppendWriter.append(to: scratch, mode: .inPlace, body: body)
+        do { try HDF5AppendWriter.append(to: scratch, mode: .inPlace, body: body) } catch {
+            discard()
+            throw error
+        }
     }
 
     /// Moves the finished file onto the destination, replacing the item that was there when this object was made (and only
-    /// that one: another file that has appeared since is left alone and the call throws `cannotWrite`). The scratch goes either way.
+    /// that one: another file that has appeared since is left alone and the call throws `cannotWrite`). The scratch goes either way. The new file does not inherit the destination's extended attributes, permissions or ACLs.
     public func publish() throws {
         guard !finished else { throw HDF5FileError.invalidArgument("the pending file was already published or discarded") }
         finished = true

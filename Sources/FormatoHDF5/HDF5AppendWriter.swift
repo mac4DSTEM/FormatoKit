@@ -349,13 +349,13 @@ public nonisolated final class HDF5WriteSession {
         guard !text.utf8.contains(0) else { throw HDF5FileError.embeddedNUL(name) }
         try open { file in
             try HDF5Ops.withObject(h5, file, path, parts) { object in
+                let type = try variableLengthTextType(utf8: true, for: name)           // built before the old value goes
+                defer { _ = h5.h5tclose(type) }
                 let exists = name.withCString { h5.h5aexists(object, $0) }
                 guard exists >= 0 else { throw HDF5RootAttributes.failure("looking for the \(name) attribute", h5) }
                 if exists > 0, name.withCString({ h5.h5adelete(object, $0) }) < 0 {
                     throw HDF5RootAttributes.failure("replacing the \(name) attribute", h5)
                 }
-                let type = try variableLengthTextType(utf8: true, for: name)
-                defer { _ = h5.h5tclose(type) }
                 try store(name, type: type, count: 1, scalar: true, on: object) { attribute in
                     text.withCString { characters -> herr_t in
                         var pointer: UnsafePointer<CChar>? = characters

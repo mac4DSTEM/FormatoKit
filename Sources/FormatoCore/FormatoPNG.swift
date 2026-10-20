@@ -111,13 +111,15 @@ public nonisolated enum FormatoPNG {
     }
 
     /// Returns `png` with `entries` inserted as text chunks before its first IDAT (the chunks the PNG already has are kept).
-    public static func inserting(_ entries: [PNGTextEntry], into png: Data) throws -> Data {
-        let chunks = try entries.map { try textChunk($0) }
+    public static func inserting(_ entries: [PNGTextEntry], into source: Data) throws -> Data {
+        let png = Data(source)                                  // zero-based, whatever slice the caller passed
         guard png.count >= 8, Array(png.prefix(8)) == signature else { throw PNGError.notPNG }
+        let chunks = try entries.map { try textChunk($0) }
         var offset = 8
         while offset + 12 <= png.count {
             let length = Int(be32(png, offset))
             if png[(offset + 4)..<(offset + 8)].elementsEqual("IDAT".utf8) {
+                guard offset + 12 + length <= png.count else { throw PNGError.malformed("the IDAT chunk runs past the end") }
                 var out = Data()
                 out.reserveCapacity(png.count + chunks.reduce(0) { $0 + $1.count })
                 out.append(png.prefix(offset))
@@ -136,7 +138,8 @@ public nonisolated enum FormatoPNG {
 
     /// The `tEXt` and uncompressed `iTXt` entries of a PNG, in file order, every chunk's CRC checked. Compressed text
     /// (`zTXt`, compressed `iTXt`) is skipped. `malformed` for a bad CRC, a truncated chunk or a missing IEND.
-    public static func textEntries(in png: Data) throws -> [PNGTextEntry] {
+    public static func textEntries(in source: Data) throws -> [PNGTextEntry] {
+        let png = Data(source)                                  // zero-based, whatever slice the caller passed
         guard png.count >= 8, Array(png.prefix(8)) == signature else { throw PNGError.notPNG }
         var offset = 8, entries: [PNGTextEntry] = [], sawEnd = false
         while offset + 12 <= png.count, !sawEnd {
@@ -170,6 +173,7 @@ public nonisolated enum FormatoPNG {
     /// One text chunk: `tEXt` for printable ASCII values, else `iTXt` (UTF-8, uncompressed).
     static func textChunk(_ entry: PNGTextEntry) throws -> [UInt8] {
         try validate(keyword: entry.keyword)
+        guard !entry.value.unicodeScalars.contains("\0") else { throw PNGError.invalidKeyword(entry.keyword + " (its value holds a NUL)") }
         let printable = entry.value.unicodeScalars.allSatisfy { $0.value >= 0x20 && $0.value < 0x7F }
         var body = entry.keyword.unicodeScalars.map { UInt8($0.value) } + [0]
         if printable {

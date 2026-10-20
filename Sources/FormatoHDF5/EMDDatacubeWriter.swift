@@ -52,7 +52,7 @@ public nonisolated struct EMDDatacubeLayout: Sendable, Equatable {
 /// A datacube file being filled band by band. Not thread-safe; one caller at a time.
 public nonisolated final class EMDDatacubeWriter: @unchecked Sendable {
     public let layout: EMDDatacubeLayout
-    private let pending: HDF5PendingFile
+    package let pending: HDF5PendingFile
     private let dataPath: String
     private var nextRow = 0
 
@@ -108,10 +108,10 @@ public nonisolated final class EMDDatacubeWriter: @unchecked Sendable {
     public var rowsWritten: Int { nextRow }
 
     /// Writes the next `rows` scan rows: `values` holds `rows * shape[1] * shape[2] * shape[3]` float32 in C order. Rows go in
-    /// order; a band past the end or of the wrong size throws `invalidArgument` and writes nothing.
+    /// order; a band past the end throws `invalidArgument` and a band whose values do not fit `rows` throws `FormatoArrayError`; neither writes anything.
     public func write(rows: Int, values: [Float]) throws {
         let band = [rows] + Array(layout.shape.dropFirst())
-        guard rows >= 1, nextRow + rows <= layout.shape[0] else {
+        guard rows >= 1, rows <= layout.shape[0] - nextRow else {
             throw HDF5FileError.invalidArgument("\(rows) rows after \(nextRow) leave a scan of \(layout.shape[0]) rows")
         }
         let array = try FormatoArray(dataType: .float32, shape: band, bytes: values.withUnsafeBytes { Data($0) })
@@ -136,12 +136,12 @@ public nonisolated final class EMDDatacubeWriter: @unchecked Sendable {
     /// Writes a whole cube. `values` is C order, `layout.shape` many float32; the file is published atomically.
     public static func write(_ values: [Float], layout: EMDDatacubeLayout, to destination: URL, sourcePath: String? = nil,
                              cancelled: @Sendable () -> Bool = FormatoCancellation.task) throws {
+        let rowCount = layout.shape[1] * layout.shape[2] * layout.shape[3]
+        guard layout.shape.count == 4, values.count == layout.shape[0] * rowCount else {
+            throw HDF5FileError.invalidArgument("\(values.count) values for the shape \(layout.shape)")
+        }
         let writer = try EMDDatacubeWriter(destination: destination, layout: layout, sourcePath: sourcePath)
         do {
-            let rowCount = layout.shape[1] * layout.shape[2] * layout.shape[3]
-            guard values.count == layout.shape[0] * rowCount else {
-                throw HDF5FileError.invalidArgument("\(values.count) values for the shape \(layout.shape)")
-            }
             // Bands of about 16 Mi values keep a large cube's memory flat.
             let rowsPerBand = max(1, (16 << 20) / max(1, rowCount))
             var row = 0
