@@ -1,5 +1,7 @@
 # Status
 
+**Hand-off 2026-10-20:** done: 0.4.0 released 2026-10-20 (the three XCFramework zips, checksums re-verified after upload), D12 wording (1ef6738); next: consumers re-pin to 0.4.0, then the formats in `docs/parity.md` by priority.
+
 What is live, one table; then the hand-off and what is unverified. Rules are in `CLAUDE.md`; the registrations in
 `docs/registration-step-1.md` to `docs/registration-step-4.md` (amendments A1 onward); what each consumer changes in
 `docs/consumers-0.0.1.md` to `docs/consumers-0.1.1.md`; the format checklist in `docs/parity.md`.
