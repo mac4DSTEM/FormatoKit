@@ -2,7 +2,7 @@
 //  BraggVectorsEMD.swift
 //  Role: write and read py4DSTEM `BraggVectors` in EMD 1.0 (the `_v_uncal` peak grid plus the calibration bundle) through the
 //        one shared HDF5 loader. The layout is what py4DSTEM 0.14.19 (emdfile 0.0.15) writes and reads; the atomic publish
-//        (a sibling temporary file, then rename) and the refusal to publish over the source come from the mac4DSTEM
+//        (a temporary file in the item-replacement directory, then rename) and the refusal to publish over the source come from the mac4DSTEM
 //        session sidecar writer, whose app-specific attributes, sidecar model and lineage stay in the app and arrive here
 //        only through the `extraAttributes` hook.
 //
@@ -132,7 +132,7 @@ public nonisolated struct BraggVectorsEMD: Sendable {
 
     /// Write BraggVectors to `destination` as a py4DSTEM EMD 1.0 file and publish it atomically.
     ///
-    /// The file is built beside the destination under a temporary name and renamed onto it only when complete, so a failed
+    /// The file is built in the item-replacement directory (beside the destination if the system gives none) and renamed onto it only when complete, so a failed
     /// or cancelled write leaves the destination exactly as it was and no temporary file behind. A `destination` that is the
     /// `sourcePath` file (by file identity, so a symlink or a different spelling counts) is refused before anything is
     /// written.
@@ -274,10 +274,13 @@ private nonisolated struct EMDWriter {
         }
         try FormatoCancellation.check(cancelled)
 
-        let directory = destination.deletingLastPathComponent()
-        let temporary = directory.appendingPathComponent(".\(destination.lastPathComponent).\(UUID().uuidString).tmp")
+        // Built in the system's item-replacement directory (writable under the sandbox, same volume), else beside the destination.
+        let (temporary, scratchDirectory) = HDF5RootAttributes.temporaryURL(for: destination, namePrefix: ".bragg-")
         var published = false
-        defer { if !published { _ = unlink(temporary.path) } }
+        defer {
+            if !published { _ = unlink(temporary.path) }
+            if let scratchDirectory { try? FileManager.default.removeItem(at: scratchDirectory) }
+        }
         try HDF5Serial.run {
             let writer = EMDWriter(h5: try loadLibrary())
             try writer.writeFile(
@@ -307,7 +310,7 @@ private nonisolated struct EMDWriter {
         extras: [BraggAttributeTarget: [String: String]], cancelled: @Sendable () -> Bool
     ) throws {
         let file = path.withCString { h5.h5fcreate($0, h5Truncate, h5Default, h5Default) }
-        guard file >= 0 else { throw BraggVectorsEMDError.publishFailed("cannot create the temporary file beside the destination") }
+        guard file >= 0 else { throw BraggVectorsEMDError.publishFailed("cannot create the temporary file") }
         defer { _ = h5.h5fclose(file) }
         try stringAttribute("emd_group_type", "file", on: file)
         try int64Attribute("version_major", 1, on: file)
