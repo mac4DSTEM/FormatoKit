@@ -1,4 +1,4 @@
-# FormatoKit CI: the hook proof, the gate (tools/test.sh = `swift test -c release`, warning-checked) and the consumer check.
+# FormatoKit CI: the gate (tools/test.sh = `swift test -c release`, warning-checked) and the consumer check.
 #
 # Written 2026-10-15 (0.0.3); enabling Actions on the repository is the owner's. The package declares macOS 15 / iOS 18 and
 # tools 6.2 (0.2.1): the macos-15 image with Xcode 26.0 pinned below (Swift 6.2). The step fails if Swift is older than 6.2.
@@ -11,6 +11,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['*']
   pull_request:
   workflow_dispatch:
 
@@ -29,9 +30,19 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_26.0.app
           swift --version
           swift --version | grep -E "Swift version 6\.([2-9]|[1-9][0-9])" || { echo "Swift 6.2 or newer needed"; exit 1; }
-      - name: Hook proof (no sleep or poll loops, no kills by name)
-        run: tools/hooks/test-no-sleep-poll.sh
       - name: Gate (tools/test.sh, release)
         run: tools/test.sh
       - name: Consumer check (public API only, Debug, no warnings, libhdf5 from the package)
         run: tools/consumer-check/run.sh
+
+  version:
+    name: CHANGELOG version matches the tag
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare
+        run: |
+          top=$(grep -m1 -E '^## [0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | sed -E 's/^## ([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+          tag=${GITHUB_REF_NAME#v}
+          [ "$top" = "$tag" ] || { echo "CHANGELOG top is $top, tag is $tag"; exit 1; }

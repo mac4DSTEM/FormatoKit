@@ -1,7 +1,5 @@
 # Changelog
 
-Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what each tag changed for a consumer) and `docs/status.md`.
-
 ## 0.8.0 (2026-10-21)
 
 The I/O the apps still carried moves into the kit. Bytes are unchanged everywhere; the new paths are pinned to `HDF5Reader` and to the stand-alone BraggVectors writer.
@@ -28,7 +26,7 @@ reader's bytes or to h5py / RosettaSciIO (`tools/dm4-gather/make_dm3.py` re-emit
 - `EMPADReader`: `scan_parameters scan_resolution_x/y` give the scan under any raw file name (after `pix_x/pix_y`, before the `scan_x/y` name rule); `init(rawPath:scanSize:)` opens a raw file with no XML (name, explicit size, or a square scan from the file's length); `rawPath` is exposed.
 - `MIBReader`: `pixelCode` (`U08` / `U16` / `U32`); the app convention takes any header size from 384 to 65536 (RosettaSciIO's convention still 384 and 768 only).
 - 0.6.1 follow-ups: `EMDDatacubeWriter.write` checks the shape before forming any product of it (a short or huge shape throws `invalidArgument` instead of trapping); a PNG compressed-zlib round-trip test and `package` access to `adler32`.
-- Not done, with reasons: lineage / marks records (two different app formats, `docs/session-bundle.md`); header-less MIB (needs the app's width/height fallback, no reference); a public `SharedHDF5` or planting API (tests keep using h5py-written fixtures); vlen and enum writes, and in-place space reclamation (`copyObject` into a new file is the route); 3D-to-4D reshape of a DM object such as `small_datacube.dm4` (rank 3, the app reshapes by its own load specification).
+- Not done, with reasons: lineage / marks records (two different app formats, design note, archived in the suite's private folder); header-less MIB (needs the app's width/height fallback, no reference); a public `SharedHDF5` or planting API (tests keep using h5py-written fixtures); vlen and enum writes, and in-place space reclamation (`copyObject` into a new file is the route); 3D-to-4D reshape of a DM object such as `small_datacube.dm4` (rank 3, the app reshapes by its own load specification).
 
 **Migration.** Additive. mac4DSTEM: delete the shims marked `delete at FormatoKit 0.6.0` that this covers and switch `DM4Reader` onto `DM4Datacube(.appCalibratedAxes, storage: .readIntoMemory)` for non-local volumes (`.mapped` elsewhere), reading `layout` instead of repeating the unit-domain rule; MIB with `.appScanXY` and EMPAD acquire-mode headers lose their fallbacks; a result copy uses `HDF5NewFile` plus `copyObject`. `HDF5Reader.readDataset` of a float16 dataset now returns float32 instead of throwing.
 
@@ -36,7 +34,7 @@ reader's bytes or to h5py / RosettaSciIO (`tools/dm4-gather/make_dm3.py` re-emit
 
 The format-level half of the apps' session files and exports moved into the kit: the EMD "scientific bundle" writers and the
 PNG with text chunks. What an app stamps into a file (its schema keys, a map's provenance, its lineage) stays the app's and is
-passed in as attributes. Design: `docs/session-bundle.md`.
+passed in as attributes. Design: design note, archived in the suite's private folder.
 
 - Add to `HDF5WriteSession`: `setVariableLengthTextAttribute`, `writeText` (scalar variable-length text dataset, UTF-8 or ASCII), `writeBool` (h5py's bool enum), `createDataset` (no data written, for a file filled by slabs) and `writeSlab` (a hyperslab into an existing numeric dataset).
 - Add `HDF5NewFile.write` and `HDF5PendingFile`: build a new HDF5 file under a scratch name and publish it by atomic rename over the item that was checked; a destination that is the source is refused (`HDF5FileError.destinationIsSource`). The pending form is kept across `await`s with no handle or lock held between calls.
@@ -166,3 +164,5 @@ reader or lazy signal exists.
 - CI runs on `macos-15` with Xcode 26.0 selected and fails if Swift is older than 6.2.
 
 **Migration.** Nothing to change in code. SpectroKit and the apps may lower their declared floor to macOS 15 (apps: iOS 18) and re-pin to 0.2.1.
+
+Consumer notes for 0.0.1 to 0.2.0 are archived.

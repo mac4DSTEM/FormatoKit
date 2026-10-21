@@ -21,7 +21,7 @@ FormatoCancellation.swift, FormatoFileName.swift come from SpectroKit 0.3.0 (tag
 commit 14c6acf8), itself extracted from mac4DSTEM (commit 5ba712a0); the tests
 under Tests/FormatoDMTests, FormatoEMDTests, FormatoHDF5Tests and
 FormatoHDF5ExitProbe, and the fixtures listed in Tests/README.md, come from the
-same tag. docs/registration-step-1.md section 1.1 lists every change.
+same tag. The design note listing every change is archived in the suite's private folder.
 
     SpectroKit - https://github.com/mac4DSTEM/SpectroKit
     mac4DSTEM  - https://github.com/mac4DSTEM/mac4DSTEM

@@ -1,5 +1,5 @@
 #!/bin/zsh
-# FormatoKit test gate: `swift test -c release`, warning-checked, with the last-green stamp.
+# FormatoKit test gate: `swift test -c release`, warning-checked.
 #
 # Release, as the sibling kits' gates: the manifest carries no Debug `-O` (a versioned dependency cannot carry
 # unsafe flags) and Debug at -Onone is many times slower on the stream decode; a consumer builds the kit optimised itself.
@@ -14,8 +14,6 @@
 # because it is signed" for the shipped frameworks it copies (FormatoLibHDF5, FormatoLibSZ, FormatoLibAEC; they are ad-hoc signed and
 # Xcode re-signs them in an app). Only those lines are allowed; any other warning fails the gate.
 #
-# Stamp: a full run (no arguments) that passes, on a tree whose Sources/, Tests/, Package.swift and Package.resolved are
-# clean and hold no untracked file, writes .build/last-green (HEAD sha, UTC time, libhdf5). Any argument or a dirty tree writes nothing and says why.
 set -euo pipefail
 cd "${0:A:h}/.."
 [[ -d dist/xcframeworks/FormatoLibHDF5.xcframework ]] || tools/xcframework/build.sh --local > /dev/null 2>&1
@@ -57,16 +55,3 @@ set -e
 (( rc == 0 )) || { print -u2 "tools/test.sh: swift test failed (exit $rc)"; exit $rc }
 other=$(grep "warning:" $log | grep -vE "warning: not stripping binary because it is signed: .*/FormatoLib(HDF5|SZ|AEC)\.framework" || true)
 if [[ -n $other ]]; then print -u2 "tools/test.sh: green, but the build warned:"; print -u2 -r -- "$other"; exit 1; fi
-if (( $# > 0 )); then
-  print -u2 "tools/test.sh: green, but arguments were given (not a full run): no stamp"
-elif [[ -n $(git status --porcelain --untracked-files=no -- Sources Tests Package.swift Package.resolved) ]]; then
-  print -u2 "tools/test.sh: green, but Sources/Tests/Package files are not clean: no stamp"
-elif [[ -n $(git ls-files --others --exclude-standard -- Sources Tests Package.swift Package.resolved) ]]; then
-  # An untracked source or test file ran but is in no commit: the stamp would name a commit without it (CuboKit's rule).
-  print -u2 "tools/test.sh: green, but untracked files under Sources/Tests ran: no stamp"
-else
-  print -r -- "commit $(git rev-parse HEAD)
-time $(date -u +%Y-%m-%dT%H:%M:%SZ)
-libhdf5 $FORMATO_HDF5_PATH" > .build/last-green
-  print -u2 "tools/test.sh: stamped .build/last-green at $(git rev-parse --short HEAD)"
-fi

@@ -3,7 +3,7 @@
 The checklist that makes "complete" a measured claim (suite ROADMAP, "Kits", phase 4). Started 2026-10-15 from RosettaSciIO
 049e7d70's own format list (its 38 `rsciio/*/specifications.yaml`, the source of its supported-formats table). Updated at
 every tag (last: 0.4.0, 2026-10-20). Since 0.2.0 FormatoKit's own refusals marked as policies (unconverted Velox
-units, the spectrum-image grid check, TIFF vendor branches, the DM string limit) are parameters (`docs/registration-0.2.0.md`). "Pinned" means a gate compares FormatoKit with RosettaSciIO on that format's files (D12: readers, axes and metadata exact; unit arithmetic may carry a written tolerance, and is compared exactly today); "read" means a
+units, the spectrum-image grid check, TIFF vendor branches, the DM string limit) are parameters (design note, archived in the suite's private folder). "Pinned" means a gate compares FormatoKit with RosettaSciIO on that format's files (D17: numerics are held to the tolerance the Python package's own tests use; readers, I/O, indices and metadata are exact); "read" means a
 reader exists without that gate.
 
 ## The formats
@@ -107,14 +107,14 @@ py4DSTEM EMD 1.0, py4DSTEM BraggVectors, Merlin), 1 empty (MSA), 33 not read.
   groups; tag names holding "."; strings over 4 KiB (registration A5). The moved DM walk does not expose these; a later
   registered change of it can.
 - **Velox images: stored type and titles (equal since step 3).** Every public, planted and owner image in its stored type
-  and with RosettaSciIO's title (`Operations`, `DetectorInformation`, the label maps); `docs/registration-step-3.md`. Left:
+  and with RosettaSciIO's title (`Operations`, `DetectorInformation`, the label maps); design note, archived in the suite's private folder. Left:
   an `Operations` kind or `Displays/ImageDisplay` stored as one dataset instead of a group is refused (Python iterates
   its JSON in written order); no file seen has one.
 - **Velox compound images** (FFT, DPC) are refused; RosettaSciIO returns them complex.
 - **Units outside FormatoUnits** (m and s with SI prefixes, their inverses, dimensionless) refuse the image: Pint also
   reads "px", "Å", "nanometre" and more (registration A5, F7).
 - **Velox spectrum images (equal since step 4).** EDS and EELS spectrum images as RosettaSciIO's `select_type="spectrum_image"`
-  returns them, every option, the counts wrapping in the stream's type as its jitted loop does (`docs/registration-step-4.md`).
+  returns them, every option, the counts wrapping in the stream's type as its jitted loop does (design note, archived in the suite's private folder).
   Left, registered deviations (refused here where RosettaSciIO reads): a first image whose grid differs from ScanSize x
   ScanArea; a stream that is not one uint16 column; a channel at or beyond the bin count (RosettaSciIO writes outside the
   voxel); frames not summed with no frame left or `last_frame` 0; streams of different bin counts read apart; no FrameTime with

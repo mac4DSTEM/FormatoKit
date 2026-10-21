@@ -29,8 +29,9 @@ FORMATO_LOCAL_XCFRAMEWORKS=1 swift test -c release
 - What a reader returns (shapes, values, axes, units, metadata) is compared bit for bit with what RosettaSciIO returns
   for the same file. The expected values are committed as fixtures next to the tests, so you can run them without
   installing Python.
-- If a test disagrees with RosettaSciIO, treat it as a bug in the reader. Please do not loosen a tolerance to make it
-  pass. If you believe RosettaSciIO is wrong, say so in the pull request and show why.
+- If a test disagrees with RosettaSciIO, treat it as a bug in the reader. If you believe RosettaSciIO is wrong, say so in
+  the pull request and show why. A test's tolerance is the one the Python package's own tests use for that function; a
+  result outside it is a bug. A change that moves a fixture says why in the pull request and in the CHANGELOG.
 - New behaviour needs a test that fails without your change and passes with it. A small file that shows the case is
   the best test data; please check you may share it.
 

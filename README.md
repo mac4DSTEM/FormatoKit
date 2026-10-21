@@ -139,18 +139,25 @@ built on it must be GPL-compatible.
 ## Build and test
 
 ```sh
-tools/test.sh                      # the gate: swift test -c release, warning-checked, stamps .build/last-green
-tools/last-green.sh                # the last green commit and whether HEAD equals it
+tools/test.sh                      # the gate: swift test -c release, warning-checked
 tools/step-1/names.sh              # the 121 inherited test names are all here
-References/rsciio-venv/bin/python -I -B tools/step-1/mutants.py [--step 2|3]   # break-once proof on a copy of HEAD
 tools/consumer-check/run.sh        # two separate packages, public API only, Debug, no warnings, libhdf5 from the package;
                                    # the second runs this README's snippets
 ```
 
-The oracle is not in the repository: `References/rosettasciio-049e7d70` (the pinned clone) and `References/rsciio-venv`;
-`docs/registration-step-1.md` §2 says how they are pinned. Without them the pins test runs on the committed public file and
-the planted files only. CI (`.github/workflows/ci.yml`) runs the hook proof, the gate and the consumer check on macOS.
+Numbers are held to the Python reference within its own tolerance; `docs/parity.md` lists each function, its state and its
+tolerance. The oracle is not in the repository (`References/rosettasciio-049e7d70`, the pinned clone, and
+`References/rsciio-venv`); without them the pins test runs on the committed public file and the planted files only. CI
+(`.github/workflows/ci.yml`) runs the gate and the consumer check on macOS; a tag also checks that the CHANGELOG top version
+matches it. Tags are made by the maintainer; what each tag changes for a consumer is in the `CHANGELOG.md` Migration paragraph.
 
-## Status
+## Known limits
 
-`docs/status.md`; what each tag changes for a consumer is in `CHANGELOG.md` (its Migration paragraph). Tags are made by the maintainer.
+- The three XCFrameworks embedded and signed by Xcode in a Developer ID archive of an app: not tried here (no signing
+  identity); checked only through `swift test` and the consumer check.
+- Big-endian DM files: none exists to test; not detected.
+- Velox: `lazy=True` and single spectra are not ported; hostile grids and bin counts were run on FormatoKit only, not
+  refuted against RosettaSciIO. Registered deviations are listed in `docs/parity.md`.
+- No performance work beyond positioned reads (DM, TIFF) and per-frame reads (Velox); not memory-mapped.
+- TIFF: tifffile's shaped, OME and pyramid series, compression and the other vendor branches are refused, not read.
+- Validation: none. Agreement with RosettaSciIO and recovery of planted files are what is claimed.
