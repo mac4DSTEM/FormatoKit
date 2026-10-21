@@ -136,6 +136,43 @@ public nonisolated struct HDF5Reader: Sendable {
         } }
     }
 
+    /// The chunk shape of the dataset at `path`, or nil when it is stored contiguously or compactly (not chunked).
+    public func chunkShape(of path: String) throws -> [Int]? {
+        let parts = try HDF5Ops.components(path)
+        return try withFile { h5, file in try HDF5Ops.withDataset(h5, file, path, parts) { ds in
+            try HDF5Ops.chunkShape(h5, ds, path)
+        } }
+    }
+
+    /// Every object below the group at `path`, depth first, each group before its members, as absolute paths with their kind
+    /// (links are followed: a soft link to a group is walked). Siblings are in `children(of:)` order. More than
+    /// `maximumLinks` objects or a depth over 64 (a link cycle) throws `limitExceeded`.
+    public func descendants(of path: String = "/", maximumObjects: Int = 1 << 20) throws -> [(path: String, kind: HDF5ObjectKind)] {
+        var out: [(path: String, kind: HDF5ObjectKind)] = []
+        func walk(_ group: String, depth: Int) throws {
+            guard depth <= 64 else { throw HDF5FileError.limitExceeded("links nest deeper than 64 below \(path)") }
+            for name in try children(of: group) {
+                let child = group == "/" ? "/" + name : group + "/" + name
+                guard out.count < maximumObjects else { throw HDF5FileError.limitExceeded("more than \(maximumObjects) objects below \(path)") }
+                let kind = try self.kind(of: child)
+                out.append((child, kind))
+                if kind == .group { try walk(child, depth: depth + 1) }
+            }
+        }
+        guard try kind(of: path) == .group else { throw HDF5FileError.wrongKind(path: path, expected: "group") }
+        try walk(path.hasSuffix("/") && path.count > 1 ? String(path.dropLast()) : path, depth: 0)
+        return out
+    }
+
+    /// The values of an enum dataset whose base type is a one-byte integer (h5py's `bool`: FALSE = 0, TRUE = 1), flattened in C
+    /// order, true where the stored value is not 0. Any other type throws `unsupportedType`.
+    public func readBooleans(_ path: String, maximumBytes: Int = defaultMaximumBytes) throws -> [Bool] {
+        let parts = try HDF5Ops.components(path)
+        return try withFile { h5, file in try HDF5Ops.withDataset(h5, file, path, parts) { ds in
+            try HDF5Ops.readBooleans(h5, ds, path, maximumBytes: maximumBytes)
+        } }
+    }
+
     private func withFile<T>(_ body: (SharedHDF5, hid_t) throws -> T) throws -> T {
         try HDF5RootAttributes.withLibrary { h5 in
             let file = try HDF5RootAttributes.openForReading(url, h5)
@@ -304,11 +341,43 @@ nonisolated enum HDF5Ops {
         return HDF5DatasetInfo(shape: try dimensions(h5, space, path), type: datasetType(h5, type))
     }
 
+    static func chunkShape(_ h5: SharedHDF5, _ dataset: hid_t, _ path: String) throws -> [Int]? {
+        let plist = h5.h5dgetCreatePlist(dataset)
+        guard plist >= 0 else { throw HDF5RootAttributes.hdf5Failure("reading the layout of \(path)", h5) }
+        defer { _ = h5.h5pclose(plist) }
+        guard h5.h5pgetLayout(plist) == 2 else { return nil }          // H5D_CHUNKED
+        var dims = [hsize_t](repeating: 0, count: maximumRank)
+        let rank = h5.h5pgetChunk(plist, Int32(maximumRank), &dims)
+        guard rank >= 0 else { throw HDF5RootAttributes.hdf5Failure("reading the chunk shape of \(path)", h5) }
+        return dims.prefix(Int(rank)).map { Int(clamping: $0) }
+    }
+
+    static func readBooleans(_ h5: SharedHDF5, _ dataset: hid_t, _ path: String, maximumBytes: Int) throws -> [Bool] {
+        let space = h5.h5dgetSpace(dataset); defer { if space >= 0 { _ = h5.h5sclose(space) } }
+        let type = h5.h5dgetType(dataset)
+        guard type >= 0 else { throw HDF5RootAttributes.hdf5Failure("reading the type of \(path)", h5) }
+        defer { _ = h5.h5tclose(type) }
+        guard h5.h5tgetClass(type) == 8, h5.h5tgetSize(type) == 1 else {   // H5T_ENUM over one byte
+            throw HDF5FileError.unsupportedType(path: path, type: className(h5.h5tgetClass(type)))
+        }
+        let elements = try FormatoArray.elementCount(try dimensions(h5, space, path))
+        guard elements <= maximumBytes else { throw HDF5FileError.limitExceeded("reading \(path) needs more than \(maximumBytes) bytes") }
+        var bytes = [UInt8](repeating: 0, count: elements)
+        if elements > 0 {
+            guard bytes.withUnsafeMutableBytes({ h5.h5dread(dataset, type, 0, 0, 0, $0.baseAddress) }) >= 0 else {
+                throw HDF5RootAttributes.hdf5Failure("reading \(path)", h5)
+            }
+        }
+        return bytes.map { $0 != 0 }
+    }
+
     // MARK: Reading datasets
 
     static func readNumeric(_ h5: SharedHDF5, _ dataset: hid_t, _ path: String, start: [Int]?, count: [Int]?,
                             maximumBytes: Int) throws -> FormatoArray {
-        let found = try info(h5, dataset, path)
+        var found = try info(h5, dataset, path)
+        // float16 is read as float32 (HDF5 converts; every half-precision value is exact in float32).
+        if found.type == .unsupported("float16") { found = HDF5DatasetInfo(shape: found.shape, type: .numeric(.float32)) }
         guard case .numeric(let dataType) = found.type, let nativeType = native(h5, dataType) else {
             switch found.type {
             case .string: throw HDF5FileError.unsupportedType(path: path, type: "string (use readStrings)")

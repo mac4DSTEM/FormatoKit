@@ -125,7 +125,8 @@ func scratchDirectory() throws -> URL {
             #expect(throws: HDF5FileError.self) { try reader.readDataset(path) }
         default:
             #expect(info.type == .unsupported(kind[1]), "\(path)")
-            #expect(throws: HDF5FileError.unsupportedType(path: path, type: kind[1])) { try reader.readDataset(path) }
+            // float16 is the one "unsupported" type readDataset widens (to float32, since 0.7.0).
+            if kind[1] != "float16" { #expect(throws: HDF5FileError.unsupportedType(path: path, type: kind[1])) { try reader.readDataset(path) } }
             #expect(throws: HDF5FileError.unsupportedType(path: path, type: kind[1])) { try reader.readStrings(path) }
         }
     }
@@ -140,6 +141,27 @@ func scratchDirectory() throws -> URL {
             #expect(try !reader.exists(path), "\(path)")
             #expect(throws: HDF5FileError.notFound(path)) { try reader.kind(of: path) }
         }
+    }
+
+    /// 0.7.0 asks: chunk shape, recursive listing, h5py bool, float16 widened (values from tools/hdf5-append/generate.py).
+    @Test func testChunkShapeDescendantsBooleansAndHalfFloats() throws {
+        let reader = try HDF5Reader(url: Self.fixture("assorted.h5"))
+        #expect(try reader.chunkShape(of: "/a/data/chunked") == [2, 3, 7])
+        #expect(try reader.chunkShape(of: "/a/data/rank1") == nil)
+        #expect(throws: HDF5FileError.self) { try reader.chunkShape(of: "/a") }
+        let pinned = try #require(Self.pins().files["assorted.h5"]).objects
+        let all = try reader.descendants()
+        #expect(Set(all.map(\.path)) == Set(pinned.keys).subtracting(["/"]))
+        #expect(all.count == Set(all.map(\.path)).count)
+        for (path, kind) in all { #expect(pinned[path]?.kind == (kind == .group ? "group" : kind == .dataset ? "dataset" : "other"), "\(path)") }
+        #expect(try reader.descendants(of: "/strings").map(\.path) == ["/strings/fixed", "/strings/fixed_utf8", "/strings/long", "/strings/scalar_vlen", "/strings/variable"])
+        #expect(throws: HDF5FileError.self) { try reader.descendants(of: "/a/data/chunked") }
+        #expect(throws: HDF5FileError.self) { try reader.descendants(maximumObjects: 3) }
+        #expect(try reader.readBooleans("/a/data/flags") == [true, false, true])
+        #expect(throws: HDF5FileError.self) { try reader.readBooleans("/a/data/rank1") }
+        let half = try reader.readDataset("/a/data/f16")
+        #expect(half.dataType == .float32 && half.shape == [2])
+        #expect(half.bytes == Data([0, 0, 0, 0x3F, 0, 0, 0xC0, 0x3F]))
     }
 
     @Test func testTheFixturesCoverTheTypesThatMatter() throws {
