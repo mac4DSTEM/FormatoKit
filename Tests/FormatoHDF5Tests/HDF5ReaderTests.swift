@@ -164,6 +164,26 @@ func scratchDirectory() throws -> URL {
         #expect(half.bytes == Data([0, 0, 0, 0x3F, 0, 0, 0xC0, 0x3F]))
     }
 
+    /// `copyObject`: a dataset (with its chunking and attributes) and a group move into a new file unchanged.
+    @Test func testCopyObjectCarriesDatasetsAndGroupsIntoANewFile() throws {
+        let source = Self.fixture("assorted.h5")
+        let dir = try scratchDirectory(); defer { try? FileManager.default.removeItem(at: dir) }
+        let out = dir.appendingPathComponent("copy.h5")
+        try HDF5NewFile.write(to: out) { session in
+            try session.copyObject(from: source, "/a/data/chunked", to: "/moved/chunked")
+            try session.copyObject(from: source, "/strings", to: "/strings")
+            #expect(throws: HDF5FileError.alreadyExists("/strings")) { try session.copyObject(from: source, "/strings", to: "/strings") }
+            try session.copyObject(from: source, "/strings", to: "/strings", replace: true)
+            #expect(throws: HDF5FileError.notFound("/nope")) { try session.copyObject(from: source, "/nope", to: "/x") }
+        }
+        let a = try HDF5Reader(url: source), b = try HDF5Reader(url: out)
+        #expect(try b.readDataset("/moved/chunked") == a.readDataset("/a/data/chunked"))
+        #expect(try b.chunkShape(of: "/moved/chunked") == [2, 3, 7])
+        #expect(try b.attributeNames(of: "/moved/chunked") == a.attributeNames(of: "/a/data/chunked"))
+        for name in try a.children(of: "/strings") { #expect(try b.readStrings("/strings/" + name) == a.readStrings("/strings/" + name)) }
+        #expect(try b.children(of: "/") == ["moved", "strings"])
+    }
+
     @Test func testTheFixturesCoverTheTypesThatMatter() throws {
         let objects = try #require(Self.pins().files["assorted.h5"]).objects
         let types = Set(objects.values.compactMap(\.type))

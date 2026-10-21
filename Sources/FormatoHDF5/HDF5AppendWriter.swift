@@ -378,6 +378,33 @@ public nonisolated final class HDF5WriteSession {
         }
     }
 
+    /// Copies the object at `sourcePath` in the file `source` (a group with everything below it, or a dataset, attributes and
+    /// storage layout included) to `path` in this file; missing groups above `path` are created. How a result moves from an old
+    /// file into a new one (`HDF5NewFile`) so that the space of replaced datasets is not carried along.
+    /// - Parameters:
+    ///   - replace: when true an existing dataset or group at `path` is unlinked first, after the source was found.
+    /// - Throws: `notFound` (source object), `alreadyExists`, `invalidArgument` when `source` is the file this session writes.
+    public func copyObject(from source: URL, _ sourcePath: String, to path: String, replace: Bool = false) throws {
+        let sourceParts = try HDF5Ops.components(sourcePath), parts = try HDF5Ops.components(path)
+        guard !sourceParts.isEmpty, !parts.isEmpty else { throw HDF5FileError.invalidPath(sourceParts.isEmpty ? sourcePath : path) }
+        try open { file in
+            let other = try HDF5RootAttributes.openForReading(source, h5)
+            defer { _ = h5.h5fclose(other) }
+            guard HDF5Ops.linkExists(h5, other, sourceParts) else { throw HDF5FileError.notFound(sourcePath) }
+            try makeGroups(Array(parts.dropLast()), file, path)
+            if HDF5Ops.linkExists(h5, file, parts) {
+                guard replace else { throw HDF5FileError.alreadyExists(path) }
+                guard HDF5Ops.absolute(parts).withCString({ h5.h5ldelete(file, $0, 0) }) >= 0 else {
+                    throw HDF5RootAttributes.failure("unlinking \(path)", h5)
+                }
+            }
+            let status = HDF5Ops.absolute(sourceParts).withCString { from in
+                HDF5Ops.absolute(parts).withCString { to in h5.h5ocopy(other, from, file, to, 0, 0) }
+            }
+            guard status >= 0 else { throw HDF5RootAttributes.failure("copying \(sourcePath) to \(path)", h5) }
+        }
+    }
+
     // MARK: Internals (all under open)
 
     /// Throws `wrongKind` when a component of `parts` that exists is not a group.

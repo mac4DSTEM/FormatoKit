@@ -82,12 +82,14 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
     package typealias H5Aoperator = @convention(c) (hid_t, UnsafePointer<CChar>?, UnsafeRawPointer?, UnsafeMutableRawPointer?) -> herr_t
     package typealias H5Aiterate2 = @convention(c) (hid_t, Int32, Int32, UnsafeMutablePointer<hsize_t>?, H5Aoperator, UnsafeMutableRawPointer?) -> herr_t
     package typealias H5Adelete = @convention(c) (hid_t, UnsafePointer<CChar>?) -> herr_t
+    package typealias H5Ocopy = @convention(c) (hid_t, UnsafePointer<CChar>?, hid_t, UnsafePointer<CChar>?, hid_t, hid_t) -> herr_t
     package typealias H5DgetCreatePlist = @convention(c) (hid_t) -> hid_t
     package typealias H5PgetLayout = @convention(c) (hid_t) -> Int32
     package typealias H5PgetChunk = @convention(c) (hid_t, Int32, UnsafeMutablePointer<hsize_t>?) -> Int32
     package typealias H5PsetChunk = @convention(c) (hid_t, Int32, UnsafePointer<hsize_t>?) -> herr_t
     package let h5ldelete: H5Ldelete, h5lexists: H5Lexists, h5igetType: H5IgetType, h5literate2: H5Literate2
     package let h5aiterate2: H5Aiterate2, h5adelete: H5Adelete, h5psetChunk: H5PsetChunk
+    package let h5ocopy: H5Ocopy
     package let h5dgetCreatePlist: H5DgetCreatePlist, h5pgetLayout: H5PgetLayout, h5pgetChunk: H5PgetChunk
     /// `H5P_CLS_DATASET_CREATE_ID_g`'s value: the dataset-creation property class.
     package let datasetCreateClass: hid_t
@@ -170,6 +172,7 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
             h5igetType: try symbol("H5Iget_type", as: H5IgetType.self), h5literate2: try symbol("H5Literate2", as: H5Literate2.self),
             h5aiterate2: try symbol("H5Aiterate2", as: H5Aiterate2.self), h5adelete: try symbol("H5Adelete", as: H5Adelete.self),
             h5psetChunk: try symbol("H5Pset_chunk", as: H5PsetChunk.self),
+            h5ocopy: try symbol("H5Ocopy", as: H5Ocopy.self),
             h5dgetCreatePlist: try symbol("H5Dget_create_plist", as: H5DgetCreatePlist.self),
             h5pgetLayout: try symbol("H5Pget_layout", as: H5PgetLayout.self),
             h5pgetChunk: try symbol("H5Pget_chunk", as: H5PgetChunk.self),
