@@ -22,6 +22,8 @@ public nonisolated enum EMPADError: Error, Sendable, Equatable {
 public nonisolated struct EMPADReader: Sendable {
     /// The signal; only requested slabs are copied from the mapping. `load()` reads every detector pixel.
     public let signal: FormatoLazySignal
+    /// The raw file the frames come from, after the XML's `raw_file.filename` was resolved against the XML's folder.
+    public let rawPath: String
 
     /// Opens an XML header (or a raw path with a same-stem XML companion).
     /// - Parameters:
@@ -37,7 +39,34 @@ public nonisolated struct EMPADReader: Sendable {
         parser.delegate = header
         parser.shouldResolveExternalEntities = false
         guard parser.parse() else { throw EMPADError.invalidXML("Malformed XML") }
-        let fields = header.fields
+        try self.init(xml: xml, fields: header.fields, qCalibration: qCalibration)
+    }
+
+    /// Opens a raw file that has no XML header: `scan_x{N}_y{M}` in its name, `scanSize` when given, or else a square scan
+    /// whose frame count is the file's. Calibrations are absent (pixels), as RosettaSciIO's for an XML without them.
+    /// - Parameter scanSize: `(y, x)` scan extents; they must account for the file's length exactly.
+    /// - Throws: `EMPADError.invalidXML("Missing scan dimensions")` when neither the name nor the length gives a scan.
+    public init(rawPath: String, scanSize: (y: Int, x: Int)? = nil, qCalibration: Double? = nil) throws {
+        let raw = URL(fileURLWithPath: rawPath)
+        var fields = ["root.raw_file.filename": raw.lastPathComponent]
+        if let scanSize {
+            guard scanSize.y > 0, scanSize.x > 0 else { throw EMPADError.invalidXML("Invalid scan dimension") }
+            fields["root.scan_parameters.scan_resolution_x"] = String(scanSize.x)
+            fields["root.scan_parameters.scan_resolution_y"] = String(scanSize.y)
+        } else if !raw.lastPathComponent.hasPrefix("scan_") {
+            var info = stat()
+            guard stat(rawPath, &info) == 0 else { throw EMPADError.cannotOpen(raw.lastPathComponent) }
+            let frame = 130 * 128 * 4
+            let frames = Int(info.st_size) / frame
+            let side = Int(Double(frames).squareRoot().rounded())
+            guard frames > 0, side * side == frames else { throw EMPADError.invalidXML("Missing scan dimensions") }
+            fields["root.scan_parameters.scan_resolution_x"] = String(side)
+            fields["root.scan_parameters.scan_resolution_y"] = String(side)
+        }
+        try self.init(xml: raw, fields: fields, qCalibration: qCalibration)
+    }
+
+    private init(xml: URL, fields: [String: String], qCalibration: Double?) throws {
         guard let filename = fields["root.raw_file.filename"], !filename.isEmpty else {
             throw EMPADError.invalidXML("Missing raw_file.filename")
         }
@@ -53,6 +82,9 @@ public nonisolated struct EMPADReader: Sendable {
             let x: Int, y: Int
             if let px = fields["root.pix_x"], let py = fields["root.pix_y"] {
                 x = try positive(px); y = try positive(py)
+            } else if let rx = fields["root.scan_parameters.scan_resolution_x"], let ry = fields["root.scan_parameters.scan_resolution_y"] {
+                // `scan_parameters mode="acquire"`: the acquisition's own extents, whatever the raw file is called.
+                x = try positive(rx); y = try positive(ry)
             } else {
                 let parts = filename.components(separatedBy: ".")[0].components(separatedBy: "_")
                 guard filename.hasPrefix("scan_"), parts.count >= 3,
@@ -136,6 +168,7 @@ public nonisolated struct EMPADReader: Sendable {
         }
         let raw = URL(fileURLWithPath: filename, relativeTo: xml.deletingLastPathComponent()).standardizedFileURL
         let mapping = try Mapping(path: raw.path, expected: expected)
+        rawPath = raw.path
         signal = FormatoLazySignal(title: title, signalType: "electron_diffraction", axes: axes, metadata: metadata,
                                  array: EMPADArray(mapping: mapping, shape: axes.map(\.size)))
     }

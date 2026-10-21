@@ -107,3 +107,28 @@ private func temporaryPair() throws -> URL {
     try FileManager.default.removeItem(at: raw)
     #expect(throws: EMPADError.self) { try EMPADReader(path: xml.path) }
 }
+
+/// 0.7.0 asks: `scan_resolution_x/y` under any raw file name, a raw file with no XML, the resolved raw path.
+@Test func empadResolutionRawOnlyAndRawPath() throws {
+    let dir = try temporaryPair()
+    defer { try? FileManager.default.removeItem(at: dir) }
+    let original = dir.appendingPathComponent("scan_x3_y2.raw")
+    let reference = try EMPADReader(rawPath: original.path)               // the name carries x3 y2
+    let expected = try reference.signal.load().data
+    #expect(expected.shape == [2, 3, 128, 128])
+    #expect(reference.rawPath == original.path)
+    let renamed = dir.appendingPathComponent("capture.raw")
+    try FileManager.default.copyItem(at: original, to: renamed)
+    #expect(try EMPADReader(rawPath: renamed.path, scanSize: (y: 2, x: 3)).signal.load().data == expected)
+    // 6 frames is not square: refused by name; a wrong explicit size is the length check.
+    #expect(throws: EMPADError.self) { try EMPADReader(rawPath: renamed.path) }
+    #expect(throws: EMPADError.self) { try EMPADReader(rawPath: renamed.path, scanSize: (y: 3, x: 3)) }
+    // An XML with scan_resolution_x/y and an arbitrary raw name, as an acquire-mode header writes it.
+    let xml = dir.appendingPathComponent("capture.xml")
+    try """
+    <root><raw_file filename="capture.raw"/><scan_parameters mode="acquire" scan_resolution_x="3" scan_resolution_y="2"/></root>
+    """.write(to: xml, atomically: true, encoding: .utf8)
+    let fromXML = try EMPADReader(path: xml.path)
+    #expect(try fromXML.signal.load().data == expected)
+    #expect(fromXML.rawPath == renamed.standardizedFileURL.path)
+}
