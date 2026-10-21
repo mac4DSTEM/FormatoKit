@@ -7,7 +7,9 @@ abstract: >-
   Velox EMD, TIFF, MRC, EMPAD, Merlin MIB and py4DSTEM-style HDF5) on macOS and iOS. It follows
   RosettaSciIO and is checked against it.
 authors:
-  - name: "mac4DSTEM contributors"
+  - family-names: Lobpreis
+    given-names: Paul
+    # TODO(Paul): add orcid: "https://orcid.org/…" and affiliation: "…" here
 license: GPL-3.0
 repository-code: "https://github.com/mac4DSTEM/FormatoKit"
 keywords:
