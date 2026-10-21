@@ -116,7 +116,7 @@ public nonisolated struct HDF5Reader: Sendable {
         } }
     }
 
-    /// A rectangular hyperslab of a numeric dataset, as stored (C order, little-endian bytes; the element type is the stored one).
+    /// A rectangular hyperslab of a numeric dataset, as stored (a float16 dataset is returned as float32 although `datasetInfo` reports `unsupported("float16")`) (C order, little-endian bytes; the element type is the stored one).
     /// `start` and `count` default to the whole dataset; both must have the dataset's rank. A zero count returns an empty array.
     public func readDataset(_ path: String, start: [Int]? = nil, count: [Int]? = nil,
                             maximumBytes: Int = defaultMaximumBytes) throws -> FormatoArray {
@@ -146,8 +146,8 @@ public nonisolated struct HDF5Reader: Sendable {
 
     /// Every object below the group at `path`, depth first, each group before its members, as absolute paths with their kind
     /// (links are followed: a soft link to a group is walked). Siblings are in `children(of:)` order. More than
-    /// `maximumLinks` objects or a depth over 64 (a link cycle) throws `limitExceeded`.
-    public func descendants(of path: String = "/", maximumObjects: Int = 1 << 20) throws -> [(path: String, kind: HDF5ObjectKind)] {
+    /// `maximumObjects` objects or a depth over 64 (a link cycle) throws `limitExceeded`.
+    public func descendants(of path: String = "/", maximumObjects: Int = 1 << 16) throws -> [(path: String, kind: HDF5ObjectKind)] {
         var out: [(path: String, kind: HDF5ObjectKind)] = []
         func walk(_ group: String, depth: Int) throws {
             guard depth <= 64 else { throw HDF5FileError.limitExceeded("links nest deeper than 64 below \(path)") }

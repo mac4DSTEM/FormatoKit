@@ -383,7 +383,8 @@ public nonisolated final class HDF5WriteSession {
     /// file into a new one (`HDF5NewFile`) so that the space of replaced datasets is not carried along.
     /// - Parameters:
     ///   - replace: when true an existing dataset or group at `path` is unlinked first, after the source was found.
-    /// - Throws: `notFound` (source object), `alreadyExists`, `invalidArgument` when `source` is the file this session writes.
+    /// `source` must be another file than the one being written (in `.atomicCopy` it would be read from the original, not the scratch).
+    /// - Throws: `notFound` (source object), `alreadyExists`.
     public func copyObject(from source: URL, _ sourcePath: String, to path: String, replace: Bool = false) throws {
         let sourceParts = try HDF5Ops.components(sourcePath), parts = try HDF5Ops.components(path)
         guard !sourceParts.isEmpty, !parts.isEmpty else { throw HDF5FileError.invalidPath(sourceParts.isEmpty ? sourcePath : path) }

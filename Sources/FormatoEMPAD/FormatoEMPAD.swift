@@ -53,7 +53,7 @@ public nonisolated struct EMPADReader: Sendable {
             guard scanSize.y > 0, scanSize.x > 0 else { throw EMPADError.invalidXML("Invalid scan dimension") }
             fields["root.scan_parameters.scan_resolution_x"] = String(scanSize.x)
             fields["root.scan_parameters.scan_resolution_y"] = String(scanSize.y)
-        } else if !raw.lastPathComponent.hasPrefix("scan_") {
+        } else if raw.lastPathComponent.range(of: #"^scan_x\d+_y\d+"#, options: .regularExpression) == nil {
             var info = stat()
             guard stat(rawPath, &info) == 0 else { throw EMPADError.cannotOpen(raw.lastPathComponent) }
             let frame = 130 * 128 * 4
