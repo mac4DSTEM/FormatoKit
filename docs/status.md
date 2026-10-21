@@ -1,5 +1,7 @@
 # Status
 
+**Hand-off 2026-10-21:** done: reader asks on local main, unreleased (CHANGELOG 0.7.0, six commits after the 0.6.0 tag): `DM4Datacube` fast path (0.035 s on the 201 MB EDX cube), DM3, `.readIntoMemory`, `layout`; `HDF5Reader` chunk shape, recursive listing, bool enum, float16; `copyObject`; Bragg scratch in the item-replacement directory; EMPAD `scan_resolution`, raw-only, `rawPath`; MIB `pixelCode` and any app header size; the 0.6.1 guard and PNG test; next: owner tags 0.7.0, mac4DSTEM and macTEM re-pin and delete the shims.
+
 **Hand-off 2026-10-20 (night):** done: EMD scientific-bundle writers (datacube, calibration, scalar/RGBA maps, `HDF5NewFile`) and `FormatoPNG` on local main, unreleased (CHANGELOG 0.6.0 proposed; pinned to mac4DSTEM c47a2b7a's own files, macTEM 53f612a, h5py/py4DSTEM/Pillow); next: owner tags 0.5.0 then 0.6.0, mac4DSTEM replaces its HDF5 write library and datacube/bundle/map writers, macTEM `PNGChunks`; lineage records deliberately not moved (`docs/session-bundle.md`).
 
 **Hand-off 2026-10-20 (evening):** done: `HDF5Reader`, `HDF5AppendWriter` and `TIFFAppImage` on local main, unreleased (CHANGELOG 0.5.0, gate green, h5py and macTEM cb6e164 pins); next: owner pushes and tags 0.5.0, then mac4DSTEM re-pins and moves `H5Reader`/sidecar append, macTEM `TIFFImageReader`.

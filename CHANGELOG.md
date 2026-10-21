@@ -2,7 +2,23 @@
 
 Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what each tag changed for a consumer) and `docs/status.md`.
 
-## 0.6.0 (unreleased)
+## 0.7.0 (2026-10-21)
+
+The reader asks the two apps still carried shims for, and the two 0.6.1 follow-ups. Every change is pinned to the previous
+reader's bytes or to h5py / RosettaSciIO (`tools/dm4-gather/make_dm3.py` re-emits DM4 fixtures as DM3).
+
+- `DM4Datacube`: contiguous fast path (row copies; typed Float32 conversion per row; one source offset per row instead of a per-element decode). `AlMgSi_4D_EDX.dm4` (float32 48x64x128x128, 201 MB) read whole in 0.035 s with the app layout and 0.089 s stored order, against the app reader's 0.10 s (and the kit's own 0.76 s before). DM3 files are accepted (header version 3 or 4). New `storage:` option, `.readIntoMemory`, reads the object's pixel bytes once at open (network or removable volumes) and survives the file changing. New `layout` (`DM4DatacubeLayout`: stored shape, permutation, `scanFastest`, stored and output type) so a consumer does not repeat the unit-domain rule. A declared data length of 0 is tolerated when the dimensions fit the file; a wrong non-zero length still refuses.
+- `HDF5Reader`: `chunkShape(of:)`, `descendants(of:)` (recursive listing with kinds, depth and count limits), `readBooleans` (h5py's one-byte enum), and float16 datasets are read as float32 (before: refused by name; `datasetInfo` still reports `unsupported("float16")`).
+- `HDF5WriteSession.copyObject(from:_:to:replace:)`: H5Ocopy of a group or dataset from another file (attributes and layout kept), the way a result moves into a new file without the space of replaced datasets.
+- `BraggVectorsEMD.write` builds in the item-replacement directory like the other writers (sandbox-safe), falling back beside the destination.
+- `EMPADReader`: `scan_parameters scan_resolution_x/y` give the scan under any raw file name (after `pix_x/pix_y`, before the `scan_x/y` name rule); `init(rawPath:scanSize:)` opens a raw file with no XML (name, explicit size, or a square scan from the file's length); `rawPath` is exposed.
+- `MIBReader`: `pixelCode` (`U08` / `U16` / `U32`); the app convention takes any header size from 384 to 65536 (RosettaSciIO's convention still 384 and 768 only).
+- 0.6.1 follow-ups: `EMDDatacubeWriter.write` checks the shape before forming any product of it (a short or huge shape throws `invalidArgument` instead of trapping); a PNG compressed-zlib round-trip test and `package` access to `adler32`.
+- Not done, with reasons: lineage / marks records (two different app formats, `docs/session-bundle.md`); header-less MIB (needs the app's width/height fallback, no reference); a public `SharedHDF5` or planting API (tests keep using h5py-written fixtures); vlen and enum writes, and in-place space reclamation (`copyObject` into a new file is the route); 3D-to-4D reshape of a DM object such as `small_datacube.dm4` (rank 3, the app reshapes by its own load specification).
+
+**Migration.** Additive. mac4DSTEM: delete the shims marked `delete at FormatoKit 0.6.0` that this covers and switch `DM4Reader` onto `DM4Datacube(.appCalibratedAxes, storage: .readIntoMemory)` for non-local volumes (`.mapped` elsewhere), reading `layout` instead of repeating the unit-domain rule; MIB with `.appScanXY` and EMPAD acquire-mode headers lose their fallbacks; a result copy uses `HDF5NewFile` plus `copyObject`. `HDF5Reader.readDataset` of a float16 dataset now returns float32 instead of throwing.
+
+## 0.6.0 (2026-10-20)
 
 The format-level half of the apps' session files and exports moved into the kit: the EMD "scientific bundle" writers and the
 PNG with text chunks. What an app stamps into a file (its schema keys, a map's provenance, its lineage) stays the app's and is
@@ -19,7 +35,7 @@ passed in as attributes. Design: `docs/session-bundle.md`.
 
 **Migration.** Source-breaking only for an exhaustive `switch` over `HDF5FileError` (already needs a `default` since 0.5.0). Otherwise additive. mac4DSTEM can replace `writeCalibratedDataCubeFile`, `writeScientificBundle`, `writeCalibration`, `writeResultMap`, `writeRGBAResultMap` and its private HDF5 write library with these calls (its reduction, re-reference and `mac4dstem_*` keys stay and become attributes); a result save becomes `HDF5AppendWriter.append` with `replace: true` instead of rebuilding the file. macTEM's `PNGChunks` becomes `FormatoPNG.inserting`. Pass `EMDBooleanStorage.uint8` to keep the app's `QR_flip` bytes; integer attributes are int64 and `UUID` / `authoring_user` are optional in `EMDFileHeader`.
 
-## 0.5.0 (unreleased)
+## 0.5.0 (2026-10-20)
 
 - Add `HDF5Reader` (FormatoHDF5): low-level read of any HDF5 file through the shared loader and `HDF5Serial`: `exists`, `kind(of:)`, `children(of:)`, `attributeNames(of:)`, `attribute(_:of:)`, `datasetInfo`, `readDataset` (hyperslab, as `FormatoArray`), `readStrings`. Compound, enum, array and vlen data, references, float16 datasets and attributes of rank 2 or more are refused by name. Pinned exact to h5py 3.16.0 (`tools/hdf5-append/generate.py`).
 - Add `HDF5AppendWriter.append(to:mode:body:)` with `HDF5WriteSession` (`createGroup`, `writeDataset` with `chunk` and `replace`, `setAttribute`, `deleteLink`, `exists`). Default `.atomicCopy` copies the file, writes the copy and publishes it over the checked original (any failure leaves the original byte-identical); `.inPlace` is not atomic. Unrelated content is unchanged; h5py reads the appended files equal to base plus operations. No compression filters, resizing or space reclamation. Note: `.inPlace` `replace: true` unlinks the old dataset before the new one is written.
