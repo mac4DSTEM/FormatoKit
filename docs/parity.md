@@ -1,67 +1,98 @@
 # Parity with RosettaSciIO
 
-The checklist that makes "complete" a measured claim (suite ROADMAP, "Kits", phase 4). Started 2026-10-15 from RosettaSciIO
-049e7d70's own format list (its 38 `rsciio/*/specifications.yaml`, the source of its supported-formats table). Updated at
-every tag (last: 0.4.0, 2026-10-20). Since 0.2.0 FormatoKit's own refusals marked as policies (unconverted Velox
-units, the spectrum-image grid check, TIFF vendor branches, the DM string limit) are parameters (design note, archived in the suite's private folder). "Pinned" means a gate compares FormatoKit with RosettaSciIO on that format's files (D17: numerics are held to the tolerance the Python package's own tests use; readers, I/O, indices and metadata are exact); "read" means a
-reader exists without that gate.
+The coverage table of the kit against RosettaSciIO's public API, rewritten by the 0.9.0 audit (2026-10-21) from source on disk:
+the 38 plugins of RosettaSciIO 0.14.0 (`refs/rsciio`, `rsciio/*/specifications.yaml`, each `file_reader` and `file_writer`
+signature, each `tests/test_*.py`). The kit's pins stay at RosettaSciIO `049e7d70` (0.14.1.dev96, `References/rsciio-venv`): it is
+a development commit that differs from the 0.14.0 release on disk. For the formats the kit holds the differences are: Velox (049e7d70
+reads FFT/DPC stacks frame by frame and adds `EelsSpectrumImage`, which 0.14.0 lacks), EMPAD (049e7d70 takes the scan size from a
+`scan_xxx_yxx.raw` file name when `pix_x`/`pix_y` are absent; 0.14.0 takes `scan_parameters/scan_resolution_x/y`; the kit has both, since
+0.7.0), TIFF (049e7d70 also accepts the Greek mu U+03BC in units); plus unrelated plugins (Bruker, EDAX, Blockfile, JobinYvon, Quadstar,
+Renishaw, TriVista, `hspy`/`zspy`, and test files). The single-spectrum, MSA, DM, MRC and MIB code are identical in both. "Pinned" means a gate compares FormatoKit with RosettaSciIO on that format's files (D17: numerics are
+held to the tolerance the Python package's own tests use; readers, I/O, indices and metadata are exact); "read" means a reader exists
+without that gate.
 
-## The formats
+**Totals (the 38 plugins; `emd` is one plugin with the Velox variant read and NCEM, prismatic, DE5 missing): 2 present, 5 partial,
+31 missing.** Present: MIB, MSA. Partial: DigitalMicrograph, EMD, TIFF, MRC, EMPAD. By priority of the 31 missing: 0 study, 10 useful, 21 not planned.
+Beside the 38 the kit has rows with no RosettaSciIO plugin (below): py4DSTEM EMD/BraggVectors, the EMD bundle writers, `HDF5Reader`, PNG
+text chunks, the TIFF app image.
 
-Priority: **A** the owner's data needs it (the order of the format lanes), **B** common in materials TEM, **C** other
-instruments and techniques, out of scope until someone asks.
+Priority: **study** the owner's study path (the TEM study, the two apps' open kit asks); **useful** common in electron-microscopy
+work or a 4D-STEM/EDS source; **not planned** other techniques or no consumer (reason in the note). State: **present** = the plugin's
+default reader (and writer where it writes) pinned, deviations listed; **partial** = reads with the refusals listed; **missing**.
+The tolerance column is the counterpart's own test file and the kind of comparison it uses (NumPy `allclose` defaults are rtol 1e-7,
+atol 0; where a test passes its own, "explicit" is stated: calibrations are 1e-5 there). Readers are held exact here, stricter than
+every one of these, as D17 prescribes for readers.
 
-| RosettaSciIO plugin | Extensions | RosettaSciIO writes | FormatoKit module | State | Priority |
-|---|---|---|---|---|---|
-| DigitalMicrograph | dm3, dm4 | no | `FormatoDM` | **pinned** (step 1): every object as a signal; 106 public signals and the owner's 40 bit for bit; the moved `DM4Experiment` API; lazy 4D gather `DM4Datacube` (stored order and app layout, pinned; DM3; row fast path; `.readIntoMemory`; layout exposed) | A |
-| EMD, Velox | emd | no | `FormatoEMD` | **pinned** for images as signals (step 1; stored type and titles, step 3) and for spectrum images as signals (step 4: EDS from the streams and EELS, every option); the moved spectrum-stream API as SpectroKit uses it; the detectors in RosettaSciIO's order (0.0.3); single spectra (`Data/Spectrum`) not read | A |
-| EMD, NCEM / Berkeley | emd | yes | `FormatoEMD` | not read | B |
-| EMD, prismatic | emd | no | — | not read | C |
-| TIFF | tif, tiff | yes | `FormatoTIFF` | **pinned** (step 2) for FEI, Gatan DM tags, ImageJ and plain files, uncompressed strips: 31 public and planted series and the owner's 6 Ceta TIFFs bit for bit; the tag walker equal to tifffile; Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu streak, compression and tiles refused by name | A |
-| TIA | ser, emi | no | `FormatoTIFF` or its own module | not read | B |
-| MRC | mrc, ali | no | `FormatoMRC` | **pinned**: `MRCReader` (lazy; modes 0 uint8, 1, 2, 6; header little-endian whatever the stamp; nm axes; size-1 axes squeezed; FEI 128-byte pixel size in float32; complex64 and float16 refused: no `FormatoDataType`), bit for bit at 049e7d70 on synthetic files; `MRCAppImage` is the named consumer option (signed mode 0, stamp honoured, Angstrom, stacks refused, Float32) pinned to macTEM cb6e164; acquisition metadata: see the section below | B |
-| TIFF app image (named option) | tif, tiff | no | `FormatoTIFF` | `TIFFAppImage`: one 2D page as Float32 plus calibration (FEI SEM, Velox, DM tags, ImageJ), refusals by name. Differs from rsciio.tiff: no series, stacks or BigTIFF, no WhiteIsZero or palette, FEI PixelWidth on x (rsciio swaps non-square axes), DM scale <= 0 is no axis. Pinned exact to macTEM cb6e164 on 149 cases | A |
-| h5py low-level (named by use) | h5, hdf5 | no | `FormatoHDF5` | `HDF5Reader`: objects, links, scalar and 1-D attributes (text, int, float, any byte order), hyperslab dataset reads, string datasets; `HDF5AppendWriter`: add or replace numeric datasets (contiguous or chunked, no filters), groups, scalar and 1-D attributes, delete links, atomic by default. `chunkShape`, `descendants`, `readBooleans` (h5py bool), float16 read as float32 (0.7.0), `copyObject` between files; `HDF5SlabReader` (held handles), `walk` with link kind and object identity, bool-enum attributes, `writeBraggVectors` in a session (0.8.0). Not supported: compound, other enum, array and vlen data, references, rank-2 attributes, external links, resizing. Pinned exact to h5py 3.16.0 | A |
-| MRCZ | mrc, mrcz | yes | `FormatoMRC` | not read | C |
-| EMPAD | xml (+ raw) | no | `FormatoEMPAD` | **pinned**: mmap Float32 frames, footer removal, scan/series shapes, squeezed axes, both XML navigation calibrations, diffraction calibration and timestamp metadata; synthetic full-byte pins at 049e7d70; `scan_resolution_x/y`, raw-only init, `rawPath` (0.7.0); `preferScanResolution` (0.8.0) | A |
-| py4DSTEM / EMD 1.0 (py4DSTEM f050d207, h5py 3.11.0) | h5, hdf5, emd | — | `FormatoHDF5` | **pinned** for explicit rank-four numeric datasets: stored bytes and shape, hyperslabs, R/Q axes, flip, rotation, ellipse, probe semiangle, lazy origin maps. Compressed Float32 and big-endian UInt16 synthetic files; uniform generic dimension vectors and scalar attributes checked with h5py; nonlinear coordinates refused | A |
-| py4DSTEM BraggVectors / EMD 1.0 (py4DSTEM f050d207 0.14.19, emdfile 0.0.15, h5py 3.11.0) | h5, hdf5, emd | — | `FormatoHDF5` | **read and write, pinned**: the `_v_uncal` vlen `{qx,qy,intensity}` float64 peak grid, `Rshape`/`Qshape`, the calibration scalars (`Q/R_pixel_size/units`, `QR_flip`, `QR_rotation(_degrees)`, `qx0/qy0_mean`, `a`, `b`, `theta`, `probe_semiangle`). Peaks read bit for bit from py4DSTEM-written files; what Swift writes is read back by py4DSTEM (`tools/bragg-writer/check.py`, result pinned with the files' SHA-256) and h5py shows the same group, dataset, dtype and attribute structure as a py4DSTEM-written file. Reference axes are primary (`qx` = detector row); `BraggAxisConvention.appImageXY` is the mac4DSTEM image convention (x = column, y = row), pinned to the app writer's swap. Atomic publish (sibling temporary file, rename), destination = source refused. Origin maps, `_v_cal` and mac4dstem_* attributes (a hook; the app owns them) are not written; non-finite peaks are refused on write | A |
-| EMD 1.0 scientific bundle writers (py4DSTEM 0.14.19, emdfile 0.0.15) | h5, hdf5, emd | — | `FormatoHDF5` | **write, pinned**: `EMDDatacubeWriter` (float32 `DataCube`, chunk one pattern, `dim0..3`), `writeEMDCalibration`, `writeEMDScalarMap` (`RealSlice`), `writeEMDRGBAMap` (`Array`), `HDF5NewFile`. Equal to mac4DSTEM c47a2b7a's own files object by object and byte by byte (UUID excepted); h5py and py4DSTEM read them as the same objects. Differs from py4DSTEM's own writer: UTF-8 strings, int64 version attributes; `QR_flip` is the h5py bool enum (`uint8` as option). Not written: py4DSTEM `Array` nodes of other shapes, `PointList`, `Metadata` beyond the calibration and caller entries. | `tools/emd-bundle` |
-| PNG with text chunks | png | — | `FormatoCore` | **write, pinned**: `FormatoPNG.encode` (gray8/16, RGB, RGBA, filter 0), `inserting` (byte-identical to macTEM 53f612a), `textEntries`. Pillow 12.3.0 and zlib read the files. No interlacing, palette, ancillary chunks other than text, or reader of pixels. | `tools/png` |
-| QuantumDetector (Merlin) | mib | no | `FormatoMIB` | **pinned**: processed U08 (1/6-bit), U16 (12-bit), U32 (24-bit), header metadata, explicit/trigger/timestamp shapes, interrupted lines, frame slices and singleton squeeze. Packed R64 raw headers at all four depths are refused, as in rsciio. `pixelCode` exposed (0.7.0). Named `appScanXY` option (any header size 384...65536) pins ScanX/ScanY, unflipped orientation and Float32 conversion to app c809679c | B |
-| Arina (Dectris) | h5 | no | — | not read | B |
-| HSPY | hspy, hdf5 | yes | `FormatoHDF5` | not read; with the sidecar | B |
-| ZSPY | zspy | yes | — | not read | C |
-| MSA | msa, ems, mas, emsa | yes | `FormatoMSA` | empty | B |
-| Bruker | bcf, spx | no | — | not read | B |
-| EDAX | spd, spc, lsd | no | — | not read | B |
-| JEOL | asw, img, map, pts, eds | no | — | not read | B |
-| Blockfile (NanoMegas) | blo | yes | — | not read | B |
-| TVIPS | tvips | yes | — | not read | C |
-| DENS | dens | no | — | not read | C |
-| Delmic | h5, hdf5 | no | — | not read | C |
-| DigitalSurf | sur, pro | yes | — | not read | C |
-| Hamamatsu | img | no | — | not read | C |
-| Image (Pillow) | png, bmp, gif, jpeg, … | yes | — | not read | C |
-| Impulse | csv | no | — | not read | C |
-| JobinYvon | xml | no | — | not read | C |
-| netCDF | nc | no | — | not read | C |
-| NeXus | nxs | yes | — | not read | C |
-| numpy | npy | yes | — | not read | C |
-| PantaRhei | prz | yes | — | not read | C |
-| Phenom | elid | no | — | not read | C |
-| Protochips | csv | no | — | not read | C |
-| Quadstar | sac, sbc | no | — | not read | C |
-| Renishaw | wdf | no | — | not read | C |
-| Ripple | rpl | yes | — | not read | C |
-| Semper | unf | yes | — | not read | C |
-| Tofwerk | h5 | no | — | not read | C |
-| Topspin | app5 | no | — | not read | C |
-| TriVista | tvf | no | — | not read | C |
-| USID | h5, hdf5 | yes | — | not read | C |
+## The 38 plugins
 
-Totals at 0.3.1 (42 rows: RosettaSciIO's plugins and formats, plus the two py4DSTEM rows): 8 pinned (DigitalMicrograph, Velox EMD, TIFF, MRC, EMPAD,
-py4DSTEM EMD 1.0, py4DSTEM BraggVectors, Merlin), 1 empty (MSA), 33 not read.
+| Plugin | Extensions | Writes | Kit symbol | State | RosettaSciIO test and tolerance | Priority | Note |
+|---|---|---|---|---|---|---|---|
+| DigitalMicrograph | dm3, dm4 | no | `FormatoDM` `DMFile`, `DM4Datacube` | **partial** | test_digitalmicrograph.py: allclose, approx, array_equal, explicit rtol/atol/decimal in places | study | complex, RGB, bool, big-endian refused; metadata mapping partial |
+| EMD | emd, de5 | yes | `FormatoEMD` `VeloxImageSignals`, `VeloxSpectrumImageSignals`, `VeloxSpectrumSignals` (0.9.0) | **partial** | test_emd_ncem.py, test_emd_prismatic.py, test_emd_velox.py: allclose, almost_equal, array_equal, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | Velox: images, spectrum images, single spectra, "DevelopersKit" accepted; compound FFT/DPC, `lazy=True` SI, `load_SI_image_stack`, `Sample.elements` not. NCEM/Berkeley EMD, prismatic and DE5: missing (useful) |
+| TIFF | tif, tiff | yes (some dims) | `FormatoTIFF` `TIFFSignals`, `TIFFAppImage` | **partial** | test_tiff.py: allclose, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | uncompressed strips; FEI, Gatan, ImageJ, plain; tifffile shaped series, Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu, compression, tiles refused by name |
+| MRC | mrc, ali | no | `FormatoMRC` `MRCReader`, `MRCAppImage` | **partial** | test_mrc.py, test_mrcz.py: almost_equal, array_almost_equal, array_equal, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | modes 0,1,2,6,12 and 4 refused (complex); DE movie options (`virtual_images`, `external_images`, `scan_file`), `navigation_shape`, `metadata_file` missing |
+| EMPAD | xml | no | `FormatoEMPAD` `EMPADReader` | **partial** | test_empad.py: allclose | study | `remove_nans` default false only |
+| QuantumDetector | mib | no | `FormatoMIB` `MIBReader` | **present** | test_quantumdetector.py: allclose | study | R64 raw refused as rsciio does; header-less MIB missing (app ask) |
+| MSA | msa, ems, mas, emsa | yes (some dims) | `FormatoMSA` `MSAReader`, `MSAWriter` (0.9.0) | **present** | test_msa.py: allclose, deep_almost_equal (allclose) | study | read and write byte-pinned; deviations in the MSA section |
+| Arina | h5 | no | — | **missing** | test_arina.py:  | useful | Dectris Arina 4D detector HDF5; a 4D-STEM source |
+| Blockfile | blo | yes (some dims) | — | **missing** | test_blockfile.py: allclose, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | useful | NanoMegas ASTAR 4D-STEM blockfile (read and write) |
+| Bruker | bcf, spx | no | — | **missing** | test_bruker.py: allclose, array_equal, deep_almost_equal (allclose), explicit rtol/atol/decimal in places | useful | BCF/SPX EDS spectrum images; a study-adjacent EDS source |
+| Delmic | h5, hdf5 | no | — | **missing** | test_delmic.py: allclose, almost_equal | not planned | cathodoluminescence SEM HDF5 |
+| DENS | dens | no | — | **missing** | test_dens.py: allclose | not planned | heating-holder log (DENSsolutions) |
+| DigitalSurf | sur, pro | yes | — | **missing** | test_digitalsurf.py: allclose, explicit rtol/atol/decimal in places, isclose | not planned | surface profilometry |
+| EDAX | spd, spc | no | — | **missing** | test_edax.py: allclose, equal, explicit rtol/atol/decimal in places | useful | SPD/SPC EDS |
+| Hamamatsu | img | no | — | **missing** | test_hamamatsu.py: allclose, explicit rtol/atol/decimal in places | not planned | streak camera; TIFF branch refused by name |
+| HSPY | hspy, hdf5 | yes | — | **missing** | test_hspy.py: allclose, array_almost_equal, array_equal, deep_almost_equal (allclose), equal | useful | HDF5 layout of HyperSpy; with the sidecar; needs compound/vlen HDF5 support |
+| Image | png, bmp, dib, gif, jpeg, jpe, jpg, msp, pcx, ppm, pbm, pgm, xbm, spi | yes (some dims) | — | **missing** | test_image.py: allclose | useful | PNG/JPEG via Pillow; `FormatoPNG` writes PNG with text chunks only |
+| Impulse | csv | no | — | **missing** | test_impulse.py: allclose, explicit rtol/atol/decimal in places | not planned | in-situ holder CSV (Protochips Impulse) |
+| JEOL | asw, img, map, pts, eds | no | — | **missing** | test_jeol.py: allclose | useful | ASW/PTS/EDS/IMG JEOL TEM and SEM |
+| JobinYvon | xml | no | — | **missing** | test_jobinyvon.py: allclose, explicit rtol/atol/decimal in places, isclose | not planned | Raman XML |
+| MRCZ | mrc, mrcz | yes (some dims) | — | **missing** | test_mrcz.py: almost_equal, array_almost_equal, deep_almost_equal (allclose), equal | not planned | blosc-compressed MRC; no consumer |
+| netCDF | nc | no | — | **missing** | no test file | not planned | netCDF; no consumer |
+| NeXus | nxs | yes | — | **missing** | test_nexus.py: allclose, almost_equal, array_equal, isclose | not planned | NeXus; no consumer |
+| numpy | npy | yes | — | **missing** | test_numpy.py: allclose, array_equal | useful | npy; trivial, needed for interchange |
+| PantaRhei | prz | yes | — | **missing** | test_pantarhei.py: allclose, almost_equal, deep_almost_equal (allclose) | not planned | PantaRhei; no consumer |
+| Phenom | elid | no | — | **missing** | test_phenom.py:  | not planned | Phenom SEM ELID |
+| Protochips | csv | no | — | **missing** | test_protochips.py: allclose, equal, explicit rtol/atol/decimal in places | not planned | in-situ holder CSV logs; would be useful with a time-series consumer |
+| Quadstar | sac, sbc | no | — | **missing** | test_quadstar.py: allclose, explicit rtol/atol/decimal in places | not planned | mass spectrometry |
+| Renishaw | wdf | no | — | **missing** | test_renishaw.py: allclose, explicit rtol/atol/decimal in places, isclose | not planned | Raman WDF |
+| Ripple | rpl | yes (some dims) | — | **missing** | test_ripple.py: allclose, array_equal | not planned | Lispix RPL; legacy |
+| Semper | unf | yes (some dims) | — | **missing** | test_semper.py: allclose, equal | not planned | Semper UNF; legacy |
+| TIA | ser, emi | no | — | **missing** | test_tia.py: allclose, almost_equal, array_equal, equal, explicit rtol/atol/decimal in places | useful | SER/EMI, FEI TIA; older FEI TEM data |
+| Tofwerk | h5 | no | — | **missing** | test_tofwerk.py: allclose, approx, array_equal | not planned | ToF mass spectrometry |
+| Topspin | app5 | no | — | **missing** | test_topspin.py:  | not planned | NMR |
+| TriVista | tvf | no | — | **missing** | test_trivista.py: allclose, explicit rtol/atol/decimal in places, isclose | not planned | Raman TVF |
+| TVIPS | tvips | yes | — | **missing** | test_tvips.py: allclose, explicit rtol/atol/decimal in places | useful | TVIPS 4D-STEM frames (read and write) |
+| USID | h5, hdf5 | yes | — | **missing** | test_usid.py: allclose | not planned | scanning-probe/PFM HDF5 layout |
+| ZSPY | zspy | yes | — | **missing** | test_zspy.py: allclose, array_equal, equal | not planned | Zarr; no Zarr reader in Swift, HSPY covers the use |
+
+## Rows with no RosettaSciIO plugin
+
+| Counterpart | Kit | State |
+|---|---|---|
+| h5py low-level | `HDF5Reader`, `HDF5AppendWriter`, `HDF5SlabReader` | pinned exact to h5py 3.16.0; compound, other enum, array and vlen data, references, external links not supported |
+| py4DSTEM EMD 1.0 4D datacube (py4DSTEM f050d207) | `HDF5Datacube` | pinned for explicit rank-four numeric datasets; nonlinear coordinates refused |
+| py4DSTEM BraggVectors | `BraggVectorsEMD`, `HDF5WriteSession.writeBraggVectors` | read and write pinned; origin maps and `_v_cal` not written |
+| EMD 1.0 bundle writers | `EMDDatacubeWriter`, `writeEMDCalibration`, maps | write pinned (design note archived in the suite folder) |
+| PNG with text chunks | `FormatoPNG` | write pinned; no interlacing, palette |
+| TIFF app image (named option) | `TIFFAppImage` | pinned to macTEM cb6e164 on 149 cases |
+| `rsciio.load` (extension guess then plugin check) | `FormatoLoader.sniff/load` (product `Formato`, 0.9.0) | extension plus first bytes; 4D formats named, not loaded |
+
+## MSA (0.9.0)
+
+`MSAReader` is `parse_msa_string`/`file_reader`; `MSAWriter` is `file_writer`. Pinned on RosettaSciIO's 11 public MSA files and 66 planted
+texts (keywords with unit suffixes, exponents with spaces, bad numbers, repeated TITLE/COMMENT, `TIME` and `DATE` strptime edges, XY
+data, CR/LF/CR-only newlines, Latin-1), read bit for bit (data, axis, mapped metadata in DTBox's tree order, keywords in order); the
+writer's bytes equal RosettaSciIO's for the public files and planted texts read and written back (`Y`, `XY`, `format=None`, own
+separator, with and without the original keywords) and for 19 synthetic signals (TEM and SEM EDS, EELS, CL, long titles, dates, float32
+and integer data, NaN, Latin-1 and non-Latin-1 text, UTF-8). Test tolerance in RosettaSciIO: `assert_allclose` defaults; the kit is exact.
+Registered deviations: (1) a numeric keyword that does not convert stays a string in RosettaSciIO and breaks HyperSpy later; the read is
+refused when it is `XPERCHAN` or `OFFSET`; (2) the writer checks `format` before opening the file (RosettaSciIO truncates first);
+(3) RosettaSciIO's writer rewrites its module-level keyword table for an SEM signal, which changes every later read and write in that
+process; the kit does not; (4) metadata numbers print as Python floats (a Python int metadata value would print without `.0`); an
+axis scale or offset of exactly 1 or 0 on a spectrum read from a file that has no `XPERCHAN` or `OFFSET` prints as the int RosettaSciIO's
+reader defaults to; (5) the header comment names `creator` (default "FormatoKit"), not RosettaSciIO's version; (6) `General.time` is
+never written (RosettaSciIO tests `"General.item"`, a typo, as RosettaSciIO does; kept).
 
 ## Reader options (RosettaSciIO 049e7d70's `file_reader` arguments, for the formats FormatoKit holds)
 
@@ -72,13 +103,15 @@ py4DSTEM EMD 1.0, py4DSTEM BraggVectors, Merlin), 1 empty (MSA), 33 not read.
 | EMD (Velox) | `lazy` | images lazy per frame (L1); spectrum images eager, as RosettaSciIO's `lazy=False` (its `lazy=True` sparse COO path, whose float counts beyond 2^24 differ, is not ported); the moved spectrum-stream reader decodes eagerly into CSR |
 | | `select_type="images"` | `VeloxImageSignals`: stored type and RosettaSciIO's titles (step 3) |
 | | `select_type="spectrum_image"`, `first_frame`, `last_frame`, `sum_frames`, `sum_EDS_detectors`, `rebin_energy`, `SI_dtype` | `VeloxSpectrumImageSignals` with `VeloxSpectrumImageOptions` (step 4): all six, RosettaSciIO's defaults, pinned on 10 public, 12 planted and 6 SpectroKit files over ten option sets. The moved `VeloxEMDReader.readSpectrumImage(frames:)` keeps SpectroKit's rules |
-| | `select_type="single_spectrum"` | no |
+| | `select_type="single_spectrum"` | `VeloxSpectrumSignals` (0.9.0): `Data/Spectrum` as RosettaSciIO returns it (Stack and Energy axes, the HyperSpy mapping, date and time under any time zone), pinned on 15 planted files and the public ones; read only from a `Spectrum` or `SpectrumStream` file as RosettaSciIO does |
 | | `load_SI_image_stack` | the default only (the first frame of an SI file's images) |
 | | `dataset_path`, `stack_group` (NCEM / Berkeley EMD) | no: NCEM EMD is not read |
 | TIFF | `lazy` | always lazy (L1) |
 | | `force_read_resolution`, `multipage_as_list`, `hamamatsu_streak_axis_type` | no: refused branches, or the default |
 | EMPAD | `lazy`, `q_calibration` | always memory-mapped; `EMPADReader(path:qCalibration:)`, XML calibration by default |
 | | `remove_nans` | default false only: preserves all stored Float32 bits |
+| MSA | `lazy`, `encoding` | `MSAReader.read(path:encoding:)`; lazy is not supported by RosettaSciIO either; `encoding` latin-1 (default) or UTF-8 |
+| | writer `format`, `separator`, `encoding` | `MSAWriter.encode/write`, byte-pinned (`Y`, `XY`, own separator, UTF-8) |
 | Writers (EMD NCEM, TIFF) | `file_writer` | no writing yet |
 
 ## Inside the pinned formats: what is not yet equal
@@ -119,12 +152,13 @@ py4DSTEM EMD 1.0, py4DSTEM BraggVectors, Merlin), 1 empty (MSA), 33 not read.
   ScanArea; a stream that is not one uint16 column; a channel at or beyond the bin count (RosettaSciIO writes outside the
   voxel); frames not summed with no frame left or `last_frame` 0; streams of different bin counts read apart; no FrameTime with
   frames not summed; numpy dtype aliases as `StreamEncoding`; EELS in a type outside the ten or with string calibrations. Not
-  ported: `lazy=True`, `select_type=None` / `"single_spectrum"`, `load_SI_image_stack`.
+  ported: `lazy=True`, `load_SI_image_stack`; `select_type=None` is `FormatoLoader.load` (spectra, images, spectrum images in RosettaSciIO's order).
 - **Velox detector order (equal since 0.0.3):** `VeloxMetadata.detectors` follows the written order of the `Detectors` keys,
   as RosettaSciIO's `json.loads`, so the energy axis and the detector-metadata match take the same entry (registration step 1
   A7). Left: a key written twice in one object reads its first value here and its last in Python (no file seen has one).
-- **Velox metadata mapping:** step 1 maps the file name and the beam energy; RosettaSciIO also maps the camera length,
-  magnification, instrument, stage, detector and EDS fields.
+- **Velox metadata mapping:** the image path maps the file name and the beam energy; `VeloxSpectrumSignals` (0.9.0) maps every field
+  RosettaSciIO's `_get_mapping` maps for a single spectrum except `Sample.elements`. The images and spectrum images keep the narrower
+  mapping (camera length, magnification, instrument and stage are in `AcquisitionMetadata.velox`).
 - **Lazy reading:** registered equal to eager (gate L1) for DM (positioned reads) and Velox images (per frame). Not yet
   memory-mapped; no chunked HDF5 reads beyond the moved reader's blocks.
 - **Writing:** none for RosettaSciIO's formats. FormatoKit writes only the EMD 1.0 bundle writers (`EMDDatacubeWriter`, calibration, maps), `FormatoPNG`, `BraggVectorsEMD` (py4DSTEM EMD 1.0), `HDF5RootAttributes` (a sidecar's root string

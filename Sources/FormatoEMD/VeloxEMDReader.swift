@@ -790,6 +790,9 @@ extension SharedHDF5 {
     }
 }
 
+/// RosettaSciIO's `is_EMD_Velox`: the root `Version.format` is "Velox" or "DevelopersKit".
+nonisolated func veloxAcceptsFormat(_ format: String?) -> Bool { format == "Velox" || format == "DevelopersKit" }
+
 /// One open file. A class so the handle closes with it. Every member that calls libhdf5 takes `HDF5Serial` itself (the lock
 /// is recursive, so a short entry point may still wrap several calls in one `run`); a long operation holds nothing between
 /// calls, and the lock is held for one call at most, `readSlab` (one block) being the longest. The handles are plain ids:
@@ -1015,14 +1018,14 @@ public nonisolated struct VeloxEMDReader: Sendable {
     public init(path: String) { self.path = path }
 
     /// True for a Velox EMD that carries a spectrum stream or a spectrum image:
-    /// root `Version` JSON with `format` "Velox", and `Data/SpectrumStream` or
+    /// root `Version` JSON with `format` "Velox" or "DevelopersKit", and `Data/SpectrumStream` or
     /// `Data/SpectrumImage`. False for anything else, including an unreadable file.
     /// This is the question "can this be opened as a spectrum image?" and the app routes `.emd` files on it:
     /// a file that holds only images answers false here and true to `isVeloxFile`.
     public static func isVeloxEMD(path: String) -> Bool {
         HDF5Serial.run {
             guard let file = try? VeloxFile(path: path) else { return false }
-            guard let version = file.readString("/Version"), parseVersion(version)?.format == "Velox" else { return false }
+            guard let version = file.readString("/Version"), veloxAcceptsFormat(parseVersion(version)?.format) else { return false }
             return file.exists("/Data/SpectrumStream") || file.exists("/Data/SpectrumImage")
         }
     }
@@ -1030,8 +1033,8 @@ public nonisolated struct VeloxEMDReader: Sendable {
     /// True for a Velox EMD that holds something this reader can read: a spectrum stream, a spectrum image, or an image group
     /// with both `Data` and `Metadata` under `Data/Image`. Use it where plain images are wanted too (`images()`); use
     /// `isVeloxEMD` to ask for a spectrum image. False for anything else, including an unreadable file.
-    /// DEVIATION: rsciio's `is_EMD_Velox` accepts `format` "Velox" and "DevelopersKit" and looks at no layout;
-    /// this accepts "Velox" only, and only a file with one of the layouts above.
+    /// rsciio's `is_EMD_Velox` accepts `format` "Velox" and "DevelopersKit" (0.9.0: so does this) and looks at no layout;
+    /// this accepts only a file with one of the layouts above.
     public static func isVeloxFile(path: String) -> Bool {
         HDF5Serial.run {
             guard let file = try? openVeloxFile(path: path) else { return false }
@@ -1040,10 +1043,20 @@ public nonisolated struct VeloxEMDReader: Sendable {
         }
     }
 
+    /// RosettaSciIO's `is_EMD_Velox`, nothing more: the root `Version` dataset holds JSON whose `format` is "Velox" or
+    /// "DevelopersKit". True for a file with only single spectra (`isVeloxFile` needs images or a spectrum image); false for
+    /// anything else, including an unreadable file.
+    public static func hasVeloxVersion(path: String) -> Bool {
+        HDF5Serial.run {
+            guard let file = try? VeloxFile(path: path), let version = file.readString("/Version") else { return false }
+            return veloxAcceptsFormat(parseVersion(version)?.format)
+        }
+    }
+
     /// Opens the file and checks the root `Version` for `format` "Velox", throwing `notVeloxFile` when it is not.
     private static func openVeloxFile(path: String) throws -> VeloxFile {
         let file = try VeloxFile(path: path)
-        guard let version = file.readString("/Version"), parseVersion(version)?.format == "Velox" else {
+        guard let version = file.readString("/Version"), veloxAcceptsFormat(parseVersion(version)?.format) else {
             throw VeloxEMDError.notVeloxFile(formatoDisplayFileName(path))
         }
         return file
@@ -1076,7 +1089,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
             try FormatoCancellation.check(cancelled)
             let file = try VeloxFile(path: path)
             guard let versionText = file.readString("/Version"), let version = Self.parseVersion(versionText),
-                  version.format == "Velox" else { throw VeloxEMDError.notVelox(formatoDisplayFileName(path)) }
+                  veloxAcceptsFormat(version.format) else { throw VeloxEMDError.notVelox(formatoDisplayFileName(path)) }
             let streams = file.children(of: "/Data/SpectrumStream").map(StreamRef.init)
             guard !streams.isEmpty else { throw VeloxEMDError.noSpectrumStream }
 
@@ -1600,7 +1613,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
         try HDF5Serial.run {
             let file = try VeloxFile(path: path)
             guard let versionText = file.readString("/Version"), let version = Self.parseVersion(versionText),
-                  version.format == "Velox" else { throw VeloxEMDError.notVelox(formatoDisplayFileName(path)) }
+                  veloxAcceptsFormat(version.format) else { throw VeloxEMDError.notVelox(formatoDisplayFileName(path)) }
             let major = Int(version.version.split(separator: ".").first ?? "") ?? 0
             let group = major >= 11 ? "/SharedProperties/EDSSpectrumQuantificationSettings" : "/Operations/ImageQuantificationOperation"
             guard let entry = file.children(of: group).first, let text = file.readString(group + "/" + entry) else { return nil }

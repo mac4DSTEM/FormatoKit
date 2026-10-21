@@ -52,6 +52,8 @@ let package = Package(
         .library(name: "FormatoEMPAD", targets: ["FormatoEMPAD"]),
         .library(name: "FormatoMIB", targets: ["FormatoMIB"]),
         .library(name: "FormatoMSA", targets: ["FormatoMSA"]),
+        // One import and one `FormatoLoader.load(path:)` for every format that reads as signals (0.9.0).
+        .library(name: "Formato", targets: ["Formato"]),
     ],
     targets: binaryTargets + [
         // The data model every reader returns: arrays, axes, units, metadata with provenance, lazy signals; cancellation.
@@ -70,10 +72,18 @@ let package = Package(
         .target(name: "FormatoEMPAD", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "FormatoMIB", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "FormatoMSA", dependencies: ["FormatoCore"], swiftSettings: settings),
+        .target(name: "Formato", dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoMRC", "FormatoMSA", "FormatoTIFF"],
+                swiftSettings: settings),
         // The first ten minutes: `swift run formato-info <file>` prints every signal of a DM, Velox or TIFF file (public API
         // only). An example, not a product.
-        .executableTarget(name: "formato-info", dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoTIFF"],
+        .executableTarget(name: "formato-info", dependencies: ["FormatoCore", "Formato"],
                           path: "Examples/formato-info", swiftSettings: settings),
+
+        // The kit's side of the FormatoKit-vs-RosettaSciIO benchmark (tools/benchmarks/bench.py). Not a product.
+        .executableTarget(name: "formato-bench",
+                          dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoHDF5", "FormatoMIB", "FormatoMRC", "FormatoMSA",
+                                         "FormatoEMPAD", "FormatoTIFF"],
+                          path: "tools/benchmarks/formato-bench", swiftSettings: settings),
 
         // FormatoCore's own tests: the data model, units, lazy = eager, and the pins against RosettaSciIO.
         .testTarget(name: "FormatoCoreTests", dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD"],
@@ -101,6 +111,8 @@ let package = Package(
         .testTarget(name: "FormatoEMPADTests", dependencies: ["FormatoEMPAD", "FormatoCore"], exclude: ["Fixtures"],
                     swiftSettings: settings),
         .testTarget(name: "FormatoMIBTests", dependencies: ["FormatoMIB", "FormatoCore"], exclude: ["Fixtures"], swiftSettings: settings),
+        .testTarget(name: "FormatoMSATests", dependencies: ["FormatoMSA", "FormatoCore"], exclude: ["Fixtures"], swiftSettings: settings),
+        .testTarget(name: "FormatoLoaderTests", dependencies: ["Formato", "FormatoCore"], swiftSettings: settings),
         .testTarget(name: "FormatoGoldenTests", dependencies: ["FormatoEMD", "FormatoCore"], exclude: ["Fixtures"],
                     swiftSettings: settings),
     ],

@@ -158,13 +158,43 @@ private func product(_ shape: [Int]) throws -> Int {
 private func timestampNanoseconds(_ text: String) throws -> Int64 {
     // Parse fractional seconds as integers, avoiding loss of scan timing at contemporary epoch values.
     let parts = text.replacingOccurrences(of: "Z", with: "").split(separator: ".", omittingEmptySubsequences: false)
-    let formatter = ISO8601DateFormatter()
-    guard parts.count <= 2, let date = formatter.date(from: String(parts[0]) + "Z") else { throw MIBError.malformed("Invalid timestamp") }
-    let seconds = date.timeIntervalSince1970
+    guard parts.count <= 2 else { throw MIBError.malformed("Invalid timestamp") }
+    // `ISO8601DateFormatter` costs tens of microseconds a call (ICU); the plain "YYYY-MM-DDTHH:MM:SS" every Merlin writes is
+    // computed directly (a proleptic Gregorian day count), anything else goes through the formatter as before.
+    let seconds: Double
+    if let direct = mibPlainUTCSeconds(String(parts[0])) {
+        seconds = direct
+    } else {
+        guard let date = ISO8601DateFormatter().date(from: String(parts[0]) + "Z") else { throw MIBError.malformed("Invalid timestamp") }
+        seconds = date.timeIntervalSince1970
+    }
     guard seconds.isFinite, abs(seconds) < 9e9 else { throw MIBError.malformed("Timestamp outside supported range") }
     let fraction = parts.count == 2 ? String(parts[1]) : ""
     guard fraction.count <= 9, fraction.utf8.allSatisfy({ $0 >= 48 && $0 <= 57 }), let ns = Int64(fraction + String(repeating: "0", count: 9 - fraction.count)) else { throw MIBError.malformed("Invalid timestamp fraction") }
     return Int64(seconds) * 1_000_000_000 + ns
+}
+/// Seconds since 1970 of "YYYY-MM-DDTHH:MM:SS" read as UTC, or nil for any other shape or an impossible date or time.
+package func mibPlainUTCSeconds(_ text: String) -> Double? {
+    let b = Array(text.utf8)
+    guard b.count == 19, b[4] == 45, b[7] == 45, b[10] == 84, b[13] == 58, b[16] == 58 else { return nil }
+    func number(_ range: Range<Int>) -> Int? {
+        var v = 0
+        for i in range { guard b[i] >= 48, b[i] <= 57 else { return nil }; v = v * 10 + Int(b[i] - 48) }
+        return v
+    }
+    guard let y = number(0..<4), let mo = number(5..<7), let d = number(8..<10), let h = number(11..<13), let mi = number(14..<16),
+          let s = number(17..<19), y >= 1, (1...12).contains(mo), h < 24, mi < 60, s < 60 else { return nil }
+    let leap = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0
+    let days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    guard d >= 1, d <= days[mo - 1] else { return nil }
+    // days from civil (Howard Hinnant)
+    let yy = mo <= 2 ? y - 1 : y
+    let era = yy / 400
+    let yoe = yy - era * 400
+    let doy = (153 * (mo + (mo > 2 ? -3 : 9)) + 2) / 5 + d - 1
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy
+    let day = era * 146097 + doe - 719468
+    return Double(day * 86400 + h * 3600 + mi * 60 + s)
 }
 private struct MIBHeader {
     let size: Int; let width: Int; let height: Int; let code: String; let layout: String; let timestamp: String; let exposure: Double
@@ -191,12 +221,12 @@ private final class MIBMapping: @unchecked Sendable {
     }
     func header(at offset: Int) throws -> MIBHeader {
         guard offset >= 0, offset <= length, length - offset >= 384 else { throw MIBError.malformed("Truncated header") }
-        let prefix = String(decoding: UnsafeRawBufferPointer(start: pointer + offset, count: 384), as: UTF8.self).components(separatedBy: ",")
+        let prefix = String(decoding: UnsafeRawBufferPointer(start: pointer + offset, count: 384), as: UTF8.self).split(separator: ",", omittingEmptySubsequences: false).map(String.init)
         guard prefix.count >= 8, prefix[0] == "MQ1", let size = Int(prefix[2]),
               anyHeaderSize ? (384...65536).contains(size) : [384,768].contains(size), size <= length - offset else { throw MIBError.malformed("Invalid MIB header") }
         let bytes = UnsafeRawBufferPointer(start: pointer + offset, count: size)
         guard bytes.allSatisfy({ $0 < 128 }) else { throw MIBError.malformed("Non-ASCII header") }
-        let fields = String(decoding: bytes, as: UTF8.self).components(separatedBy: ",")
+        let fields = String(decoding: bytes, as: UTF8.self).split(separator: ",", omittingEmptySubsequences: false).map(String.init)
         guard fields.count >= 11, let w = Int(fields[4]), let h = Int(fields[5]), w > 0, h > 0 else { throw MIBError.malformed("Invalid detector shape") }
         let exposure = fields[fields.count - 3]
         guard exposure.hasSuffix("ns"), let value = Double(exposure.dropLast(2)), value.isFinite, value >= 0 else { throw MIBError.malformed("Invalid exposure") }
@@ -209,36 +239,68 @@ private struct MIBArray: FormatoLazyArray {
     func read(start: [Int], count: [Int]) throws -> FormatoArray {
         try FormatoArray.checkSlab(start: start, count: count, shape: shape); try mapping.checkSize()
         let elements = try FormatoArray.elementCount(count)
-        var bytes = Data(capacity: elements * dataType.byteSize)
+        let outSize = dataType.byteSize, inSize = storedType.byteSize
+        var bytes = Data(count: elements * outSize)
         let framePixels = header.height * header.width
         var checkedFrame = -1
         var failure: MIBError?
-        FormatoArray.forEachRun(start: start, count: count, shape: shape) { element, length in
-            guard failure == nil else { return }
-            for i in element..<(element + length) {
-                var source = i
-                if flip {
-                    let stride = shape.last!, axis = shape[shape.count - 2]
-                    let coordinate = (i / stride) % axis
-                    source += (axis - 1 - 2 * coordinate) * stride
+        var written = 0
+        bytes.withUnsafeMutableBytes { out in
+            FormatoArray.forEachRun(start: start, count: count, shape: shape) { element, length in
+                guard failure == nil else { return }
+                // A run is cut where the source leaves a frame or the flip's row changes, so each piece is contiguous in the file.
+                var i = element
+                var remaining = length
+                while remaining > 0 {
+                    var source = i
+                    var piece = remaining
+                    if flip {
+                        let stride = shape.last!, axis = shape[shape.count - 2]
+                        let coordinate = (i / stride) % axis
+                        source += (axis - 1 - 2 * coordinate) * stride
+                        piece = min(piece, stride - i % stride)
+                    }
+                    let frame = first + source / framePixels, pixel = source % framePixels
+                    piece = min(piece, framePixels - pixel)
+                    if frame != checkedFrame {
+                        do {
+                            let actual = try mapping.header(at: frame * stride)
+                            guard actual.size == header.size, actual.width == header.width, actual.height == header.height, actual.code == header.code else { throw MIBError.malformed("Frame header changed layout") }
+                            checkedFrame = frame
+                        } catch let error as MIBError { failure = error; return } catch { failure = .malformed("Invalid frame"); return }
+                    }
+                    let base = mapping.pointer + frame * stride + header.size + pixel * inSize
+                    let destination = out.baseAddress! + written * outSize
+                    switch (storedType, dataType) {
+                    case (.uint8, .uint8):
+                        destination.copyMemory(from: base, byteCount: piece)
+                    case (.uint16, .uint16):
+                        // Big-endian in the file, little-endian out: swap in 16-bit lanes.
+                        let dst = destination.assumingMemoryBound(to: UInt16.self)
+                        if Int(bitPattern: base) % 2 == 0 {
+                            let src = base.assumingMemoryBound(to: UInt16.self)
+                            for k in 0..<piece { dst[k] = src[k].byteSwapped }
+                        } else {
+                            for k in 0..<piece { dst[k] = UInt16(bigEndian: base.loadUnaligned(fromByteOffset: 2 * k, as: UInt16.self)).littleEndian }
+                        }
+                    case (.uint32, .uint32):
+                        let dst = destination.assumingMemoryBound(to: UInt32.self)
+                        for k in 0..<piece { dst[k] = UInt32(bigEndian: base.loadUnaligned(fromByteOffset: 4 * k, as: UInt32.self)).littleEndian }
+                    default:
+                        for k in 0..<piece {
+                            let pointer = base + k * inSize
+                            let value: UInt32
+                            switch storedType {
+                            case .uint8: value = UInt32(pointer.load(as: UInt8.self))
+                            case .uint16: value = UInt32(UInt16(bigEndian: pointer.loadUnaligned(as: UInt16.self)))
+                            default: value = UInt32(bigEndian: pointer.loadUnaligned(as: UInt32.self))
+                            }
+                            var little = dataType == .float32 ? Float(value).bitPattern.littleEndian : value.littleEndian
+                            withUnsafeBytes(of: &little) { (destination + k * outSize).copyMemory(from: $0.baseAddress!, byteCount: outSize) }
+                        }
+                    }
+                    i += piece; remaining -= piece; written += piece
                 }
-                let frame = first + source / framePixels, pixel = source % framePixels
-                if frame != checkedFrame {
-                    do {
-                        let actual = try mapping.header(at: frame * stride)
-                        guard actual.size == header.size, actual.width == header.width, actual.height == header.height, actual.code == header.code else { throw MIBError.malformed("Frame header changed layout") }
-                        checkedFrame = frame
-                    } catch let error as MIBError { failure = error; return } catch { failure = .malformed("Invalid frame"); return }
-                }
-                let pointer = mapping.pointer + frame * stride + header.size + pixel * storedType.byteSize
-                let value: UInt32
-                switch storedType {
-                case .uint8: value = UInt32(pointer.load(as: UInt8.self))
-                case .uint16: value = UInt32(UInt16(bigEndian: pointer.loadUnaligned(as: UInt16.self)))
-                default: value = UInt32(bigEndian: pointer.loadUnaligned(as: UInt32.self))
-                }
-                var little = dataType == .float32 ? Float(value).bitPattern.littleEndian : value.littleEndian
-                withUnsafeBytes(of: &little) { bytes.append(contentsOf: $0.prefix(dataType.byteSize)) }
             }
         }
         if let failure { throw failure }

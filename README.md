@@ -10,13 +10,14 @@ large, one SwiftPM product per module.
 |---|---|---|
 | `FormatoCore` | the data model: arrays as stored, axes, units (Pint's compact units, ported), metadata with provenance, lazy signals; cancellation; `FormatoPNG` (PNG with text chunks) | reads; `AcquisitionMetadata`, `GuardedXML`, `FormatoFileWrite` |
 | `FormatoDM` | Gatan DigitalMicrograph `.dm3` / `.dm4` (little-endian): every object as a signal, the tag tree, EDS and EELS spectrum images; complex, RGB and bool images are refused by name | reads; `AcquisitionMetadata.dm` |
-| `FormatoEMD` | Thermo Fisher Velox `.emd`: images as signals in their stored type, titled as RosettaSciIO titles them; EDS and EELS spectrum images as signals (`VeloxSpectrumImageSignals`, with `VeloxSpectrumImageOptions` for RosettaSciIO's six options); the sparse spectrum streams. Not read: single spectra, NCEM / Berkeley EMD | reads; `AcquisitionMetadata.velox` |
+| `FormatoEMD` | Thermo Fisher Velox `.emd`: images as signals in their stored type, titled as RosettaSciIO titles them; EDS and EELS spectrum images as signals (`VeloxSpectrumImageSignals`, with `VeloxSpectrumImageOptions` for RosettaSciIO's six options); the sparse spectrum streams; single spectra (`VeloxSpectrumSignals`, 0.9.0, "DevelopersKit" files included). Not read: NCEM / Berkeley EMD | reads; `AcquisitionMetadata.velox` |
 | `FormatoHDF5` | `HDF5Datacube`: lazy rank-four numeric HDF5 / py4DSTEM EMD 1.0 hyperslabs in stored order, calibration axes, scalar metadata and lazy origin maps; the shared loader, lock and quit barrier. HSPY is not read. `BraggVectorsEMD`: write and read py4DSTEM BraggVectors (EMD 1.0 peak grid, shapes, calibration scalars), atomic publish, a hook for the caller's own attributes. EMD bundle writers: `EMDDatacubeWriter`, calibration and result maps on a write session, `HDF5NewFile` (design note, archived in the suite's private folder) | reads and writes, pinned; `HDF5RootAttributes` (sidecar file layer: write, read, publish) |
 | `FormatoTIFF` | the TIFF container with a public tag walker (any private tag as stored); FEI, Gatan DM, ImageJ and plain TIFF as signals. Compression, tiles and the other vendors' branches are refused by name | reads; `AcquisitionMetadata.tiff` (Velox XML, FEI INI, DM stream) |
 | `FormatoMRC` | MRC / MRC2014: `MRCReader` (lazy images and stacks as RosettaSciIO reads them), `MRCAppImage` (the consumer's Float32 reading), acquisition metadata (RosettaSciIO's 128-byte FEI sections, or the FEI1/FEI2 extended-header record) | reads, pinned |
 | `FormatoEMPAD` | EMPAD XML + raw, memory-mapped scan / image series with calibrations; 4D HDF5 later | reads, pinned |
 | `FormatoMIB` | Merlin MIB: mmap U08 (1/6-bit), U16 (12-bit), U32 (24-bit), trigger/timestamp scan shape; named app ScanX/ScanY convention; packed R64 refused | reads, pinned |
-| `FormatoMSA` | EMSA/MAS spectra | empty |
+| `FormatoMSA` | EMSA/MAS spectra (`.msa`, `.ems`, `.mas`, `.emsa`): `MSAReader` and `MSAWriter`, byte-pinned to RosettaSciIO | reads and writes, pinned |
+| `Formato` | the umbrella product: `FormatoLoader.sniff(path:)` (extension plus first bytes) and `FormatoLoader.load(path:)` (the signals of a DM, Velox, TIFF, MRC or MSA file); 4D formats are named, not loaded | 0.9.0 |
 
 `docs/parity.md` is the checklist against RosettaSciIO's formats table and its reader options: what reads, what is pinned,
 what is next.
@@ -156,8 +157,8 @@ matches it. Tags are made by the maintainer; what each tag changes for a consume
 - The three XCFrameworks embedded and signed by Xcode in a Developer ID archive of an app: not tried here (no signing
   identity); checked only through `swift test` and the consumer check.
 - Big-endian DM files: none exists to test; not detected.
-- Velox: `lazy=True` and single spectra are not ported; hostile grids and bin counts were run on FormatoKit only, not
+- Velox: `lazy=True` is not ported; hostile grids and bin counts were run on FormatoKit only, not
   refuted against RosettaSciIO. Registered deviations are listed in `docs/parity.md`.
-- No performance work beyond positioned reads (DM, TIFF) and per-frame reads (Velox); not memory-mapped.
+- Performance: `docs/benchmarks.md`. DM, TIFF and the 2048² Velox image read 1.2 to 2x slower than RosettaSciIO at typical sizes (`docs/open-items.md`); MIB, MSA, MRC, EMPAD, HDF5 4D and the Velox spectrum-image decode are at parity or faster.
 - TIFF: tifffile's shaped, OME and pyramid series, compression and the other vendor branches are refused, not read.
 - Validation: none. Agreement with RosettaSciIO and recovery of planted files are what is claimed.

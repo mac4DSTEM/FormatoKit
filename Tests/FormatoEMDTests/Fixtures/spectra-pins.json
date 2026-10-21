@@ -1,0 +1,4839 @@
+{
+ "cases": {
+  "sp-bad-dispersion": {
+   "zones": {
+    "America/New_York": {
+     "raises": "ValueError"
+    },
+    "Asia/Kolkata": {
+     "raises": "ValueError"
+    },
+    "Europe/Berlin": {
+     "raises": "ValueError"
+    },
+    "UTC": {
+     "raises": "ValueError"
+    }
+   }
+  },
+  "sp-bad-voltage": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-bad-voltage.emd",
+       "time": "10:37:52.250000-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": {
+        "raises": "ValueError"
+       },
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-bad-voltage.emd",
+       "time": "20:07:52.250000",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": {
+        "raises": "ValueError"
+       },
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-bad-voltage.emd",
+       "time": "15:37:52.250000",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": {
+        "raises": "ValueError"
+       },
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-bad-voltage.emd",
+       "time": "14:37:52.250000",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": {
+        "raises": "ValueError"
+       },
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "sp-ceta-stamp": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 4,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "85e79f470a97a11b2ae7640b20f3229cdf00276458c3548cba3be67412206fbd",
+      "dtype": "int8",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-ceta-stamp.emd",
+       "time": "10:37:52.123456-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0
+      },
+      "shape": [
+       4
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 4,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "85e79f470a97a11b2ae7640b20f3229cdf00276458c3548cba3be67412206fbd",
+      "dtype": "int8",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-ceta-stamp.emd",
+       "time": "20:07:52.123456",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0
+      },
+      "shape": [
+       4
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 4,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "85e79f470a97a11b2ae7640b20f3229cdf00276458c3548cba3be67412206fbd",
+      "dtype": "int8",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-ceta-stamp.emd",
+       "time": "15:37:52.123456",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0
+      },
+      "shape": [
+       4
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 4,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "85e79f470a97a11b2ae7640b20f3229cdf00276458c3548cba3be67412206fbd",
+      "dtype": "int8",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-ceta-stamp.emd",
+       "time": "14:37:52.123456",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0
+      },
+      "shape": [
+       4
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "sp-devkit": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-devkit.emd",
+       "time": "10:37:52.250000-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-devkit.emd",
+       "time": "20:07:52.250000",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-devkit.emd",
+       "time": "15:37:52.250000",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-devkit.emd",
+       "time": "14:37:52.250000",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "sp-images-only": {
+   "zones": {
+    "America/New_York": [],
+    "Asia/Kolkata": [],
+    "Europe/Berlin": [],
+    "UTC": []
+   }
+  },
+  "sp-no-acquisition": {
+   "zones": {
+    "America/New_York": {
+     "raises": "KeyError"
+    },
+    "Asia/Kolkata": {
+     "raises": "KeyError"
+    },
+    "Europe/Berlin": {
+     "raises": "KeyError"
+    },
+    "UTC": {
+     "raises": "KeyError"
+    }
+   }
+  },
+  "sp-no-detector0": {
+   "zones": {
+    "America/New_York": {
+     "raises": "KeyError"
+    },
+    "Asia/Kolkata": {
+     "raises": "KeyError"
+    },
+    "Europe/Berlin": {
+     "raises": "KeyError"
+    },
+    "UTC": {
+     "raises": "KeyError"
+    }
+   }
+  },
+  "sp-nodetector": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": 0,
+        "scale": 1,
+        "size": 5,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "c3f655b7b8e49711ea88e45b0d0ccb074a7c8c3fb642a1e9b68e274ff6769105",
+      "dtype": "uint64",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-nodetector.emd",
+       "time": "10:37:52.250000-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       5
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": 0,
+        "scale": 1,
+        "size": 5,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "c3f655b7b8e49711ea88e45b0d0ccb074a7c8c3fb642a1e9b68e274ff6769105",
+      "dtype": "uint64",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-nodetector.emd",
+       "time": "20:07:52.250000",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       5
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": 0,
+        "scale": 1,
+        "size": 5,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "c3f655b7b8e49711ea88e45b0d0ccb074a7c8c3fb642a1e9b68e274ff6769105",
+      "dtype": "uint64",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-nodetector.emd",
+       "time": "15:37:52.250000",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       5
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": 0,
+        "scale": 1,
+        "size": 5,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "c3f655b7b8e49711ea88e45b0d0ccb074a7c8c3fb642a1e9b68e274ff6769105",
+      "dtype": "uint64",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-nodetector.emd",
+       "time": "14:37:52.250000",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       5
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "sp-none": {
+   "zones": {
+    "America/New_York": [],
+    "Asia/Kolkata": [],
+    "Europe/Berlin": [],
+    "UTC": []
+   }
+  },
+  "sp-notvelox": {
+   "zones": {
+    "America/New_York": {
+     "raises": "OSError"
+    },
+    "Asia/Kolkata": {
+     "raises": "OSError"
+    },
+    "Europe/Berlin": {
+     "raises": "OSError"
+    },
+    "UTC": {
+     "raises": "OSError"
+    }
+   }
+  },
+  "sp-rank1": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 8,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "6ba866520d5b41853627ff9a283137bc3a4108297f9acfa3cbd5c5f9b272e09c",
+      "dtype": "uint16",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-rank1.emd",
+       "time": "10:37:52.250000-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       8
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 8,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "6ba866520d5b41853627ff9a283137bc3a4108297f9acfa3cbd5c5f9b272e09c",
+      "dtype": "uint16",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-rank1.emd",
+       "time": "20:07:52.250000",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       8
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 8,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "6ba866520d5b41853627ff9a283137bc3a4108297f9acfa3cbd5c5f9b272e09c",
+      "dtype": "uint16",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-rank1.emd",
+       "time": "15:37:52.250000",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       8
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 8,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "6ba866520d5b41853627ff9a283137bc3a4108297f9acfa3cbd5c5f9b272e09c",
+      "dtype": "uint16",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-rank1.emd",
+       "time": "14:37:52.250000",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       8
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "sp-single": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-single.emd",
+       "time": "10:37:52.250000-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-single.emd",
+       "time": "20:07:52.250000",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-single.emd",
+       "time": "15:37:52.250000",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-single.emd",
+       "time": "14:37:52.250000",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "sp-stack": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Stack",
+        "navigate": true,
+        "offset": 0,
+        "scale": 1,
+        "size": 3
+       },
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 6,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "1b9e59f3f423b4fd7462c354f7dabc7bdc8fb719311e2bf24710401bdc291424",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-stack.emd",
+       "time": "10:37:52.250000-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       3,
+       6
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Stack",
+        "navigate": true,
+        "offset": 0,
+        "scale": 1,
+        "size": 3
+       },
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 6,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "1b9e59f3f423b4fd7462c354f7dabc7bdc8fb719311e2bf24710401bdc291424",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-stack.emd",
+       "time": "20:07:52.250000",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       3,
+       6
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Stack",
+        "navigate": true,
+        "offset": 0,
+        "scale": 1,
+        "size": 3
+       },
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 6,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "1b9e59f3f423b4fd7462c354f7dabc7bdc8fb719311e2bf24710401bdc291424",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-stack.emd",
+       "time": "15:37:52.250000",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       3,
+       6
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Stack",
+        "navigate": true,
+        "offset": 0,
+        "scale": 1,
+        "size": 3
+       },
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 6,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "1b9e59f3f423b4fd7462c354f7dabc7bdc8fb719311e2bf24710401bdc291424",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-stack.emd",
+       "time": "14:37:52.250000",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       3,
+       6
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "sp-stream": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-stream.emd",
+       "time": "10:37:52.250000-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Detector.EDS.azimuth_angle": "90.000",
+       "Acquisition_instrument.TEM.Detector.EDS.elevation_angle": 0.611,
+       "Acquisition_instrument.TEM.Detector.EDS.live_time": "12.345679",
+       "Acquisition_instrument.TEM.Detector.EDS.number_of_frames": 20,
+       "Acquisition_instrument.TEM.Detector.EDS.real_time": "13.500000",
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT",
+       "General.title": "SuperXG11",
+       "Signal.Noise_properties.Variance_linear_model.gain_factor": 5.0,
+       "Signal.Noise_properties.Variance_linear_model.gain_offset": -480.0
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-stream.emd",
+       "time": "20:07:52.250000",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Detector.EDS.azimuth_angle": "90.000",
+       "Acquisition_instrument.TEM.Detector.EDS.elevation_angle": 0.611,
+       "Acquisition_instrument.TEM.Detector.EDS.live_time": "12.345679",
+       "Acquisition_instrument.TEM.Detector.EDS.number_of_frames": 20,
+       "Acquisition_instrument.TEM.Detector.EDS.real_time": "13.500000",
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST",
+       "General.title": "SuperXG11",
+       "Signal.Noise_properties.Variance_linear_model.gain_factor": 5.0,
+       "Signal.Noise_properties.Variance_linear_model.gain_offset": -480.0
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-stream.emd",
+       "time": "15:37:52.250000",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Detector.EDS.azimuth_angle": "90.000",
+       "Acquisition_instrument.TEM.Detector.EDS.elevation_angle": 0.611,
+       "Acquisition_instrument.TEM.Detector.EDS.live_time": "12.345679",
+       "Acquisition_instrument.TEM.Detector.EDS.number_of_frames": 20,
+       "Acquisition_instrument.TEM.Detector.EDS.real_time": "13.500000",
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST",
+       "General.title": "SuperXG11",
+       "Signal.Noise_properties.Variance_linear_model.gain_factor": 5.0,
+       "Signal.Noise_properties.Variance_linear_model.gain_offset": -480.0
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 12,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "4f27f6c0af79c54ba6c880ad9e0995ffd3dc5b262bc69fe1b430fc5cec86bbd3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-stream.emd",
+       "time": "14:37:52.250000",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Detector.EDS.azimuth_angle": "90.000",
+       "Acquisition_instrument.TEM.Detector.EDS.elevation_angle": 0.611,
+       "Acquisition_instrument.TEM.Detector.EDS.live_time": "12.345679",
+       "Acquisition_instrument.TEM.Detector.EDS.number_of_frames": 20,
+       "Acquisition_instrument.TEM.Detector.EDS.real_time": "13.500000",
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC",
+       "General.title": "SuperXG11",
+       "Signal.Noise_properties.Variance_linear_model.gain_factor": 5.0,
+       "Signal.Noise_properties.Variance_linear_model.gain_offset": -480.0
+      },
+      "shape": [
+       12
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "sp-two": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 5,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "dbce3c08df700bd09804bcd3356a541fba66e3a37ca35e22ccbd9a55f196455b",
+      "dtype": "int16",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-two.emd",
+       "time": "10:37:52.250000-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       5
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.0965,
+        "scale": 0.01,
+        "size": 6,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5f28f2e63364cc8f287b9fa1f260e0893c0c2005021acfc2540347c03e7e752b",
+      "dtype": "float32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-two.emd",
+       "time": "10:37:52.250000-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       6
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 5,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "dbce3c08df700bd09804bcd3356a541fba66e3a37ca35e22ccbd9a55f196455b",
+      "dtype": "int16",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-two.emd",
+       "time": "20:07:52.250000",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       5
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.0965,
+        "scale": 0.01,
+        "size": 6,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5f28f2e63364cc8f287b9fa1f260e0893c0c2005021acfc2540347c03e7e752b",
+      "dtype": "float32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-two.emd",
+       "time": "20:07:52.250000",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       6
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 5,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "dbce3c08df700bd09804bcd3356a541fba66e3a37ca35e22ccbd9a55f196455b",
+      "dtype": "int16",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-two.emd",
+       "time": "15:37:52.250000",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       5
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.0965,
+        "scale": 0.01,
+        "size": 6,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5f28f2e63364cc8f287b9fa1f260e0893c0c2005021acfc2540347c03e7e752b",
+      "dtype": "float32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-two.emd",
+       "time": "15:37:52.250000",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       6
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.48,
+        "scale": 0.005,
+        "size": 5,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "dbce3c08df700bd09804bcd3356a541fba66e3a37ca35e22ccbd9a55f196455b",
+      "dtype": "int16",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-two.emd",
+       "time": "14:37:52.250000",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       5
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.0965,
+        "scale": 0.01,
+        "size": 6,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5f28f2e63364cc8f287b9fa1f260e0893c0c2005021acfc2540347c03e7e752b",
+      "dtype": "float32",
+      "general": {
+       "date": "2017-03-21",
+       "original_filename": "sp-two.emd",
+       "time": "14:37:52.250000",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -11.459,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       6
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  }
+ },
+ "public": {
+  "fei_emd_files.zip/fei_SI_EDS-HAADF-4detectors_2frames.emd": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "bdc26940af68a9284504dc6edd49ab8f7f6fcac1b82e79eaa5e208278c0be35a",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "18:12:15-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "e9f29313a9eaaf3d37bcc809d8b9d4a32e3bb614073af2fd9042544363ebf8d0",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "18:12:15-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "6d2993cf4d182c26fe6c7f860d2fdd81aa2158763c4baeed0aca452ab72cb2ed",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "18:12:15-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "19e0224d8d61aa5d833a3128fb3341315f04cb063100b2536337ed25ca8abb03",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "18:12:15-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "bdc26940af68a9284504dc6edd49ab8f7f6fcac1b82e79eaa5e208278c0be35a",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-16",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "03:42:15",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "e9f29313a9eaaf3d37bcc809d8b9d4a32e3bb614073af2fd9042544363ebf8d0",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-16",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "03:42:15",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "6d2993cf4d182c26fe6c7f860d2fdd81aa2158763c4baeed0aca452ab72cb2ed",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-16",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "03:42:15",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "19e0224d8d61aa5d833a3128fb3341315f04cb063100b2536337ed25ca8abb03",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-16",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "03:42:15",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "bdc26940af68a9284504dc6edd49ab8f7f6fcac1b82e79eaa5e208278c0be35a",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "23:12:15",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "e9f29313a9eaaf3d37bcc809d8b9d4a32e3bb614073af2fd9042544363ebf8d0",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "23:12:15",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "6d2993cf4d182c26fe6c7f860d2fdd81aa2158763c4baeed0aca452ab72cb2ed",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "23:12:15",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "19e0224d8d61aa5d833a3128fb3341315f04cb063100b2536337ed25ca8abb03",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "23:12:15",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "bdc26940af68a9284504dc6edd49ab8f7f6fcac1b82e79eaa5e208278c0be35a",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "22:12:15",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "e9f29313a9eaaf3d37bcc809d8b9d4a32e3bb614073af2fd9042544363ebf8d0",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "22:12:15",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "6d2993cf4d182c26fe6c7f860d2fdd81aa2158763c4baeed0aca452ab72cb2ed",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "22:12:15",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.005,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "19e0224d8d61aa5d833a3128fb3341315f04cb063100b2536337ed25ca8abb03",
+      "dtype": "uint32",
+      "general": {
+       "date": "2018-03-15",
+       "original_filename": "fei_SI_EDS-HAADF-4detectors_2frames.emd",
+       "time": "22:12:15",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.007,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -3e-06,
+       "Acquisition_instrument.TEM.Stage.y": -1.5e-05,
+       "Acquisition_instrument.TEM.Stage.z": -0.000198,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 260.0,
+       "Acquisition_instrument.TEM.magnification": 1300000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "fei_emd_files.zip/fei_SI_SuperX-HAADF_10frames_10x50.emd": {
+   "zones": {
+    "America/New_York": [],
+    "Asia/Kolkata": [],
+    "Europe/Berlin": [],
+    "UTC": []
+   }
+  },
+  "fei_emd_files.zip/fei_emd_image.emd": {
+   "zones": {
+    "America/New_York": [],
+    "Asia/Kolkata": [],
+    "Europe/Berlin": [],
+    "UTC": []
+   }
+  },
+  "fei_emd_files.zip/fei_emd_si.emd": {
+   "zones": {
+    "America/New_York": [],
+    "Asia/Kolkata": [],
+    "Europe/Berlin": [],
+    "UTC": []
+   }
+  },
+  "fei_emd_files.zip/fei_emd_spectrum.emd": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5d7f98b7e161fc8e6ace6b41dea554507200ed9783fad45b2c5a00d5b066d2cf",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-06",
+       "original_filename": "fei_emd_spectrum.emd",
+       "time": "04:57:05-05:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5d7f98b7e161fc8e6ace6b41dea554507200ed9783fad45b2c5a00d5b066d2cf",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-06",
+       "original_filename": "fei_emd_spectrum.emd",
+       "time": "15:27:05",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5d7f98b7e161fc8e6ace6b41dea554507200ed9783fad45b2c5a00d5b066d2cf",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-06",
+       "original_filename": "fei_emd_spectrum.emd",
+       "time": "10:57:05",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -1.0,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5d7f98b7e161fc8e6ace6b41dea554507200ed9783fad45b2c5a00d5b066d2cf",
+      "dtype": "uint32",
+      "general": {
+       "date": "2017-03-06",
+       "original_filename": "fei_emd_spectrum.emd",
+       "time": "09:57:05",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.006,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.0,
+       "Acquisition_instrument.TEM.Stage.x": -9e-06,
+       "Acquisition_instrument.TEM.Stage.y": 0.000144,
+       "Acquisition_instrument.TEM.Stage.z": 2.9e-05,
+       "Acquisition_instrument.TEM.beam_energy": 200.0,
+       "Acquisition_instrument.TEM.camera_length": 98.0,
+       "Acquisition_instrument.TEM.magnification": 40000.0,
+       "Acquisition_instrument.TEM.microscope": "Talos",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "velox_EELS_EDS.zip/example_velox_EELS_EDS.emd": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ca46911c8ae99f3c2b6df996aefdec407114cfbae5a17775c37f16314fc522c3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "06:01:03-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "b8419c6a0189c1bbf9b129b421175f59e73d145850e6236390f6802028d11e07",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "06:01:03-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ffe45b6a7883f633a9b150c6905b23957b3250f5bec1a75140c9a092290835c1",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "06:01:03-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "144abe19a489994587d7b1d6507ce854342c1d59782787b16661d8d20e4156c5",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "06:01:03-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "a40051907ac54e66aad687d4ca5ccee6f162aa6604558c8a30b5ec053e3f41e8",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "06:01:03-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ead124853cb6199fbf56b490da9315a0196c766ddf10de3bf7e5e9fe8e0dd04e",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "06:01:03-04:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ca46911c8ae99f3c2b6df996aefdec407114cfbae5a17775c37f16314fc522c3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "15:31:03",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "b8419c6a0189c1bbf9b129b421175f59e73d145850e6236390f6802028d11e07",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "15:31:03",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ffe45b6a7883f633a9b150c6905b23957b3250f5bec1a75140c9a092290835c1",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "15:31:03",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "144abe19a489994587d7b1d6507ce854342c1d59782787b16661d8d20e4156c5",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "15:31:03",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "a40051907ac54e66aad687d4ca5ccee6f162aa6604558c8a30b5ec053e3f41e8",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "15:31:03",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ead124853cb6199fbf56b490da9315a0196c766ddf10de3bf7e5e9fe8e0dd04e",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "15:31:03",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ca46911c8ae99f3c2b6df996aefdec407114cfbae5a17775c37f16314fc522c3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "12:01:03",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "b8419c6a0189c1bbf9b129b421175f59e73d145850e6236390f6802028d11e07",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "12:01:03",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ffe45b6a7883f633a9b150c6905b23957b3250f5bec1a75140c9a092290835c1",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "12:01:03",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "144abe19a489994587d7b1d6507ce854342c1d59782787b16661d8d20e4156c5",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "12:01:03",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "a40051907ac54e66aad687d4ca5ccee6f162aa6604558c8a30b5ec053e3f41e8",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "12:01:03",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ead124853cb6199fbf56b490da9315a0196c766ddf10de3bf7e5e9fe8e0dd04e",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "12:01:03",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ca46911c8ae99f3c2b6df996aefdec407114cfbae5a17775c37f16314fc522c3",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "10:01:03",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "b8419c6a0189c1bbf9b129b421175f59e73d145850e6236390f6802028d11e07",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "10:01:03",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ffe45b6a7883f633a9b150c6905b23957b3250f5bec1a75140c9a092290835c1",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "10:01:03",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "144abe19a489994587d7b1d6507ce854342c1d59782787b16661d8d20e4156c5",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "10:01:03",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "a40051907ac54e66aad687d4ca5ccee6f162aa6604558c8a30b5ec053e3f41e8",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "10:01:03",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.2,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "ead124853cb6199fbf56b490da9315a0196c766ddf10de3bf7e5e9fe8e0dd04e",
+      "dtype": "uint32",
+      "general": {
+       "date": "2026-06-11",
+       "original_filename": "example_velox_EELS_EDS.emd",
+       "time": "10:01:03",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": -0.0,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": -0.001,
+       "Acquisition_instrument.TEM.Stage.x": 0.0,
+       "Acquisition_instrument.TEM.Stage.y": 0.0,
+       "Acquisition_instrument.TEM.Stage.z": 0.0,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 434.91200000000003,
+       "Acquisition_instrument.TEM.magnification": 5000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "velox_emd_version11.zip/Test SI 16x16 215 kx.emd": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5a2657d2c6a01c0990bac10f6d3dc875d1110641ab810d2254a9f280b8708759",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "01:58:04-05:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "7f141d5ad33daa5263045308b5e0b24217b902ab9d73a841dbf5d5342aed6268",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "01:58:04-05:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "781df0e352f456d309ba2254b38abd3bdc591f8380e67aa0dc69fa4e66e08d45",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "01:58:04-05:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.007,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "f39c46561ce81117c8aaa2dc451aa5090380e374f1247132ff3959fab6397cd4",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "01:58:04-05:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5a2657d2c6a01c0990bac10f6d3dc875d1110641ab810d2254a9f280b8708759",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "12:28:04",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "7f141d5ad33daa5263045308b5e0b24217b902ab9d73a841dbf5d5342aed6268",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "12:28:04",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "781df0e352f456d309ba2254b38abd3bdc591f8380e67aa0dc69fa4e66e08d45",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "12:28:04",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.007,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "f39c46561ce81117c8aaa2dc451aa5090380e374f1247132ff3959fab6397cd4",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "12:28:04",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5a2657d2c6a01c0990bac10f6d3dc875d1110641ab810d2254a9f280b8708759",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "07:58:04",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "7f141d5ad33daa5263045308b5e0b24217b902ab9d73a841dbf5d5342aed6268",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "07:58:04",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "781df0e352f456d309ba2254b38abd3bdc591f8380e67aa0dc69fa4e66e08d45",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "07:58:04",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.007,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "f39c46561ce81117c8aaa2dc451aa5090380e374f1247132ff3959fab6397cd4",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "07:58:04",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5a2657d2c6a01c0990bac10f6d3dc875d1110641ab810d2254a9f280b8708759",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "06:58:04",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "7f141d5ad33daa5263045308b5e0b24217b902ab9d73a841dbf5d5342aed6268",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "06:58:04",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "781df0e352f456d309ba2254b38abd3bdc591f8380e67aa0dc69fa4e66e08d45",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "06:58:04",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.007,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "f39c46561ce81117c8aaa2dc451aa5090380e374f1247132ff3959fab6397cd4",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 215 kx.emd",
+       "time": "06:58:04",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  },
+  "velox_emd_version11.zip/Test SI 16x16 ReducedData 215 kx.emd": {
+   "zones": {
+    "America/New_York": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5a2657d2c6a01c0990bac10f6d3dc875d1110641ab810d2254a9f280b8708759",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "01:58:04-05:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "7f141d5ad33daa5263045308b5e0b24217b902ab9d73a841dbf5d5342aed6268",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "01:58:04-05:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "781df0e352f456d309ba2254b38abd3bdc591f8380e67aa0dc69fa4e66e08d45",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "01:58:04-05:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.007,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "f39c46561ce81117c8aaa2dc451aa5090380e374f1247132ff3959fab6397cd4",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "01:58:04-05:00",
+       "time_zone": "EDT",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "EDT"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Asia/Kolkata": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5a2657d2c6a01c0990bac10f6d3dc875d1110641ab810d2254a9f280b8708759",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "12:28:04",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "7f141d5ad33daa5263045308b5e0b24217b902ab9d73a841dbf5d5342aed6268",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "12:28:04",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "781df0e352f456d309ba2254b38abd3bdc591f8380e67aa0dc69fa4e66e08d45",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "12:28:04",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.007,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "f39c46561ce81117c8aaa2dc451aa5090380e374f1247132ff3959fab6397cd4",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "12:28:04",
+       "time_zone": "IST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "IST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "Europe/Berlin": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5a2657d2c6a01c0990bac10f6d3dc875d1110641ab810d2254a9f280b8708759",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "07:58:04",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "7f141d5ad33daa5263045308b5e0b24217b902ab9d73a841dbf5d5342aed6268",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "07:58:04",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "781df0e352f456d309ba2254b38abd3bdc591f8380e67aa0dc69fa4e66e08d45",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "07:58:04",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.007,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "f39c46561ce81117c8aaa2dc451aa5090380e374f1247132ff3959fab6397cd4",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "07:58:04",
+       "time_zone": "CEST",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "CEST"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ],
+    "UTC": [
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "5a2657d2c6a01c0990bac10f6d3dc875d1110641ab810d2254a9f280b8708759",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "06:58:04",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "7f141d5ad33daa5263045308b5e0b24217b902ab9d73a841dbf5d5342aed6268",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "06:58:04",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "781df0e352f456d309ba2254b38abd3bdc591f8380e67aa0dc69fa4e66e08d45",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "06:58:04",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.007,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     },
+     {
+      "axes": [
+       {
+        "name": "Energy",
+        "navigate": false,
+        "offset": -0.25,
+        "scale": 0.01,
+        "size": 4096,
+        "units": "keV"
+       }
+      ],
+      "data_sha256": "f39c46561ce81117c8aaa2dc451aa5090380e374f1247132ff3959fab6397cd4",
+      "dtype": "uint32",
+      "general": {
+       "date": "2024-02-29",
+       "original_filename": "Test SI 16x16 ReducedData 215 kx.emd",
+       "time": "06:58:04",
+       "time_zone": "UTC",
+       "title": "EDS"
+      },
+      "mapped": {
+       "Acquisition_instrument.TEM.Stage.tilt_alpha": 0.005,
+       "Acquisition_instrument.TEM.Stage.tilt_beta": 0.006,
+       "Acquisition_instrument.TEM.Stage.x": -0.000416,
+       "Acquisition_instrument.TEM.Stage.y": 0.0004,
+       "Acquisition_instrument.TEM.Stage.z": -0.000144,
+       "Acquisition_instrument.TEM.beam_energy": 300.0,
+       "Acquisition_instrument.TEM.camera_length": 115.9,
+       "Acquisition_instrument.TEM.magnification": 225000.0,
+       "Acquisition_instrument.TEM.microscope": "Titan",
+       "General.time_zone": "UTC"
+      },
+      "shape": [
+       4096
+      ],
+      "signal": {
+       "signal_type": "EDS_TEM"
+      }
+     }
+    ]
+   }
+  }
+ },
+ "rsciio": "0.14.1.dev96+g049e7d707"
+}

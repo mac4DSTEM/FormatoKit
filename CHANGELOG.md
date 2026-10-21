@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.9.0 (2026-10-21)
+
+The 0.9.0 audit against RosettaSciIO: the parity table rewritten from the 38 plugins on disk (`docs/parity.md`), a benchmark against RosettaSciIO (`docs/benchmarks.md`), and the study-path gaps filled. Bytes read by existing readers are unchanged.
+
+- Velox single spectra: `VeloxSpectrumSignals(path:timeZone:policy:)` returns `Data/Spectrum` as RosettaSciIO's `select_type="single_spectrum"` does: the stored counts transposed, a `Stack` axis for more than one spectrum, the `Energy` axis in keV from the detector's dispersion and offset, title "EDS", signal type `EDS_TEM`, the file name, date, time and time zone, and the metadata mapping (beam energy, camera length, magnification, microscope, stage, number of frames, detector fields). Pinned on 15 planted files under four time zones and on RosettaSciIO's public Velox files. Not mapped: `Sample.elements`.
+- Velox files whose `Version.format` is "DevelopersKit" are accepted everywhere (RosettaSciIO's `is_EMD_Velox`); `VeloxEMDReader.hasVeloxVersion(path:)` is that check alone, true for a file with only single spectra.
+- `FormatoMSA` is no longer empty: `MSAReader` and `MSAWriter` (`.msa`, `.ems`, `.mas`, `.emsa`), read and written byte for byte as RosettaSciIO's `msa` plugin (11 public files, 66 planted texts, 19 synthetic signals; deviations in `docs/parity.md`).
+- New product `Formato`: `FormatoLoader.sniff(path:)` (extension confirmed by the first bytes) and `FormatoLoader.load(path:)` (DM objects, Velox spectra then images then spectrum images, TIFF series, MRC, MSA); EMPAD, MIB and HDF5 4D files throw `FormatoLoadError.useDedicatedReader`. `formato-info` now uses it.
+- Speed: reading a Merlin MIB was 934 ms for 1024 frames of 256x256 (RosettaSciIO 29 ms): an `ISO8601DateFormatter` was built for each of the first 10 000 frame headers, and every pixel was appended to a `Data` one at a time. Now 35 ms (header timestamps read directly, pinned to the formatter over a 2000-2100 sweep; pixel runs copied and byte-swapped in place). MSA read of 65 536 points: 111 ms to 17 ms. The header split no longer goes through `components(separatedBy:)`.
+- `tools/benchmarks/` (driver and the kit's `formato-bench`), `tools/velox-spectrum/pins.py`, `tools/msa/pins.py`.
+- Not done, with reasons (`docs/open-items.md`): Velox live/real times and GMS EDS geometry (need Paul's files), the app asks that each need their own pins, and the slower-than-RosettaSciIO read path of DM, TIFF and 2048² Velox images (1.2 to 2x; cause not yet isolated).
+
+**Migration.** Additive. `VeloxEMDReader.isVeloxFile`/`isVeloxEMD` now answer true for "DevelopersKit" files, which were refused before: an app that routes `.emd` files on them will open those files. Nothing else changes for a consumer. SpectroKit: a bump is not required by this release.
+
 ## 0.8.0 (2026-10-21)
 
 The I/O the apps still carried moves into the kit. Bytes are unchanged everywhere; the new paths are pinned to `HDF5Reader` and to the stand-alone BraggVectors writer.

@@ -1,4 +1,4 @@
-// formato-info: the first ten minutes with FormatoKit. Opens a DigitalMicrograph (.dm3, .dm4), Velox (.emd) or TIFF file
+// formato-info: the first ten minutes with FormatoKit. Opens a DigitalMicrograph (.dm3, .dm4), Velox (.emd), TIFF, MRC or MSA file
 // and prints every signal it holds as RosettaSciIO would return it (for Velox: its images, then its spectrum images with
 // RosettaSciIO's defaults, `VeloxSpectrumImageSignals`): title, signal type, stored type, shape, the axes with
 // their units, the metadata with where each value came from, and one value read lazily. Public API only.
@@ -7,34 +7,12 @@
 //
 import Foundation
 import FormatoCore
-import FormatoDM
-import FormatoEMD
-import FormatoTIFF
+import Formato
 
 /// Every signal of the file, lazy (nothing is read until a slab is asked for); a signal FormatoKit refuses is its error.
+/// `FormatoLoader` finds the format (extension and first bytes) and returns the module's signals.
 func signals(of path: String) throws -> [Result<FormatoLazySignal, Error>] {
-    switch URL(fileURLWithPath: path).pathExtension.lowercased() {
-    case "dm3", "dm4":
-        let dm = try DMFile(path: path)
-        return dm.objects.map { object in Result { try dm.signal(index: object.index) } }
-    case "emd":
-        let velox = try VeloxImageSignals(path: path)
-        let images = velox.images.map { image in Result { try velox.signal(image) } }
-        // The spectrum images are eager (as RosettaSciIO's lazy=False); wrapped here so every signal prints the same way.
-        let spectra: [Result<FormatoLazySignal, Error>]
-        do {
-            spectra = try VeloxSpectrumImageSignals(path: path).signals.map { s in
-                .success(FormatoLazySignal(title: s.title, signalType: s.signalType, axes: s.axes, metadata: s.metadata,
-                                           array: FormatoInMemoryArray(s.data)))
-            }
-        } catch { spectra = [.failure(error)] }
-        return images + spectra
-    case "tif", "tiff":
-        let tiff = try TIFFSignals(path: path)
-        return tiff.series.indices.map { n in Result { try tiff.signal(series: n) } }
-    default:
-        throw FormatoReadError.unsupported("\(path): not a .dm3, .dm4, .emd, .tif or .tiff file")
-    }
+    try FormatoLoader.load(path: path)
 }
 
 func describe(_ s: FormatoLazySignal, _ n: Int) throws {
@@ -52,7 +30,7 @@ func describe(_ s: FormatoLazySignal, _ n: Int) throws {
 }
 
 let paths = CommandLine.arguments.dropFirst()
-if paths.isEmpty { print("usage: formato-info <file.dm4 | file.emd | file.tif> ..."); exit(2) }
+if paths.isEmpty { print("usage: formato-info <file.dm4 | file.emd | file.tif | file.mrc | file.msa> ..."); exit(2) }
 var failed = false
 for path in paths {
     print("== \(path)")

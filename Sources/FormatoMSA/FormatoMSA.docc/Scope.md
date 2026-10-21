@@ -1,11 +1,13 @@
 # Scope
 
-FormatoMSA is empty until its format is registered. This article says what it will read.
+## What is read and written
 
-## What it will read
+The keyword header (`#KEY: value`, one `#KEY-unit` suffix per keyword), `Y` and `XY` data with one or two columns, the date and time
+as RosettaSciIO parses them, the signal type (`ELS` to `EELS`, `CLS` to `CL`, `EDS` to `EDS_TEM` above 30 kV else `EDS_SEM`), and the
+quantity. Text is Latin-1 by default, UTF-8 on request. Where RosettaSciIO raises, the read throws `FormatoReadError.unsupported`.
 
-The EMSA/MAS spectral data files, `.msa` and `.ems`, for EDS and EELS spectra. They are read and written as RosettaSciIO's `msa` plugin does: the keyword header, the XY or Y data, and the units. The keywords map into the metadata of ``FormatoCore``, each with its provenance.
+## Where it differs
 
-## Status
-
-The module has no public types yet. Its format is registered before any code is written, and its public types are added then. The checks will be against RosettaSciIO's MSA test files.
+A numeric keyword that does not convert stays a string in RosettaSciIO; here a bad `XPERCHAN` or `OFFSET` refuses the read. The writer
+checks its `format` before it opens the file, does not rewrite a shared keyword table for an SEM signal, and names its own `creator` in the
+header comment. The full list is in `docs/parity.md`.

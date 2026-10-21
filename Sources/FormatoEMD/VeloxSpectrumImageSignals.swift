@@ -98,7 +98,7 @@ private nonisolated struct VeloxSpectrumImageRead {
         try FormatoCancellation.check(cancelled)
         guard let versionText = file.readString("/Version"),
               let version = (try? JSONSerialization.jsonObject(with: Data(versionText.utf8))) as? [String: Any],
-              version["format"] as? String == "Velox" else { throw VeloxEMDError.notVeloxFile(fileName) }
+              veloxAcceptsFormat(version["format"] as? String) else { throw VeloxEMDError.notVeloxFile(fileName) }
         // `_check_im_type` on `f.get("Data")`: no Data group raises.
         guard file.exists("/Data"), !isDataset("/Data") else { throw raises("no Data group") }
         let hasImage = file.exists("/Data/Image"), hasSpectrumImage = file.exists("/Data/SpectrumImage")

@@ -125,3 +125,18 @@ private func directory() throws -> URL {
     #expect(try app.signal.load().data == plain.signal.load().data)
     #expect(throws: MIBError.self) { try MIBReader(path: path.path) }
 }
+
+/// The direct "YYYY-MM-DDTHH:MM:SS" reading (0.9.0) agrees with `ISO8601DateFormatter` over a sweep of instants, leap days included.
+@Test func mibPlainTimestampEqualsTheFormatter() throws {
+    let formatter = ISO8601DateFormatter()
+    var t = 951_782_400.0   // 2000-02-29
+    var checked = 0
+    while t < 4_102_444_800 {   // to 2100-01-01
+        let stamp = formatter.string(from: Date(timeIntervalSince1970: t))
+        #expect(mibPlainUTCSeconds(String(stamp.dropLast())) == t, "\(stamp)")
+        #expect(formatter.date(from: stamp)?.timeIntervalSince1970 == t)
+        t += 86_400 * 37 + 3_671
+        checked += 1
+    }
+    #expect(checked > 600)
+}
