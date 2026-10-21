@@ -11,6 +11,7 @@
 import Testing
 import Foundation
 import FormatoEMD
+import FormatoKitTestSupport
 
 // MARK: - The dump (inherited, 0.3.0, verbatim)
 
@@ -122,13 +123,12 @@ enum GoldenDump {
 // MARK: - The scenario: the reader part of the inherited "velox-tiny"
 
 enum FormatoGolden {
-    static let fixtures = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures")
+    static let fixtures = FixtureDirs.fixtures(of: "FormatoGoldenTests")
 
     /// The inherited 0.3.0 `add("velox-tiny")` up to (not including) `SpectrumImageOpener.openVelox`, verbatim.
     static func veloxTinyReader() throws -> String {
         var out: [String] = ["# SpectroGolden velox-tiny"]
-        let path = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
-            .appendingPathComponent("FormatoEMDTests/Fixtures/velox-tiny.emd").path
+        let path = FixtureDirs.fixtures(of: "FormatoEMDTests").appendingPathComponent("velox-tiny.emd").path
         let v = try VeloxEMDReader(path: path).readSpectrumImage()
         GoldenDump.dump("readSpectrumImage", v, into: &out)
         let s = v.eventStore

@@ -104,7 +104,7 @@ let package = Package(
                           path: "Tests/FormatoHDF5ExitProbe", swiftSettings: settings),
         // The Velox reader's part of the inherited golden baseline, byte for byte (registration §1.3).
         // Step 2 (docs/registration-step-2.md): the TIFF container and TIFF files as signals, against RosettaSciIO and tifffile.
-        .testTarget(name: "FormatoTIFFTests", dependencies: ["FormatoTIFF", "FormatoDM", "FormatoCore", "FormatoAcquisitionPins"], exclude: ["Fixtures"],
+        .testTarget(name: "FormatoTIFFTests", dependencies: ["FormatoTIFF", "FormatoDM", "FormatoCore", "FormatoAcquisitionPins", "FormatoKitTestSupport"], exclude: ["Fixtures"],
                     swiftSettings: settings),
         .testTarget(name: "FormatoMRCTests", dependencies: ["FormatoMRC", "FormatoCore", "FormatoAcquisitionPins"], exclude: ["Fixtures"],
                     swiftSettings: settings),
@@ -113,7 +113,11 @@ let package = Package(
         .testTarget(name: "FormatoMIBTests", dependencies: ["FormatoMIB", "FormatoCore"], exclude: ["Fixtures"], swiftSettings: settings),
         .testTarget(name: "FormatoMSATests", dependencies: ["FormatoMSA", "FormatoCore"], exclude: ["Fixtures"], swiftSettings: settings),
         .testTarget(name: "FormatoLoaderTests", dependencies: ["Formato", "FormatoCore"], swiftSettings: settings),
-        .testTarget(name: "FormatoGoldenTests", dependencies: ["FormatoEMD", "FormatoCore"], exclude: ["Fixtures"],
+        // The comparisons with the pinned RosettaSciIO, Pint and tifffile values and the inherited golden baseline
+        // (`swift test -c release --parallel --skip FormatoKitParityTests` leaves them out). Fixtures stay in the old test folders.
+        .target(name: "FormatoKitTestSupport", path: "Tests/FormatoKitTestSupport", swiftSettings: settings),
+        .testTarget(name: "FormatoKitParityTests",
+                    dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoTIFF", "FormatoKitTestSupport"],
                     swiftSettings: settings),
     ],
     swiftLanguageModes: [.v6]

@@ -4,7 +4,7 @@
 # FormatoTIFF (FormatoTIFFPinsTests, the owner test), compared exactly as the public pins are. Never part of the gate; its numbers
 # are cited with this log in docs/status.md, and every file read has a line in ../data/README.md.
 #   owner-check.sh      prints the files read, the result line, exit 0 when every signal agrees.
-# The Swift side (Tests/FormatoTIFFTests/FormatoTIFFPinsTests.swift) reads FORMATO_OWNER_TIFF_PINS (the JSON) and
+# The Swift side (Tests/FormatoKitParityTests/TIFF/FormatoTIFFPinsTests.swift) reads FORMATO_OWNER_TIFF_PINS (the JSON) and
 # FORMATO_OWNER_TIFF_FILES (one absolute path per line); it does not exist until step 2's Swift lane lands.
 set -euo pipefail
 cd "${0:A:h}/../.."

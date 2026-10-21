@@ -12,13 +12,14 @@ import CryptoKit
 import Foundation
 import Testing
 import FormatoCore
+import FormatoKitTestSupport
 @testable import FormatoTIFF
 
 @Suite(.serialized) struct FormatoTIFFPinsTests {
-    static let fixtures = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures")
-    static let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+    static let fixtures = FixtureDirs.fixtures(of: "FormatoTIFFTests")
+    static let root = FixtureDirs.repository
     static let rsciioData = root.appendingPathComponent("References/rosettasciio-049e7d70/rsciio/tests/data")
-    static let unpacked = root.appendingPathComponent(".build/rsciio-tiff")
+    static let unpacked = FixtureDirs.unpackedTIFF
 
     private func sha(_ d: Data) -> String { SHA256.hash(data: d).map { String(format: "%02x", $0) }.joined() }
     private func hex(_ d: Double) -> String { String(format: "%016llx", d.bitPattern) }

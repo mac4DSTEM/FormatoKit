@@ -10,7 +10,8 @@ the reference's own tolerance is agreement, outside it a bug. Readers, I/O, indi
 ## Build and test
 ```sh
 swift build
-swift test -c release          # the gate; Debug is many times slower on the numeric loops
+swift test -c release --parallel --skip FormatoKitParityTests   # per-session gate: the fast unit target
+swift test -c release --parallel   # full suite with FormatoKitParityTests: before a tag and in the nightly (Debug is many times slower)
 tools/consumer-check/run.sh    # a separate package that compiles against the public API
 ```
 Never `swift build --build-tests -c release` (fails on this toolchain). Real-data tests skip when the data is absent.

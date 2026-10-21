@@ -1,9 +1,10 @@
 import Foundation
+import FormatoKitTestSupport
 
 /// Paths of the fixtures and of the pinned RosettaSciIO clone (gitignored; absent in a clone without References).
 enum TestPaths {
-    static let fixtures = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures")
-    static let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+    static let fixtures = FixtureDirs.fixtures(of: "FormatoCoreTests")
+    static let root = FixtureDirs.repository
     static let rsciioData = root.appendingPathComponent("References/rosettasciio-049e7d70/rsciio/tests/data")
     /// The public zips' members, unzipped by tools/test.sh after their sha256 is checked against the registry.
     static let unzipped = root.appendingPathComponent(".build/rsciio-unzipped")
