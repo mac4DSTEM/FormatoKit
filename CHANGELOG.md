@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.1 (2026-10-21)
+
+Tests and documentation only; no source change and no byte moves.
+
+- Exactness tests for the MIB reader rewritten in 0.9.0 (934 ms to 35 ms). The pixel codes (1, 6, 12, 24 bit, 8, 16 and 32 bit stored), the header sizes the fixtures carry and multi-frame files were already pinned byte for byte against RosettaSciIO (`pins.json`, 18 fixtures); added: every one-index slice along every axis of every fixture equals the matching slab of the RosettaSciIO bytes (crossing frame, row and flip boundaries), and an odd 513-byte header (16- and 32-bit pixels at odd addresses, the unaligned path) gives the bytes of the 384-byte file for U08, U16 and U32. The 0.8.x reader gave the same bytes, so these tests cannot fail against it: the rewrite changed speed only; they pin the new copy and byte-swap paths.
+- The 0.9.0 Migration line saying SpectroKit needs no bump is corrected: apps pin FormatoKit 0.9.1 with SpectroKit 0.8.1.
+- Added `docs/status.md`.
+
+**Migration.** None.
+
 ## 0.9.0 (2026-10-21)
 
 The 0.9.0 audit against RosettaSciIO: the parity table rewritten from the 38 plugins on disk (`docs/parity.md`), a benchmark against RosettaSciIO (`docs/benchmarks.md`), and the study-path gaps filled. Bytes read by existing readers are unchanged.
@@ -12,7 +22,7 @@ The 0.9.0 audit against RosettaSciIO: the parity table rewritten from the 38 plu
 - `tools/benchmarks/` (driver and the kit's `formato-bench`), `tools/velox-spectrum/pins.py`, `tools/msa/pins.py`.
 - Not done, with reasons (`docs/open-items.md`): Velox live/real times and GMS EDS geometry (need Paul's files), the app asks that each need their own pins, and the slower-than-RosettaSciIO read path of DM, TIFF and 2048² Velox images (1.2 to 2x; cause not yet isolated).
 
-**Migration.** Additive. `VeloxEMDReader.isVeloxFile`/`isVeloxEMD` now answer true for "DevelopersKit" files, which were refused before: an app that routes `.emd` files on them will open those files. Nothing else changes for a consumer. SpectroKit: a bump is not required by this release.
+**Migration.** Additive. `VeloxEMDReader.isVeloxFile`/`isVeloxEMD` now answer true for "DevelopersKit" files, which were refused before: an app that routes `.emd` files on them will open those files. Nothing else changes for a consumer. SpectroKit 0.8.x already accepts FormatoKit `0.4.0..<1.0.0`, so its source needs nothing from this release; the suite rule is still that the two are bumped together, and an app pins FormatoKit 0.9.1 with SpectroKit 0.8.1 (the 0.8.1 line corrects this sentence).
 
 ## 0.8.0 (2026-10-21)
 

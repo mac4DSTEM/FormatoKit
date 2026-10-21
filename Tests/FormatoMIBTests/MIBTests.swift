@@ -140,3 +140,66 @@ private func directory() throws -> URL {
     }
     #expect(checked > 600)
 }
+
+/// 0.9.1: the 0.9.0 reader copies whole runs (8-bit copy, 16- and 32-bit byte swap in lanes, an unaligned path). Every fixture is the
+/// RosettaSciIO bytes (`pins.json`, `*.data.gz`); here every one-index slice along every axis, each of which crosses frame, row and
+/// flip boundaries differently, equals the matching slab of those bytes. The 0.8.x element-by-element reader gave the same bytes
+/// (the rewrite changed speed only), so no assertion here can fail against it; they pin the new copy paths.
+@Test func mibEveryAxisSliceEqualsTheRosettaSciIOBytes() throws {
+    let pins = try JSONDecoder().decode(Pins.self, from: Data(contentsOf: fixtures.appendingPathComponent("pins.json")))
+    let dir = try directory(); defer { try? FileManager.default.removeItem(at: dir) }
+    var slices = 0
+    for pin in pins.cases {
+        let path = dir.appendingPathComponent(pin.name + ".mib")
+        try inflate(pin.name + ".mib.gz").write(to: path)
+        let hdr = fixtures.appendingPathComponent(pin.name + ".hdr")
+        if FileManager.default.fileExists(atPath: hdr.path) { try FileManager.default.copyItem(at: hdr, to: path.deletingPathExtension().appendingPathExtension("hdr")) }
+        let lazy = try MIBReader(path: path.path, navigationShape: pin.navigation, firstFrame: pin.first, lastFrame: pin.last,
+                                 convention: pin.app ? .appScanXY : .rosettaSciIO).signal
+        let expected = try FormatoArray(dataType: lazy.array.dataType, shape: pin.shape, bytes: inflate(pin.name + ".data.gz"))
+        for axis in 0..<pin.shape.count {
+            for k in 0..<pin.shape[axis] {
+                var start = pin.shape.map { _ in 0 }, count = pin.shape
+                start[axis] = k; count[axis] = 1
+                #expect(try lazy.array.read(start: start, count: count).bytes == expected.slab(start: start, count: count).bytes, "\(pin.name) axis \(axis) index \(k)")
+                slices += 1
+            }
+        }
+    }
+    #expect(slices > 100)
+}
+
+/// An odd header size (the app convention allows 384...65536) puts 16- and 32-bit pixels at odd addresses: the unaligned path of the
+/// byte swap must give the bytes of the same file with the 384-byte header, for every stored pixel width.
+@Test func mibOddHeaderSizeGivesTheSameBytesForEveryPixelWidth() throws {
+    let pins = try JSONDecoder().decode(Pins.self, from: Data(contentsOf: fixtures.appendingPathComponent("pins.json")))
+    let dir = try directory(); defer { try? FileManager.default.removeItem(at: dir) }
+    var widths = Set<String>()
+    for pin in pins.cases where pin.app {
+        let source = try inflate(pin.name + ".mib.gz")
+        let fields = String(decoding: source.prefix(384), as: UTF8.self).components(separatedBy: ",")
+        let width = try #require(Int(fields[4])), height = try #require(Int(fields[5]))
+        let bytes = try #require(["U08": 1, "U16": 2, "U32": 4][fields[6]])
+        let stride = 384 + width * height * bytes
+        guard source.count % stride == 0 else { continue }
+        var odd = Data()
+        for frame in 0..<(source.count / stride) {
+            var header = Data(source[(frame * stride)..<(frame * stride + 384)])
+            let marker = Data("00384".utf8), at = try #require(header.range(of: marker))
+            header.replaceSubrange(at, with: Data("00513".utf8))
+            odd += header + Data(repeating: 0x20, count: 129) + source[(frame * stride + 384)..<((frame + 1) * stride)]
+        }
+        let oddPath = dir.appendingPathComponent(pin.name + "-odd.mib"), plainPath = dir.appendingPathComponent(pin.name + ".mib")
+        try odd.write(to: oddPath); try source.write(to: plainPath)
+        let hdr = fixtures.appendingPathComponent(pin.name + ".hdr")
+        if FileManager.default.fileExists(atPath: hdr.path) {
+            for target in [oddPath, plainPath] { try FileManager.default.copyItem(at: hdr, to: target.deletingPathExtension().appendingPathExtension("hdr")) }
+        }
+        let a = try MIBReader(path: oddPath.path, convention: .appScanXY).signal.load()
+        let b = try MIBReader(path: plainPath.path, convention: .appScanXY).signal.load()
+        #expect(a.data == b.data, "\(pin.name)")
+        #expect(a.data.bytes == (try inflate(pin.name + ".data.gz")), "\(pin.name) against the pinned bytes")
+        widths.insert(fields[6])
+    }
+    #expect(widths == ["U08", "U16", "U32"])
+}
