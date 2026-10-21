@@ -97,3 +97,24 @@ import FormatoMRC
         #expect(throws: FormatoReadError.self) { try MRCReader(path: "/nonexistent/none.mrc") }
     }
 }
+
+#if arch(arm64)
+@Test func halfFloatConversionMatchesFloat16ForEveryBitPattern() throws {
+    // MRCAppImage's mode-12 conversion is private; read a synthetic mode-12 file holding all 65536 patterns.
+    var header = [UInt8](repeating: 0, count: 1024)
+    func put(_ index: Int, _ value: Int32) { withUnsafeBytes(of: value.littleEndian) { header.replaceSubrange(4 * index..<4 * index + 4, with: $0) } }
+    put(0, 256); put(1, 256); put(2, 1); put(3, 12); put(16, 1); put(17, 2); put(18, 3)
+    header.replaceSubrange(208..<212, with: Array("MAP ".utf8)); header.replaceSubrange(212..<216, with: [0x44, 0x44, 0, 0])
+    var body = Data(header)
+    for bits in 0...UInt16.max { withUnsafeBytes(of: bits.littleEndian) { body.append(contentsOf: $0) } }
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent("half-\(UUID().uuidString).mrc")
+    try body.write(to: url); defer { try? FileManager.default.removeItem(at: url) }
+    let image = try MRCAppImage.read(path: url.path)
+    let pixels = image.pixels
+    #expect(pixels.count == 65536)
+    for bits in 0...UInt16.max {
+        let expected = Float(Float16(bitPattern: bits)), got = pixels[Int(bits)]
+        #expect(expected.isNaN ? got.isNaN : got.bitPattern == expected.bitPattern, "\(bits)")
+    }
+}
+#endif

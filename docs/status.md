@@ -71,3 +71,5 @@ Validation: none. Agreement with RosettaSciIO and recovery of planted files are 
   hostile grids and bin counts were run on FormatoKit only (the suite's memory rule): not refuted against RosettaSciIO here.
 - No performance work: lazy reads are positioned reads (DM, TIFF) and per-frame reads (Velox), not memory-mapped.
 - TIFF: tifffile's shaped, OME and pyramid series, compression and the other vendor branches are refused, not read.
+
+- 0.8.0 handoff (2026-10-21): done — loadStandard cache, HDF5SlabReader, walk, bool-enum attributes, session writeBraggVectors, EMPAD preferScanResolution, x86_64 MRC fix; next — DM4 lazy 4D gather, Velox live/real times and GMS EDS geometry, then the apps delete their copies (mac4DSTEM sidecar parity run is the app's gate).

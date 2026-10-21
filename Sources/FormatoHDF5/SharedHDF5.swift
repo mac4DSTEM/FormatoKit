@@ -93,10 +93,28 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
     package let h5dgetCreatePlist: H5DgetCreatePlist, h5pgetLayout: H5PgetLayout, h5pgetChunk: H5PgetChunk
     /// `H5P_CLS_DATASET_CREATE_ID_g`'s value: the dataset-creation property class.
     package let datasetCreateClass: hid_t
+    // Link and object identity (FormatoKit 0.8.0: HDF5Reader.walk). Nil when the library lacks them.
+    package typealias H5LgetInfo2 = @convention(c) (hid_t, UnsafePointer<CChar>?, UnsafeMutableRawPointer?, hid_t) -> herr_t
+    package typealias H5OgetInfoByName3 = @convention(c) (hid_t, UnsafePointer<CChar>?, UnsafeMutableRawPointer?, UInt32, hid_t) -> herr_t
+    package let h5lgetInfo2: H5LgetInfo2?, h5ogetInfoByName3: H5OgetInfoByName3?
 
     /// The standard lookup shared by the HDF5 readers and writers in this package: the `FORMATO_HDF5_PATH` override, the host
     /// app's `Frameworks/libhdf5.dylib`, the copy FormatoKit ships, then the loader's search path. Call under `HDF5Serial`.
+    ///
+    /// The loaded library is cached for the process (0.8.0): a successful load is kept and later calls return it; a failure is
+    /// not cached, so a host that adds the library later is found. The lookup (environment, bundle paths, `dlopen`, 60 `dlsym`)
+    /// was 53 % of a single-pattern read.
     package static func loadStandard() throws -> SharedHDF5 {
+        if let cached = standardCache { return cached }
+        let loaded = try loadStandardUncached()
+        standardCache = loaded
+        return loaded
+    }
+
+    /// Guarded by `HDF5Serial`, which every caller of `loadStandard` holds.
+    private nonisolated(unsafe) static var standardCache: SharedHDF5?
+
+    private static func loadStandardUncached() throws -> SharedHDF5 {
         let candidates = [ProcessInfo.processInfo.environment["FORMATO_HDF5_PATH"],
             Bundle.main.privateFrameworksURL?.appendingPathComponent("libhdf5.dylib").path,
             Bundle.main.executableURL?.deletingLastPathComponent().appendingPathComponent("../Frameworks/libhdf5.dylib").standardized.path,
@@ -176,7 +194,9 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
             h5dgetCreatePlist: try symbol("H5Dget_create_plist", as: H5DgetCreatePlist.self),
             h5pgetLayout: try symbol("H5Pget_layout", as: H5PgetLayout.self),
             h5pgetChunk: try symbol("H5Pget_chunk", as: H5PgetChunk.self),
-            datasetCreateClass: try global("H5P_CLS_DATASET_CREATE_ID_g"))
+            datasetCreateClass: try global("H5P_CLS_DATASET_CREATE_ID_g"),
+            h5lgetInfo2: dlsym(handle, "H5Lget_info2").map { unsafeBitCast($0, to: H5LgetInfo2.self) },
+            h5ogetInfoByName3: dlsym(handle, "H5Oget_info_by_name3").map { unsafeBitCast($0, to: H5OgetInfoByName3.self) })
     }
 }
 

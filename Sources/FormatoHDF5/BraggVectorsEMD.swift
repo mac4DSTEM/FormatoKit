@@ -326,6 +326,14 @@ private nonisolated struct EMDWriter {
         try extra(extras[.root], on: root)
         try writeCalibration(calibration, target: "/" + nodeName, in: root)
 
+        try writeNode(nodeName, in: root, peaks: peaks, scan: scan, detector: detector, convention: convention,
+                      extras: extras, cancelled: cancelled)
+    }
+
+    /// The BraggVectors group (its shape bundle and `_v_uncal` peak grid) inside the open group `root`.
+    func writeNode(_ nodeName: String, in root: hid_t, peaks: [[BraggPeak]], scan: BraggGridShape, detector: BraggGridShape,
+                   convention: BraggAxisConvention, extras: [BraggAttributeTarget: [String: String]],
+                   cancelled: @Sendable () -> Bool) throws {
         let node = try group(nodeName, in: root); defer { _ = h5.h5close(node) }
         try stringAttribute("emd_group_type", "custom", on: node)
         try stringAttribute("python_class", "BraggVectors", on: node)
@@ -746,3 +754,54 @@ private nonisolated struct EMDReader {
         return try readString(type: type, key: name) { h5.h5aread(attribute, type, $0) }
     }
 }
+
+// MARK: - In a session
+
+extension HDF5WriteSession {
+    /// Writes the BraggVectors object (py4DSTEM's layout: the group `nodeName` with its `_braggvectors_shape` bundle and the
+    /// `_v_uncal` peak grid) into the existing group `root` of the file this session is changing, so a file that also holds a
+    /// calibration, results or copied objects gets the peaks without a second file. The group and root must already exist
+    /// (`createGroup`, `createEMDRoot`); `nodeName` must not. `groupAttributes` are written on the BraggVectors group.
+    /// Peaks are row-major (`scan.rows * scan.columns` arrays); every value must be finite.
+    public func writeBraggVectors(
+        peaks: [[BraggPeak]], scan: BraggGridShape, detector: BraggGridShape, inRoot root: String,
+        nodeName: String = "braggvectors", convention: BraggAxisConvention = .py4DSTEM,
+        groupAttributes: [String: String] = [:], cancelled: @Sendable () -> Bool = FormatoCancellation.task
+    ) throws {
+        guard scan.rows > 0, scan.columns > 0, detector.rows > 0, detector.columns > 0 else {
+            throw BraggVectorsEMDError.invalidInput("the scan and detector shapes must be positive")
+        }
+        guard peaks.count == scan.rows * scan.columns else {
+            throw BraggVectorsEMDError.invalidInput("\(peaks.count) peak lists for a \(scan.rows) x \(scan.columns) scan")
+        }
+        guard peaks.allSatisfy({ $0.allSatisfy { $0.qx.isFinite && $0.qy.isFinite && $0.intensity.isFinite } }) else {
+            throw BraggVectorsEMDError.invalidInput("a peak value is not finite")
+        }
+        guard !groupAttributes.keys.contains(where: { groupReserved.contains($0) }) else {
+            throw BraggVectorsEMDError.invalidInput("a group attribute name belongs to the EMD layout")
+        }
+        let parts = try HDF5Ops.components(root)
+        try withHandle { h5, file in
+            guard HDF5Ops.linkExists(h5, file, parts) else { throw HDF5FileError.notFound(root) }
+            let id = HDF5Ops.absolute(parts).withCString { h5.h5oopen(file, $0, 0) }
+            guard id >= 0 else { throw HDF5FileError.notFound(root) }
+            defer { _ = h5.h5oclose(id) }
+            guard !nodeName.isEmpty, !nodeName.contains("/"), !"\(nodeName)".utf8.contains(0) else { throw HDF5FileError.invalidPath(nodeName) }
+            guard !nodeName.withCString({ h5.h5lexists(id, $0, 0) }).isPositive else {
+                throw HDF5FileError.invalidArgument("\(root)/\(nodeName) already exists")
+            }
+            do {
+                try EMDWriter(h5: h5).writeNode(nodeName, in: id, peaks: peaks, scan: scan, detector: detector, convention: convention,
+                                                extras: [.braggVectors: groupAttributes], cancelled: cancelled)
+            } catch {
+                _ = nodeName.withCString { h5.h5ldelete(id, $0, 0) }
+                if let error = error as? BraggVectorsEMDError {
+                    throw HDF5FileError.cannotWrite(operation: "writing the BraggVectors object", detail: "\(error)")
+                }
+                throw error
+            }
+        }
+    }
+}
+
+private extension Int32 { var isPositive: Bool { self > 0 } }

@@ -30,8 +30,10 @@ public nonisolated struct EMPADReader: Sendable {
     ///   - path: The XML or raw file path. XML `raw_file.filename` resolves relative to the XML directory.
     ///   - qCalibration: Optional diffraction scale in 1/nm, overriding XML `calibrated_pixelsize`.
     ///     The default uses the XML value times 1e9, or pixel scales if absent.
+    ///   - preferScanResolution: When the header has both `pix_x/pix_y` and `scan_parameters/scan_resolution_x/y`, use the
+    ///     latter (default false: RosettaSciIO's order, `pix_x/pix_y` first).
     /// - Throws: `EMPADError` for missing files, invalid headers, overflowing dimensions or incorrect raw length.
-    public init(path: String, qCalibration: Double? = nil) throws {
+    public init(path: String, qCalibration: Double? = nil, preferScanResolution: Bool = false) throws {
         let input = URL(fileURLWithPath: path)
         let xml = input.pathExtension.lowercased() == "raw" ? input.deletingPathExtension().appendingPathExtension("xml") : input
         guard let parser = XMLParser(contentsOf: xml) else { throw EMPADError.cannotOpen(xml.lastPathComponent) }
@@ -39,7 +41,12 @@ public nonisolated struct EMPADReader: Sendable {
         parser.delegate = header
         parser.shouldResolveExternalEntities = false
         guard parser.parse() else { throw EMPADError.invalidXML("Malformed XML") }
-        try self.init(xml: xml, fields: header.fields, qCalibration: qCalibration)
+        var fields = header.fields
+        if preferScanResolution, fields["root.scan_parameters.scan_resolution_x"] != nil,
+           fields["root.scan_parameters.scan_resolution_y"] != nil {
+            fields["root.pix_x"] = nil; fields["root.pix_y"] = nil
+        }
+        try self.init(xml: xml, fields: fields, qCalibration: qCalibration)
     }
 
     /// Opens a raw file that has no XML header: `scan_x{N}_y{M}` in its name, `scanSize` when given, or else a square scan

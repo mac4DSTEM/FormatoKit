@@ -129,6 +129,9 @@ public nonisolated final class HDF5WriteSession {
         }
     }
 
+    /// The library and the open file, under the lock, for the kit's own writers that work on handles.
+    package func withHandle<T>(_ body: (SharedHDF5, hid_t) throws -> T) throws -> T { try open { try body(h5, $0) } }
+
     /// Whether a link exists at `path` (every component must exist).
     public func exists(_ path: String) throws -> Bool {
         let parts = try HDF5Ops.components(path)

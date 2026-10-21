@@ -164,6 +164,55 @@ public nonisolated struct HDF5Reader: Sendable {
         return out
     }
 
+    /// How a link is stored.
+    public enum LinkKind: Sendable, Equatable { case hard, soft, external }
+
+    /// One object found by `walk`.
+    public struct WalkEntry: Sendable, Equatable {
+        public let path: String
+        public let kind: HDF5ObjectKind
+        public let link: LinkKind
+        /// The object's identity in the file (file number and token, from `H5Oget_info_by_name3`): two hard links to one
+        /// object carry the same value. Nil for soft and external links, and when the library cannot say.
+        public let identity: Data?
+    }
+
+    /// Every link below the group at `path` (the root is "/"), depth first, parents before members, siblings in `children(of:)`
+    /// order, with each link's kind and the object identity. Unlike `descendants`, a group reached by a second hard link (an
+    /// alias, or a cycle back to an ancestor) is listed but not entered again, and a soft or external link is listed but not
+    /// followed, so neither lists a subtree twice nor loops. More than `maximumObjects` entries or a depth over 64 throws
+    /// `limitExceeded`. One file open, one lock hold.
+    public func walk(from path: String = "/", maximumObjects: Int = 1 << 17) throws -> [WalkEntry] {
+        let parts = try HDF5Ops.components(path)
+        return try withFile { h5, file in
+            var out: [WalkEntry] = []
+            var entered = Set<Data>()
+            func visit(_ groupParts: [String], depth: Int) throws {
+                guard depth <= 64 else { throw HDF5FileError.limitExceeded("links nest deeper than 64 below \(path)") }
+                let groupPath = HDF5Ops.absolute(groupParts)
+                let names = try HDF5Ops.withObject(h5, file, groupPath, groupParts) { obj in
+                    try HDF5Ops.children(h5, obj, groupPath)
+                }
+                for name in names {
+                    guard out.count < maximumObjects else { throw HDF5FileError.limitExceeded("more than \(maximumObjects) objects below \(path)") }
+                    let childParts = groupParts + [name]
+                    let childPath = HDF5Ops.absolute(childParts)
+                    let (link, identity) = HDF5Ops.linkInfo(h5, file, childPath)
+                    let kind = HDF5Ops.kind(h5, file, childParts)
+                    out.append(WalkEntry(path: childPath, kind: kind, link: link, identity: identity))
+                    guard kind == .group, link == .hard else { continue }
+                    if let identity, !entered.insert(identity).inserted { continue }
+                    try visit(childParts, depth: depth + 1)
+                }
+            }
+            guard HDF5Ops.linkExists(h5, file, parts) else { throw HDF5FileError.notFound(path) }
+            guard HDF5Ops.kind(h5, file, parts) == .group else { throw HDF5FileError.wrongKind(path: path, expected: "group") }
+            if let identity = HDF5Ops.linkInfo(h5, file, HDF5Ops.absolute(parts)).1 { entered.insert(identity) }
+            try visit(parts, depth: 0)
+            return out
+        }
+    }
+
     /// The values of an enum dataset whose base type is a one-byte integer (h5py's `bool`: FALSE = 0, TRUE = 1), flattened in C
     /// order, true where the stored value is not 0. Any other type throws `unsupportedType`.
     public func readBooleans(_ path: String, maximumBytes: Int = defaultMaximumBytes) throws -> [Bool] {
@@ -239,6 +288,23 @@ nonisolated enum HDF5Ops {
             guard kindOf(h5, obj) == .dataset else { throw HDF5FileError.wrongKind(path: path, expected: "dataset") }
             return try body(obj)
         }
+    }
+
+    /// The link type of `path` (`H5Lget_info2`: the first field is `H5L_type_t`, 0 hard, 1 soft, 64 external) and, for a hard
+    /// link, the object identity (`H5Oget_info_by_name3` with `H5O_INFO_BASIC`: the file number and token are the first 24 bytes).
+    static func linkInfo(_ h5: SharedHDF5, _ file: hid_t, _ path: String) -> (HDF5Reader.LinkKind, Data?) {
+        guard let linkGet = h5.h5lgetInfo2 else { return (.hard, nil) }
+        var link = [UInt8](repeating: 0, count: 256)
+        guard path.withCString({ name in link.withUnsafeMutableBytes { linkGet(file, name, $0.baseAddress, 0) } }) >= 0 else { return (.hard, nil) }
+        switch link.withUnsafeBytes({ $0.loadUnaligned(as: Int32.self) }) {
+        case 0: break
+        case 1: return (.soft, nil)
+        default: return (.external, nil)
+        }
+        guard let objectGet = h5.h5ogetInfoByName3 else { return (.hard, nil) }
+        var object = [UInt8](repeating: 0, count: 256)
+        let got = path.withCString { name in object.withUnsafeMutableBytes { objectGet(file, name, $0.baseAddress, 1, 0) } }
+        return (.hard, got >= 0 ? Data(object[0..<24]) : nil)
     }
 
     // MARK: Listing
@@ -522,6 +588,18 @@ nonisolated enum HDF5Ops {
                 throw HDF5FileError.limitExceeded("\(label) holds an unsigned 64-bit value over \(Int64.max)")
             }
             return scalar ? .integer(values[0]) : .integers(values)
+        case 8 where size == 1:
+            // h5py's bool (a one-byte enum, FALSE = 0, TRUE = 1): read as the integers 0 and 1.
+            var values = [UInt8](repeating: 0, count: elements)
+            if elements > 0 {
+                guard values.withUnsafeMutableBytes({ h5.h5aread(attribute, type, $0.baseAddress) }) >= 0 else {
+                    throw HDF5RootAttributes.hdf5Failure("reading \(label)", h5)
+                }
+            }
+            // Only h5py's bool (members FALSE = 0 and TRUE = 1): any other value means another enum, which stays unsupported.
+            guard values.allSatisfy({ $0 <= 1 }) else { throw HDF5FileError.unsupportedType(path: label, type: "enum") }
+            let flags = values.map { Int64($0) }
+            return scalar ? .integer(flags[0]) : .integers(flags)
         case 1:
             guard [2, 4, 8].contains(size) else { throw HDF5FileError.unsupportedType(path: label, type: "float\(size * 8)") }
             var values = [Double](repeating: 0, count: elements)

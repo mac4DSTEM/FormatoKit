@@ -114,7 +114,7 @@ public nonisolated enum MRCAppImage {
                 case 0: pixels[i] = Float(Int8(bitPattern: buffer[i]))
                 case 1: pixels[i] = Float(Int16(bitPattern: u16(i)))
                 case 6: pixels[i] = Float(u16(i))
-                case 12: pixels[i] = Float(Float16(bitPattern: u16(i)))
+                case 12: pixels[i] = halfToFloat(u16(i))
                 default:
                     let v = buffer.loadUnaligned(fromByteOffset: 4 * i, as: UInt32.self)
                     pixels[i] = Float(bitPattern: bigEndian ? UInt32(bigEndian: v) : UInt32(littleEndian: v))
@@ -140,4 +140,18 @@ public nonisolated enum MRCAppImage {
         return Image(width: nx, height: ny, pixels: pixels, x: x, y: y, fileName: fileName,
                      source: (["MRC · mode \(mode) \(kind)"] + notes).joined(separator: " · "), notes: notes)
     }
+}
+
+/// IEEE 754 binary16 to Float, exact. `Float16` is unavailable on x86_64 macOS, so a universal build cannot use it.
+private func halfToFloat(_ bits: UInt16) -> Float {
+    let sign = UInt32(bits >> 15) << 31
+    let exponent = UInt32((bits >> 10) & 0x1F), fraction = UInt32(bits & 0x3FF)
+    if exponent == 0x1F { return Float(bitPattern: sign | 0x7F80_0000 | (fraction << 13)) }
+    if exponent == 0 {
+        if fraction == 0 { return Float(bitPattern: sign) }
+        // Subnormal: fraction * 2^-24, exact in Float.
+        let magnitude = Float(fraction) * Float(bitPattern: 0x3380_0000)
+        return sign == 0 ? magnitude : -magnitude
+    }
+    return Float(bitPattern: sign | ((exponent + 112) << 23) | (fraction << 13))
 }

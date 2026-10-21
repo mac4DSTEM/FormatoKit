@@ -81,6 +81,9 @@ func scratchDirectory() throws -> URL {
         for (name, attr) in pin.attrs ?? [:] {
             let label = "\(path)@\(name)"
             switch attr.type {
+            case "unsupported" where attr.name == "enum":
+                // 0.8.0, on purpose: h5py's bool attribute (a one-byte enum) reads as the integer 0 or 1; `flag` is True.
+                #expect(try reader.attribute(name, of: path) == .integer(1), "\(label)")
             case "unsupported":
                 #expect(throws: HDF5FileError.unsupportedType(path: label, type: attr.name!), "\(label)") { try reader.attribute(name, of: path) }
             case "limit":

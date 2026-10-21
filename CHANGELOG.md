@@ -2,6 +2,20 @@
 
 Earlier releases: `docs/consumers-0.0.1.md` to `docs/consumers-0.2.0.md` (what each tag changed for a consumer) and `docs/status.md`.
 
+## 0.8.0 (2026-10-21)
+
+The I/O the apps still carried moves into the kit. Bytes are unchanged everywhere; the new paths are pinned to `HDF5Reader` and to the stand-alone BraggVectors writer.
+
+- Speed: `SharedHDF5.loadStandard()` is cached for the process (a failure is not cached). It was 53 % of a single-pattern `HDF5Reader.readDataset` (environment, bundle paths, four `dlopen`, 60 `dlsym` on every call). `HDF5SlabReader(url:path:)` holds the file and dataset open for many small reads: `read(start:count:)` and an allocation-free `read(start:count:into:)`; `close()` or `deinit` releases them. Release build, one 1x1x4 float32 slab: `HDF5Reader.readDataset` 39 us per call, `HDF5SlabReader` 0.79 us (0.69 us into a caller buffer); the investigation measured 197 us per call before the cache.
+- `HDF5Reader.walk(from:maximumObjects:)`: the link walk with object identity. Every link below a group, depth first, each with its kind, link kind (`hard`, `soft`, `external`) and the object identity (`H5Oget_info_by_name3`); a group reached by a second hard link, or a cycle back to an ancestor, is listed but not entered again, and soft links are listed but not followed. Replaces the app's `HDF5LegacyProbe.linkInfo` walk.
+- `HDF5Reader.attribute` reads h5py's bool (a one-byte enum with values 0 and 1) as the integers 0 and 1 (before: `unsupportedType`; another one-byte enum still is).
+- `HDF5WriteSession.writeBraggVectors(peaks:scan:detector:inRoot:nodeName:convention:groupAttributes:)`: the BraggVectors object (shape bundle and `_v_uncal` peak grid) written into the session's own file next to a calibration, results and copied objects; same layout as `BraggVectorsEMD.write`, which now shares the code; a failure removes the half-built node. `HDF5PendingFile.sameFile` is public (a destination check against a second protected path, the sidecar). A datacube export already goes through `EMDDatacubeWriter`; the app's comment "no kit writes a 4D datacube" is stale.
+- `EMPADReader(path:qCalibration:preferScanResolution:)`: with `true`, `scan_parameters/scan_resolution_x/y` win over `pix_x/pix_y` (default `false`, RosettaSciIO's order).
+- MRC: mode 12 (half float) no longer uses `Float16`, which does not exist on x86_64 macOS; FormatoMRC builds for both architectures (macTEM's Developer ID archive was arm64-only). The conversion is exact.
+- Not done, with reasons: lineage / marks records, header-less MIB, learned-detector pieces (stay in the app, as agreed); the DM4 lazy 4D gather and more-than-four-dimension objects, the Velox live/real times and GMS EDS geometry, and the Velox allocation bounds (each is a registration-sized change with its own pins; left for 0.9); `Package.swift` has no sibling-kit dependency, so there were no ranges to widen.
+
+**Migration.** Additive. mac4DSTEM: switch `H5Reader`'s single-pattern read onto `HDF5SlabReader` and delete `HDF5LegacyProbe` (link walk with `walk(from:)`, `QR_flip` with `attribute`); move the sidecar's peak-grid write onto `writeBraggVectors` inside `HDF5NewFile.write` (the sidecar-parity run, about 35 GB, stays the app session's gate). macTEM: the archive can be universal.
+
 ## 0.7.0 (2026-10-21)
 
 The reader asks the two apps still carried shims for, and the two 0.6.1 follow-ups. Every change is pinned to the previous

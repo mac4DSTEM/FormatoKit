@@ -132,3 +132,17 @@ private func temporaryPair() throws -> URL {
     #expect(try fromXML.signal.load().data == expected)
     #expect(fromXML.rawPath == renamed.standardizedFileURL.path)
 }
+
+@Test func empadPreferScanResolutionPicksTheAcquisitionExtents() throws {
+    let dir = try temporaryPair()
+    defer { try? FileManager.default.removeItem(at: dir) }
+    let xml = dir.appendingPathComponent("both.xml")
+    let raw = dir.appendingPathComponent("scan_x3_y2.raw")
+    let bytes = try Data(contentsOf: raw).count
+    // pix_x/pix_y say 1 x 1 (the raw is 6 frames), scan_resolution says 3 x 2.
+    try Data("<root><raw_file filename='scan_x3_y2.raw'/><pix_x>1</pix_x><pix_y>1</pix_y><scan_parameters><scan_resolution_x>3</scan_resolution_x><scan_resolution_y>2</scan_resolution_y></scan_parameters></root>".utf8).write(to: xml)
+    #expect(bytes == 130 * 128 * 4 * 6)
+    #expect(throws: EMPADError.self) { try EMPADReader(path: xml.path) }          // default: pix_x/pix_y first, length mismatch
+    let preferred = try EMPADReader(path: xml.path, preferScanResolution: true)
+    #expect(preferred.signal.array.shape.prefix(2) == [2, 3])
+}

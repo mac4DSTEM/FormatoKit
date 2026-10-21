@@ -74,7 +74,7 @@ public nonisolated final class HDF5PendingFile: @unchecked Sendable {
     }
 
     /// One file under two spellings (a symbolic link, a different path): by path after resolving links, then by device and inode.
-    static func sameFile(_ a: String, _ b: String) -> Bool {
+    public static func sameFile(_ a: String, _ b: String) -> Bool {
         let ra = URL(fileURLWithPath: a).standardizedFileURL.resolvingSymlinksInPath()
         let rb = URL(fileURLWithPath: b).standardizedFileURL.resolvingSymlinksInPath()
         if ra == rb { return true }
