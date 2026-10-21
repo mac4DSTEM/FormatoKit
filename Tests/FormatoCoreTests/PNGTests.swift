@@ -110,6 +110,25 @@ import FormatoCore
         }
     }
 
+    /// The compressed path round-trips: zlibCompress's stream, decoded by the Compression framework, is the input; header and
+    /// Adler-32 are the zlib ones. (The stored path is covered above.)
+    @Test func compressedZlibRoundTrips() {
+        let compressible = [UInt8](repeating: 7, count: 100_000) + (0..<5_000).map { UInt8($0 % 13) }
+        let incompressible = (0..<4_000).map { hashed($0) }
+        for raw in [compressible, incompressible, [UInt8](repeating: 0, count: 1)] {
+            let stream = FormatoPNG.zlibCompress(raw)
+            #expect(Array(stream.prefix(2)) == [0x78, 0x9C])
+            let body = Array(stream.dropFirst(2).dropLast(4))
+            var out = [UInt8](repeating: 0, count: raw.count + 16)
+            let n = body.withUnsafeBufferPointer { src in out.withUnsafeMutableBufferPointer { dst in
+                compression_decode_buffer(dst.baseAddress!, dst.count, src.baseAddress!, src.count, nil, COMPRESSION_ZLIB) } }
+            #expect(n == raw.count && Array(out.prefix(n)) == raw, "\(raw.count) bytes")
+            let adler = stream.suffix(4).reduce(UInt32(0)) { $0 << 8 | UInt32($1) }
+            #expect(adler == FormatoPNG.adler32(raw))
+        }
+        #expect(FormatoPNG.zlibCompress(compressible).count < compressible.count / 10)
+    }
+
     @Test func encoderOutputIsStructurallyAPNG() throws {
         let png = try FormatoPNG.encode(width: 3, height: 2, format: .rgba8, pixels: pixels(3, 2, 4, b8), text: [title])
         #expect(Array(png.prefix(8)) == [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])

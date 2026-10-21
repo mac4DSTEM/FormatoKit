@@ -228,7 +228,7 @@ public nonisolated enum FormatoPNG {
     }
 
     /// Adler-32 (the one `zlib.adler32` computes).
-    static func adler32(_ bytes: [UInt8]) -> UInt32 {
+    package static func adler32(_ bytes: [UInt8]) -> UInt32 {
         var a: UInt32 = 1, b: UInt32 = 0
         var index = 0
         while index < bytes.count {

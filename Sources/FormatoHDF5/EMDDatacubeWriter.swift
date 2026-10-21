@@ -136,10 +136,12 @@ public nonisolated final class EMDDatacubeWriter: @unchecked Sendable {
     /// Writes a whole cube. `values` is C order, `layout.shape` many float32; the file is published atomically.
     public static func write(_ values: [Float], layout: EMDDatacubeLayout, to destination: URL, sourcePath: String? = nil,
                              cancelled: @Sendable () -> Bool = FormatoCancellation.task) throws {
-        let rowCount = layout.shape[1] * layout.shape[2] * layout.shape[3]
-        guard layout.shape.count == 4, values.count == layout.shape[0] * rowCount else {
+        // The shape is checked before any product of it is formed (a short or huge shape must not trap here).
+        guard layout.shape.count == 4, layout.shape.allSatisfy({ $0 >= 1 }), let total = try? FormatoArray.elementCount(layout.shape),
+              values.count == total else {
             throw HDF5FileError.invalidArgument("\(values.count) values for the shape \(layout.shape)")
         }
+        let rowCount = layout.shape[1] * layout.shape[2] * layout.shape[3]
         let writer = try EMDDatacubeWriter(destination: destination, layout: layout, sourcePath: sourcePath)
         do {
             // Bands of about 16 Mi values keep a large cube's memory flat.

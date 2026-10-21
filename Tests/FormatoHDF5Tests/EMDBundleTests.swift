@@ -112,6 +112,16 @@ import FormatoHDF5
         #expect(made == pinned)
     }
 
+    @Test func wholeCubeWriteRefusesABadShapeBeforeAnyProduct() throws {
+        let dir = try scratch(); defer { cleanup(dir) }
+        let out = dir.appendingPathComponent("bad.h5")
+        for shape in [[2, 2, 2], [0, 2, 2, 2], [Int.max, 2, 2, 2], [1 << 40, 1 << 40, 1 << 40, 1 << 40]] {
+            let layout = EMDDatacubeLayout(shape: shape, header: EMDFileHeader(authoringProgram: "test"))
+            #expect(throws: HDF5FileError.self) { try EMDDatacubeWriter.write([0, 1], layout: layout, to: out) }
+        }
+        #expect(!FileManager.default.fileExists(atPath: out.path))
+    }
+
     @Test func axesOfOneAreASingleZeroAndMissingCalibrationIsPixels() throws {
         let dir = try scratch(); defer { cleanup(dir) }
         let out = dir.appendingPathComponent("tiny.h5")
