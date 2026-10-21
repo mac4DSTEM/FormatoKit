@@ -1,7 +1,7 @@
 # Parity with RosettaSciIO
 
 The coverage table of the kit against RosettaSciIO's public API, rewritten by the 0.9.0 audit (2026-10-21) from source on disk:
-the 38 plugins of RosettaSciIO 0.14.0 (`refs/rsciio`, `rsciio/*/specifications.yaml`, each `file_reader` and `file_writer`
+the 38 plugins of RosettaSciIO 0.14.0 (`References/python/rsciio`, `rsciio/*/specifications.yaml`, each `file_reader` and `file_writer`
 signature, each `tests/test_*.py`). The kit's pins stay at RosettaSciIO `049e7d70` (0.14.1.dev96, `References/rsciio-venv`): it is
 a development commit that differs from the 0.14.0 release on disk. For the formats the kit holds the differences are: Velox (049e7d70
 reads FFT/DPC stacks frame by frame and adds `EelsSpectrumImage`, which 0.14.0 lacks), EMPAD (049e7d70 takes the scan size from a

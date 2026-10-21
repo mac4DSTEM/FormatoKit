@@ -1,5 +1,5 @@
 """Checks the Swift-written BraggVectors fixtures against py4DSTEM and h5py. Run (after generate.py, and after the Swift
-test wrote swift-*.h5 into the fixtures folder) with References/CuboKit/py4dstem-venv/bin/python -I -B, under memcap.sh:
+test wrote swift-*.h5 into the fixtures folder) with References/python/py4dstem/bin/python -I -B, under memcap.sh:
 
   FORMATO_BRAGG_FIXTURE_DIR=$PWD/Tests/FormatoHDF5Tests/Fixtures/bragg swift test -c release --jobs 4 --filter BraggVectorsTests
   MACEM_SUITE=... MPLCONFIGDIR=$PWD/.build/matplotlib tools/memcap.sh -- .../python -I -B tools/bragg-writer/check.py

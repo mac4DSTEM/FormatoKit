@@ -14,7 +14,7 @@
 //  049e7d70 `_get_detector_metadata_dict`) and from tools/velox-metadata-parity/make_fixture.py, which plants them.
 //  They are not read from velox-metadata-planted.truth.json and not computed by the reader.
 //  Fixtures/velox-metadata-planted.emd is regenerated with
-//  `References/python-venv/bin/python -I tools/velox-metadata-parity/make_fixture.py` (stdlib + h5py + numpy).
+//  `../References/python/hyperspy/bin/python -I tools/velox-metadata-parity/make_fixture.py` (stdlib + h5py + numpy).
 //
 //  Each Data/Image group of the planted file has a 2-column Metadata. Column 0 holds the values below; column 1 is a
 //  DECOY with a different value in every field, so a reader that takes the wrong column cannot pass.
