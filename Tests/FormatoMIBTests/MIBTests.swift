@@ -94,3 +94,34 @@ private func directory() throws -> URL {
     try data.write(to: path)
     #expect(throws: MIBError.self) { try MIBReader(path: path.path) }
 }
+
+/// `.appScanXY` takes a header size other than 384 / 768 (the original reader did); RosettaSciIO's convention still refuses it.
+@Test func mibOtherHeaderSizeIsTheAppConventionsAndPixelCodeIsExposed() throws {
+    let pins = try JSONDecoder().decode(Pins.self, from: Data(contentsOf: fixtures.appendingPathComponent("pins.json")))
+    let dir = try directory(); defer { try? FileManager.default.removeItem(at: dir) }
+    let pin = try #require(pins.cases.first { $0.app })
+    let source = try inflate(pin.name + ".mib.gz")
+    let fields = String(decoding: source.prefix(384), as: UTF8.self).components(separatedBy: ",")
+    let width = try #require(Int(fields[4])), height = try #require(Int(fields[5]))
+    let bytes = ["U08": 1, "U16": 2, "U32": 4][fields[6]]!
+    let stride = 384 + width * height * bytes
+    #expect(source.count % stride == 0)
+    var wide = Data()
+    for frame in 0..<(source.count / stride) {
+        var header = Data(source[(frame * stride)..<(frame * stride + 384)])
+        let marker = Data("00384".utf8), at = try #require(header.range(of: marker))
+        header.replaceSubrange(at, with: Data("00512".utf8))
+        wide += header + Data(repeating: 0x20, count: 128) + source[(frame * stride + 384)..<((frame + 1) * stride)]
+    }
+    let path = dir.appendingPathComponent("wide.mib"); try wide.write(to: path)
+    let reference = dir.appendingPathComponent("plain.mib"); try source.write(to: reference)
+    let hdr = fixtures.appendingPathComponent(pin.name + ".hdr")
+    for target in [path, reference] where FileManager.default.fileExists(atPath: hdr.path) {
+        try FileManager.default.copyItem(at: hdr, to: target.deletingPathExtension().appendingPathExtension("hdr"))
+    }
+    let app = try MIBReader(path: path.path, convention: .appScanXY)
+    let plain = try MIBReader(path: reference.path, convention: .appScanXY)
+    #expect(app.pixelCode == fields[6] && plain.pixelCode == fields[6])
+    #expect(try app.signal.load().data == plain.signal.load().data)
+    #expect(throws: MIBError.self) { try MIBReader(path: path.path) }
+}

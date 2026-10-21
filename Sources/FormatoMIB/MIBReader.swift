@@ -28,6 +28,8 @@ public nonisolated enum MIBConvention: Sendable {
 public nonisolated struct MIBReader: Sendable {
     /// Signal metadata and on-demand pixels; construction reads headers but no detector payload.
     public let signal: FormatoLazySignal
+    /// The stored pixel code of the first frame header: `U08`, `U16` or `U32` (the type the signal is read from).
+    public let pixelCode: String
 
     /// Opens a MIB file and its optional same-stem `.hdr` companion.
     /// - Parameters:
@@ -39,8 +41,9 @@ public nonisolated struct MIBReader: Sendable {
     /// - Throws: `MIBError` for malformed files and unsupported layouts, including R64.
     public init(path: String, navigationShape: [Int]? = nil, firstFrame: Int? = nil, lastFrame: Int? = nil,
                 convention: MIBConvention = .rosettaSciIO) throws {
-        let mapping = try MIBMapping(path: path)
+        let mapping = try MIBMapping(path: path, anyHeaderSize: convention == .appScanXY)
         let header = try mapping.header(at: 0)
+        pixelCode = header.code
         if header.code == "R64" { throw MIBError.unsupported("RAW MIB data not supported.") }
         let type: FormatoDataType
         switch header.code {
@@ -169,7 +172,10 @@ private struct MIBHeader {
 // Immutable mapping; lifetime is retained by the signal and reads use no shared mutable cursor.
 private final class MIBMapping: @unchecked Sendable {
     let fd: Int32; let pointer: UnsafeMutableRawPointer; let length: Int
-    init(path: String) throws {
+    /// RosettaSciIO's two header sizes only (false), or any size from 384 to 64 KiB (the original app's reader; true).
+    let anyHeaderSize: Bool
+    init(path: String, anyHeaderSize: Bool) throws {
+        self.anyHeaderSize = anyHeaderSize
         let descriptor = open(path, O_RDONLY)
         guard descriptor >= 0 else { throw MIBError.cannotOpen(path) }
         var info = stat()
@@ -186,7 +192,8 @@ private final class MIBMapping: @unchecked Sendable {
     func header(at offset: Int) throws -> MIBHeader {
         guard offset >= 0, offset <= length, length - offset >= 384 else { throw MIBError.malformed("Truncated header") }
         let prefix = String(decoding: UnsafeRawBufferPointer(start: pointer + offset, count: 384), as: UTF8.self).components(separatedBy: ",")
-        guard prefix.count >= 8, prefix[0] == "MQ1", let size = Int(prefix[2]), [384,768].contains(size), size <= length - offset else { throw MIBError.malformed("Invalid MIB header") }
+        guard prefix.count >= 8, prefix[0] == "MQ1", let size = Int(prefix[2]),
+              anyHeaderSize ? (384...65536).contains(size) : [384,768].contains(size), size <= length - offset else { throw MIBError.malformed("Invalid MIB header") }
         let bytes = UnsafeRawBufferPointer(start: pointer + offset, count: size)
         guard bytes.allSatisfy({ $0 < 128 }) else { throw MIBError.malformed("Non-ASCII header") }
         let fields = String(decoding: bytes, as: UTF8.self).components(separatedBy: ",")
