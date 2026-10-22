@@ -59,7 +59,7 @@ nonisolated extension AcquisitionMetadata {
         // The pixel size at the specimen: RosettaSciIO's axis scale, `PixelUnitX` for both axes as it reads them (rows from the
         // height, columns from the width). A pixel size that is not a finite positive number is no calibration (nil).
         if let size = m.pixelSizeMeters, size.width.isFinite, size.width > 0, size.height.isFinite, size.height > 0,
-           let unit = text(m.pixelUnit) {
+           case let unit = text(m.pixelUnit) ?? "" {   // a missing PixelUnitX is "" in RosettaSciIO (`.get("PixelUnitX", "")`): scale kept
             var note = "BinaryResult.PixelSize, as stored; RosettaSciIO reads it as the axis scale, not as metadata"
             if let unitY = text(m.pixelUnitY), unitY != unit { note += "; PixelUnitY is '\(unitY)', RosettaSciIO uses PixelUnitX for both" }
             out.pixelSize = MetadataReading(PixelSize(rows: size.height, columns: size.width, units: unit), note: note)

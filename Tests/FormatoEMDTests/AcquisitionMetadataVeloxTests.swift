@@ -85,5 +85,22 @@ extension VeloxEMDSerialized {
             #expect(entries["haadf"]?.detectorType == "ScanningDetector")
             #expect(entries["ceta"]?.resolvedDetector?.name == "BM-Ceta")
         }
+
+        @Test func testPixelSizeWithoutPixelUnitXKeepsAnEmptyUnitLikeRosettaSciIO() throws {
+            // RosettaSciIO reads `.get("PixelUnitX", "")`: the scale is kept and the unit is "" (tools/acq-metadata/no_unit.py).
+            let path = Self.fixtures.appendingPathComponent("velox-no-unit.emd").path
+            let pin = try JSONSerialization.jsonObject(with: Data(contentsOf: Self.fixtures.appendingPathComponent("velox-no-unit.pin.json")))
+            let axes = try #require((pin as? [String: Any])?["axes"] as? [[[String: Any]]])
+            let images = try VeloxEMDReader(path: path).images()
+            #expect(images.count == axes.count && !images.isEmpty)
+            for image in images {
+                let m = AcquisitionMetadata.velox(image, timeZone: Self.utc)
+                let size = try #require(m.pixelSize?.value, Comment(rawValue: image.id))
+                #expect(size == PixelSize(rows: 2e-10, columns: 2e-10, units: ""), Comment(rawValue: image.id))
+            }
+            for pair in axes {
+                #expect(pair.allSatisfy { ($0["units"] as? String) == "" && ($0["scale"] as? Double) == 2e-10 })
+            }
+        }
     }
 }
