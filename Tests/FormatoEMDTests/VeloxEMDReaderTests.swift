@@ -514,6 +514,23 @@ extension VeloxEMDSerialized {
             #expect(half.pixelUnitY == nil)
         }
 
+        /// `contents` counts what the file holds from its group names, with nothing decoded: the planted main file holds an image, a
+        /// spectrum stream and no EELS; with its image group renamed away it holds none; a file that is not HDF5 has no contents.
+        @Test func testContentsCountsTheGroupsAFileHolds() throws {
+            let main = try #require(VeloxEMDReader.contents(path: try writeFile()))
+            #expect(main == VeloxContents(images: 1, spectra: 0, edsSpectrumImages: 2, eelsSpectrumImages: 0), "the planted main file: one image, two streams")
+            #expect(main.hasSpectrumImage)
+            let noImages = try #require(VeloxEMDReader.contents(path: try patched("\0Image\0", "\0Imagx\0")))
+            #expect(noImages.images == 0, "the rename took")
+            #expect(noImages.edsSpectrumImages == main.edsSpectrumImages)
+            // Without its Data/SpectrumImage group the streams are a spot spectrum (the FEI single-spectrum layout), not a scan.
+            let spot = try #require(VeloxEMDReader.contents(path: try patched("\0SpectrumImage\0", "\0SpectrumImagx\0")))
+            #expect(spot.edsSpectrumImages == 0 && !spot.hasSpectrumImage)
+            let text = NSTemporaryDirectory() + "velox-contents-\(UUID().uuidString).emd"
+            try Data("not hdf5".utf8).write(to: URL(fileURLWithPath: text))
+            #expect(VeloxEMDReader.contents(path: text) == nil)
+        }
+
         /// `isVeloxFile` is "a Velox file that holds something to read": a spectrum stream or image, or an image group with Data AND
         /// Metadata. `isVeloxEMD` keeps meaning a spectrum image (the app routes `.emd` on it), so it stays false for image-only files.
         @Test func testIsVeloxFileAcceptsStreamAndImageFilesAndNothingElse() throws {

@@ -1007,6 +1007,27 @@ public nonisolated struct VeloxImageInfo: Sendable {
     public let metadata: VeloxMetadata
 }
 
+/// The groups of a Velox file, counted (`VeloxEMDReader.contents`).
+public nonisolated struct VeloxContents: Equatable, Sendable {
+    /// Image groups with `Data` and `Metadata` (HAADF, BF, EDS maps, ...).
+    public let images: Int
+    /// Single spectra under `Data/Spectrum`.
+    public let spectra: Int
+    /// EDS spectrum streams under `Data/SpectrumStream` (one per detector) of a file that has a `Data/SpectrumImage` group, that is a
+    /// scan: a stream recorded at one spot (a single spectrum acquisition) is not a spectrum image and counts as 0.
+    public let edsSpectrumImages: Int
+    /// EELS spectrum images under `Data/EelsSpectrumImage`.
+    public let eelsSpectrumImages: Int
+
+    public init(images: Int, spectra: Int, edsSpectrumImages: Int, eelsSpectrumImages: Int) {
+        self.images = images; self.spectra = spectra
+        self.edsSpectrumImages = edsSpectrumImages; self.eelsSpectrumImages = eelsSpectrumImages
+    }
+
+    /// A spectrum cube (EDS or EELS) is in the file.
+    public var hasSpectrumImage: Bool { edsSpectrumImages > 0 || eelsSpectrumImages > 0 }
+}
+
 public nonisolated struct VeloxEMDReader: Sendable {
     package let path: String
     /// Values per block read. The default is 32 M (64 MB); a test lowers it so a small file spans several blocks.
@@ -1040,6 +1061,21 @@ public nonisolated struct VeloxEMDReader: Sendable {
             guard let file = try? openVeloxFile(path: path) else { return false }
             if file.exists("/Data/SpectrumStream") || file.exists("/Data/SpectrumImage") { return true }
             return file.children(of: "/Data/Image").contains { imageGroup(file: file, id: $0) != nil }
+        }
+    }
+
+    /// What a Velox file holds, counted from its group names with one HDF5 open and nothing decoded: the image groups (with `Data` and
+    /// `Metadata`, the ones `images()` reads), the single spectra, the EDS spectrum streams and the EELS spectrum images. A file's
+    /// The `Data/SpectrumImage` descriptors are not counted, but without one the streams are not a scan. Nil for a file that is not Velox or cannot be opened;
+    /// a Velox file that holds nothing readable returns all zeros (unlike `isVeloxFile`, which says false).
+    public static func contents(path: String) -> VeloxContents? {
+        HDF5Serial.run {
+            guard let file = try? openVeloxFile(path: path) else { return nil }
+            return VeloxContents(
+                images: file.children(of: "/Data/Image").filter { imageGroup(file: file, id: $0) != nil }.count,
+                spectra: file.children(of: "/Data/Spectrum").count,
+                edsSpectrumImages: file.exists("/Data/SpectrumImage") ? file.children(of: "/Data/SpectrumStream").count : 0,
+                eelsSpectrumImages: file.children(of: "/Data/EelsSpectrumImage").count)
         }
     }
 
