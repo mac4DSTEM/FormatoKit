@@ -755,9 +755,10 @@ public nonisolated struct TIFFSeriesArray: FormatoLazyArray {
         for k in stride(from: rank - 2, through: 0, by: -1) { strides[k] = strides[k + 1] * shape[k + 1] }
         var idx = [Int](repeating: 0, count: max(rank - 1, 0))
         while true {
-            var flat = start[rank - 1]
-            for k in 0..<(rank - 1) { flat += (start[k] + idx[k]) * strides[k] }
-            var remaining = count[rank - 1]
+            // Rank 0 (tifffile's shape () series) is the page's one value: flat 0, one element.
+            var flat = rank > 0 ? start[rank - 1] : 0
+            for k in 0..<max(rank - 1, 0) { flat += (start[k] + idx[k]) * strides[k] }
+            var remaining = rank > 0 ? count[rank - 1] : 1
             while remaining > 0 {
                 let image = flat / pageElements, within = flat % pageElements
                 let (y, x) = (within / width, within % width)

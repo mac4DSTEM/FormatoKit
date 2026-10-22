@@ -3030,6 +3030,226 @@
   {
    "bigtiff": false,
    "byteorder": "<",
+   "bytes": 226,
+   "container": null,
+   "fei_metadata": null,
+   "flags": [
+    "shaped",
+    "uniform"
+   ],
+   "imagej_metadata": null,
+   "in_scope": true,
+   "out_of_scope": null,
+   "out_of_scope_reasons": [],
+   "page0_flags": [
+    "shaped"
+   ],
+   "pages": 1,
+   "path": "shaped/description_rank0.tif",
+   "raises": null,
+   "series": [
+    {
+     "axes": [],
+     "data_sha256": "d32c1dacbd6c6906812f1339032fe0afe963302f128950841c1dc2ca2cac33ec",
+     "dtype": "uint16",
+     "dtype_as_returned": "uint16",
+     "metadata": [
+      {
+       "key": "General.original_filename",
+       "kind": "string",
+       "source": null,
+       "value": "description_rank0.tif"
+      },
+      {
+       "key": "Signal.signal_type",
+       "kind": "string",
+       "source": null,
+       "value": ""
+      }
+     ],
+     "shape": [],
+     "tifffile_axes": "",
+     "tifffile_kind": "shaped"
+    }
+   ],
+   "set": "shaped",
+   "sha256": "4eedf2feea9dfca83f4b7a322f201fd50f636d597c41eef94235e7d305b060bb",
+   "tags": [
+    {
+     "code": 256,
+     "count": 1,
+     "name": "ImageWidth",
+     "raw_sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+     "type": 4,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 257,
+     "count": 1,
+     "name": "ImageLength",
+     "raw_sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+     "type": 4,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 258,
+     "count": 1,
+     "name": "BitsPerSample",
+     "raw_sha256": "707bf0b938f307b5c222e670598b865d5e1f8a8003df82c7abbf7c9f8fa4d720",
+     "type": 3,
+     "value": 16,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 259,
+     "count": 1,
+     "name": "Compression",
+     "raw_sha256": "47dc540c94ceb704a23875c11273e16bb0b8a87aed84de911f2133568115f254",
+     "type": 3,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 262,
+     "count": 1,
+     "name": "PhotometricInterpretation",
+     "raw_sha256": "47dc540c94ceb704a23875c11273e16bb0b8a87aed84de911f2133568115f254",
+     "type": 3,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 270,
+     "count": 14,
+     "name": "ImageDescription",
+     "raw_sha256": "79f16aaef62f71de26dc7ad0b194906bcfe0f53c0bd14203aed9c7a8d2e81236",
+     "type": 2,
+     "value": "{\"shape\": []}",
+     "value_bits": null,
+     "value_kind": "str"
+    },
+    {
+     "code": 273,
+     "count": 1,
+     "name": "StripOffsets",
+     "raw_sha256": "cbce3f24bbaf263e07da1c5f31dcebcaf407d740d884c1298ab73a9641074a89",
+     "type": 4,
+     "value": [
+      224
+     ],
+     "value_bits": [
+      null
+     ],
+     "value_kind": "list"
+    },
+    {
+     "code": 277,
+     "count": 1,
+     "name": "SamplesPerPixel",
+     "raw_sha256": "47dc540c94ceb704a23875c11273e16bb0b8a87aed84de911f2133568115f254",
+     "type": 3,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 278,
+     "count": 1,
+     "name": "RowsPerStrip",
+     "raw_sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+     "type": 4,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 279,
+     "count": 1,
+     "name": "StripByteCounts",
+     "raw_sha256": "26b25d457597a7b0463f9620f666dd10aa2c4373a505967c7c8d70922a2d6ece",
+     "type": 4,
+     "value": [
+      2
+     ],
+     "value_bits": [
+      null
+     ],
+     "value_kind": "list"
+    },
+    {
+     "code": 282,
+     "count": 1,
+     "name": "XResolution",
+     "raw_sha256": "64ed86b909d6d0502b64b28db0ea1272ffb358e20e9b1d88b63ccb07fa900cf5",
+     "type": 5,
+     "value": [
+      1,
+      1
+     ],
+     "value_bits": [
+      null,
+      null
+     ],
+     "value_kind": "list"
+    },
+    {
+     "code": 283,
+     "count": 1,
+     "name": "YResolution",
+     "raw_sha256": "64ed86b909d6d0502b64b28db0ea1272ffb358e20e9b1d88b63ccb07fa900cf5",
+     "type": 5,
+     "value": [
+      1,
+      1
+     ],
+     "value_bits": [
+      null,
+      null
+     ],
+     "value_kind": "list"
+    },
+    {
+     "code": 296,
+     "count": 1,
+     "name": "ResolutionUnit",
+     "raw_sha256": "47dc540c94ceb704a23875c11273e16bb0b8a87aed84de911f2133568115f254",
+     "type": 3,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 305,
+     "count": 12,
+     "name": "Software",
+     "raw_sha256": "15218e83e7d52d30092b80e5002207077670f9e2a0a206dadb0208ff605290bc",
+     "type": 2,
+     "value": "tifffile.py",
+     "value_bits": null,
+     "value_kind": "str"
+    }
+   ],
+   "tifffile_raises": null,
+   "tifffile_series": [
+    {
+     "axes": "",
+     "dtype": "uint16",
+     "kind": "shaped",
+     "pages": 1,
+     "shape": []
+    }
+   ]
+  },
+  {
+   "bigtiff": false,
+   "byteorder": "<",
    "bytes": 1534,
    "container": null,
    "fei_metadata": null,
@@ -3790,6 +4010,202 @@
      ]
     }
    ]
+  },
+  {
+   "bigtiff": false,
+   "byteorder": "<",
+   "bytes": 242,
+   "container": null,
+   "fei_metadata": null,
+   "flags": [
+    "shaped",
+    "uniform"
+   ],
+   "imagej_metadata": null,
+   "in_scope": false,
+   "out_of_scope": "tifffile-cannot-open",
+   "out_of_scope_reasons": [
+    "tifffile-cannot-open"
+   ],
+   "page0_flags": [
+    "shaped"
+   ],
+   "pages": 1,
+   "path": "shaped/description_reshape_underflow.tif",
+   "raises": {
+    "message": "tuple index out of range",
+    "type": "IndexError"
+   },
+   "series": [],
+   "set": "shaped",
+   "sha256": "9e064ae37e46f1e00cd7a972e99ee125d104075b3fa484d5aaff8e0093090d85",
+   "tags": [
+    {
+     "code": 256,
+     "count": 1,
+     "name": "ImageWidth",
+     "raw_sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+     "type": 4,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 257,
+     "count": 1,
+     "name": "ImageLength",
+     "raw_sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+     "type": 4,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 258,
+     "count": 1,
+     "name": "BitsPerSample",
+     "raw_sha256": "707bf0b938f307b5c222e670598b865d5e1f8a8003df82c7abbf7c9f8fa4d720",
+     "type": 3,
+     "value": 16,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 259,
+     "count": 1,
+     "name": "Compression",
+     "raw_sha256": "47dc540c94ceb704a23875c11273e16bb0b8a87aed84de911f2133568115f254",
+     "type": 3,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 262,
+     "count": 1,
+     "name": "PhotometricInterpretation",
+     "raw_sha256": "47dc540c94ceb704a23875c11273e16bb0b8a87aed84de911f2133568115f254",
+     "type": 3,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 270,
+     "count": 27,
+     "name": "ImageDescription",
+     "raw_sha256": "9eaca1fc9554473bf6a233aba32aca4f83f2e0b37ecd7e051b514d2a2a886ee2",
+     "type": 2,
+     "value": "{\"shape\": [1, 1, 1, 1, 1]}",
+     "value_bits": null,
+     "value_kind": "str"
+    },
+    {
+     "code": 273,
+     "count": 1,
+     "name": "StripOffsets",
+     "raw_sha256": "e6bfd42cb3ef4c11ccd2eb76227f9fa93916250b47c03f644c3171b9be8d9c02",
+     "type": 4,
+     "value": [
+      240
+     ],
+     "value_bits": [
+      null
+     ],
+     "value_kind": "list"
+    },
+    {
+     "code": 277,
+     "count": 1,
+     "name": "SamplesPerPixel",
+     "raw_sha256": "47dc540c94ceb704a23875c11273e16bb0b8a87aed84de911f2133568115f254",
+     "type": 3,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 278,
+     "count": 1,
+     "name": "RowsPerStrip",
+     "raw_sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+     "type": 4,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 279,
+     "count": 1,
+     "name": "StripByteCounts",
+     "raw_sha256": "26b25d457597a7b0463f9620f666dd10aa2c4373a505967c7c8d70922a2d6ece",
+     "type": 4,
+     "value": [
+      2
+     ],
+     "value_bits": [
+      null
+     ],
+     "value_kind": "list"
+    },
+    {
+     "code": 282,
+     "count": 1,
+     "name": "XResolution",
+     "raw_sha256": "64ed86b909d6d0502b64b28db0ea1272ffb358e20e9b1d88b63ccb07fa900cf5",
+     "type": 5,
+     "value": [
+      1,
+      1
+     ],
+     "value_bits": [
+      null,
+      null
+     ],
+     "value_kind": "list"
+    },
+    {
+     "code": 283,
+     "count": 1,
+     "name": "YResolution",
+     "raw_sha256": "64ed86b909d6d0502b64b28db0ea1272ffb358e20e9b1d88b63ccb07fa900cf5",
+     "type": 5,
+     "value": [
+      1,
+      1
+     ],
+     "value_bits": [
+      null,
+      null
+     ],
+     "value_kind": "list"
+    },
+    {
+     "code": 296,
+     "count": 1,
+     "name": "ResolutionUnit",
+     "raw_sha256": "47dc540c94ceb704a23875c11273e16bb0b8a87aed84de911f2133568115f254",
+     "type": 3,
+     "value": 1,
+     "value_bits": null,
+     "value_kind": "int"
+    },
+    {
+     "code": 305,
+     "count": 12,
+     "name": "Software",
+     "raw_sha256": "15218e83e7d52d30092b80e5002207077670f9e2a0a206dadb0208ff605290bc",
+     "type": 2,
+     "value": "tifffile.py",
+     "value_bits": null,
+     "value_kind": "str"
+    }
+   ],
+   "tifffile_raises": {
+    "message": "tuple index out of range",
+    "type": "IndexError"
+   },
+   "tifffile_series": []
   },
   {
    "bigtiff": false,

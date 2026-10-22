@@ -105,8 +105,9 @@ extension TIFFSignals {
         return true
     }
 
-    /// tifffile's `reshape_axes(axes, shape, newshape)` (unknown axes 'Q'); nil where it raises ValueError.
-    static func reshapeAxes(_ axes: [Character], _ shape: [Int], _ newShape: [Int]) -> [Character]? {
+    /// tifffile's `reshape_axes(axes, shape, newshape)` (unknown axes 'Q'); nil where it raises ValueError; throws where it raises
+    /// IndexError (an exhausted source indexed from the end past its first dimension), which tifffile does not swallow.
+    static func reshapeAxes(_ axes: [Character], _ shape: [Int], _ newShape: [Int], file: String) throws -> [Character]? {
         guard axes.count == shape.count else { return nil }
         guard let size = try? product(shape), let newSize = try? product(newShape), size == newSize else { return nil }
         if axes.isEmpty && newShape.isEmpty { return [] }
@@ -120,6 +121,9 @@ extension TIFFSignals {
             prodns *= ns
             while i > 0 && shape[i] == 1 && ns != 1 { i -= 1 }
             let k = i >= 0 ? i : i + shape.count   // Python's negative index: an exhausted source reads from the end
+            guard k >= 0 && k < shape.count else {
+                throw FormatoReadError.unsupported("\(file): the shaped description's shape \(newShape) indexes past the page's dimensions (tifffile raises IndexError here).")
+            }
             if ns == shape[k] && prodns == prods * shape[k] {
                 prods *= shape[k]
                 result.append(axes[k])
@@ -219,7 +223,7 @@ extension TIFFSignals {
                 curAxes.insert("Q", at: 0)
                 curShape.insert(reSize / curSize, at: 0)
             }
-            if let reshaped = reshapeAxes(curAxes, curShape, outReshape) { curAxes = reshaped; curShape = outReshape }
+            if let reshaped = try reshapeAxes(curAxes, curShape, outReshape, file: formatoDisplayFileName(file.path)) { curAxes = reshaped; curShape = outReshape }
             // The images the series reads: one per page, or (one page, data following it) a virtual run.
             let images = try product(curShape) / pageElements
             guard try product(curShape) % pageElements == 0 else { throw FormatoReadError.unsupported("A shaped series whose shape is not a whole number of pages.") }

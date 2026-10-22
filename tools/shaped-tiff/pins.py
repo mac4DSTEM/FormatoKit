@@ -84,6 +84,8 @@ CASES = {
     "description_reshape_split": ((6, 7, 9), "<u2", {"description": '{"shape": [2, 3, 7, 9]}', "metadata": None}),
     "description_reshape_split_rows": ((5, 8, 9), "<u2", {"description": '{"shape": [5, 2, 4, 9]}', "metadata": None}),
     "description_bigger_than_pages": ((2, 7, 9), "<u2", {"description": '{"shape": [5, 7, 9]}', "metadata": None}),
+    "description_reshape_underflow": ((1, 1), "<u2", {"description": '{"shape": [1, 1, 1, 1, 1]}', "metadata": None}),
+    "description_rank0": ((1, 1), "<u2", {"description": '{"shape": []}', "metadata": None}),
 }
 
 

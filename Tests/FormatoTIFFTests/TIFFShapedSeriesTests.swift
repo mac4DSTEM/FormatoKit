@@ -155,4 +155,24 @@ import FormatoCore
         let m = try t.signal(series: 0).load().metadata
         #expect(m["General.date"]?.value.text == "2026-10-22" && m["General.time"]?.value.text == "12:34:56")
     }
+
+    @Test func testShapeIndexingPastThePageDimensionsIsRefusedByName() throws {
+        // A 1x1 page described as {"shape": [1,1,1,1,1]}: tifffile's reshape_axes raises IndexError (not swallowed); this once trapped.
+        do {
+            _ = try open("description_reshape_underflow")
+            Issue.record("expected a refusal")
+        } catch let error as FormatoReadError {
+            guard case .unsupported(let why) = error else { Issue.record("wrong error \(error)"); return }
+            #expect(why.contains("description_reshape_underflow.tif") && why.contains("IndexError"))
+        }
+    }
+
+    @Test func testShapeOfRankZeroReadsOneValueLikeTifffile() throws {
+        // {"shape": []}: tifffile's series is a 0-d array of the page's one value; this once trapped in the flat reader.
+        let t = try open("description_rank0")
+        #expect(t.series[0].shape == [] && t.series[0].axes == "")
+        let s = try t.signal(series: 0).load()
+        #expect(s.data.shape == [] && s.axes.isEmpty)
+        #expect(s.data.bytes == (try pageBytes("description_rank0", 0..<1, bytesPerSample: 2)))
+    }
 }
