@@ -54,6 +54,8 @@ let package = Package(
         .library(name: "FormatoMSA", targets: ["FormatoMSA"]),
         // One import and one `FormatoLoader.load(path:)` for every format that reads as signals (0.9.0).
         .library(name: "Formato", targets: ["Formato"]),
+        // One decimated frame and the header facts of a file, never more than one frame read (0.10.0): Quick Look and Finder-style consumers.
+        .library(name: "FormatoPeek", targets: ["FormatoPeek"]),
     ],
     targets: binaryTargets + [
         // The data model every reader returns: arrays, axes, units, metadata with provenance, lazy signals; cancellation.
@@ -74,8 +76,12 @@ let package = Package(
         .target(name: "FormatoMSA", dependencies: ["FormatoCore"], swiftSettings: settings),
         .target(name: "Formato", dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoMRC", "FormatoMSA", "FormatoTIFF"],
                 swiftSettings: settings),
+        .target(name: "FormatoPeek",
+                dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoHDF5", "FormatoMRC", "FormatoMSA", "FormatoTIFF", "Formato"],
+                swiftSettings: settings),
         // The first ten minutes: `swift run formato-info <file>` prints every signal of a DM, Velox or TIFF file (public API
         // only). An example, not a product.
+        .executableTarget(name: "formato-peek", dependencies: ["FormatoPeek"], path: "Examples/formato-peek", swiftSettings: settings),
         .executableTarget(name: "formato-info", dependencies: ["FormatoCore", "Formato"],
                           path: "Examples/formato-info", swiftSettings: settings),
 
@@ -112,6 +118,7 @@ let package = Package(
                     swiftSettings: settings),
         .testTarget(name: "FormatoMIBTests", dependencies: ["FormatoMIB", "FormatoCore"], exclude: ["Fixtures"], swiftSettings: settings),
         .testTarget(name: "FormatoMSATests", dependencies: ["FormatoMSA", "FormatoCore"], exclude: ["Fixtures"], swiftSettings: settings),
+        .testTarget(name: "FormatoPeekTests", dependencies: ["FormatoPeek", "FormatoCore", "FormatoHDF5", "FormatoKitTestSupport"], swiftSettings: settings),
         .testTarget(name: "FormatoLoaderTests", dependencies: ["Formato", "FormatoCore"], swiftSettings: settings),
         // The comparisons with the pinned RosettaSciIO, Pint and tifffile values and the inherited golden baseline
         // (`swift test -c release --parallel --skip FormatoKitParityTests` leaves them out). Fixtures stay in the old test folders.

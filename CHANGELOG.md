@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.10.0 (2026-10-22)
+
+New product `FormatoPeek` for Quick Look and Finder-style previews: what a file looks like and says without reading the file. Additive; no existing reader changes.
+
+- `Peek.thumbnailFrame(url:maxPixels:)` returns one decimated frame (`Peek.Frame`: width, height, row-major `Float` pixels, the source size, the stride, a `kind` of `.image`, `.diffractionPattern`, `.virtualImage` or `.spectrum`, where in the file it came from). `Peek.summary(url:)` returns the header facts (`Peek.Summary`: format, title, size in pixels, scan size for 4D, pixel size and unit, data type, acquisition date, detector, instrument, voltage, camera length, magnification). Neither reads more than one frame: an image is read one row at a time, every `stride`-th row (stride = ceil(longer side / maxPixels)), the columns decimated in memory; the pixels are the file's own, point sampled, never averaged. A stack or cube is entered at the centre of its leading axes.
+- Formats: DM3/DM4 (the first two-dimensional image object GMS lists, else the first stack entered at its centre, else a spectrum), Velox EMD (the image `VeloxImageSelection` chooses, HAADF first, never the spectrum cube), TIFF (first greyscale series), MRC (middle section of a stack), MSA/EMSA (the spectrum, binned to the largest value per bin), py4DSTEM-style HDF5 (a stored virtual image beside the cube if there is one, else the centre scan position's diffraction pattern). EMPAD and MIB are refused by name (`Peek.PeekError`); a consumer shows a pattern from its own reader.
+- Measured on this Mac, release: the 1.66 GB Velox spectrum image of the study peeks in 0.36 s with 22 MB resident (11 MB peak footprint). `formato-peek <file> [maxPixels]` (Examples) prints both.
+- Tests: a planted gradient (1000 * row + column) at stride 1 and 4, and, for DM, Velox, TIFF, MRC, MSA and the py4DSTEM fixtures, equality with the same file read whole by the format's own reader and cut at the same stride; refusals; a footprint test on the big Velox file (skips without the data).
+
+**Migration.** None; add the `FormatoPeek` product where you want it. An app extension links the three libhdf5 xcframeworks through it (FormatoHDF5), so measure the extension's bundle growth.
+
 ## 0.9.1 (2026-10-21)
 
 Tests and documentation only; no source change and no byte moves.

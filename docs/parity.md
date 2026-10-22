@@ -263,3 +263,7 @@ The golden file `kit-written.h5` is compared with a fresh write by size, the HDF
 (`kit-written.h5py.json`). To regenerate the golden on purpose (a changed layout), run
 `FORMATO_WRITE_GOLDEN=1 swift test --filter HDF5RootAttributesTests` and then `tools/hdf5-write/generate.py` for the h5py pins; the run that regenerates it compares the golden with itself, so
 run the suite again without the variable. The regenerated files are committed on their own with the reason.
+
+## Peek (0.10.0)
+
+`Peek` has no RosettaSciIO counterpart. Its dimensions, axes, data types and acquisition fields are the readers' own (compared with them, exact); its pixels are the file's, point sampled at `stride = ceil(longer side / maxPixels)` (pixel (i, j) = source (i * stride, j * stride)), so there is no tolerance: a planted gradient (1000 * row + column) pins the closed form at stride 1 and 4, and every format is compared with the same file read whole by its own reader and cut at the same stride (`Tests/FormatoPeekTests`). A stack or cube is entered at the centre of its leading axes; a spectrum is binned to the largest value per bin. Budget: the 1.66 GB Velox spectrum image peeks in 0.36 s with 22 MB resident.

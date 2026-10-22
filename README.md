@@ -18,6 +18,7 @@ large, one SwiftPM product per module.
 | `FormatoMIB` | Merlin MIB: mmap U08 (1/6-bit), U16 (12-bit), U32 (24-bit), trigger/timestamp scan shape; named app ScanX/ScanY convention; packed R64 refused | reads, pinned |
 | `FormatoMSA` | EMSA/MAS spectra (`.msa`, `.ems`, `.mas`, `.emsa`): `MSAReader` and `MSAWriter`, byte-pinned to RosettaSciIO | reads and writes, pinned |
 | `Formato` | the umbrella product: `FormatoLoader.sniff(path:)` (extension plus first bytes) and `FormatoLoader.load(path:)` (the signals of a DM, Velox, TIFF, MRC or MSA file); 4D formats are named, not loaded | 0.9.0 |
+| `FormatoPeek` | `Peek.thumbnailFrame(url:maxPixels:)` and `Peek.summary(url:)`: one decimated frame and the header facts of a DM, Velox, TIFF, MRC, MSA or py4DSTEM HDF5 file, never more than one frame read (for Quick Look and Finder previews) | 0.10.0 |
 
 `docs/parity.md` is the checklist against RosettaSciIO's formats table and its reader options: what reads, what is pinned,
 what is next.
