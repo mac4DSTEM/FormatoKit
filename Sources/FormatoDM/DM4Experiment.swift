@@ -168,6 +168,11 @@ public nonisolated struct DM4EDSSpectrumImage: Sendable, Equatable {
     public let channels: Int
     public let counts: [UInt32]
     public let energyAxis: DM4Axis
+    /// The scan calibration along x (the columns of `counts`' pixels) and y (the rows), `ImageData.Calibrations.Dimension.1` and
+    /// `.2` exactly as the file states them (units NOT converted: "µm" in a GMS file); nil where the file wrote none. Pixel `i` is
+    /// at `(i - origin) * scale`, RosettaSciIO's axis `scale` and `offset = -origin * scale` (pinned on its reading of the same files).
+    public let xAxis: DM4Axis?
+    public let yAxis: DM4Axis?
 }
 
 /// A decoded EELS spectrum image (a 3D object of role `.eels`: x, y, energy loss), read by
@@ -191,6 +196,11 @@ public nonisolated struct DM4EELSSpectrumImage: Sendable, Equatable {
     /// `ImageData.Calibrations.Dimension.3` (`Origin`, `Scale`, `Units`), units "eV": channel `c` is at `(c - origin) * scale` eV.
     /// RosettaSciIO's `offset` is `-origin * scale`.
     public let energyAxis: DM4Axis
+    /// The scan calibration along x (the columns of the scan) and y (the rows), `ImageData.Calibrations.Dimension.1` and `.2` exactly as
+    /// the file states them (units NOT converted: "µm" in a GMS file); nil where the file wrote none. Pixel `i` is at
+    /// `(i - origin) * scale`: RosettaSciIO's axis `scale`, and its `offset` is `-origin * scale` (pinned on its reading of the same files).
+    public let xAxis: DM4Axis?
+    public let yAxis: DM4Axis?
     /// `ImageTags.Microscope Info.Voltage` (volts in GMS) / 1000, as RosettaSciIO maps it to `beam_energy`
     /// (`_api.py:921-924`, `lambda x: x / 1e3`); nil when the tag is absent. As stored: a 0 V tag is 0 keV. RosettaSciIO files
     /// it under `SEM` instead of `TEM` when the illumination mode says SEM; this reads the tag either way.
@@ -510,7 +520,8 @@ public nonisolated enum DM4Experiment {
             }
             c0 += b
         }
-        return DM4EDSSpectrumImage(object: object, nx: nx, ny: ny, channels: nch, counts: out, energyAxis: axis)
+        return DM4EDSSpectrumImage(object: object, nx: nx, ny: ny, channels: nch, counts: out, energyAxis: axis,
+                                    xAxis: object.axes[0], yAxis: object.axes[1])
     }
 
     /// One block of `b` channel planes (`np` values each) into the pixel-major cube. True when a value does not convert.
@@ -604,6 +615,7 @@ public nonisolated enum DM4Experiment {
         let conditions = base + "EELS.Experimental Conditions."
         return DM4EELSSpectrumImage(
             object: object, nx: nx, ny: ny, channels: nch, counts: out, energyAxis: axis,
+            xAxis: object.axes[0], yAxis: object.axes[1],
             beamEnergyKeV: object.imageTagNumbers[base + "Microscope Info.Voltage"].map { $0 / 1e3 },
             convergenceSemiAngleMrad: object.imageTagNumbers[conditions + "Convergence semi-angle (mrad)"],
             collectionSemiAngleMrad: object.imageTagNumbers[conditions + "Collection semi-angle (mrad)"])
