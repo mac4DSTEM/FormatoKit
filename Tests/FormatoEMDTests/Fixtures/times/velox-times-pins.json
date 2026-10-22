@@ -1,0 +1,166 @@
+{
+ "files": [
+  {
+   "axes": [
+    {
+     "name": "y",
+     "navigate": true,
+     "scale": 2.4999999999999996,
+     "scale_bits": "4003ffffffffffff",
+     "size": 3,
+     "units": "nm"
+    },
+    {
+     "name": "x",
+     "navigate": true,
+     "scale": 1.26953125,
+     "scale_bits": "3ff4500000000000",
+     "size": 4,
+     "units": "nm"
+    },
+    {
+     "name": "X-ray energy",
+     "navigate": false,
+     "scale": 0.01,
+     "scale_bits": "3f847ae147ae147b",
+     "size": 8,
+     "units": "keV"
+    }
+   ],
+   "file": "si-times-planted.emd",
+   "mapped": {
+    "Acquisition_instrument.TEM.beam_energy": {
+     "bits": "4069000000000000",
+     "source": "Optics.AccelerationVoltage",
+     "value": 200.0
+    },
+    "Acquisition_instrument.TEM.camera_length": {
+     "bits": "405f400000000000",
+     "source": "Optics.CameraLength",
+     "value": 125.0
+    },
+    "Acquisition_instrument.TEM.magnification": {
+     "bits": "40f6f30000000000",
+     "source": "CustomProperties.StemMagnification.value",
+     "value": 94000.0
+    }
+   },
+   "planted": {
+    "camera_length_m": 0.125,
+    "pixel_size_m": {
+     "height": 2.5e-09,
+     "width": 1.26953125e-09
+    },
+    "segments": [
+     {
+      "enabled": true,
+      "live_time_s": 1423.1050950000008,
+      "name": "SuperXG11",
+      "real_time_s": 4187.726754226165
+     },
+     {
+      "enabled": true,
+      "live_time_s": 1423.1050950000008,
+      "name": "SuperXG12",
+      "real_time_s": 4187.726754226165
+     },
+     {
+      "enabled": true,
+      "live_time_s": 1423.1050950000008,
+      "name": "SuperXG13",
+      "real_time_s": 4187.726754226165
+     },
+     {
+      "enabled": false,
+      "live_time_s": 0.0,
+      "name": "SuperXG14",
+      "real_time_s": 0.0
+     }
+    ],
+    "stem_magnification": 94000.0
+   }
+  },
+  {
+   "axes": [
+    {
+     "name": "y",
+     "navigate": true,
+     "scale": 2.4999999999999996,
+     "scale_bits": "4003ffffffffffff",
+     "size": 3,
+     "units": "nm"
+    },
+    {
+     "name": "x",
+     "navigate": true,
+     "scale": 1.26953125,
+     "scale_bits": "3ff4500000000000",
+     "size": 4,
+     "units": "nm"
+    },
+    {
+     "name": "X-ray energy",
+     "navigate": false,
+     "scale": 0.01,
+     "scale_bits": "3f847ae147ae147b",
+     "size": 8,
+     "units": "keV"
+    }
+   ],
+   "file": "si-times-differ.emd",
+   "mapped": {
+    "Acquisition_instrument.TEM.beam_energy": {
+     "bits": "4069000000000000",
+     "source": "Optics.AccelerationVoltage",
+     "value": 200.0
+    },
+    "Acquisition_instrument.TEM.camera_length": {
+     "bits": "4069000000000000",
+     "source": "Optics.CameraLength",
+     "value": 200.0
+    },
+    "Acquisition_instrument.TEM.magnification": {
+     "bits": "0000000000000000",
+     "source": "CustomProperties.StemMagnification.value",
+     "value": 0.0
+    }
+   },
+   "planted": {
+    "camera_length_m": 0.2,
+    "pixel_size_m": {
+     "height": 2.5e-09,
+     "width": 1.26953125e-09
+    },
+    "segments": [
+     {
+      "enabled": true,
+      "live_time_s": 50.25,
+      "name": "SuperXG11",
+      "real_time_s": 100.5
+     },
+     {
+      "enabled": true,
+      "live_time_s": 49.75,
+      "name": "SuperXG12",
+      "real_time_s": 100.5
+     },
+     {
+      "enabled": true,
+      "live_time_s": 50.25,
+      "name": "SuperXG13",
+      "real_time_s": 101.5
+     },
+     {
+      "enabled": false,
+      "live_time_s": 0.0,
+      "name": "SuperXG14",
+      "real_time_s": 0.0
+     }
+    ],
+    "stem_magnification": 0.0
+   }
+  }
+ ],
+ "generator": "tools/velox-times/pins.py",
+ "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.emd.file_reader, select_type=spectrum_image)"
+}

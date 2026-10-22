@@ -402,9 +402,10 @@ public nonisolated struct VeloxDetectorInfo: Equatable, Sendable {
     public let solidAngleSteradians: Double?
     public let dispersionEV: Double?
     public let offsetEnergyEV: Double?
-    /// Column-0 values of the stream's per-frame metadata, recorded as read. SEMANTICS UNVERIFIED: the meaning
+    /// Column-0 values of the stream's per-frame metadata, recorded as read. SEMANTICS UNVERIFIED for a stream: the meaning
     /// differs by file (cumulative in one, per-frame in another, 0 on the owner's file: formats.md §2.2), so
-    /// they are reported and never interpreted or used.
+    /// they are reported and never interpreted or used. In the metadata of the `Data/SpectrumImage` group
+    /// (`VeloxEMDReader.spectrumImageMetadata()`) they are the acquisition's totals, in seconds.
     public let realTimeColumn0: Double?
     public let liveTimeColumn0: Double?
     /// `ExposureTime` as stored (s). In RosettaSciIO 049e7d70's public files only camera (`ImagingDetector`) entries
@@ -434,6 +435,13 @@ public nonisolated struct VeloxScanTransformation: Equatable, Sendable {
     package init(a11: Double, a12: Double, a13: Double, a21: Double, a22: Double, a23: Double) {
         self.a11 = a11; self.a12 = a12; self.a13 = a13; self.a21 = a21; self.a22 = a22; self.a23 = a23
     }
+}
+
+/// One X-ray detector segment's live and real time in seconds, as the file stores them.
+public nonisolated struct VeloxSegmentTimes: Equatable, Sendable {
+    public let name: String
+    public let liveTimeSeconds: Double?
+    public let realTimeSeconds: Double?
 }
 
 public nonisolated struct VeloxMetadata: Sendable {
@@ -515,6 +523,24 @@ public nonisolated struct VeloxMetadata: Sendable {
     public let exposureTimeSeconds: Double?
 
     public var superXDetectors: [VeloxDetectorInfo] { detectors.filter { $0.isAnalytical } }
+
+    /// The live and real time (s) of each X-ray segment that is not disabled, in the file's order, as stored. In the metadata of a
+    /// `Data/SpectrumImage` group (`VeloxEMDReader.spectrumImageMetadata()`) these are the totals of the scan. RosettaSciIO maps
+    /// neither for a spectrum image.
+    public var segmentTimes: [VeloxSegmentTimes] {
+        superXDetectors.filter { $0.enabled != false }.map {
+            VeloxSegmentTimes(name: $0.name, liveTimeSeconds: $0.liveTimeColumn0, realTimeSeconds: $0.realTimeColumn0)
+        }
+    }
+    /// The live time every enabled segment states (equal to the bit), nil where there is none, one lacks it or they differ.
+    public var commonLiveTimeSeconds: Double? { Self.common(segmentTimes.map(\.liveTimeSeconds)) }
+    /// The real time every enabled segment states, as `commonLiveTimeSeconds`.
+    public var commonRealTimeSeconds: Double? { Self.common(segmentTimes.map(\.realTimeSeconds)) }
+    private static func common(_ values: [Double?]) -> Double? {
+        let present = values.compactMap { $0 }
+        guard !values.isEmpty, present.count == values.count, let first = present.first, present.allSatisfy({ $0 == first }) else { return nil }
+        return first
+    }
     public var alphaDegrees: Double? { stageAlphaRadians.map { $0 * 180 / .pi } }
     public var betaDegrees: Double? { stageBetaRadians.map { $0 * 180 / .pi } }
 
@@ -1438,6 +1464,26 @@ public nonisolated struct VeloxEMDReader: Sendable {
                     elementType: Self.imageElementType(of: dataset), metadata: metadata))
             }
             return out
+        }
+    }
+
+    /// The metadata of the file's spectrum image: column 0 of `Metadata` of the first group under `Data/SpectrumImage` (name order, as
+    /// RosettaSciIO's EELS reader takes its pixel size), nil when the file has no such group or the group has no `Metadata`.
+    ///
+    /// This is where a Velox file keeps the live and real time of the whole acquisition: `superXDetectors[i].liveTimeColumn0` and
+    /// `.realTimeColumn0` are seconds, one pair per X-ray detector segment, the totals over the frames of the scan (the owner's
+    /// 1607-frame file: real 4187.7 s against a frame time of 2.64 s, live 1423.1 s). The spectrum stream's own columns
+    /// hold one frame's values, or 0 in the first column. RosettaSciIO maps neither; FormatoKit reads them as stored. The group also
+    /// carries the optics (`stemMagnification`, `cameraLengthMeters`), `pixelSizeMeters` and `pixelUnit` of the scan; `segmentTimes`, `commonLiveTimeSeconds` and `commonRealTimeSeconds` read the times. They are not in the signals' metadata: that stays RosettaSciIO's. Throws as `images()`
+    /// does for a damaged file.
+    public func spectrumImageMetadata(cancelled: @Sendable () -> Bool = FormatoCancellation.task) throws -> VeloxMetadata? {
+        try HDF5Serial.run {
+            try FormatoCancellation.check(cancelled)
+            let file = try Self.openVeloxFile(path: path)
+            guard let name = file.children(of: "/Data/SpectrumImage").first else { return nil }
+            let group = "/Data/SpectrumImage/" + name
+            guard file.exists(group + "/Metadata") else { return nil }
+            return try VeloxMetadata.parse(jsonData: file.readMetadataJSON(group: group, column: 0))
         }
     }
 

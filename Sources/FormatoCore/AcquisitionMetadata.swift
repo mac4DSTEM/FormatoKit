@@ -42,6 +42,20 @@ public nonisolated struct MetadataReading<Value: Sendable & Equatable>: Sendable
     }
 }
 
+/// A pixel size in one stated unit: the length of a row step and of a column step.
+public nonisolated struct PixelSize: Sendable, Equatable {
+    /// The size along the rows' direction (one step to the next row; the file's height).
+    public let rows: Double
+    /// The size along a row (one step to the next column; the file's width).
+    public let columns: Double
+    /// The unit as the file writes it ("m"), never converted.
+    public let units: String
+
+    public init(rows: Double, columns: Double, units: String) {
+        self.rows = rows; self.columns = columns; self.units = units
+    }
+}
+
 public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     /// High tension in kV (stored in V: /1e3).
     public var highTensionKV: MetadataReading<Double>?
@@ -97,6 +111,13 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     public var signalTexts: [String: MetadataReading<String>] = [:]
     /// EELS collection semi-angle in mrad.
     public var collectionAngleMrad: MetadataReading<Double>?
+
+    // MARK: Added in 0.11.0 (additive). Read by the Velox reader under `.rosettaSciIO`; every other reader and the `.app` convention
+    // leave it nil.
+
+    /// The pixel size of the image at the specimen (Velox `BinaryResult.PixelSize`), in the unit the file states, as stored:
+    /// RosettaSciIO uses it as the axis scale, not as metadata, so the `note` says what the file does not settle.
+    public var pixelSize: MetadataReading<PixelSize>?
     /// Convergence semi-angle in mrad.
     public var convergenceAngleMrad: MetadataReading<Double>?
 

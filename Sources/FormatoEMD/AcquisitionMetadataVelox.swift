@@ -14,6 +14,10 @@
 //  code (an `.emd` stores a code, not a name), the start `Acquisition.AcquisitionStartDatetime` (Unix seconds shown on
 //  the given zone's clock, as RosettaSciIO shows its time zone).
 //
+//  FormatoKit 0.11.0 adds `pixelSize` (`BinaryResult.PixelSize` in its stated unit; RosettaSciIO uses it as the axis scale, so
+//  the note says it is not a metadata mapping) under `.rosettaSciIO`, and `velox(spectrumImage:)`, the same fields for the metadata
+//  of a spectrum image (`VeloxEMDReader.spectrumImageMetadata()`).
+//
 //  `.app` is the consumer's reading of the same entry, pinned to its source: high tension, detector, instrument, start
 //  date and dwell only; magnification, camera length, exposure and mode are `unread` (the consumer's reader predated the
 //  fields the kit now exposes), and the rules of AcquisitionMetadata.swift apply (absent or non-positive is nil).
@@ -52,11 +56,29 @@ nonisolated extension AcquisitionMetadata {
         out.stageX = m.stageXMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
         out.stageY = m.stageYMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
         out.stageZ = m.stageZMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
+        // The pixel size at the specimen: RosettaSciIO's axis scale, `PixelUnitX` for both axes as it reads them (rows from the
+        // height, columns from the width). A pixel size that is not a finite positive number is no calibration (nil).
+        if let size = m.pixelSizeMeters, size.width.isFinite, size.width > 0, size.height.isFinite, size.height > 0,
+           let unit = text(m.pixelUnit) {
+            var note = "BinaryResult.PixelSize, as stored; RosettaSciIO reads it as the axis scale, not as metadata"
+            if let unitY = text(m.pixelUnitY), unitY != unit { note += "; PixelUnitY is '\(unitY)', RosettaSciIO uses PixelUnitX for both" }
+            out.pixelSize = MetadataReading(PixelSize(rows: size.height, columns: size.width, units: unit), note: note)
+        }
         if let seconds = positive(m.exposureTimeSeconds) { out.exposureS = MetadataReading(seconds, note: unvalidatedNote) }
         if let mode = text(m.operatingMode) {
             out.mode = MetadataReading(mode, note: "the stored code, not decoded; " + unvalidatedNote)
         }
         return out
+    }
+
+    /// The fields a spectrum image's own metadata records (`VeloxEMDReader.spectrumImageMetadata()`, or the first stream's), under
+    /// the same rules as an image entry's: high tension, magnification, camera length, instrument, stage, pixel size, start date.
+    /// The detector is the one `BinaryResult.Detector` names; a dwell is read only where the detector table says the detector is a
+    /// ScanningDetector, so an EDS spectrum image gives none.
+    public static func velox(spectrumImage metadata: VeloxMetadata, timeZone: TimeZone = .current,
+                             convention: AcquisitionMetadataConvention = .rosettaSciIO) -> AcquisitionMetadata {
+        velox(VeloxImageInfo(id: "", detectorName: metadata.binaryResultDetector ?? "", height: 0, width: 0, frameCount: 0,
+                             elementType: nil, metadata: metadata), timeZone: timeZone, convention: convention)
     }
 
     static func veloxApp(_ entry: VeloxImageInfo, timeZone: TimeZone) -> AcquisitionMetadata {
