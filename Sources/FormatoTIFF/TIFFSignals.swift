@@ -28,8 +28,21 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
     /// each other in the file.
     var isContiguous: Bool {
         if stripOffsets.count == 1 { return true }
-        guard stripByteCounts.reduce(0, +) == pageBytes else { return false }
-        return (0..<(stripOffsets.count - 1)).allSatisfy { stripByteCounts[$0] != 0 && stripOffsets[$0] + stripByteCounts[$0] == stripOffsets[$0 + 1] }
+        // Overflow-reporting arithmetic: a planted count near 2^62 is not contiguous, and neither is a negative or oversized count.
+        let page = pageBytes
+        var total = 0
+        for count in stripByteCounts {
+            guard count >= 0 && count <= page else { return false }
+            let (sum, overflow) = total.addingReportingOverflow(count)
+            guard !overflow else { return false }
+            total = sum
+        }
+        guard total == page else { return false }
+        for i in 0..<(stripOffsets.count - 1) {
+            let (end, overflow) = stripOffsets[i].addingReportingOverflow(stripByteCounts[i])
+            guard !overflow, stripByteCounts[i] != 0, end == stripOffsets[i + 1] else { return false }
+        }
+        return true
     }
     /// Bytes of one row, all samples.
     var rowBytes: Int { width * samples * bytesPerSample }

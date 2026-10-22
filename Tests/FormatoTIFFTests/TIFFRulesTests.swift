@@ -43,4 +43,18 @@ import FormatoCore
         #expect(TIFFSignals.axisName("Y") == "height")
         #expect(TIFFSignals.axisName("Q") == "None")
     }
+
+    @Test func testIsContiguousDoesNotTrapOnHugeOrNegativeStripCounts() {
+        func layout(_ offsets: [Int], _ counts: [Int]) -> TIFFPageLayout {
+            TIFFPageLayout(width: 2, height: 2, dataType: .uint8, samples: 1, bytesPerSample: 1, stripOffsets: offsets, stripByteCounts: counts,
+                           rowsPerStrip: 1, bigEndian: false, photometric: 1, extraSamples: [])
+        }
+        #expect(layout([8, 10], [2, 2]).isContiguous)
+        #expect(!layout([8, 20], [2, 2]).isContiguous)
+        let huge = 1 << 62
+        #expect(!layout([8, 10], [huge, huge]).isContiguous)          // the sum overflows Int
+        #expect(!layout([Int.max - 1, 10], [2, 2]).isContiguous)      // offset + count overflows
+        #expect(!layout([8, 10], [-1, 5]).isContiguous)               // sums to 4, but a count is negative
+        #expect(!layout([8, 10, 12], [2, 2, huge]).isContiguous)      // an extra strip beyond the page
+    }
 }
