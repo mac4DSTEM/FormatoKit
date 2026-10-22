@@ -122,7 +122,7 @@ def gen_velox_spectrum(path):
 
 def gen_tiff(path, n):
     import tifffile
-    tifffile.imwrite(path, (np.arange(n * n, dtype=np.int64) % 65521).astype("<u2").reshape(n, n), description="", metadata=None)
+    tifffile.imwrite(path, (np.arange(n * n, dtype=np.int64) % 65521).astype("<u2").reshape(n, n))   # default metadata: the shaped description
 
 
 def gen_mrc(path, n, frames):

@@ -24,6 +24,13 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
     let bigEndian: Bool
     let photometric: Int64
     let extraSamples: [Int64]
+    /// tifffile's `TiffPage.is_contiguous` (and `is_final`, as fill order and predictor are refused): the page's strips follow
+    /// each other in the file.
+    var isContiguous: Bool {
+        if stripOffsets.count == 1 { return true }
+        guard stripByteCounts.reduce(0, +) == pageBytes else { return false }
+        return (0..<(stripOffsets.count - 1)).allSatisfy { stripByteCounts[$0] != 0 && stripOffsets[$0] + stripByteCounts[$0] == stripOffsets[$0 + 1] }
+    }
     /// Bytes of one row, all samples.
     var rowBytes: Int { width * samples * bytesPerSample }
     var pageBytes: Int { rowBytes * height }
@@ -135,9 +142,12 @@ public nonisolated struct TIFFSeries: Sendable {
     /// computed per image, never one record per image (Gate B F15).
     let pages: [TIFFPageLayout]
     let virtualCount: Int?
+    /// The index of the directory the series starts at (its first page, whose tags give the metadata).
+    let firstDirectory: Int
 
-    init(axes: String, shape: [Int], dataType: FormatoDataType, pages: [TIFFPageLayout], virtualCount: Int? = nil) {
+    init(axes: String, shape: [Int], dataType: FormatoDataType, pages: [TIFFPageLayout], virtualCount: Int? = nil, firstDirectory: Int = 0) {
         self.axes = axes; self.shape = shape; self.dataType = dataType; self.pages = pages; self.virtualCount = virtualCount
+        self.firstDirectory = firstDirectory
     }
 
     func source(_ i: Int) -> TIFFImageSource {
@@ -219,16 +229,15 @@ public nonisolated struct TIFFSignals: Sendable {
         let pageAxes = layout0.samples > 1 ? "YXS" : "YX"
         let pageShape = layout0.samples > 1 ? [layout0.height, layout0.width, layout0.samples] : [layout0.height, layout0.width]
 
-        // tifffile's shaped (its own JSON description) and OME series come before ImageJ and the generic rule; not ported
-        // (Gate B F1).
-        if let d = first[270]?.text {
-            if (d.hasPrefix("{") && d.contains("\"shape\"")) || d.hasPrefix("shape=(") {
-                throw FormatoReadError.unsupported("The file carries tifffile's shaped description; its series rule is not ported.")
+        // tifffile tries its own shaped series first; when the first page is shaped and that rule gives no series, the generic
+        // rule follows (not ImageJ). OME series come next; not ported (Gate B F1).
+        let shaped = shapedDescription(first) != nil
+        if shaped, let s = try shapedSeries(file) { return s }
+        if !shaped {
+            if let d = first[270]?.text, d.contains("<OME") { throw FormatoReadError.unsupported("The file is an OME-TIFF; its series rule is not ported.") }
+            if let meta = imageJDescription(first), let s = try imageJSeries(file, meta, layout0, pageAxes, pageShape) {
+                return [s]
             }
-            if d.contains("<OME") { throw FormatoReadError.unsupported("The file is an OME-TIFF; its series rule is not ported.") }
-        }
-        if let meta = imageJDescription(first), let s = try imageJSeries(file, meta, layout0, pageAxes, pageShape) {
-            return [s]
         }
         let layouts = try file.directories.map { try TIFFPageLayout.of($0, bigEndian: file.bigEndian, fileSize: size) }
         // Uniform or generic: pages with the same shape and type form one series, in first-seen order.
@@ -324,12 +333,19 @@ public nonisolated struct TIFFSignals: Sendable {
     public func signal(series index: Int) throws -> FormatoLazySignal {
         guard series.indices.contains(index) else { throw FormatoReadError.unsupported("No series \(index).") }
         let s = series[index]
-        let page = file.directories[0]
+        let page = file.directories[s.firstDirectory]
         let name = formatoDisplayFileName(file.path)
         // RosettaSciIO drops the sample axis of an RGB page (a structured element per pixel).
         let isRGB = s.dataType.components > 1
+        if isRGB, s.shape.last != s.dataType.components {
+            throw FormatoReadError.unsupported("The series' last dimension is not the page's \(s.dataType.components) samples; RosettaSciIO raises on it.")
+        }
         let codes = Array(isRGB ? String(s.axes.dropLast()) : s.axes)
         let shape = isRGB ? Array(s.shape.dropLast()) : s.shape
+        // `axes_label_codes[axis]`: a code it does not list (a user's `axes` in a shaped description) is a KeyError.
+        guard codes.allSatisfy({ Self.axisCodes.contains($0) }) else {
+            throw FormatoReadError.unsupported("The series' axes \(s.axes) hold a code RosettaSciIO has no name for; it raises on it.")
+        }
         let names = codes.map(Self.axisName)
         var axes: [FormatoAxis]
         do { axes = try Self.axes(page: page, shape: shape, names: names) } catch {
@@ -372,7 +388,10 @@ public nonisolated struct TIFFSignals: Sendable {
                                  array: TIFFSeriesArray(path: file.path, series: s, shape: shape))
     }
 
-    /// RosettaSciIO's `axes_label_codes` (the names it gives tifffile's axis codes).
+    /// The keys of RosettaSciIO's `axes_label_codes`.
+    static let axisCodes: Set<Character> = ["X", "Y", "S", "P", "I", "Z", "C", "E", "T", "R", "A", "F", "H", "L", "V", "Q", "_"]
+
+    /// RosettaSciIO's `axes_label_codes` (the names it gives tifffile's axis codes; "None" for Q and _).
     static func axisName(_ c: Character) -> String {
         switch c {
         case "X": return "width"
@@ -666,16 +685,25 @@ public nonisolated struct TIFFSeriesArray: FormatoLazyArray {
     public let shape: [Int]
     public var dataType: FormatoDataType { series.dataType }
 
+    /// The last two dimensions are a page's rows and columns and the others count the images (every series but some shaped
+    /// ones): the read goes by image and row. Otherwise it goes by run of the last dimension through the flat element order.
+    let rowsAndColumns: Bool
+
     init(path: String, series: TIFFSeries, shape: [Int]) {
         self.path = path
         self.series = series
         self.shape = shape
+        let page = series.pages[0]
+        let images = series.virtualCount ?? series.pages.count
+        rowsAndColumns = shape.count >= 2 && shape[shape.count - 2] == page.height && shape[shape.count - 1] == page.width
+            && shape.dropLast(2).reduce(1, *) == images
     }
 
     public func read(start: [Int], count: [Int]) throws -> FormatoArray {
         try FormatoArray.checkSlab(start: start, count: count, shape: shape)
         let rank = shape.count
         let el = dataType.byteSize
+        guard rowsAndColumns else { return try readFlat(start: start, count: count) }
         let outerShape = Array(shape.prefix(rank - 2)), outerStart = Array(start.prefix(rank - 2)), outerCount = Array(count.prefix(rank - 2))
         let (y0, ny, x0, nx) = (start[rank - 2], count[rank - 2], start[rank - 1], count[rank - 1])
         let fd = open(path, O_RDONLY)
@@ -706,6 +734,46 @@ public nonisolated struct TIFFSeriesArray: FormatoLazyArray {
                 src.layout.toLittleEndian(&row)
                 out.append(row)
             }
+        }
+        return try FormatoArray(dataType: dataType, shape: count, bytes: out)
+    }
+
+    /// A shaped series whose dimensions are not images, rows and columns (a shape with trailing 1s, say): the elements in C
+    /// order are the pages' elements one after the other, and a run of the last dimension is read row segment by row segment.
+    private func readFlat(start: [Int], count: [Int]) throws -> FormatoArray {
+        let el = dataType.byteSize
+        let page = series.pages[0]
+        let (width, pageElements) = (page.width, page.width * page.height)
+        let fd = open(path, O_RDONLY)
+        guard fd >= 0 else { throw FormatoReadError.cannotOpen(formatoDisplayFileName(path), String(cString: strerror(errno))) }
+        defer { close(fd) }
+        var out = Data()
+        out.reserveCapacity(count.reduce(1, *) * el)
+        guard !count.contains(0) else { return try FormatoArray(dataType: dataType, shape: count, bytes: out) }
+        let rank = shape.count
+        var strides = [Int](repeating: 1, count: rank)
+        for k in stride(from: rank - 2, through: 0, by: -1) { strides[k] = strides[k + 1] * shape[k + 1] }
+        var idx = [Int](repeating: 0, count: max(rank - 1, 0))
+        while true {
+            var flat = start[rank - 1]
+            for k in 0..<(rank - 1) { flat += (start[k] + idx[k]) * strides[k] }
+            var remaining = count[rank - 1]
+            while remaining > 0 {
+                let image = flat / pageElements, within = flat % pageElements
+                let (y, x) = (within / width, within % width)
+                let take = min(remaining, width - x)
+                let src = series.source(image)
+                var run = Data(count: take * el)
+                let at = src.layout.rowOffset(y) + src.shift + x * el
+                let got = run.withUnsafeMutableBytes { pread(fd, $0.baseAddress!, take * el, off_t(at)) }
+                guard got == take * el else { throw FormatoReadError.truncated(formatoDisplayFileName(path)) }
+                src.layout.toLittleEndian(&run)
+                out.append(run)
+                flat += take; remaining -= take
+            }
+            var k = rank - 2
+            while k >= 0 { idx[k] += 1; if idx[k] < count[k] { break }; idx[k] = 0; k -= 1 }
+            if k < 0 { break }
         }
         return try FormatoArray(dataType: dataType, shape: count, bytes: out)
     }

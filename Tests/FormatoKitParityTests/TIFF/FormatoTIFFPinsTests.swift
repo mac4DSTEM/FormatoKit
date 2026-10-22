@@ -86,7 +86,7 @@ import FormatoKitTestSupport
     }
 
     private func compare(_ files: [[String: Any]], locate: (String) -> URL?, mustFind: Bool, refusedOnPurpose: Set<String> = [],
-                         metadataDeviations: Set<String> = []) throws -> (files: Int, signals: Int, refused: Int) {
+                         metadataDeviations: Set<String> = [], readNow: Set<String> = [], ignoreScope: Bool = false) throws -> (files: Int, signals: Int, refused: Int) {
         var read = 0, signals = 0, refused = 0
         for f in files {
             let path = f["path"] as! String
@@ -100,7 +100,7 @@ import FormatoKitTestSupport
                 assertTags(first, tags, path)
                 #expect(file.directories.count == f["pages"] as? Int, "\(path): pages")
             }
-            if f["in_scope"] as? Bool != true || f["raises"] as? [String: Any] != nil || refusedOnPurpose.contains(path) {
+            if (f["in_scope"] as? Bool != true && !ignoreScope && !readNow.contains(path)) || f["raises"] as? [String: Any] != nil || refusedOnPurpose.contains(path) {
                 #expect(refuses(url), "\(path): out of scope (\(f["out_of_scope"] ?? f["raises"] ?? "?")) but read")
                 refused += 1; continue
             }
@@ -171,9 +171,23 @@ import FormatoKitTestSupport
                                       "o_fill2_u8.tif", "h_off0.tif"]
         let r = try compare(files, locate: { name in
             let u = dir.appendingPathComponent(name); return FileManager.default.fileExists(atPath: u.path) ? u : nil
-        }, mustFind: true, refusedOnPurpose: onPurpose, metadataDeviations: ["dt_15.tif"])
+        }, mustFind: true, refusedOnPurpose: onPurpose, metadataDeviations: ["dt_15.tif"], readNow: ["tf_stack2.tif"])
         print("TIFFRefuter: \(r.files) files, \(r.signals) equal, \(r.refused) refused")
         #expect(r.files == 26)
+    }
+
+    /// Files tifffile writes with its default (shaped) description, `tools/shaped-tiff/pins.py` into shaped-pins.json: the
+    /// shaped series rule gives RosettaSciIO's shapes, axes, bytes and metadata exactly; where RosettaSciIO raises, FormatoKit
+    /// refuses; where tifffile gives up on the description and uses the generic rule, so does FormatoKit.
+    @Test func testShapedSeriesFilesAgreeWithRosettaSciIO() throws {
+        let object = try JSONSerialization.jsonObject(with: Data(contentsOf: Self.fixtures.appendingPathComponent("shaped-pins.json"))) as! [String: Any]
+        let files = object["files"] as! [[String: Any]]
+        let r = try compare(files, locate: { name in
+            let u = Self.fixtures.appendingPathComponent(name); return FileManager.default.fileExists(atPath: u.path) ? u : nil
+        }, mustFind: true, ignoreScope: true)
+        print("ShapedTIFF: \(r.files) files, \(r.signals) signals equal, \(r.refused) refused")
+        #expect(r.files == files.count)
+        #expect(r.signals >= 50)
     }
 
     @Test(.enabled(if: ProcessInfo.processInfo.environment["FORMATO_OWNER_TIFF_PINS"] != nil, "owner files: tools/step-2/owner-check.sh"))

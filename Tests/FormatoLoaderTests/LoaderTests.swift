@@ -33,3 +33,13 @@ private func path(_ relative: String) -> String { tests.appendingPathComponent(r
     // 4D formats are named, not loaded; an unknown file is refused by name.
     #expect(throws: FormatoLoadError.self) { _ = try FormatoLoader.load(path: path("FormatoDMTests/Fixtures/eels-planted.truth.json")) }
 }
+
+@Test func loadsATifffileWrittenFileWithItsShapedDescription() throws {
+    // `tifffile.imwrite(array)` with default metadata: sniffed as TIFF and loaded through the shaped series rule.
+    let stack = try FormatoLoader.load(path: path("FormatoTIFFTests/Fixtures/shaped/stack_f4.tif"))
+    #expect(stack.count == 1)
+    let signal = try stack[0].get().load()
+    #expect(signal.data.dataType == .float32 && signal.data.shape == [5, 7, 9])
+    let two = try FormatoLoader.load(path: path("FormatoTIFFTests/Fixtures/shaped/series_two.tif"))
+    #expect(try two.map { try $0.get().array.shape } == [[2, 7, 9], [7, 9]])
+}
