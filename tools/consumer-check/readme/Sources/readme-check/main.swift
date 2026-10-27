@@ -32,7 +32,6 @@ for object in dm.objects {
 check(dm.objects.count > 0, "block 1: the DM file lists \(dm.objects.count) object(s)")
 
 // README block 2
-import FormatoCore
 import FormatoEMD
 
 let velox = try VeloxImageSignals(path: "Tests/FormatoEMDTests/Fixtures/velox-titles-v6-image.emd")
@@ -51,7 +50,6 @@ check(!velox.images.isEmpty, "block 2: the Velox file has \(velox.images.count) 
 check(!spectrumImages.signals.isEmpty, "block 2: the spectrum-image file has \(spectrumImages.signals.count) signal(s)")
 
 // README block 3
-import FormatoCore
 import FormatoTIFF
 
 let tiff = try TIFFSignals(path: "Tests/FormatoTIFFTests/Fixtures/planted/fei-helios.tif")

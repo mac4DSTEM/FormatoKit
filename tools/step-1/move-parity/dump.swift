@@ -120,7 +120,6 @@ enum GoldenDump {
     }
 }
 
-
 // MARK: - Output
 
 nonisolated(unsafe) private var stdoutLines = 0

@@ -250,7 +250,7 @@ public nonisolated enum MSAReader {
                     value = nil
                 }
                 let keyName = pyString(pyStrip(pyStripHash(key)))
-                if (keyName == "TITLE" || keyName == "COMMENT"), values[keyName] != nil {
+                if keyName == "TITLE" || keyName == "COMMENT", values[keyName] != nil {
                     guard case .some(.text(let old)) = values[keyName], let value else { throw raises("a repeated \(keyName) line whose value is missing (TypeError)") }
                     store(keyName, .text(old + pyString(value)))
                 } else if keyName != "SPECTRUM" {
