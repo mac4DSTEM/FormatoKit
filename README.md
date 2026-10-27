@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/banner.png" width="100%" alt="FormatoKit: electron-microscopy file formats for macOS"></p>
+
 # FormatoKit
 
 A file-format library for macOS: the Mac counterpart of [RosettaSciIO](https://github.com/hyperspy/rosettasciio).
