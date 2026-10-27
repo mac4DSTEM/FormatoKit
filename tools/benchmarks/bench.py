@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """FormatoKit vs RosettaSciIO benchmark driver (docs/benchmarks.md).
 
-    tools/memcap.sh -- References/rsciio-venv/bin/python -I -B tools/benchmarks/bench.py run --work DIR [--large] [--only PREFIX]
+    References/rsciio-venv/bin/python -I -B tools/benchmarks/bench.py run --work DIR [--large] [--only PREFIX]
     References/rsciio-venv/bin/python -I -B tools/benchmarks/bench.py report --work DIR --out docs/benchmarks.md
 
 `gen` writes the inputs under DIR (a scratch folder, never the repo) and DIR/cases.json; `run` generates what is missing, then for

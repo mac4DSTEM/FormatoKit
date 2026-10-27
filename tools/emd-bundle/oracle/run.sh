@@ -9,6 +9,10 @@
 # (the app's Package.swift pins). SwiftPM warns that the kits' own dependency URLs conflict with the local copies: expected.
 # Takes about two minutes (a release build of the app's Core and the kits). The output folder defaults to the kit's fixtures.
 set -euo pipefail
+# MEMORY_CAP: the command prefix that caps the run's memory (a wrapper that stops the process tree past its limit, with its
+# argument separator), as an absolute path; MEMORY_CAP=none runs without a cap.
+: ${MEMORY_CAP:?set MEMORY_CAP to a memory-cap command prefix, or none}
+cap=(); [[ $MEMORY_CAP == none ]] || cap=(${=MEMORY_CAP})
 here=${0:A:h}; suite=${here:h:h:h:h}
 scratch=${1:?scratch dir}; out=${2:-${here:h:h:h}/Tests/FormatoHDF5Tests/Fixtures/emd-bundle}
 mkdir -p $scratch/kits $scratch/Sources/oracle
@@ -20,4 +24,4 @@ mkdir -p $scratch/export && git -C $suite/mac4DSTEM archive c47a2b7a mac4DSTEM/C
 rm -rf $scratch/Sources/DSTEMCore && mv $scratch/export/mac4DSTEM/Core $scratch/Sources/DSTEMCore
 cp $here/Package.swift $scratch/Package.swift; cp $here/main.swift $scratch/Sources/oracle/main.swift
 cd $scratch && swift build -c release --jobs 4
-$suite/tools/memcap.sh -- .build/release/oracle $out
+$cap .build/release/oracle $out

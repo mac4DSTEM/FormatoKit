@@ -1,5 +1,5 @@
-"""Synthetic 4D DM4 and byte/axis pins. MACEM_SUITE=<suite> <suite>/tools/memcap.sh --
-<suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/dm4-gather/generate.py.
+"""Synthetic 4D DM4 and byte/axis pins. Run under a memory cap:
+MACEM_SUITE=<suite> <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/dm4-gather/generate.py.
 App output comes from its exact pinned gather and decode methods, compiled with identity-view scaffolding.
 """
 import os, pathlib, subprocess, tempfile, struct, json, hashlib

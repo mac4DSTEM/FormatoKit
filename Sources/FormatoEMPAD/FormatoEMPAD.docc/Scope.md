@@ -17,6 +17,6 @@ shapes, invalid numeric calibrations and incorrect raw lengths throw `EMPADError
 reader, trailing raw bytes are refused. Arbitrary Python literal expressions in XML are refused. Repeated XML scalar paths retain their last value.
 
 The committed synthetic pair and complete byte/axis/metadata pins are produced by `tools/empad/generate.py`
-under the pinned FormatoKit venv with `../tools/memcap.sh`. Tests inflate the small gzip fixtures in a temporary directory;
+under the pinned FormatoKit venv and a memory cap. Tests inflate the small gzip fixtures in a temporary directory;
 no Python dependency is needed to run them. NaN, infinity and signed-zero bits are preserved; `remove_nans` is not ported.
 4D HDF5 reading remains future work.

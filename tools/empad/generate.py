@@ -1,4 +1,4 @@
-"""Run from FormatoKit with ../tools/memcap.sh -- ../References/FormatoKit/rsciio-venv/bin/python -I -B tools/empad/generate.py."""
+"""Run from FormatoKit with ../References/FormatoKit/rsciio-venv/bin/python -I -B tools/empad/generate.py."""
 import gzip, json, pathlib, subprocess, tempfile
 import numpy as np
 import rsciio

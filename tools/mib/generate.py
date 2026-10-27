@@ -1,4 +1,4 @@
-"""Run with MACEM_SUITE=<suite> <suite>/tools/memcap.sh -- <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/mib/generate.py.
+"""Run with MACEM_SUITE=<suite> <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/mib/generate.py.
 Processed 1/6/12/24-bit synthetic frames and raw refusal pins. App pins compile the exact pinned initializer/readPattern
 with identity-view scaffolding (no crop/bin); no app files are changed or app targets built.
 """
