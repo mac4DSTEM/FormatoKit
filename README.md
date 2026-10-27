@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/banner.png" width="100%" alt="FormatoKit: electron-microscopy file formats for macOS"></p>
+<p align="center"><img src="docs/banner.png" width="100%" alt="FormatoKit: Gatan, Velox, TIFF, MRC, EMPAD, Merlin and EMSA files, read natively on the Mac"></p>
 
 # FormatoKit
 
