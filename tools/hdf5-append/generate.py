@@ -1,6 +1,6 @@
 """Fixtures and h5py pins for FormatoHDF5's low-level reader (HDF5Reader) and append writer (HDF5AppendWriter).
 
-    <suite>/tools/memcap.sh -- <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/hdf5-append/generate.py
+    <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/hdf5-append/generate.py
 
 (a) READ.  Writes with h5py (the reference HDF5 binding) Tests/FormatoHDF5Tests/Fixtures/low-level/{assorted,latest}.h5: many dtypes
     (both byte orders, chunked and compressed, scalar, empty), fixed and variable-length strings, attributes of every shape the

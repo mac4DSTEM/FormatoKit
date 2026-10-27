@@ -1,5 +1,5 @@
 """Pinned py4DSTEM BraggVectors (EMD 1.0) fixtures. Run using References/python/py4dstem/bin/python -I -B,
-under the suite tools/memcap.sh. MACEM_SUITE may locate References from a worktree.
+under a memory cap. MACEM_SUITE may locate References from a worktree.
 
 Writes Tests/FormatoHDF5Tests/Fixtures/bragg/: py4DSTEM-written files, the peaks as little-endian float64
 (qx, qy, intensity) triples in scan row-major order, and pins.json with the h5py structure and the values.

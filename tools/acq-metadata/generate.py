@@ -1,6 +1,6 @@
 """Acquisition-metadata fixtures and pins (FormatoCore AcquisitionMetadata; FormatoDM/MRC/TIFF/EMD readers).
 
-    MACEM_SUITE=<suite> <suite>/tools/memcap.sh -- <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/acq-metadata/generate.py
+    MACEM_SUITE=<suite> <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/acq-metadata/generate.py
 
 Writes small synthetic DM4, MRC, TIFF and Velox EMD files (struct/h5py only, byte by byte) under Tests/*/Fixtures/acq-metadata/ and,
 for each, two pins:

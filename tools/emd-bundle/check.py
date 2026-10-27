@@ -1,9 +1,9 @@
 """Checks the Swift-written EMD bundle fixtures against the first consumer's own files, h5py and py4DSTEM.
 
-Run (after the Swift test wrote swift-*.h5 into the fixtures folder) with the py4DSTEM venv, under memcap.sh:
+Run (after the Swift test wrote swift-*.h5 into the fixtures folder) with the py4DSTEM venv, under a memory cap:
 
   FORMATO_EMD_FIXTURE_DIR=$PWD/Tests/FormatoHDF5Tests/Fixtures/emd-bundle swift test -c release --jobs 4 --filter EMDBundleTests
-  MPLCONFIGDIR=$PWD/.build/matplotlib <suite>/tools/memcap.sh -- <suite>/References/python/py4dstem/bin/python -I -B tools/emd-bundle/check.py
+  MPLCONFIGDIR=$PWD/.build/matplotlib <suite>/References/python/py4dstem/bin/python -I -B tools/emd-bundle/check.py
 
 app-*.h5 are mac4DSTEM's own writers' output on the same inputs (tools/emd-bundle/oracle). For each swift file:
   structure_equal   h5py shows the same groups, datasets, dtypes (string encodings, bool storage), shapes, chunking-free attributes

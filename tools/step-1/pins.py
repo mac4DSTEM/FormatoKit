@@ -30,7 +30,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 def cap_memory():
-    """The suite's rule (../CLAUDE.md, owner 2026-10-15 12:30): every oracle or helper process caps its memory first, 8 GB by
+    """The memory rule (2026-10-15): every oracle or helper process caps its memory first, 8 GB by
     default (FORMATO_MEM_CAP_GB to change it), so an oversized case fails loudly instead of swapping. macOS refuses
     setrlimit(RLIMIT_AS / RLIMIT_DATA) below infinity ("current limit exceeds maximum limit", checked 2026-10-15 on this Mac), so
     the cap is tried and, in any case, enforced by a watchdog thread on the process's own peak resident size (ru_maxrss, bytes
