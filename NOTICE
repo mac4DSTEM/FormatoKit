@@ -21,7 +21,7 @@ FormatoCancellation.swift, FormatoFileName.swift come from SpectroKit 0.3.0 (tag
 commit 14c6acf8), itself extracted from mac4DSTEM (commit 5ba712a0); the tests
 under Tests/FormatoDMTests, FormatoEMDTests, FormatoHDF5Tests and
 FormatoHDF5ExitProbe, and the fixtures listed in Tests/README.md, come from the
-same tag. The design note listing every change is archived in the suite's private folder.
+same tag.
 
     SpectroKit - https://github.com/mac4DSTEM/SpectroKit
     mac4DSTEM  - https://github.com/mac4DSTEM/mac4DSTEM
@@ -74,7 +74,7 @@ from the pinned clone and not committed.
 
     tifffile - https://github.com/cgohlke/tifffile, version 2026.9.20
     Copyright (c) 2008-2026, Christoph Gohlke
-    BSD 3-Clause License
+    BSD 3-Clause License: Licenses/tifffile-LICENSE.txt
     macTEM   - https://github.com/mac4DSTEM/macTEM, GNU General Public License v3.0
 
 
@@ -89,7 +89,7 @@ tools/step-1/pint_factors.py.
 
     Pint - https://github.com/hgrecco/pint, version 0.26.1
     Copyright (c) 2012 by Hernan E. Grecco and contributors
-    BSD 3-Clause License
+    BSD 3-Clause License: Licenses/Pint-LICENSE.txt
 
 
 ================================================================================
