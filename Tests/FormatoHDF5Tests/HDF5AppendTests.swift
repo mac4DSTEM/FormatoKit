@@ -253,7 +253,7 @@ struct Model {
         let reader = try HDF5Reader(url: Self.fixture("base.h5"))
         #expect(try reader.children(of: "/") == ["empty", "grp1", "keep", "orphan", "strs"])
         #expect(try reader.attribute("version", of: "/") == .integer(3))
-        #expect(try reader.readDataset("/grp1/data").doubles() == (0..<12).map { Double($0 * 11 - 5) })
+        #expect(try reader.readDataset("/grp1/data").doubles() == (0..<12).map { (i: Int) -> Double in Double(i * 11 - 5) })
     }
 
     // MARK: Atomicity

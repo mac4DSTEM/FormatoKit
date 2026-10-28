@@ -125,7 +125,7 @@ extension VeloxEMDSerialized {
             let single = try read("sp-single", zone: "UTC")
             #expect(single.count == 1 && single[0].title == "EDS" && single[0].signalType == "EDS_TEM")
             #expect(single[0].data.dataType == .uint32 && single[0].data.shape == [12])
-            #expect(single[0].data.doubles() == (0..<12).map { Double($0 * 7 + 1) })
+            #expect(single[0].data.doubles() == (0..<12).map { (i: Int) -> Double in Double(i * 7 + 1) })
             #expect(single[0].axes == [FormatoAxis(name: "Energy", size: 12, scale: 0.005, offset: -0.48, units: "keV", navigate: false)])
             // 1490107072.25 s = 2017-03-21 14:37:52.25 UTC.
             #expect(single[0].metadata["General.date"]?.value.text == "2017-03-21")
