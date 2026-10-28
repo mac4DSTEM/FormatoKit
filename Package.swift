@@ -1,4 +1,5 @@
 // swift-tools-version: 6.2
+// SPDX-License-Identifier: GPL-3.0-only
 // FormatoKit — a file-format library for electron microscopy on the Mac, the counterpart of RosettaSciIO: readers (and later writers)
 // for the electron-microscopy formats, one module per format, over one data model (FormatoCore: axes, units, metadata
 // with provenance, lazy signals). Checked bit for bit against RosettaSciIO (GPL-3.0) at a pinned commit; the DM and Velox

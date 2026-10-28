@@ -5,7 +5,7 @@
 [![CI](https://github.com/mac4DSTEM/FormatoKit/actions/workflows/ci.yml/badge.svg)](https://github.com/mac4DSTEM/FormatoKit/actions/workflows/ci.yml)
 [![Docs](https://github.com/mac4DSTEM/FormatoKit/actions/workflows/docs.yml/badge.svg)](https://mac4dstem.github.io/FormatoKit/documentation/)
 [![Release](https://img.shields.io/github/v/tag/mac4DSTEM/FormatoKit?label=release&sort=semver)](https://github.com/mac4DSTEM/FormatoKit/tags)
-[![Licence: GPL-3.0](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
+[![Licence: GPL-3.0-only](https://img.shields.io/badge/licence-GPL--3.0--only-blue)](LICENSE)
 
 A file-format library for macOS: the Mac counterpart of [RosettaSciIO](https://github.com/hyperspy/rosettasciio).
 A Swift package of readers and writers for the electron-microscopy formats, one module per format over one data model,
@@ -141,7 +141,7 @@ and `swift test` need nothing installed. The Velox reader looks for libhdf5 in t
 
 ## Licence
 
-GPL-3.0 (`LICENSE`, `NOTICE`). The DM and Velox readers are inherited from an earlier GPL-3.0 package (named in `NOTICE`). The signal adapters port **RosettaSciIO**'s rules (GPL-3.0-or-later, the HyperSpy developers), which is also the
+GPL-3.0-only (`LICENSE`, `NOTICE`). The DM and Velox readers are inherited from an earlier GPL-3.0 package (named in `NOTICE`). The signal adapters port **RosettaSciIO**'s rules (GPL-3.0-or-later, the HyperSpy developers), which is also the
 oracle every reader is checked against; `FormatoUnits` ports what RosettaSciIO does with **Pint** (BSD-3-Clause) and carries
 Pint's conversion factors. HDF5, libaec and libsz are BSD-style; tifffile, whose TIFF rules FormatoTIFF ports, is BSD-3-Clause. Every third-party
 licence text is in `Licenses/`. One GPL part makes the package GPL-3.0: an app
