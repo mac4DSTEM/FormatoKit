@@ -14,7 +14,7 @@ The Velox reader looks for libhdf5 in this order, and uses the first copy it can
 4. The copy that ships with FormatoKit, given by ``FormatoHDF5Library/bundledLibraryPath``: the `FormatoLibHDF5` framework the process has loaded, or one in the host's `Frameworks` folder or beside the executable.
 5. The loader's own search path.
 
-The libraries are macOS-only (arm64, macOS 15 or later); on iOS the package builds and a read refuses. Set `FORMATO_HDF5_PATH` in the process environment before the process starts reading files. A host that embeds its own copy and leaves out the framework gets nil from ``FormatoHDF5Library/bundledLibraryPath``, not a crash, and the search goes on to the next candidate.
+The libraries are macOS-only (arm64, macOS 15 or later), like the package. Set `FORMATO_HDF5_PATH` in the process environment before the process starts reading files. A host that embeds its own copy and leaves out the framework gets nil from ``FormatoHDF5Library/bundledLibraryPath``, not a crash, and the search goes on to the next candidate.
 
 ```swift
 import FormatoHDF5

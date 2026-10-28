@@ -1,7 +1,8 @@
 # FormatoKit CI: the gate (tools/test.sh = `swift test -c release`, warning-checked) and the consumer check.
 #
-# Written 2026-10-15 (0.0.3); enabling Actions on the repository is the owner's. The package declares macOS 15 / iOS 18 and
-# tools 6.2 (0.2.1): the macos-15 image with Xcode 26.0 pinned below (Swift 6.2). The step fails if Swift is older than 6.2.
+# The package declares macOS 15 and tools 6.2; the macos-26 image with Xcode 26.6 (Swift 6.3) is pinned below, as in docs.yml.
+# The gate and the consumer check use the locally built libhdf5 XCFrameworks (FORMATO_LOCAL_XCFRAMEWORKS); the `xcframework-url`
+# job resolves the release zips by URL and checksum, as a consumer does.
 # No libhdf5 step: FormatoHDF5 ships it. No References/: without the RosettaSciIO clone the pins tests run on the committed
 # copies of the pins and fixtures (tools/test.sh); the oracles are rerun locally, never in CI.
 # tools/step-1/names.sh (the 121 moved names) stays a local check: it reads the original package's tests from a sibling checkout (see the script).
@@ -19,21 +20,36 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Pinned like the apps: the macos-26 image's Xcode 26.6 (Swift 6.3, macOS 26 SDK). Bump on purpose.
+  DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+
 jobs:
   test:
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
-      - name: Select Xcode 26.0 (Swift 6.2)
+      - name: Toolchain on record
         run: |
-          sudo xcode-select -s /Applications/Xcode_26.0.app
+          xcode-select -p
           swift --version
-          swift --version | grep -E "Swift version 6\.([2-9]|[1-9][0-9])" || { echo "Swift 6.2 or newer needed"; exit 1; }
       - name: Gate (tools/test.sh, release)
         run: tools/test.sh
       - name: Consumer check (public API only, Debug, no warnings, libhdf5 from the package)
         run: tools/consumer-check/run.sh
+
+  xcframework-url:
+    name: libhdf5 XCFrameworks resolve by URL
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - name: Resolve the release zips (checksums from Package.swift) and build FormatoHDF5 against them
+        run: |
+          unset FORMATO_LOCAL_XCFRAMEWORKS
+          swift package resolve
+          swift build -c release --product FormatoHDF5
 
   version:
     name: CHANGELOG version matches the tag

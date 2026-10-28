@@ -23,6 +23,9 @@ let package = Package(
             .product(name: "FormatoMRC", package: formatoKit),
             .product(name: "FormatoEMPAD", package: formatoKit),
             .product(name: "FormatoMSA", package: formatoKit),
+            .product(name: "FormatoMIB", package: formatoKit),
+            .product(name: "Formato", package: formatoKit),
+            .product(name: "FormatoPeek", package: formatoKit),
         ]),
     ],
     swiftLanguageModes: [.v6]
