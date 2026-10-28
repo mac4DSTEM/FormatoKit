@@ -41,6 +41,8 @@ jobs:
 
   xcframework-url:
     name: libhdf5 XCFrameworks resolve by URL
+    # Not on pull requests: the free plan's macOS runners are scarce, so this runs on main, tags and by hand.
+    if: github.event_name != 'pull_request'
     runs-on: macos-26
     timeout-minutes: 30
     steps:
