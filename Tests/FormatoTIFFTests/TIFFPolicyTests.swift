@@ -1,6 +1,6 @@
 //
 //  TIFFPolicyTests.swift
-//  Registration 0.2.0, P5 `TIFFReadOptions.vendorBranches` (tier 2): files built byte by byte here, their values typed as
+//  The policy `TIFFReadOptions.vendorBranches`: files built byte by byte here, their values typed as
 //  literals. A vendor tag is refused by name by default; `.readAsGeneric` reads the pixels as a plain TIFF and flags it;
 //  a layout refusal (Compression 5) holds under every option.
 //

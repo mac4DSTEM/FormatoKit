@@ -1,6 +1,6 @@
 //
 //  DM4EELSSpectrumImageTests.swift
-//  Role: Pin `DM4Experiment.readEELSSpectrumImage` (EELS slice 1b, registered in docs/eels-slice-1-registration.md section 1):
+//  Role: Pin `DM4Experiment.readEELSSpectrumImage` (EELS slice 1b):
 //        a 3D EELS spectrum image of a GMS `.dm4` as Float32 counts in (y, x, channel) order, its energy axis, and E0 /
 //        convergence / collection semi-angle from the tags RosettaSciIO maps. Tier 2: file handling, no computed number.
 //

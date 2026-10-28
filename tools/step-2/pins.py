@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pins RosettaSciIO's and tifffile's readings of TIFF files for FormatoKit step 2 (docs/registration-step-2.md, sections 1.2, 2, 3.2, 3.3, 5).
+"""Pins RosettaSciIO's and tifffile's readings of TIFF files for FormatoKit step 2.
 
     References/rsciio-venv/bin/python -I -B tools/step-2/pins.py [--work DIR]
         writes Tests/FormatoTIFFTests/Fixtures/step-2-pins.json   (every TIFF of the pinned clone's tests/data/tiff, and the
@@ -44,7 +44,7 @@ MAX_UNPACKED = 1 << 30   # refuse a zip or gz that would unpack to more than 1 G
 
 # TIFF datatype -> bytes per item
 TYPE_SIZE = {1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 6: 1, 7: 1, 8: 2, 9: 4, 10: 8, 11: 4, 12: 8, 13: 4, 16: 8, 17: 8, 18: 8}
-# the reasons a file is out of step 2's scope, in the order the first one is reported (registration section 1.2)
+# the reasons a file is out of step 2's scope, in the order the first one is reported
 FILE_FLAG_REASONS = (("sem", "flag:sem"), ("tvips", "flag:tvips"), ("sis", "flag:sis"), ("streak", "flag:streak"))
 METADATA_KEYS = ("General.original_filename", "General.date", "General.time", "Signal.signal_type", "Signal.quantity",
                  "Signal.Noise_properties.Variance_linear_model.gain_factor",
@@ -236,7 +236,7 @@ def tag_records(page, raw, np):
 # ---------------------------------------------------------------------------------------------------------------- scope
 
 def scope_reasons(t, series_info, p0):
-    """The reasons (registration section 1.2, 'Out of step 2') a file is outside step 2, in a fixed order."""
+    """The reasons a file is outside step 2, in a fixed order."""
     reasons = []
     flags = set(t.flags)
     page_flags = set()

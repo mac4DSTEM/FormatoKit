@@ -3,7 +3,7 @@
 //  Peek reads one decimated frame and the header facts. Its pixels are the file's own, point sampled, so the references are
 //  (a) planted gradients written here (value = 1000 * row + column, closed form) and (b) the same file read whole by the
 //  format's own reader and cut at the same stride; the dimensions, axes and acquisition fields are the readers' and are
-//  compared with them. Registration, stated before the first run: stride = ceil(max(rows, cols) / maxPixels); output
+//  compared with them. The rule, stated before the first run: stride = ceil(max(rows, cols) / maxPixels); output
 //  ceil(rows / stride) x ceil(cols / stride); pixel (i, j) = source (i * stride, j * stride); a stack or cube is entered at
 //  the centre index (size / 2) of every leading axis; a spectrum is binned to the largest value per bin.
 //

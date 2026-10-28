@@ -5,7 +5,7 @@ import FormatoEMD
 import FormatoHDF5
 
 extension VeloxEMDSerialized {
-    /// v5.0 WP1: the Velox EMD spectrum-image reader. None of these needs References data: the
+    /// The Velox EMD spectrum-image reader. None of these needs References data: the
     /// decode is tested on synthetic streams, the metadata parser on a JSON literal, and the file
     /// path on a 3 KB synthetic Velox EMD embedded below (`tools/velox-parity/make-tiny-fixture.py`
     /// writes it). The count-for-count comparison with rosettasciio on the public files is

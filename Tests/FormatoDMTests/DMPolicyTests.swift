@@ -1,6 +1,6 @@
 //
 //  DMPolicyTests.swift
-//  Registration 0.2.0, P6 `DMReadOptions.maximumStringBytes` (tier 2): bare tag streams built byte by byte here. A type-18
+//  The policy `DMReadOptions.maximumStringBytes`: bare tag streams built byte by byte here. A type-18
 //  string is cut at the limit, a UTF-16 array at or past it is absent, and numeric arrays keep their own fixed 4096-byte rule.
 //
 
@@ -132,7 +132,7 @@ import Testing
         }
     }
 
-    /// The 0.2.0 refuter's F4 (registration 0.2.0 A2): a ushort array the default keeps as a string (under 4096 bytes) never
+    /// The 0.2.0 refuter's F4: a ushort array the default keeps as a string (under 4096 bytes) never
     /// becomes a numeric array under a smaller string limit; it is then simply absent.
     @Test func testAShortUShortArrayNeverTakesTheNumericBranch() throws {
         let tags: [Node] = [.group("SI", [.group("Acquisition", [.group("Survey Image", [.utf16("Spectrum Image Rect", String(repeating: "A", count: 100))])])])]

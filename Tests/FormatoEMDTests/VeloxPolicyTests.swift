@@ -5,7 +5,7 @@ import FormatoCore
 @testable import FormatoEMD
 
 extension VeloxEMDSerialized {
-    /// Registration 0.2.0 (docs/registration-0.2.0.md §3): FormatoKit's Velox policies. P2 (the grid) against RosettaSciIO's own
+    /// FormatoKit's Velox policies. P2 (the grid) against RosettaSciIO's own
     /// reading in step-4-pins.json, P1 (an unhandled pixel unit) against literals typed here for the planted `si-units-px.emd`
     /// (tools/policy/make_policy_fixtures.py), P3 (the array cap) at its boundary, P8 (the block size) by equal results and by
     /// the blocks it makes.
@@ -96,8 +96,8 @@ extension VeloxEMDSerialized {
                 }
             }
             #expect(equalSignals == 8)
-            #expect { _ = try read(path) } throws: { "\($0)".contains("§3.3") }
-            #expect { _ = try read(path, .init(policy: VeloxReadPolicy(spectrumImageGrid: .firstImageChecked))) } throws: { "\($0)".contains("§3.3") }
+            #expect { _ = try read(path) } throws: { "\($0)".contains("ScanSize x ScanArea") }
+            #expect { _ = try read(path, .init(policy: VeloxReadPolicy(spectrumImageGrid: .firstImageChecked))) } throws: { "\($0)".contains("ScanSize x ScanArea") }
         }
 
         /// `.scanSizeTimesArea` decodes onto the stream's 4 x 3 grid: the planted counts are 12 events in stream order, so the
@@ -239,7 +239,7 @@ extension VeloxEMDSerialized {
             #expect { _ = try read(path, .init(policy: VeloxReadPolicy(maximumArrayBytes: 95))) } throws: {
                 "\($0)".contains("95 bytes the policy allows")
             }
-            #expect { _ = try read(path, .init(policy: VeloxReadPolicy(maximumArrayBytes: 59))) } throws: { "\($0)".contains("§3.8") }
+            #expect { _ = try read(path, .init(policy: VeloxReadPolicy(maximumArrayBytes: 59))) } throws: { "\($0)".contains("refused here on purpose") }
         }
 
         // MARK: P8, the block size

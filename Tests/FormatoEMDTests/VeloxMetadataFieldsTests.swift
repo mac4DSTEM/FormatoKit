@@ -31,7 +31,7 @@
 //    M20 detector sort removed; M21 detector sort by index as text; M22 projectorMode reading OperatingMode; M23
 //    `jsonDouble` ignoring JSON numbers; M24 `jsonDouble` reading 0 as nil; M25 stem read only when its "type" is
 //    "double"; M26 stem falling back to a string CustomProperties; M27 nominalMagnification `?? 0`.
-//  Gate B's findings (79295e8), each applied alone to VeloxEMDReader.swift:
+//  The review findings on 79295e8, each applied alone to VeloxEMDReader.swift:
 //    M28 exposure by `BinaryResult.DetectorIndex` when present, else by name; M29 exposure falling back to the
 //    DetectorIndex entry when no entry has the name; M30 the same when the named entry has no ExposureTime; M31
 //    `jsonDouble` reading a JSON bool as nil; M32 the DetectorIndex fallback only when the named entry has no
@@ -366,7 +366,7 @@ extension VeloxEMDSerialized {
             #expect(m.detectors.map(\.exposureTimeSeconds) == [nil, 2])
         }
 
-        /// "First" is the first key WRITTEN, as RosettaSciIO's `json.loads` keeps it (registration step 1 A7; until 0.0.3 the
+        /// "First" is the first key WRITTEN, as RosettaSciIO's `json.loads` keeps it (since 0.0.3; until then the
         /// index order, as `testFirstMeansLowestDetectorIndexWhateverTheKeyOrder`). The keys are written in DESCENDING order
         /// here (11 ... 0): the first BM-Ceta is Detector-11 (ExposureTime 110), not the lowest index.
         @Test func testFirstMeansTheFirstWrittenKeyAsRosettaSciIO() throws {

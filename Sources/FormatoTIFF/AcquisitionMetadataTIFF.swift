@@ -39,7 +39,7 @@
 //    cameraLengthMM  Optics/CameraLength, m → mm (×1e3), ONLY where the mode makes it real (rule c): ProjectorMode
 //                    "Diffraction" or OperatingMode "STEM". All six files say OperatingMode "TEM", ProjectorMode
 //                    "Imaging" and still store a CameraLength (0.844 / 1.365 m): a stale setting, so nil here. The
-//                    two mode values that open the gate are the registration's; no file here holds one.
+//                    two mode values that open the gate are a design choice; no file here holds one.
 //    detector        BinaryResult/Detector.
 //    exposureS       ExposureTime (s) of the Detectors/* element whose DetectorName is BinaryResult/Detector, never
 //                    another detector's (the Ceta files list nine detectors; only the imaging one has an exposure).
@@ -465,7 +465,7 @@ nonisolated extension AcquisitionMetadata {
         return Int(s)
     }
 
-    /// The notes of one reading, in the order the registration lists them, joined with "; "; nil when none.
+    /// The notes of one reading, in a fixed order, joined with "; "; nil when none.
     private static func joined(_ notes: String?...) -> String? {
         let present = notes.compactMap { $0 }
         return present.isEmpty ? nil : present.joined(separator: "; ")

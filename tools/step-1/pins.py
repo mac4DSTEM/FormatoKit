@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pins RosettaSciIO's readings for FormatoKit step 1 (docs/registration-step-1.md, sections 2, 3.1-3.3 and 4).
+"""Pins RosettaSciIO's readings for FormatoKit step 1.
 
     References/rsciio-venv/bin/python -I -B tools/step-1/pins.py [--work DIR]
         writes Tests/FormatoCoreTests/Fixtures/step-1-pins.json   (the public DM and Velox files of the pinned clone)
@@ -49,7 +49,7 @@ def cap_memory():
         while True:
             peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
             if peak > cap:
-                sys.stderr.write(f"pins: resident size {peak >> 20} MB passed the {cap >> 20} MB cap; stopping (suite memory rule)\n")
+                sys.stderr.write(f"pins: resident size {peak >> 20} MB passed the {cap >> 20} MB cap; stopping (memory cap)\n")
                 sys.stderr.flush()
                 os._exit(3)
             time.sleep(0.2)
@@ -605,7 +605,7 @@ def build_units(velox_paths, R, np, pint):
     for v in vals_s:
         for to in ("s", "ms", "µs", "ns"):
             add(conv_record(R, float(v), "s", to, "sweep"))
-    # (c) the planted cases of registration section 4
+    # (c) the planted cases
     planted_scale = [(1.5e-9, "m", 100), (2.5e-7, "m", 1000), (0.5, "s", 2 * 20), (0.0, "m", 100), (float("nan"), "m", 100),
                      (3.0, "", 10), (2.0, "1/nm", 10), (1.5e-9, None, 100), (0.0, "m", 1), (1.0, "m", 1), (1.0, "s", 2)]
     for v, u, f in planted_scale:

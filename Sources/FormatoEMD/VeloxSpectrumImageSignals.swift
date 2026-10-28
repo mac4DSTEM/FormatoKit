@@ -1,13 +1,13 @@
 //
 //  VeloxSpectrumImageSignals.swift
 //  Role: A Velox file's spectrum images as FormatoCore signals, as RosettaSciIO 049e7d70's `rsciio.emd.file_reader` returns
-//        them with `select_type="spectrum_image"` and `lazy=False` (docs/registration-step-4.md): the EELS spectrum images
+//        them with `select_type="spectrum_image"` and `lazy=False`: the EELS spectrum images
 //        (`Data/EelsSpectrumImage`, read as stored) then the EDS one(s), decoded from the spectrum streams by RosettaSciIO's
 //        `_fill_array_with_stream[_sum_frames]` line for line, every count a `+= 1` in the target type; its six options as
 //        parameters with its defaults. Eager, as RosettaSciIO's non-lazy path.
 //        The streams are read here through `VeloxFile`, not through the moved `VeloxEMDReader.readSpectrumImage`, whose rules
 //        (the ScanSize x ScanArea grid, the CSR store, every stream summed) are the inherited reader's and stay as they are.
-//        Every refusal names RosettaSciIO's raise, or the registered deviation it is (registration step 4 §3).
+//        Every refusal names RosettaSciIO's raise, or the deliberate deviation it is.
 //
 
 import Foundation
@@ -30,7 +30,7 @@ public nonisolated struct VeloxSpectrumImageOptions: Sendable, Equatable {
     /// `SI_dtype`: the counts' type; nil is the first stream's `StreamEncoding`. Counts wrap (integers) or stop growing
     /// (float32 at 2^24, float64 at 2^53) exactly as `+= 1` in that type does.
     public var dataType: FormatoDataType?
-    /// FormatoKit's own policies (registration 0.2.0): the unit of a pixel, the grid, the array cap, the block size. Not RosettaSciIO
+    /// FormatoKit's own policies: the unit of a pixel, the grid, the array cap, the block size. Not RosettaSciIO
     /// arguments; the default is 0.1.1's behaviour, and a non-default path that changes the result says so in the metadata.
     public var policy: VeloxReadPolicy
 
@@ -66,7 +66,7 @@ public nonisolated struct VeloxSpectrumImageSignals: Sendable {
     }
 }
 
-/// One read: the open file and the rules of registration step 4 §3.
+/// One read: the open file and the rules below.
 private nonisolated struct VeloxSpectrumImageRead {
     let path: String
     let options: VeloxSpectrumImageOptions
@@ -87,9 +87,9 @@ private nonisolated struct VeloxSpectrumImageRead {
         .unsupported("Velox spectrum image of \(fileName): \(why) (RosettaSciIO raises).")
     }
 
-    /// Where RosettaSciIO reads and FormatoKit refuses on purpose (registration step 4 §3).
-    func deviation(_ why: String, _ section: String) -> FormatoReadError {
-        .unsupported("Velox spectrum image of \(fileName): \(why) (refused here: registration step 4 \(section)).")
+    /// Where RosettaSciIO reads and FormatoKit refuses on purpose.
+    func deviation(_ why: String) -> FormatoReadError {
+        .unsupported("Velox spectrum image of \(fileName): \(why) (refused here on purpose).")
     }
 
     func isDataset(_ path: String) -> Bool { (try? file.open(path)).map { file.close($0); return true } ?? false }
@@ -115,7 +115,7 @@ private nonisolated struct VeloxSpectrumImageRead {
                 return []
             }
             let image = try firstImage(first)
-            // `_read_image_data(h5data, read_stack=False)` reads `h5data[:, :, 0]`: IndexError without a frame (A1, F3).
+            // `_read_image_data(h5data, read_stack=False)` reads `h5data[:, :, 0]`: IndexError without a frame.
             if hasSpectrumImage, image.frameCount == 0 { throw raises("the first image \(first) has no frame") }
             let images = VeloxImageSignals(reader: VeloxEMDReader(path: path), images: [image],
                                            readsWholeStacks: !hasSpectrumImage, titles: titles, policy: options.policy)
@@ -131,13 +131,13 @@ private nonisolated struct VeloxSpectrumImageRead {
         return out
     }
 
-    /// The first image as `VeloxImageInfo`: a group with a rank-3 `Data` and a `Metadata` (registered deviation, step 3 A1).
+    /// The first image as `VeloxImageInfo`: a group with a rank-3 `Data` and a `Metadata` (a deliberate deviation).
     func firstImage(_ id: String) throws -> VeloxImageInfo {
         let group = "/Data/Image/" + id
         guard file.exists(group + "/Data"), file.exists(group + "/Metadata") else { throw raises("the first image \(id) lacks Data or Metadata") }
         let dataset = try file.open(group + "/Data")
         defer { file.close(dataset) }
-        guard dataset.dims.count == 3 else { throw deviation("the first image \(id) is not a rank-3 stack", "§3.2") }
+        guard dataset.dims.count == 3 else { throw deviation("the first image \(id) is not a rank-3 stack") }
         let json = try file.readMetadataJSON(group: group, column: 0)
         guard let metadata = try? VeloxMetadata.parse(jsonData: json) else { throw raises("the metadata of image \(id) is not a JSON object") }
         return VeloxImageInfo(id: id, detectorName: metadata.binaryResultDetector ?? "", height: dataset.dims[0], width: dataset.dims[1],
@@ -149,7 +149,7 @@ private nonisolated struct VeloxSpectrumImageRead {
     func edsSignals(grid: (ny: Int, nx: Int)) throws -> [FormatoSignal] {
         let o = options
         guard o.rebinEnergy >= 1 else { throw raises("rebin_energy \(o.rebinEnergy) (a modulo by zero, or a negative array extent)") }
-        if let t = o.dataType, t.components != 1 { throw deviation("SI_dtype \(t.rawValue) is not a numeric type", "§3.5") }
+        if let t = o.dataType, t.components != 1 { throw deviation("SI_dtype \(t.rawValue) is not a numeric type") }
 
         // §3.4: number_of_frames from the first SpectrumImage child's settings, none on any failure.
         var numberOfFrames: Int?
@@ -177,8 +177,8 @@ private nonisolated struct VeloxSpectrumImageRead {
         let streams = file.children(of: "/Data/SpectrumStream")
         guard !streams.isEmpty else { return [] }                         // pruned (version 11)
 
-        // §3.3: the grid is the first image's; refused where the stream's ScanSize x ScanArea says otherwise (registration 0.2.0 P2
-        // makes that a choice).
+        // The grid is the first image's; refused where the stream's ScanSize x ScanArea says otherwise (the policy's
+        // `spectrumImageGrid` makes that a choice).
         let head = "/Data/SpectrumStream/" + streams[0]
         let headJSON = try file.readMetadataJSON(group: head, column: 0)
         guard let om = (try? JSONSerialization.jsonObject(with: headJSON)) as? [String: Any] else {
@@ -191,7 +191,7 @@ private nonisolated struct VeloxSpectrumImageRead {
             let source = String(head.dropFirst()) + "/Metadata[0].Scan"
             switch o.policy.spectrumImageGrid {
             case .firstImageChecked:
-                throw deviation(both, "§3.3")
+                throw deviation(both)
             case .firstImage:
                 gridEntry = veloxPolicyEntry("grid", value: "\(grid.ny) x \(grid.nx)", file: fileName, source: source,
                                              rule: "spectrumImageGrid = firstImage decodes onto the first image's grid (ny x nx), as RosettaSciIO does, where FormatoKit's default refuses: \(both)")
@@ -203,7 +203,7 @@ private nonisolated struct VeloxSpectrumImageRead {
         }
         let (ny, nx) = chosen
         guard ny >= 1, nx >= 1 else { throw raises("an image of \(ny) x \(nx) pixels") }
-        // ny * nx checked before any arithmetic on it (Gate B, A1, F7: it trapped); RosettaSciIO's arrays raise there too.
+        // ny * nx checked before any arithmetic on it; RosettaSciIO's arrays raise there too.
         let (pixels, pixelsOverflow) = ny.multipliedReportingOverflow(by: nx)
         guard !pixelsOverflow else { throw raises("a grid of \(ny) x \(nx) pixels (no array that large)") }
 
@@ -216,7 +216,7 @@ private nonisolated struct VeloxSpectrumImageRead {
         } else {
             guard let encoding = settings0["StreamEncoding"] else { throw raises("stream \(streams[0]) has no StreamEncoding") }
             guard let name = encoding as? String, let t = FormatoDataType(rawValue: name), t.components == 1 else {
-                throw deviation("StreamEncoding \(encoding) is not one of the ten numeric type names", "§3.5")
+                throw deviation("StreamEncoding \(encoding) is not one of the ten numeric type names")
             }
             dataType = t
         }
@@ -233,9 +233,9 @@ private nonisolated struct VeloxSpectrumImageRead {
         let first = o.firstFrame
         if !o.sumFrames {
             guard last - first >= 1 else {
-                throw deviation("first_frame \(first) and last_frame \(last) leave no frame", "§3.5")
+                throw deviation("first_frame \(first) and last_frame \(last) leave no frame")
             }
-            guard last != 0 else { throw deviation("last_frame 0 never stops with frames not summed", "§3.5") }
+            guard last != 0 else { throw deviation("last_frame 0 never stops with frames not summed") }
         }
 
         // §3.6: the axes, from stream 0's metadata.
@@ -262,7 +262,7 @@ private nonisolated struct VeloxSpectrumImageRead {
                 // FeiSpectrumStream parses each stream's Metadata.
                 if k > 0 { _ = try streamMetadata(group, name: name) }
                 guard bins == bins0 else {
-                    throw deviation("stream \(name) has \(bins) channels, stream \(streams[0]) \(bins0): the energy axis would not fit", "§3.5")
+                    throw deviation("stream \(name) has \(bins) channels, stream \(streams[0]) \(bins0): the energy axis would not fit")
                 }
                 let array = try VeloxCountArray(dataType: dataType, shape: layout.shape(bins: bins), maximumBytes: o.policy.arrayByteLimit)
                 try fill(array, stream: group + "/Data", layout: layout, bins: bins)
@@ -301,7 +301,7 @@ private nonisolated struct VeloxSpectrumImageRead {
         let d = try file.open(dataset)
         defer { file.close(d) }
         guard d.dims.count == 2, d.dims[1] == 1, d.typeClass == hdf5IntegerClass, d.byteSize == 2, !d.isSigned else {
-            throw deviation("\(dataset) is not one column of unsigned 16-bit integers", "§3.5")
+            throw deviation("\(dataset) is not one column of unsigned 16-bit integers")
         }
         let total = d.dims[0]
         let blockValues = min(max(total, 1), options.policy.blockValues)
@@ -324,7 +324,7 @@ private nonisolated struct VeloxSpectrumImageRead {
             return !state.stopped
         }
         if state.outOfRange {
-            throw deviation("\(stream) holds a channel beyond its \(bins) channels (RosettaSciIO's jitted fill writes outside the voxel)", "§3.5")
+            throw deviation("\(stream) holds a channel beyond its \(bins) channels (RosettaSciIO's jitted fill writes outside the voxel)")
         }
     }
 
@@ -335,7 +335,7 @@ private nonisolated struct VeloxSpectrumImageRead {
         if let binary = om["BinaryResult"] {
             guard let binary = binary as? [String: Any] else { throw raises("BinaryResult is not an object") }
             if let index = binary["DetectorIndex"], !(index is NSNull) {
-                guard let text = pythonFormat(index) else { throw deviation("DetectorIndex is not an integer or string", "§3.6 (step 3 A1)") }
+                guard let text = pythonFormat(index) else { throw deviation("DetectorIndex is not an integer or string") }
                 guard let detectors = om["Detectors"] as? [String: Any], detectors["Detector-" + text] != nil else {
                     throw raises("DetectorIndex names Detector-\(text), which Detectors lacks")
                 }
@@ -350,7 +350,7 @@ private nonisolated struct VeloxSpectrumImageRead {
         guard let size = binary["PixelSize"], let offset = binary["Offset"], let unitValue = binary["PixelUnitX"] else {
             throw raises("BinaryResult lacks PixelSize, Offset or PixelUnitX")
         }
-        guard let unit = unitValue as? String else { throw deviation("PixelUnitX is not a string", "§3.6") }
+        guard let unit = unitValue as? String else { throw deviation("PixelUnitX is not a string") }
         guard let size = size as? [String: Any], let offset = offset as? [String: Any],
               size["width"] != nil, size["height"] != nil, offset["x"] != nil, offset["y"] != nil else {
             throw raises("PixelSize or Offset lacks a key")
@@ -363,13 +363,13 @@ private nonisolated struct VeloxSpectrumImageRead {
         let factor = frames == nil ? nx : ny
         guard let x = VeloxPixelCalibration.make(width: width, height: height, offsetX: ox, offsetY: oy, unit: unit, factor: factor,
                                                  policy: options.policy) else {
-            throw deviation("pixel units '\(unit)' or a pixel size this reader does not convert", "§3.6 (step 1 A5)")
+            throw deviation("pixel units '\(unit)' or a pixel size this reader does not convert")
         }
         var axes: [FormatoAxis] = []
         // 4. Time.
         if let frames {
             guard let scan = om["Scan"] as? [String: Any], let raw = scan["FrameTime"] else {
-                throw deviation("frames not summed and no Scan.FrameTime (RosettaSciIO's Time axis has no scale)", "§3.6")
+                throw deviation("frames not summed and no Scan.FrameTime (RosettaSciIO's Time axis has no scale)")
             }
             guard let frameTime = veloxPythonFloat(raw), let time = FormatoUnits.convertScaleUnits(frameTime, units: "s", factor: frames) else {
                 throw raises("Scan.FrameTime does not convert")
@@ -399,7 +399,7 @@ private nonisolated struct VeloxSpectrumImageRead {
             guard let entry = detectors[key] as? [String: Any] else { throw raises("Detectors.\(key) is not an object") }
             guard let nameValue = entry["DetectorName"] else { return fallback }
             guard let wantedText = wanted as? String, let name = nameValue as? String else {
-                throw deviation("BinaryResult.Detector or Detectors.\(key).DetectorName is not a string", "§3.6")
+                throw deviation("BinaryResult.Detector or Detectors.\(key).DetectorName is not a string")
             }
             guard wantedText.isEmpty || name.range(of: wantedText, options: .literal) != nil else { continue }
             guard let dispersionValue = entry["Dispersion"] else { return fallback }
@@ -441,48 +441,48 @@ private nonisolated struct VeloxSpectrumImageRead {
             throw raises("the metadata of \(siGroup) is not a JSON object")
         }
         guard let binary = om["BinaryResult"] as? [String: Any] else { throw raises("\(siGroup) has no BinaryResult object") }
-        guard let offset = binary["Offset"] as? [String: Any] else { throw deviation("\(siGroup) BinaryResult.Offset is not an object (len())", "§3.8") }
+        guard let offset = binary["Offset"] as? [String: Any] else { throw deviation("\(siGroup) BinaryResult.Offset is not an object (len())") }
         let spatialDim = offset.count
         guard let size = binary["PixelSize"] as? [String: Any], let unitValue = binary["PixelUnitX"], size["width"] != nil, offset["x"] != nil else {
             throw raises("\(siGroup) BinaryResult lacks PixelSize.width, PixelUnitX or Offset.x")
         }
-        guard let unitX = unitValue as? String else { throw deviation("PixelUnitX is not a string", "§3.8") }
+        guard let unitX = unitValue as? String else { throw deviation("PixelUnitX is not a string") }
         guard let width = veloxPythonFloat(size["width"]), let ox = veloxPythonFloat(offset["x"]) else {
             throw raises("PixelSize.width or Offset.x: float() refuses it")
         }
-        // Registration 0.2.0 P1: an unhandled unit is kept as written when every unit involved is that one string.
+        // Policy `unconvertedUnits`: an unhandled unit is kept as written when every unit involved is that one string.
         let x: (value: Double, units: String), offsetX: Double
         var keptUnits = false
         switch FormatoUnits.scaleOutcome(width, units: unitX, factor: 1) {
         case .converted(let value, let units):
             guard let converted = FormatoUnits.convertUnits(ox, from: unitX, to: units) else {
-                throw deviation("pixel units '\(unitX)' or a pixel size this reader does not convert", "§3.8 (step 1 A5)")
+                throw deviation("pixel units '\(unitX)' or a pixel size this reader does not convert")
             }
             (x, offsetX) = ((value, units), converted)
         case .unhandledUnit where options.policy.unconvertedUnits == .keepAsWritten:
             (x, offsetX) = ((width, unitX), ox)
             keptUnits = true
         case .unhandledUnit, .pintRaises:
-            throw deviation("pixel units '\(unitX)' or a pixel size this reader does not convert", "§3.8 (step 1 A5)")
+            throw deviation("pixel units '\(unitX)' or a pixel size this reader does not convert")
         }
         var y: (scale: Double, offset: Double)?
         if spatialDim == 2 {
             guard size["height"] != nil, offset["y"] != nil, let unitYValue = binary["PixelUnitY"] else {
                 throw raises("\(siGroup) BinaryResult lacks PixelSize.height, Offset.y or PixelUnitY")
             }
-            guard let unitY = unitYValue as? String else { throw deviation("PixelUnitY is not a string", "§3.8") }
+            guard let unitY = unitYValue as? String else { throw deviation("PixelUnitY is not a string") }
             guard let height = veloxPythonFloat(size["height"]), let oy = veloxPythonFloat(offset["y"]) else {
                 throw raises("PixelSize.height or Offset.y: float() refuses it")
             }
             if keptUnits {
                 guard unitY == unitX else {
-                    throw deviation("pixel units '\(unitY)' this reader does not convert to '\(x.units)'", "§3.8 (step 1 A5)")
+                    throw deviation("pixel units '\(unitY)' this reader does not convert to '\(x.units)'")
                 }
                 y = (height, oy)
             } else {
                 guard let sy = FormatoUnits.convertUnits(height, from: unitY, to: x.units),
                       let offY = FormatoUnits.convertUnits(oy, from: unitY, to: x.units) else {
-                    throw deviation("pixel units '\(unitY)' this reader does not convert to '\(x.units)'", "§3.8 (step 1 A5)")
+                    throw deviation("pixel units '\(unitY)' this reader does not convert to '\(x.units)'")
                 }
                 y = (sy, offY)
             }
@@ -513,7 +513,7 @@ private nonisolated struct VeloxSpectrumImageRead {
                 throw raises("EELS \(id): AcquisitionMetadata lacks Data.offset or Data.dispersion")
             }
             guard let energyOffset = jsonNumber(offsetValue), let energyScale = jsonNumber(scaleValue) else {
-                throw deviation("EELS \(id): Data.offset or Data.dispersion is not a JSON number", "§3.8")
+                throw deviation("EELS \(id): Data.offset or Data.dispersion is not a JSON number")
             }
             axes.append(FormatoAxis(name: "Energy-loss", size: data.shape.last!, scale: energyScale, offset: energyOffset, units: "eV", navigate: false))
             _ = try jsonColumn(group + "/Metadata")   // `_parse_metadata(..., bin_id)`: must be JSON
@@ -523,7 +523,7 @@ private nonisolated struct VeloxSpectrumImageRead {
                                                                       rule: "rsciio emd velox _read_eels_spectrum_images: title 'EELS'")))
             md.set(FormatoMetadataEntry(key: "General.original_filename", value: .text(fileName), units: nil,
                                         provenance: FormatoProvenance(file: fileName, source: "(the file name)",
-                                                                      rule: "rsciio emd velox: the file opened (its name here; registration step 4 §3.8)")))
+                                                                      rule: "rsciio emd velox: the file opened (its name here)")))
             if keptUnits {
                 md.set(VeloxPixelCalibration.entry(unit: unitX, file: fileName, source: String(siGroup.dropFirst()) + "/Metadata[0].BinaryResult.PixelUnitX"))
             }
@@ -535,7 +535,7 @@ private nonisolated struct VeloxSpectrumImageRead {
     /// A JSON value Python keeps as a number: an integer or a float, not a bool.
     func jsonNumber(_ value: Any) -> Double? {
         guard let n = value as? NSNumber, CFGetTypeID(n) != CFBooleanGetTypeID() else { return nil }
-        return formatoPythonFloat(n)   // an NSDecimalNumber from its exact text (A1, F5)
+        return formatoPythonFloat(n)   // an NSDecimalNumber from its exact text
     }
 
     /// `_parse_sub_data_group_metadata` of any (n, k) uint8 dataset: column 0, cut at the first NUL, as JSON.
@@ -571,11 +571,11 @@ private nonisolated struct VeloxSpectrumImageRead {
         case (true, _, 8, true): (type, memory) = (.int64, h5.int64)
         case (_, true, 4, _): (type, memory) = (.float32, h5.float32)
         case (_, true, 8, _): (type, memory) = (.float64, h5.float64)
-        default: throw deviation("\(path) is stored as a type this reader does not read", "§3.8")
+        default: throw deviation("\(path) is stored as a type this reader does not read")
         }
         let count = try FormatoArray.elementCount(d.dims)
         let (bytes, overflow) = count.multipliedReportingOverflow(by: type.byteSize)
-        guard !overflow, bytes <= options.policy.arrayByteLimit else { throw deviation("\(path) is larger than this reader accepts", "§3.8") }
+        guard !overflow, bytes <= options.policy.arrayByteLimit else { throw deviation("\(path) is larger than this reader accepts") }
         var out = Data(count: bytes)
         if count > 0 {
             try out.withUnsafeMutableBytes {
@@ -611,8 +611,8 @@ private nonisolated struct VeloxSpectrumImageRead {
 private let hdf5IntegerClass: Int32 = 0
 private let hdf5FloatClass: Int32 = 1
 
-/// Python's `int()` and `float()` read any Unicode decimal digit ("٣", "３") as its ASCII digit (registration step 4 A1, F1):
-/// the string with those digits mapped, for FormatoCore's ASCII rules. Velox only: TIFF and DM keep step 2's F15.
+/// Python's `int()` and `float()` read any Unicode decimal digit ("٣", "３") as its ASCII digit:
+/// the string with those digits mapped, for FormatoCore's ASCII rules. Velox only: TIFF and DM keep their own rule.
 nonisolated func veloxPythonDigits(_ s: String) -> String {
     var out = String.UnicodeScalarView()
     for scalar in s.unicodeScalars {
@@ -669,7 +669,7 @@ nonisolated func pythonIntValue(_ value: Any?) -> Int? {
     return nil
 }
 
-// MARK: - The fill (registration step 4 §3.5)
+// MARK: - The fill
 
 /// RosettaSciIO's `_fill_array_with_stream_sum_frames` and `_fill_array_with_stream`, line for line, block by block.
 package nonisolated enum VeloxStreamFill {
@@ -689,7 +689,7 @@ package nonisolated enum VeloxStreamFill {
         var navigation = 0
         var frame = 0
         package var stopped = false
-        /// A channel at or beyond the bin count was met where it would be written (registered deviation: refused).
+        /// A channel at or beyond the bin count was met where it would be written (deliberate deviation: refused).
         package var outOfRange = false
         package init() {}
     }
@@ -743,7 +743,7 @@ nonisolated final class VeloxCountArray {
     private var storage: UnsafeMutableRawPointer?
     private let byteCount: Int
 
-    /// `maximumBytes`: the policy's limit on one array (registration 0.2.0 P3).
+    /// `maximumBytes`: the policy's limit on one array.
     init(dataType: FormatoDataType, shape: [Int], maximumBytes: Int = VeloxCountArray.physicalMemoryBytes) throws {
         let count = try FormatoArray.elementCount(shape)
         let (bytes, overflow) = count.multipliedReportingOverflow(by: dataType.byteSize)
@@ -790,13 +790,13 @@ nonisolated final class VeloxCountArray {
     }
 }
 
-/// RosettaSciIO's `stream_to_array` on values in memory: the kernel pins (registration step 4 §2) and the planted literals.
+/// RosettaSciIO's `stream_to_array` on values in memory: the kernel pins and the planted literals.
 package nonisolated func veloxStreamToArray(_ values: [UInt16], ny: Int, nx: Int, channels: Int, firstFrame: Int, lastFrame: Int,
                                             rebinEnergy: Int, sumFrames: Bool, dataType: FormatoDataType) throws -> FormatoArray {
     let layout = VeloxStreamFill.Layout(ny: ny, nx: nx, first: firstFrame, last: lastFrame, rebin: rebinEnergy, sumFrames: sumFrames)
     let array = try VeloxCountArray(dataType: dataType, shape: layout.shape(bins: channels))
     var state = VeloxStreamFill.State()
     try values.withUnsafeBufferPointer { try array.fill($0, layout: layout, bins: channels, state: &state) }
-    if state.outOfRange { throw FormatoReadError.unsupported("A channel beyond the \(channels) channels (registration step 4 §3.5).") }
+    if state.outOfRange { throw FormatoReadError.unsupported("A channel beyond the \(channels) channels.") }
     return try array.finish()
 }

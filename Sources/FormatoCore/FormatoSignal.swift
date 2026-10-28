@@ -1,9 +1,9 @@
 //
 //  FormatoSignal.swift
-//  Role: A signal (docs/registration-step-1.md §3.1): its values, one axis per dimension in array order, its title, its
+//  Role: A signal: its values, one axis per dimension in array order, its title, its
 //        signal type and its metadata; eager (`FormatoSignal`) or lazy (`FormatoLazySignal` over a `FormatoLazyArray`).
 //        REGISTERED EQUAL: `load()` is `read(start: zeros, count: shape)`, and every hyperslab a lazy array reads equals the
-//        same slab cut from the eager array, bit for bit (gate L1).
+//        same slab cut from the eager array, bit for bit (`ArrayTests`).
 //
 
 import Foundation

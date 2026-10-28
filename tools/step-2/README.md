@@ -1,7 +1,7 @@
 # tools/step-2: the oracle pins and the planted files of FormatoTIFF
 
-`docs/registration-step-2.md` (sections 2, 4, 5) says what these scripts are for. Python only; the Swift tests (gates P2, L2,
-planted) read what they write. Agreement with RosettaSciIO and tifffile is agreement with an independent reading of the same
+These scripts pin what RosettaSciIO and tifffile read. Python only; the Swift tests (`FormatoTIFFPinsTests`,
+`PlantedTIFFTests`) read what they write. Agreement with RosettaSciIO and tifffile is agreement with an independent reading of the same
 bytes, not truth; truth is a planted file.
 
 ## Run
@@ -50,11 +50,11 @@ lives in the `tiff/` folder). Files: loose files by path, then `.gz`, then zip m
 | `tifffile_raises` | null, or what `tifffile.TiffFile(path)` raised (then `tags` is empty and the reason is `tifffile-cannot-open`) |
 | `tifffile_series` | tifffile's `series`: `axes`, `kind`, `shape`, `dtype`, `pages` (the number of pages of the series) |
 | `tags` | every tag of page 0, see below |
-| `fei_metadata` | with flag `fei`: `tiff.fei_metadata` as an ordered list `{section, key, kind (int/float/bool/str), value[, value_bits]}`; the INI parse the Swift port must equal (registration 3.3) |
+| `fei_metadata` | with flag `fei`: `tiff.fei_metadata` as an ordered list `{section, key, kind (int/float/bool/str), value[, value_bits]}`; the INI parse the Swift port must equal |
 | `imagej_metadata` | with flag `imagej`: `tiff.imagej_metadata`'s scalar items as `{key, kind, value[, value_bits]}` |
 | `series` | one record per dict RosettaSciIO returned, see below |
 
-**Scope rule** (registration 1.2, "Out of step 2"; the reasons in this order): `flag:sem`, `flag:tvips`, `flag:sis`,
+**Scope rule** (the reasons in this order): `flag:sem`, `flag:tvips`, `flag:sis`,
 `flag:streak` (any file flag, or any flag of any page of any series), `make:JEOL Ltd.` (page-0 Make, RosettaSciIO's own test;
 tifffile 2026.9.20 has no SightX detection, its `JEOL_Header` is DM tag 65027), `compressed` (any page of any series with
 Compression != 1), `tiled`, `planar-config-2`, `series-kind:<kind>` (a series whose kind is not `imagej`, `generic`, `uniform`,
@@ -117,7 +117,7 @@ versus that reading; empty for all 20 files, the script prints any and the run i
 | `unknown-tag-type.tif` (extra) | tag 65200 of datatype 99: tifffile drops it from the page |
 | `lzw.tif`, `tiled.tif`, `strip-past-end.tif` | the refusals: Compression 5; TileWidth/TileLength and tile offsets; a StripOffsets at 100000 in a 150-byte file |
 
-## What RosettaSciIO and tifffile do that the registration does not say (found while writing these)
+## What RosettaSciIO and tifffile do that is easy to miss (found while writing these)
 
 - tifffile's tag value for ASCII is `rstrip(b'\0')`, decode UTF-8 else cp1252, then `.strip()`: it does not cut at the first NUL
   (`be-u16-3strips.tif` tag 305 reads `"planted\0junk"`). `bytes2str` (cut at the first NUL, same decoding) is what the FEI INI

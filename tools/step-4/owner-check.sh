@@ -1,5 +1,5 @@
 #!/bin/zsh
-# The owner's Velox spectrum image against RosettaSciIO (registration step 4 §2): $MACEM_DATA/stem-edx/*.emd (default
+# The owner's Velox spectrum image against RosettaSciIO: $MACEM_DATA/stem-edx/*.emd (default
 # ../data), read by RosettaSciIO (`tools/step-4/pins.py --owner`, with O1, O4 and first_frame 100 / last_frame 200, into
 # .build/owner-step4, never committed) and by VeloxSpectrumImageSignals (SpectrumImagePinsTests.testOwnerSpectrumImages),
 # compared as the public pins are. Never part of the gate; its numbers are cited with this log in docs/status.md, and the

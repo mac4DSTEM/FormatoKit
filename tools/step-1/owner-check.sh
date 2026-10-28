@@ -1,5 +1,5 @@
 #!/bin/zsh
-# The owner's files against RosettaSciIO (registration §2): every *.dm3, *.dm4 and *.emd under $MACEM_DATA/{eels,tem,stem-edx}
+# The owner's files against RosettaSciIO: every *.dm3, *.dm4 and *.emd under $MACEM_DATA/{eels,tem,stem-edx}
 # (default ../data), read by RosettaSciIO (`pins.py --owner`, into .build/owner, never committed) and by FormatoKit's
 # adapters (PinsTests.testOwnerFilesAgreeWithRosettaSciIO), compared exactly as the public pins are. Never part of the gate;
 # its numbers are cited with this log in docs/status.md, and every file read has a line in ../data/README.md.

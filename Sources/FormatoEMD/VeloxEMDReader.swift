@@ -512,7 +512,7 @@ public nonisolated struct VeloxMetadata: Sendable {
     /// `ExposureTime` (s) of the first `Detectors` entry, in the order the file writes the keys, whose `DetectorName`
     /// equals `BinaryResult.Detector`. The rule is a consumer's request, applied with the matching of RosettaSciIO 049e7d70's
     /// `_get_detector_metadata_dict` (`_emd_velox.py:51-57`): `==`, not the energy axis's `contains`, and the first
-    /// entry as the file stores the keys (FormatoKit 0.0.3, registration step 1 A7; until then index order, which differs
+    /// entry as the file stores the keys (FormatoKit 0.0.3; until then index order, which differs
     /// only when two entries share a `DetectorName` out of index order; no public file writes its keys out of index order).
     /// This is not RosettaSciIO's `DetectorMetadata`: RosettaSciIO feeds `_get_detector_metadata_dict` another name,
     /// from `Operations` or from `Detectors["Detector-<DetectorIndex>"].DetectorName` (`_emd_velox.py:326-330`,
@@ -549,7 +549,7 @@ public nonisolated struct VeloxMetadata: Sendable {
     public var derivedGrid: (ny: Int, nx: Int)? {
         guard let w = scanSizeWidth, let h = scanSizeHeight, let a = scanArea else { return nil }
         let nx = Double(w) * (a.right - a.left), ny = Double(h) * (a.bottom - a.top)
-        // Bounded before Int(): a ScanSize x ScanArea past 2^31 is no scan grid (it trapped; registration step 1 A9).
+        // Bounded before Int(): a ScanSize x ScanArea past 2^31 is no scan grid (it trapped).
         guard abs(nx - nx.rounded()) < 0.01, abs(ny - ny.rounded()) < 0.01, nx >= 1, ny >= 1, nx <= 2_147_483_648, ny <= 2_147_483_648 else { return nil }
         return (Int(ny.rounded()), Int(nx.rounded()))
     }
@@ -563,8 +563,8 @@ public nonisolated struct VeloxMetadata: Sendable {
 
     /// The keys of the root object's `Detectors` object in the order the text writes them (RosettaSciIO's `json.loads`
     /// keeps that order; a Swift dictionary does not). A key written twice keeps its first place, as in a Python dict; of
-    /// two root `Detectors` the FIRST is listed, the one whose values `JSONSerialization` keeps (Python keeps the last: the
-    /// registered repeated-key deviation, A7 and its Gate B note). Keys are compared decoded (`\u002d` is "-"); a leading
+    /// two root `Detectors` the FIRST is listed, the one whose values `JSONSerialization` keeps (Python keeps the last: a
+    /// deliberate deviation). Keys are compared decoded (`\u002d` is "-"); a leading
     /// UTF-8 BOM is skipped, as `JSONSerialization` accepts it. nil when there is no root `Detectors` object or the text is
     /// not one JSON object this scan can walk: the caller then keeps index order. Linear in the text; it parses only keys.
     package static func detectorKeyOrder(jsonData: Data) -> [String]? {
@@ -654,7 +654,7 @@ public nonisolated struct VeloxMetadata: Sendable {
     package static func parse(root: [String: Any], detectorKeyOrder: [String]? = nil) -> VeloxMetadata {
         func dict(_ parent: [String: Any]?, _ key: String) -> [String: Any]? { parent?[key] as? [String: Any] }
         // `Detector-<n>` in the order the text writes the keys, as rsciio's `json.loads` keeps them and its rules take the
-        // first match in (registration step 1 A7, FormatoKit 0.0.3; until then the index order). A Swift dictionary has no
+        // first match in (since FormatoKit 0.0.3; until then the index order). A Swift dictionary has no
         // order, so `detectorKeyOrder` scans the text; a key it does not list (no text, or a text the scan cannot walk)
         // goes after the listed ones, in index order.
         let written = Dictionary((detectorKeyOrder ?? []).enumerated().map { ($1, $0) }, uniquingKeysWith: { first, _ in first })
@@ -785,7 +785,7 @@ private nonisolated let collectVeloxLink: @convention(c)
 
 /// Where the Velox reader looks for libhdf5, in order (the inherited list plus one): the `FORMATO_HDF5_PATH`
 /// override, the host app's `Frameworks/libhdf5.dylib` (a host that ships its own is served first), the copy FormatoKit ships
-/// (`FormatoHDF5Library.bundledLibraryPath`, docs/registration-step-1.md §5), then the loader's search path. A host with other names sets `libraryCandidates` once, before the first read.
+/// (`FormatoHDF5Library.bundledLibraryPath`), then the loader's search path. A host with other names sets `libraryCandidates` once, before the first read.
 package nonisolated enum VeloxHDF5Library {
     /// The default list: exactly the lookup the reader has always done.
     package static let defaultCandidates: @Sendable () -> [String] = {
@@ -1527,8 +1527,8 @@ public nonisolated struct VeloxEMDReader: Sendable {
     }
 
     /// One frame of one image in its STORED type: `height * width` elements, row-major (y, then x), little-endian, read through
-    /// HDF5's native type of the stored class, size and sign, so no value changes (FormatoKit step 3, registration step 3
-    /// §1.1; `readImageFrame` above stays Float32 for its callers). Throws as `readImageFrame` does.
+    /// HDF5's native type of the stored class, size and sign, so no value changes (`readImageFrame`
+    /// above stays Float32 for its callers). Throws as `readImageFrame` does.
     package func readImageFrameBytes(id: String, frame: Int, cancelled: @Sendable () -> Bool = FormatoCancellation.task) throws -> (VeloxImageElementType, [UInt8]) {
         try HDF5Serial.run {
             try FormatoCancellation.check(cancelled)

@@ -3,7 +3,7 @@ import Foundation
 import FormatoEMD
 
 extension VeloxEMDSerialized {
-    /// 0.0.3 (a consumer's request, 2026-10-15; registration step 1 A7): `VeloxMetadata.parse` keeps the `Detectors` entries
+    /// 0.0.3 (a consumer's request, 2026-10-15): `VeloxMetadata.parse` keeps the `Detectors` entries
     /// in the order the metadata text writes them, as RosettaSciIO's `json.loads` does, where it sorted them by the
     /// `Detector-<n>` index. RosettaSciIO 049e7d70 takes the FIRST entry in that order whose name contains
     /// `BinaryResult.Detector` for the energy axis (`_emd_velox.py:866-876`), and the first whose name equals it for the
@@ -66,7 +66,7 @@ extension VeloxEMDSerialized {
             #expect(m.exposureTimeSeconds == 0.7, "the first BF written")
         }
 
-        /// Gate B (refuter on 42f27e3): of two root `Detectors` objects `JSONSerialization` keeps the FIRST's values, so the
+        /// Found in review (on 42f27e3): of two root `Detectors` objects `JSONSerialization` keeps the FIRST's values, so the
         /// order is the first's too (it listed the last's: indices [1, 0] and 2 eV, neither reading). Python keeps the last
         /// (rsciio: [5, 1], 5 eV): the registered repeated-key deviation, now at least one consistent reading.
         @Test func testTwoRootDetectorsObjectsReadTheFirstConsistently() throws {
@@ -76,7 +76,7 @@ extension VeloxEMDSerialized {
             #expect(m.energyAxis == VeloxEnergyAxis(offsetKeV: 0.001, scaleKeV: 0.001))
         }
 
-        /// Gate B: a leading UTF-8 BOM, which `JSONSerialization` accepts, does not drop the written order.
+        /// Found in review: a leading UTF-8 BOM, which `JSONSerialization` accepts, does not drop the written order.
         @Test func testALeadingByteOrderMarkKeepsTheWrittenOrder() throws {
             let json = #"{"BinaryResult": {"Detector": "BF"}, "Detectors": {"Detector-5": {"DetectorName": "BF", "ExposureTime": "5"}, "Detector-1": {"DetectorName": "BF", "ExposureTime": "1"}}}"#
             let m = try VeloxMetadata.parse(jsonData: Data([0xEF, 0xBB, 0xBF]) + Data(json.utf8))

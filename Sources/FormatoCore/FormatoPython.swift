@@ -1,6 +1,6 @@
 //
 //  FormatoPython.swift
-//  Role: the few Python parsing rules the readers port exactly (registration step 1 A5, step 2 §3.3): `float(x)`, `int(s)`,
+//  Role: the few Python parsing rules the readers port exactly: `float(x)`, `int(s)`,
 //        and tifffile's `asbool` and `astype`, so a reader accepts and refuses the same strings RosettaSciIO and tifffile do.
 //        Package API: the format modules share them; no consumer calls them.
 //
@@ -15,7 +15,7 @@ package nonisolated func formatoPythonFloat(_ value: Any?) -> Double? {
     case let n as NSNumber:
         if CFGetTypeID(n) == CFBooleanGetTypeID() { return n.boolValue ? 1 : 0 }
         // JSONSerialization keeps some JSON numbers as NSDecimalNumber, whose doubleValue can be one ulp from the correctly
-        // rounded value Python's json gives (registration step 4 A1, F5): parse its exact decimal text instead.
+        // rounded value Python's json gives: parse its exact decimal text instead.
         if let d = n as? NSDecimalNumber, let exact = Double(d.stringValue) { return exact }
         return n.doubleValue
     case let d as Double: return d

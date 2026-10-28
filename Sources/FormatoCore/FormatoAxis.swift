@@ -1,6 +1,6 @@
 //
 //  FormatoAxis.swift
-//  Role: One dimension of a signal (docs/registration-step-1.md §3.1): uniform, `value(i) = offset + i * scale`, with its
+//  Role: One dimension of a signal: uniform, `value(i) = offset + i * scale`, with its
 //        units as the reference writes them and whether it navigates (a position) or is the signal (what is measured at a
 //        position): RosettaSciIO's axes dictionary, one field each.
 //

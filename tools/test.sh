@@ -8,7 +8,7 @@
 # release asset may not exist yet, so the gate builds them into dist/xcframeworks when missing and sets FORMATO_LOCAL_XCFRAMEWORKS
 # (Package.swift then takes the local build). FORMATO_HDF5_PATH is still exported, to that framework's binary, unless already set: the
 # quit-barrier probe asks the loaded image for H5atclose by that path (RTLD_NOLOAD). The consumer check proves the shipped copy is
-# found with it unset (gate H1).
+# found with it unset.
 #
 # Warnings: the build must have none, with ONE named exception: in release, Swift Build reports "not stripping binary
 # because it is signed" for the shipped frameworks it copies (FormatoLibHDF5, FormatoLibSZ, FormatoLibAEC; they are ad-hoc signed and
@@ -21,7 +21,7 @@ export FORMATO_LOCAL_XCFRAMEWORKS=1
 export FORMATO_HDF5_PATH=${FORMATO_HDF5_PATH:-$PWD/dist/xcframeworks/FormatoLibHDF5.xcframework/macos-arm64/FormatoLibHDF5.framework/Versions/A/FormatoLibHDF5}
 print -u2 "tools/test.sh: libhdf5 = $FORMATO_HDF5_PATH"
 mkdir -p .build
-# The public RosettaSciIO zips the pins read (registration §2): each checked against the pinned clone's registry.txt, then
+# The public RosettaSciIO zips the pins read: each checked against the pinned clone's registry.txt, then
 # unzipped into its own fresh folder under .build/rsciio-unzipped. Without References/ the pins test runs on the committed
 # copy only.
 refs=References/rosettasciio-049e7d70/rsciio/tests
@@ -34,7 +34,7 @@ if [[ -d $refs/data ]]; then
     mkdir .build/rsciio-unzipped/emd/$zip && unzip -q $refs/data/emd/$zip -d .build/rsciio-unzipped/emd/$zip
   done
 fi
-# The public TIFF test data the step-2 pins read (registration step 2 §2): each .zip and .gz checked against registry.txt,
+# The public TIFF test data the step-2 pins read: each .zip and .gz checked against registry.txt,
 # unpacked into .build/rsciio-tiff/tiff/<zip>/ (a .gz into a file of its own name, the name the pins use).
 if [[ -d $refs/data/tiff ]]; then
   rm -rf .build/rsciio-tiff; mkdir -p .build/rsciio-tiff/tiff

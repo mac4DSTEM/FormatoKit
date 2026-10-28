@@ -3,7 +3,7 @@ import Foundation
 import FormatoCore
 import FormatoEMD
 
-/// The 0.2.0 refuter's findings (registration 0.2.0 A2): a ScanSize x ScanArea that overflows Int must give no grid (it trapped,
+/// The 0.2.0 refuter's findings: a ScanSize x ScanArea that overflows Int must give no grid (it trapped,
 /// default path too); unit strings are trimmed as Pint trims them (ASCII whitespace), not Foundation's wider set.
 @Suite struct Refuter020Tests {
     private func metadata(width: String, height: String, right: String) throws -> VeloxMetadata {

@@ -1,6 +1,6 @@
 //
 //  FormatoArray.swift
-//  Role: The values of a signal as the file stores them (docs/registration-step-1.md §3.1): a stored element type, a shape
+//  Role: The values of a signal as the file stores them: a stored element type, a shape
 //        in C order (slowest first, RosettaSciIO's array shape) and the values as little-endian bytes in that order. Two
 //        arrays are equal when type, shape and bytes are equal: that is the bit-for-bit claim against RosettaSciIO, whose
 //        array `.tobytes()` in little-endian order is the same byte string.
@@ -9,7 +9,7 @@
 import Foundation
 
 /// A stored element type. A file type outside this list (complex, bool) is refused by name, never converted.
-/// The colour types (registration step 2 §3.1) are RosettaSciIO's structured RGB arrays: one element is one pixel, its
+/// The colour types are RosettaSciIO's structured RGB arrays: one element is one pixel, its
 /// samples interleaved as stored (each sample little-endian), so shape and bytes equal RosettaSciIO's.
 public nonisolated enum FormatoDataType: String, Sendable, Equatable, CaseIterable {
     case int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64
@@ -110,7 +110,7 @@ public nonisolated struct FormatoArray: Sendable, Equatable {
     }
 
     /// The hyperslab `[start, start + count)` per dimension, cut from this array in C order: the eager reference every lazy
-    /// read is compared with (gate L1).
+    /// read is compared with (`ArrayTests`).
     public func slab(start: [Int], count: [Int]) throws -> FormatoArray {
         try FormatoArray.checkSlab(start: start, count: count, shape: shape)
         let size = dataType.byteSize

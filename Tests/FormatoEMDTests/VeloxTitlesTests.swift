@@ -4,7 +4,7 @@ import FormatoCore
 import FormatoEMD
 
 extension VeloxEMDSerialized {
-    /// Step 3 (docs/registration-step-3.md §4, gate "planted literals"): the four planted files of
+    /// Step 3: the four planted files of
     /// `tools/step-3/make_velox_titles.py`, each image's title and stored type typed here by hand from the rules, without the
     /// pins; and stored values Float32 cannot hold read exactly.
     @Suite final class VeloxTitlesTests {

@@ -1,6 +1,6 @@
 # Provenance
 
-Copied 2026-10-15 by FormatoKit's step-4 session (docs/registration-step-4.md §2 and §4), unchanged, from SpectroKit
+Copied 2026-10-15 by FormatoKit's step-4 session, unchanged, from SpectroKit
 0.4.0 at commit `9b93fb4c3478476d41b17904961548086552dc8a`, path `Tests/SpectroEDXTests/Fixtures/`, read with
 `git archive` (SpectroKit's working tree was not touched). Written there by SpectroKit's
 `tools/edx-stages/make_velox_streams.py` (h5py 3.16.0, NumPy 2.5.4); the truth is that generator's draw. GPL-3.0, as both

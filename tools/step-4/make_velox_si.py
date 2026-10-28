@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Planted Velox spectrum-image files for step 4 (docs/registration-step-4.md §4).
+"""Planted Velox spectrum-image files for step 4.
 
     References/rsciio-venv/bin/python -I -B tools/step-4/make_velox_si.py [--out DIR]
 
 writes the files into DIR (default Tests/FormatoEMDTests/Fixtures/step4). THE TRUTH IS THE PLANTED COUNTS: each file's
 counts per stream, frame, pixel and channel are drawn from a seed (or typed) HERE, the stream is encoded from them, and
-`expected(name, options)` computes every option set's arrays from those counts by registration §3.5's definitions (frames
+`expected(name, options)` computes every option set's arrays from those counts by these definitions (frames
 first_frame <= f < last_frame, last_frame 0 never stopping, rebinning, `+= 1` in the target type), without RosettaSciIO's code.
 tools/step-4/pins.py reads the files with RosettaSciIO and stops if it disagrees.
 
@@ -28,7 +28,7 @@ MARK = 65535
 SEED = 20261015
 SK_CASES = ["1stream-1frame", "1stream-3frames", "4streams-2frames", "unterminated", "axis-decoy", "axis-order"]
 
-# The option sets of registration §2 (O10 is filled per file: last_frame one past the recorded frame count).
+# The option sets (O10 is filled per file: last_frame one past the recorded frame count).
 OPTIONS = {
     "O1": {},
     "O2": {"sum_frames": False},
@@ -155,7 +155,7 @@ class Planted:
 
 
 def accumulate(n, dtype):
-    """n times `+= 1` in dtype, from 0 (registration §3.5): integers wrap, floats stop where +1 no longer changes them."""
+    """n times `+= 1` in dtype, from 0: integers wrap, floats stop where +1 no longer changes them."""
     dt = np.dtype(dtype)
     if dt.kind in "iu":
         return np.array(n % (1 << (8 * dt.itemsize)), dtype=np.uint64).astype(dt.str.replace("i", "u")).view(dt)
@@ -164,7 +164,7 @@ def accumulate(n, dtype):
 
 
 def expected_arrays(pl, enc0, options, streams_summed):
-    """The arrays registration §3.5 defines, from the planted counts. Returns a list (one per signal)."""
+    """The expected arrays, from the planted counts. Returns a list (one per signal)."""
     first = options.get("first_frame", 0)
     last = options.get("last_frame")
     rebin = options.get("rebin_energy", 1)
@@ -448,7 +448,7 @@ def expected(made, name, opts):
     return EELS_TRUTH.get(name, []) + expected_arrays(pl, enc, opts, opts.get("sum_EDS_detectors", True))
 
 
-# Files whose RosettaSciIO reading FormatoKit refuses on purpose (registration §3.3, §3.5), by option set.
+# Files whose RosettaSciIO reading FormatoKit refuses on purpose, by option set.
 DEVIATIONS = {
     "si-planted-grid.emd": ("all", "grid: ScanSize x ScanArea is 4 x 3, the first image 3 x 4 (§3.3)"),
     "si-planted-bins.emd": ("unsummed", "a stream's bin count differs from stream 0's with sum_EDS_detectors=False (§3.5)"),

@@ -1,6 +1,6 @@
 //
 //  BundledLibraryTests.swift
-//  Registration §5 and gate H1's in-process half: the libhdf5 FormatoKit ships (the FormatoLibHDF5 framework, a binary target) is found, loads, and
+//  The in-process half of the bundled-library check (tools/consumer-check is the other): the libhdf5 FormatoKit ships (the FormatoLibHDF5 framework, a binary target) is found, loads, and
 //  stands in the Velox reader's lookup after the host's own copies and before the bare name. (The consumer check proves
 //  the other half: a separate package reads a Velox file with FORMATO_HDF5_PATH unset.)
 //  Mutation 16 (the shipped candidate removed from the lookup) - red.

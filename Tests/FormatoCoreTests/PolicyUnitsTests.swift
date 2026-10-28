@@ -1,6 +1,6 @@
 //
 //  PolicyUnitsTests.swift
-//  Registration 0.2.0 P1's building block: `FormatoUnits.scaleOutcome` tells a unit FormatoUnits does not handle (a reader's
+//  The building block of the `unconvertedUnits` policy: `FormatoUnits.scaleOutcome` tells a unit FormatoUnits does not handle (a reader's
 //  policy decides) from a conversion Pint raises on (a refusal under every policy), with the arithmetic of `convertScaleUnits`.
 //
 
@@ -12,8 +12,8 @@ import FormatoCore
     @Test func testUnhandledUnitAndPintRaiseAreToldApart() {
         #expect(FormatoUnits.scaleOutcome(0.5, units: "px", factor: 4) == .unhandledUnit)
         #expect(FormatoUnits.scaleOutcome(0.5, units: "pixels", factor: 4) == .unhandledUnit)
-        #expect(FormatoUnits.scaleOutcome(0.5, units: "fm", factor: 4) == .unhandledUnit, "Pint's fermi, not converted (step 4 A1 F6)")
-        // 5e-324 nm is 0 in metres: Pint's log10 raises (step 1 Gate B F1). factor 2 halves to 1.
+        #expect(FormatoUnits.scaleOutcome(0.5, units: "fm", factor: 4) == .unhandledUnit, "Pint's fermi, not converted")
+        // 5e-324 nm is 0 in metres: Pint's log10 raises. factor 2 halves to 1.
         #expect(FormatoUnits.scaleOutcome(5e-324, units: "nm", factor: 2) == .pintRaises)
         #expect(FormatoUnits.convertScaleUnits(5e-324, units: "nm", factor: 2) == nil)
         #expect(FormatoUnits.convertScaleUnits(0.5, units: "px", factor: 4) == nil)

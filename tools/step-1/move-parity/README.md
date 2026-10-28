@@ -1,6 +1,6 @@
-# tools/step-1/move-parity: gate M3 (move parity)
+# tools/step-1/move-parity: move parity
 
-`docs/registration-step-1.md` section 6, M3: the readers moved from SpectroKit 0.3.0 into FormatoKit give byte-identical
+The readers moved from SpectroKit 0.3.0 into FormatoKit give byte-identical
 outputs. `run.sh` proves it on many files by running one dump program against both code bases.
 
 ## What is compared

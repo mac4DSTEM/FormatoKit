@@ -1,7 +1,7 @@
 //
 //  TIFFSignals.swift
 //  Role: a TIFF file as FormatoCore signals, the way RosettaSciIO 049e7d70's `rsciio.tiff.file_reader` returns them with its
-//        defaults (docs/registration-step-2.md §1.2), over the parts of tifffile 2026.9.20 it relies on: the series (ImageJ,
+//        defaults, over the parts of tifffile 2026.9.20 it relies on: the series (ImageJ,
 //        else uniform or generic grouping), the FEI INI tags, the ImageJ description, the Gatan DM tags. Data as stored;
 //        RGB as one element per pixel. Out of step 2, refused by name: Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX,
 //        Hamamatsu streak (unless `TIFFReadOptions.vendorBranches` is `.readAsGeneric`), compressed or tiled pages.
@@ -66,7 +66,7 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
             throw TIFFError.unsupportedLayout("The page mixes sample sizes or formats.")
         }
         // RosettaSciIO logs `op["PhotometricInterpretation"]` and raises without it; tifffile reads FillOrder 2 bit-reversed and
-        // undoes a predictor; ImageDepth makes a volume page. Refused rather than ported (Gate B F8, F12).
+        // undoes a predictor; ImageDepth makes a volume page. Refused rather than ported.
         guard let photometric = int(262) else { throw TIFFError.unsupportedLayout("The page has no PhotometricInterpretation.") }
         if let fill = int(266), fill != 1 { throw TIFFError.unsupportedLayout("The page sets FillOrder \(fill).") }
         if let predictor = int(317), predictor != 1 { throw TIFFError.unsupportedLayout("The page sets Predictor \(predictor).") }
@@ -96,11 +96,11 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
             throw TIFFError.unsupportedLayout("The page has no strips.")
         }
         let rps = Int(min(int(278, 0xFFFF_FFFF) ?? 0xFFFF_FFFF, h))
-        // Sizes without overflow (Gate B F9): a row and a page must be addressable.
+        // Sizes without overflow: a row and a page must be addressable.
         let (rowBytes, o1) = Int(w).multipliedReportingOverflow(by: samples * (Int(b) / 8))
         let (pageBytes, o2) = rowBytes.multipliedReportingOverflow(by: Int(h))
         guard !o1, !o2, pageBytes <= fileSize else { throw TIFFError.truncated("The page claims more bytes than the file holds.") }
-        // tifffile treats a strip offset of 0 as a missing strip (Gate B F11): refused.
+        // tifffile treats a strip offset of 0 as a missing strip: refused.
         guard !offsets.contains(0) else { throw TIFFError.unsupportedLayout("A strip offset of the page is 0 (a missing strip).") }
         let layout = TIFFPageLayout(width: Int(w), height: Int(h), dataType: type, samples: samples, bytesPerSample: Int(b) / 8,
                                     stripOffsets: offsets.map(Int.init), stripByteCounts: counts.map(Int.init),
@@ -152,7 +152,7 @@ public nonisolated struct TIFFSeries: Sendable {
     public let shape: [Int]
     public let dataType: FormatoDataType
     /// The real pages, or (an ImageJ virtual stack) one page whose `virtualCount` images follow its data contiguously:
-    /// computed per image, never one record per image (Gate B F15).
+    /// computed per image, never one record per image.
     let pages: [TIFFPageLayout]
     let virtualCount: Int?
     /// The index of the directory the series starts at (its first page, whose tags give the metadata).
@@ -194,7 +194,7 @@ public nonisolated struct TIFFSignals: Sendable {
         if let refusal = Self.outOfScope(first) {
             switch options.vendorBranches {
             case .refuse:
-                throw FormatoReadError.unsupported("\(formatoDisplayFileName(path)) is a \(refusal) TIFF, whose reading is not ported yet (registration step 2 §1.2).")
+                throw FormatoReadError.unsupported("\(formatoDisplayFileName(path)) is a \(refusal) TIFF, whose reading is not ported yet.")
             case .readAsGeneric:
                 branch = refusal
             }
@@ -243,7 +243,7 @@ public nonisolated struct TIFFSignals: Sendable {
         let pageShape = layout0.samples > 1 ? [layout0.height, layout0.width, layout0.samples] : [layout0.height, layout0.width]
 
         // tifffile tries its own shaped series first; when the first page is shaped and that rule gives no series, the generic
-        // rule follows (not ImageJ). OME series come next; not ported (Gate B F1).
+        // rule follows (not ImageJ). OME series come next; not ported.
         let shaped = shapedDescription(first) != nil
         if shaped, let s = try shapedSeries(file) { return s }
         if !shaped {
@@ -260,7 +260,7 @@ public nonisolated struct TIFFSignals: Sendable {
             if let i = groups.firstIndex(where: { $0.key == key }) { groups[i].pages.append(l) } else { groups.append((key, [l])) }
         }
         // tifffile splits pages by more than shape and type, and merges reduced-size pages into pyramids: a file whose pages
-        // fall in more than one group is refused rather than guessed (Gate B F2-F4).
+        // fall in more than one group is refused rather than guessed.
         guard groups.count == 1 else {
             throw FormatoReadError.unsupported("The file's pages form \(groups.count) groups; several series are not ported.")
         }
@@ -274,7 +274,7 @@ public nonisolated struct TIFFSignals: Sendable {
 
     /// tifffile's `series_imagej` for the files in scope; nil where it returns None (then the generic rule applies). A
     /// description whose counts are not integers, a count overflow, pages that disagree with the first, or images that
-    /// neither the pages nor a contiguous block after the first page hold, are refused (Gate B F5, F6, F9).
+    /// neither the pages nor a contiguous block after the first page hold, are refused.
     static func imageJSeries(_ file: TIFFFile, _ meta: [String: FormatoPythonValue], _ page: TIFFPageLayout,
                              _ pageAxes: String, _ pageShape: [Int]) throws -> TIFFSeries? {
         func int(_ k: String) throws -> Int {
@@ -463,7 +463,7 @@ public nonisolated struct TIFFSignals: Sendable {
                 return v
             }
             func divide(_ a: Double, _ b: Double) throws -> Double {
-                guard b != 0 else { throw TIFFError.unsupportedLayout("ZeroDivisionError") }   // Python float division (Gate B F7)
+                guard b != 0 else { throw TIFFError.unsupportedLayout("ZeroDivisionError") }   // Python float division
                 return a / b
             }
             func float(_ v: FormatoPythonValue) throws -> Double {
@@ -515,7 +515,7 @@ public nonisolated struct TIFFSignals: Sendable {
     static func resolutionScales(_ page: TIFFDirectory) throws -> (Double, Double) {
         guard case .rationals(let y)? = page[283]?.value, let yr = y.first,
               case .rationals(let x)? = page[282]?.value, let xr = x.first else { throw TIFFError.unsupportedLayout("no resolution") }
-        // Python's int / int raises ZeroDivisionError on a zero numerator (Gate B F7).
+        // Python's int / int raises ZeroDivisionError on a zero numerator.
         guard yr.numerator != 0, xr.numerator != 0 else { throw TIFFError.unsupportedLayout("ZeroDivisionError") }
         return (Double(yr.denominator) / Double(yr.numerator), Double(xr.denominator) / Double(xr.numerator))
     }
@@ -570,7 +570,7 @@ public nonisolated struct TIFFSignals: Sendable {
         m.set(FormatoMetadataEntry(key: "Signal.signal_type", value: .text(""), units: nil,
                                    provenance: p("(constant)", "rsciio tiff: signal_type is \"\"")))
         // `%Y:%m:%d %H:%M:%S`; the slash form only when the page has no ImageDescription (RosettaSciIO tries the JEOL
-        // description first and gives up when it is not one; amendment A1).
+        // description first and gives up when it is not one).
         if let dt = page[306]?.text, let (date, time) = Self.dateTime(dt, slashAllowed: page[270] == nil) {
             m.set(FormatoMetadataEntry(key: "General.date", value: .text(date), units: nil, provenance: p("tag 306 DateTime", "rsciio tiff: strptime, date().isoformat()")))
             m.set(FormatoMetadataEntry(key: "General.time", value: .text(time), units: nil, provenance: p("tag 306 DateTime", "rsciio tiff: strptime, time().isoformat()")))
@@ -651,7 +651,7 @@ public nonisolated struct TIFFSignals: Sendable {
             guard parts.count == 3, parts.allSatisfy({ !$0.isEmpty && $0.allSatisfy { $0.isASCII && $0.isNumber } }) else { return nil }
             return parts.map { Int($0)! }
         }
-        // dateutil raises on a date the calendar does not hold (Gate B F10).
+        // dateutil raises on a date the calendar does not hold.
         func valid(_ y: Int, _ m: Int, _ d: Int) -> String? {
             let cal = Calendar(identifier: .gregorian)
             guard y >= 1000, (1...12).contains(m), let first = cal.date(from: DateComponents(year: y, month: m)),

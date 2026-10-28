@@ -20,7 +20,7 @@ public typealias hsize_t = UInt64
 /// tile-streaming export releases it before it reads the next tile from the
 /// source actor, and re-takes it to write. A caller that blocks on it blocks
 /// its thread for the length of one operation, which is the cost of a
-/// library that cannot be entered twice. Gate B (2026-09-15 late night)
+/// library that cannot be entered twice. A review (2026-09-15)
 /// found two entry points that opened the file themselves and took nothing
 /// — `loadResultMap(id:)` and `loadRGBAResultMap(id:)`, reached by clicking
 /// a saved result — and crashed the probe's variant on the first attempt;
@@ -65,7 +65,7 @@ public nonisolated enum HDF5Serial {
     /// unchanged but leaves the unfinished temporary file, since `_exit` runs no cleanup.
     ///
     /// Call it right after the first successful `H5open`, never earlier: called earlier, the barrier is registered
-    /// before HDF5's handler, so it runs after `H5_term_library` and the teardown runs unguarded (Gate B measured
+    /// before HDF5's handler, so it runs after `H5_term_library` and the teardown runs unguarded (a review measured
     /// SIGSEGV with a thread inside `H5Aread`). Two threads calling `exit()` at once bypass the barrier in progress:
     /// libc runs the remaining handlers on the second `exit` (also true of 0.1.0). `fork` without `exec` is
     /// unsupported.

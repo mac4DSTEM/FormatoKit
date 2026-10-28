@@ -1,6 +1,6 @@
 //
 //  DMSignalsPlantedTests.swift
-//  Registration §4, planted truth independent of RosettaSciIO: the inherited generator (tools/eels-reader/make_planted.py,
+//  Planted truth independent of RosettaSciIO: the inherited generator (tools/eels-reader/make_planted.py,
 //  its fixture copied byte for byte) writes x origin 1.5, scale 2.5 nm; y origin 0, scale 3.5 nm; energy origin -40, scale
 //  0.25 eV on every 3 x 2 x 5 cube, so offset = -origin * scale is -3.75, -0.0 and 10 by closed form, and the array shape is
 //  [5, 2, 3]. Mutations: the minus sign dropped (1), the axes not reversed (2), int16 read as uint16 (7) - red.
