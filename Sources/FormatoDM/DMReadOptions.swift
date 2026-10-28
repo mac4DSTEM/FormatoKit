@@ -1,7 +1,6 @@
 //
 //  DMReadOptions.swift
-//  Role: the policies of the DM tag walk that FormatoKit chose, as parameters whose defaults are the 0.1.1 behaviour
-//        (docs/registration-0.2.0.md §1.3).
+//  Role: the policies of the DM tag walk that FormatoKit chose, as parameters whose defaults are the 0.1.1 behaviour.
 //
 
 import Foundation

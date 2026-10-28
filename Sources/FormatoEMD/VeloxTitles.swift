@@ -1,7 +1,7 @@
 //
 //  VeloxTitles.swift
-//  Role: The title RosettaSciIO 049e7d70 gives each Velox image with `select_type="images"` (docs/registration-step-3.md
-//        §3.2), ported rule for rule from `_emd_velox.py`: `read_file` (the four file-level groups, the image type),
+//  Role: The title RosettaSciIO 049e7d70 gives each Velox image with `select_type="images"`,
+//        ported rule for rule from `_emd_velox.py`: `read_file` (the four file-level groups, the image type),
 //        `_parse_image_display` (the label maps), `_read_image` (DetectorInformation and the KeyError fallback, the name
 //        carried from image to image) and `_get_detector_name` (the seven `Operations` kinds, in that order).
 //        Python's KeyError, which `_read_image` catches around `_get_detector_name`, is `Fallback` here; whatever RosettaSciIO
@@ -29,7 +29,7 @@ nonisolated struct VeloxTitles: Sendable {
                                 "MathematicsOperation", "DpcOperation", "IntegrationOperation", "FftOperation"]
 
     /// Reads the file's titles. Must run inside `HDF5Serial.run`. `firstImageOnly`: RosettaSciIO's `_read_images` with
-    /// `select_type="spectrum_image"`, which reads the first image (name order) and returns (registration step 4 §3.2).
+    /// `select_type="spectrum_image"`, which reads the first image (name order) and returns.
     init(file: VeloxFile, fileName: String, firstImageOnly: Bool = false) throws {
         func refuse(_ why: String) -> FormatoReadError { .unsupported("Velox file \(fileName): \(why) (RosettaSciIO raises).") }
         func json(_ path: String) throws -> Any {
@@ -52,7 +52,7 @@ nonisolated struct VeloxTitles: Sendable {
         }
         var groups: [String: [String: Entry]] = [:]
         for name in ["Displays", "Operations", "SharedProperties", "Features"] where file.exists("/" + name) {
-            // `_parse_metadata_group` on a dataset: `_get_keys_from_group` raises AttributeError (Gate B, A1).
+            // `_parse_metadata_group` on a dataset: `_get_keys_from_group` raises AttributeError.
             guard !isDataset("/" + name) else { throw refuse("/\(name) is a dataset, not a group") }
             var entries: [String: Entry] = [:]
             for child in file.children(of: "/" + name) {
@@ -145,7 +145,7 @@ nonisolated struct VeloxTitles: Sendable {
                     carried = (text, "Data/Image/\(id)/Metadata[0].Detectors.\(informationKey).DetectorName (rsciio DetectorInformation)")
                 }
             }
-            // `_get_detector_metadata_dict(om, self.detector_name)` when a name is set (Gate B, A1): it iterates `om["Detectors"]`
+            // `_get_detector_metadata_dict(om, self.detector_name)` when a name is set: it iterates `om["Detectors"]`
             // in written order, indexing each entry's DetectorName, until one equals the name.
             if let name = carried?.text {
                 try Self.checkDetectorMetadata(om, data: omData, name: name, id: id, refuse: refuse)
@@ -232,9 +232,9 @@ nonisolated struct VeloxTitles: Sendable {
         return ("Unrecognized_image_signal", "/Operations (no entry names the image; rsciio _get_detector_name)")
     }
 
-    /// The raises of `_get_metadata_dict(om)` (Gate B, A1): `om["Acquisition"]` must be a dictionary; without its
+    /// The raises of `_get_metadata_dict(om)`: `om["Acquisition"]` must be a dictionary; without its
     /// `AcquisitionStartDatetime`, `om["CustomProperties"]` must exist and be a string or a dictionary; with it, its
-    /// `DateTime` must be there. (A value `_convert_datetime` then rejects is not checked: registered, A1.)
+    /// `DateTime` must be there. (A value `_convert_datetime` then rejects is not checked, on purpose.)
     static func checkMetadataDict(_ om: [String: Any], id: String, refuse: (String) -> FormatoReadError) throws {
         guard let acquisition = om["Acquisition"] as? [String: Any] else { throw refuse("image \(id) has no Acquisition dictionary") }
         if let start = acquisition["AcquisitionStartDatetime"] {
@@ -282,7 +282,7 @@ nonisolated struct VeloxTitles: Sendable {
     private static func pythonInt(_ value: Any?) -> Int? {
         if let n = value as? NSNumber, CFGetTypeID(n) != CFBooleanGetTypeID() { return Int(exactly: n.doubleValue.rounded(.towardZero)) }
         guard let text = value as? String else { return nil }
-        // Python's strip, Unicode decimal digits and underscores between digits (registration step 4 A1, F1).
+        // Python's strip, Unicode decimal digits and underscores between digits.
         return veloxPythonNumberText(text).flatMap { formatoPythonInt($0) }.flatMap { Int(exactly: $0) }
     }
 

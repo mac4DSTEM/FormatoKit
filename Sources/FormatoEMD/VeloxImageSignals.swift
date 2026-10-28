@@ -1,7 +1,7 @@
 //
 //  VeloxImageSignals.swift
 //  Role: A Velox file's images as FormatoCore signals, as RosettaSciIO 049e7d70's `rsciio.emd` reader returns them with
-//        `select_type="images"` (docs/registration-step-1.md §3.3, amendments A1 and A4; docs/registration-step-3.md): shape
+//        `select_type="images"`: shape
 //        `(frames, y, x)` or `(y, x)`, the STORED type (step 3; Float32 until then), RosettaSciIO's title (step 3,
 //        `VeloxTitles`), the Time, y and x axes with Pint's compact units, and the beam energy with its JSON path. Lazy: a
 //        slab reads only the frames it covers, one `readImageFrameBytes` each.
@@ -18,17 +18,17 @@ public nonisolated struct VeloxImageSignals: Sendable {
     public let images: [VeloxImageInfo]
     /// True when the file has no `Data/SpectrumImage` group: RosettaSciIO then reads every frame of a stack.
     public let readsWholeStacks: Bool
-    /// RosettaSciIO's title of each image (registration step 3 §3.2).
+    /// RosettaSciIO's title of each image.
     let titles: VeloxTitles
-    /// FormatoKit's policies for this read (registration 0.2.0): the pixel unit of an image is P1's. The default is 0.1.1's.
+    /// FormatoKit's policies for this read: the pixel unit of an image is P1's. The default is 0.1.1's.
     public let policy: VeloxReadPolicy
 
-    /// Throws `FormatoReadError.unsupported` where RosettaSciIO's title rule raises on the file (registration step 3 §3.2).
+    /// Throws `FormatoReadError.unsupported` where RosettaSciIO's title rule raises on the file.
     public init(path: String, cancelled: @Sendable () -> Bool = FormatoCancellation.task) throws {
         try self.init(path: path, policy: VeloxReadPolicy(), cancelled: cancelled)
     }
 
-    /// As `init(path:cancelled:)`, with FormatoKit's policies (registration 0.2.0 P1: `policy.unconvertedUnits`).
+    /// As `init(path:cancelled:)`, with FormatoKit's policies.
     public init(path: String, policy: VeloxReadPolicy, cancelled: @Sendable () -> Bool = FormatoCancellation.task) throws {
         self.policy = policy
         reader = VeloxEMDReader(path: path)
@@ -40,7 +40,7 @@ public nonisolated struct VeloxImageSignals: Sendable {
     /// RosettaSciIO's title of `image`, or nil when its metadata has none.
     public func title(of image: VeloxImageInfo) -> String? { titles.byImage[image.id]?.text }
 
-    /// The images and titles of a file already opened (registration step 4 §3.2: the spectrum-image path reads the first
+    /// The images and titles of a file already opened (the spectrum-image path reads the first
     /// image only).
     init(reader: VeloxEMDReader, images: [VeloxImageInfo], readsWholeStacks: Bool, titles: VeloxTitles,
          policy: VeloxReadPolicy = VeloxReadPolicy()) {
@@ -63,11 +63,11 @@ public nonisolated struct VeloxImageSignals: Sendable {
     }
 
     /// Everything of `image`'s signal but its data: what RosettaSciIO's `_read_image` computes and where it raises, whatever
-    /// the stored type (the spectrum-image path runs it on the first image, compound or not; registration step 4 §3.2).
+    /// the stored type (the spectrum-image path runs it on the first image, compound or not).
     func describe(_ image: VeloxImageInfo) throws -> (shape: [Int], stacked: Bool, axes: [FormatoAxis], metadata: FormatoMetadata, title: String?) {
         // RosettaSciIO's `_read_image` reads the image's own metadata (column 0) as a dictionary and indexes it; a key it
         // indexes that is missing, or a value `float()` refuses, raises there. The same rules here, on the same JSON, so a
-        // value the file states but that does not parse is never replaced by a default (Gate B F2, F3).
+        // value the file states but that does not parse is never replaced by a default.
         let file = formatoDisplayFileName(reader.path)
         let om = try rawMetadata(image)
         func refuse(_ why: String) -> FormatoReadError { .unsupported("Velox image \(image.id) of \(file): \(why).") }
@@ -121,7 +121,7 @@ public nonisolated struct VeloxImageSignals: Sendable {
         if let title, let text = title.text {
             md.set(FormatoMetadataEntry(key: "General.title", value: .text(text), units: nil,
                                         provenance: FormatoProvenance(file: file, source: title.source,
-                                                                      rule: "rsciio emd velox: Operations name, DetectorInformation or display label (registration step 3 §3.2)")))
+                                                                      rule: "rsciio emd velox: Operations name, DetectorInformation or display label")))
         }
         md.set(FormatoMetadataEntry(key: "General.original_filename", value: .text(file), units: nil,
                                     provenance: FormatoProvenance(file: file, source: "(the file name)", rule: "rsciio emd: os.path.split(filename)[1]")))

@@ -1,6 +1,6 @@
 //
 //  FormatoMetadata.swift
-//  Role: Metadata with provenance (docs/registration-step-1.md §3.1). Each entry is a value under RosettaSciIO's metadata
+//  Role: Metadata with provenance. Each entry is a value under RosettaSciIO's metadata
 //        key, with where in the file it came from and the rule that made it. An entry without a source does not exist: a
 //        value the file does not state is absent, never defaulted.
 //

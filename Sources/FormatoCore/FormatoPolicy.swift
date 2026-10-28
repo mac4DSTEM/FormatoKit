@@ -1,6 +1,6 @@
 //
 //  FormatoPolicy.swift
-//  Role: What the readers share of FormatoKit's own policies (docs/registration-0.2.0.md): a choice FormatoKit makes where
+//  Role: What the readers share of FormatoKit's own policies: a choice FormatoKit makes where
 //        RosettaSciIO raises, or where an inherited reader has a contract, is a parameter whose default is the 0.1.1 behaviour.
 //        A non-default path that changes what is returned adds one metadata entry under `FormatoMetadata.policyKeyPrefix`
 //        whose provenance rule begins "FormatoKit policy, not RosettaSciIO's", and only when that branch fired.
@@ -9,7 +9,7 @@
 import Foundation
 
 /// What a reader does with a pixel unit FormatoUnits does not handle (anything outside m and s with an SI prefix, to the
-/// power +1 or -1, and dimensionless; registration step 1 A5 F7).
+/// power +1 or -1, and dimensionless).
 public nonisolated enum FormatoUnconvertedUnits: Sendable, Equatable {
     /// Refuse the signal (the default; what 0.1.1 does).
     case refuse

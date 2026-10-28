@@ -1,7 +1,7 @@
 //
 //  DMSignals.swift
 //  Role: A DM3 or DM4 file's image objects as FormatoCore signals, as RosettaSciIO 049e7d70's
-//        `rsciio.digitalmicrograph.file_reader` returns them (docs/registration-step-1.md §3.2, amendment A1): the data as
+//        `rsciio.digitalmicrograph.file_reader` returns them: the data as
 //        stored, shape = `Dimensions` reversed, the axes (scale, offset = -origin * scale, units, name, navigate), the signal
 //        type, the title, and the metadata of step 1 with the tag path each value came from. Lazy: the data is read from
 //        the file by slab, never whole unless asked (`FormatoFileArray`).
@@ -64,11 +64,11 @@ public nonisolated struct DMFile: Sendable {
     }
 
     /// The axes in array order (slowest first), RosettaSciIO's `get_axes_dict`. Built for every object, also one whose
-    /// data type is refused (amendment A1.1).
+    /// data type is refused.
     public static func axes(of object: DM4ImageObject) -> [FormatoAxis] {
         let n = object.dimensions.count
         // DM order (fastest first), a missing calibration as scale 1, origin 0, units "" (RosettaSciIO pads the same values
-        // after the listed calibrations, amendment A1.4); then reversed into array order.
+        // after the listed calibrations); then reversed into array order.
         let calibrations: [(origin: Double, scale: Double, units: String)] = (0..<n).map { i in
             guard i < object.axes.count, let a = object.axes[i] else { return (0, 1, "") }
             return (a.origin, a.scale, a.units)
@@ -81,7 +81,7 @@ public nonisolated struct DMFile: Sendable {
 
         // `names`: the energy axis by its units, found by `units.index(...)` (the first match); then x, y, z from the fastest.
         // RosettaSciIO tests `signal_type in ("EDS", "EDX")`, which its own `signal_type` ("EDS_TEM") never equals, so an
-        // EDS energy axis is named like a spatial one there; ported as it is (amendment A4), named in docs/parity.md.
+        // EDS energy axis is named like a spatial one there; ported as it is, named in docs/parity.md.
         var names = [String?](repeating: nil, count: n)
         var indices = Array(0..<n)
         let type = signalType(of: object)
@@ -108,7 +108,7 @@ public nonisolated struct DMFile: Sendable {
         }
     }
 
-    /// The metadata of step 1, each value with the tag path it came from (amendment A1.5).
+    /// The metadata of step 1, each value with the tag path it came from.
     public func metadata(of object: DM4ImageObject) -> FormatoMetadata {
         let file = formatoDisplayFileName(path)
         let tags = "ImageList.\(object.index).ImageTags."

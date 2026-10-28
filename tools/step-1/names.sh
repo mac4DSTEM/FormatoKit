@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Gate M1 of docs/registration-step-1.md: the 121 test names that moved from SpectroKit 0.3.0 exist in FormatoKit, as
+# The 121 test names that moved from SpectroKit 0.3.0 exist in FormatoKit, as
 # `Class.testName`, and nothing else of those files was dropped. Reads SpectroKit only with `git show` at the tag.
 #   names.sh    prints "names: 121 of 121 moved names present" and exits 0, or lists the missing ones and exits 1.
 set -euo pipefail
@@ -26,7 +26,7 @@ for line in sys.stdin:
 '
 }
 want=$(for f in $moved; do git -C $sk --no-optional-locks show $tag:$f | names; done | sort)
-# Renamed on purpose (registration step 1 A7, 0.0.3: the Velox detectors in the written order, not the index order): the old
+# Renamed on purpose (0.0.3: the Velox detectors in the written order, not the index order): the old
 # name counts as present when the new one is.
 renamed=(
   VeloxMetadataFieldsTests.testFirstMeansLowestDetectorIndexWhateverTheKeyOrder VeloxMetadataFieldsTests.testFirstMeansTheFirstWrittenKeyAsRosettaSciIO
@@ -41,4 +41,4 @@ have=$(print -r -- $have | sort)
 missing=$(comm -23 <(print -r -- $want) <(print -r -- $have))
 n=$(print -r -- $want | grep -c .)
 if [[ -n $missing ]]; then print -r -- "missing:"; print -r -- $missing; exit 1; fi
-print "names: $n of $n moved names present ($(( ${#renamed} / 2 )) renamed on purpose, registration step 1 A7)"
+print "names: $n of $n moved names present ($(( ${#renamed} / 2 )) renamed on purpose)"

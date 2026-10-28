@@ -135,7 +135,7 @@ extension AcquisitionMetadata {
     }
 }
 
-/// The notes this reader attaches, worded once (the texts are fixed by the registration).
+/// The notes this reader attaches, worded once (the texts are fixed).
 nonisolated enum DMNote {
     static let cameraLengthUnit = "mm (assumed)"
     static let monthFirst = "month-first order assumed"

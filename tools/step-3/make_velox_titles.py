@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Planted Velox image files for step 3 (docs/registration-step-3.md §4): the title rule and the stored types.
+"""Planted Velox image files for step 3: the title rule and the stored types.
 
     References/rsciio-venv/bin/python -I -B tools/step-3/make_velox_titles.py [--out DIR]
 
 writes four files into DIR (default Tests/FormatoEMDTests/Fixtures) and prints EXPECT as JSON. THE TRUTH IS EXPECT, typed
-by hand below from RosettaSciIO 049e7d70's rules as registration §3.2 states them; no reader is consulted here.
+by hand below from RosettaSciIO 049e7d70's title rules; no reader is consulted here.
 tools/step-3/pins.py reads the files with RosettaSciIO and stops if it disagrees with EXPECT.
 
 Every image is (2, 3, 1) (y, x, frame), its values distinct and chosen so a wrong stored type shows: uint64 and int64 beyond
@@ -23,7 +23,7 @@ REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 ROWS = 8192
 S = h5py.string_dtype()
 
-# file -> image id -> (stored dtype, expected title or None); every title typed by hand (registration §3.2).
+# file -> image id -> (stored dtype, expected title or None); every title typed by hand.
 EXPECT = {
     "velox-titles-v6-image.emd": {
         "a01": ("uint8", "BM-Ceta"),          # CameraInputOperation -> cameraName (a STEM entry also names a01: camera first)

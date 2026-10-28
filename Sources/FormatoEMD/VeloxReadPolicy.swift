@@ -1,6 +1,6 @@
 //
 //  VeloxReadPolicy.swift
-//  Role: FormatoKit's own policies for the Velox readers (docs/registration-0.2.0.md §1): each is a choice FormatoKit makes where
+//  Role: FormatoKit's own policies for the Velox readers: each is a choice FormatoKit makes where
 //        RosettaSciIO raises or where a memory limit applies, as a parameter whose default is the 0.1.1 behaviour. A non-default
 //        path that changes the result adds one metadata entry under `FormatoMetadata.policyKeyPrefix`, whose rule begins
 //        "FormatoKit policy, not RosettaSciIO's", only when that branch fired (§2).
@@ -9,9 +9,9 @@
 import Foundation
 import FormatoCore
 
-/// Which grid a spectrum image is decoded onto (registration 0.2.0 P2).
+/// Which grid a spectrum image is decoded onto.
 public nonisolated enum VeloxGridChoice: Sendable, Equatable {
-    /// The first image's grid, refused where the stream's ScanSize x ScanArea gives another (registration step 4 §3.3): the default.
+    /// The first image's grid, refused where the stream's ScanSize x ScanArea gives another: the default.
     case firstImageChecked
     /// The first image's grid with no check: RosettaSciIO's own reading. A stream whose ScanSize x ScanArea gives another grid
     /// is then decoded with the first image's, and the result says so.
@@ -20,7 +20,7 @@ public nonisolated enum VeloxGridChoice: Sendable, Equatable {
     case scanSizeTimesArea
 }
 
-/// FormatoKit's policies for reading a Velox file (registration 0.2.0 §1). `VeloxReadPolicy()` is the 0.1.1 behaviour.
+/// FormatoKit's policies for reading a Velox file. `VeloxReadPolicy()` is the 0.1.1 behaviour.
 public nonisolated struct VeloxReadPolicy: Sendable, Equatable {
     /// P1: a pixel unit FormatoUnits does not handle (default: refuse the image).
     public var unconvertedUnits: FormatoUnconvertedUnits
@@ -79,7 +79,7 @@ nonisolated struct VeloxPixelCalibration {
         }
     }
 
-    /// The flag entry for a kept unit (registration 0.2.0 §2): the unit as written.
+    /// The flag entry for a kept unit: the unit as written.
     static func entry(unit: String, file: String, source: String) -> FormatoMetadataEntry {
         veloxPolicyEntry("units", value: unit, file: file, source: source,
                          rule: "unconvertedUnits = keepAsWritten: the pixel unit '\(unit)' is not one FormatoUnits converts; the axes carry the file's numbers (float() only, no compacting) and the unit as written")

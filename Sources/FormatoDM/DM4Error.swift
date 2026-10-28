@@ -2,7 +2,7 @@
 //  DM4Error.swift
 //  Role: The error type of the GMS `.dm4` readers (`DM4Reader`, `DM4Experiment`).
 //        Split out of DM4Reader.swift so it can move with
-//        `DM4Experiment` (registration step 1 §1.1); declaration unchanged.
+//        `DM4Experiment`; declaration unchanged.
 //
 
 import Foundation

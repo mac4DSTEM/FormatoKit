@@ -1,7 +1,7 @@
 //
 //  ArrayTests.swift
-//  Gate L1's reference half: `FormatoArray.slab` cut in C order, checked against an index-by-index cut; and the lazy file
-//  array equal to the eager one on every seeded slab (registration §3.1, §4). Mutations: the row stride off by one (13),
+//  The lazy-read check's reference half: `FormatoArray.slab` cut in C order, checked against an index-by-index cut; and the lazy file
+//  array equal to the eager one on every seeded slab. Mutations: the row stride off by one (13),
 //  `start` ignored (14) - red.
 //
 

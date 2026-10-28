@@ -1,7 +1,7 @@
 # tools/step-1: the oracle pins
 
-`pins.py` reads the pinned RosettaSciIO (commit `049e7d70`, `docs/registration-step-1.md` section 2) and writes what it
-returns, so the Swift tests (gates P1 and U1) compare against numbers that exist before the Swift code. Python only.
+`pins.py` reads the pinned RosettaSciIO (commit `049e7d70`) and writes what it
+returns, so the Swift tests (`PinsTests`, `UnitsTests`) compare against numbers that exist before the Swift code. Python only.
 Agreement with RosettaSciIO is agreement with an independent reading of the same bytes, not truth.
 
 ## Run
@@ -86,4 +86,4 @@ Every record is the output of RosettaSciIO's own function, called by the script 
 - `case`: `public-velox` (the arguments the public Velox image path hands to the two functions, recorded while reading every
   public Velox file with `select_type="images"`, deduplicated), `sweep` (400 "m" and 200 "s" values with factors for
   `convert_scale_units`; each value also through `convert_units` m to m, mm, µm (U+00B5), nm, pm and s to s, ms, µs, ns),
-  `planted` (the cases of registration section 4 and a few neighbours: zero, NaN, `""`, `1/nm`, `None`).
+  `planted` (the planted cases and a few neighbours: zero, NaN, `""`, `1/nm`, `None`).

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pins RosettaSciIO's reading of step 4's Gate B files (docs/registration-step-4.md amendment A1).
+"""Pins RosettaSciIO's reading of step 4's review files.
 
     References/rsciio-venv/bin/python -I -B tools/step-4/refuter_pins.py
         writes Tests/FormatoCoreTests/Fixtures/step-4-refuter-pins.json from Tests/FormatoEMDTests/Fixtures/step4/refuter/
@@ -7,7 +7,7 @@
 The refuter's files on the frozen 4ac6df0 (one each per finding), with the option sets it found them under; each record as
 tools/step-4/pins.py's. `deviations` names the files FormatoKit treats differently on purpose (A1): "all" refused although
 RosettaSciIO reads, "reads" read although RosettaSciIO raises, "not-run" never given to RosettaSciIO (it would allocate past
-the suite's memory cap; FormatoKit must refuse it without allocating). The memory watchdog of tools/step-1/pins.py is on.
+the memory cap; FormatoKit must refuse it without allocating). The memory watchdog of tools/step-1/pins.py is on.
 """
 import importlib.util
 import sys

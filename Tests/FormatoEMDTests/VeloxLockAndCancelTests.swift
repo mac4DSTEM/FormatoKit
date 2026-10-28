@@ -5,7 +5,7 @@ import FormatoEMD
 import FormatoHDF5
 
 extension VeloxEMDSerialized {
-    /// Inherited behaviour (registration step 1 §1.1): the HDF5 lock is taken per call inside `VeloxFile`, so a long Velox read holds
+    /// Inherited behaviour: the HDF5 lock is taken per call inside `VeloxFile`, so a long Velox read holds
     /// it for one block at most; the long calls take `cancelled:` / `progress:`; the library lookup is injectable. All on
     /// `Fixtures/velox-tiny.emd` (two streams of a few dozen values) read with a 4-value block, so it spans several blocks.
     @Suite(.serialized) struct VeloxLockAndCancelTests {

@@ -1,6 +1,6 @@
 //
 //  TIFFRulesTests.swift
-//  The small parsing rules step 2 ports (registration step 2 §1.2, §3.3), each by closed-form cases: tifffile's `astype`,
+//  The small parsing rules step 2 ports, each by closed-form cases: tifffile's `astype`,
 //  RosettaSciIO's DateTime parse, the FEI date and time forms, RosettaSciIO's axis names and its height/width cross-over.
 //
 

@@ -1,6 +1,6 @@
 //
 //  FormatoTIFFPinsTests.swift
-//  Gates P2 and L2 of docs/registration-step-2.md: every TIFF of RosettaSciIO 049e7d70's public test data, the planted
+//  Every TIFF of RosettaSciIO 049e7d70's public test data, the planted
 //  files and (owner-check.sh only) the owner's Ceta TIFFs against Fixtures/step-2-pins.json (tools/step-2/pins.py,
 //  RosettaSciIO's file_reader over tifffile 2026.9.20): page 0's tags as tifffile decodes them (code, type, count, the raw
 //  bytes' sha256, the decoded value), and for each series in scope the data's sha256, shape, element type, every axis
@@ -47,7 +47,7 @@ import FormatoKitTestSupport
     }
 
     private func assertTags(_ dir: TIFFDirectory, _ pinned: [[String: Any]], _ what: String) {
-        // tifffile drops a tag of a type it does not know; the walker keeps it (amendment A1): compared without those.
+        // tifffile drops a tag of a type it does not know; the walker keeps it: compared without those.
         let known: Set<Int> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18]
         let gotCodes: [Int] = dir.tags.filter { known.contains($0.type) }.map(\.code)
         let wantCodes: [Int] = pinned.map { (p: [String: Any]) -> Int in p["code"] as! Int }
@@ -59,7 +59,7 @@ import FormatoKitTestSupport
             #expect(tag.count == p["count"] as? Int, "\(w): count")
             // A pointer tag (EXIF 34665, GPS 34853, Interoperability 40965, TVIPS 37706 as tifffile reads it): tifffile's
             // `valueoffset` is where it reads the structure, so its "raw" bytes are not the stored field; the walker keeps
-            // the stored field (amendment A1).
+            // the stored field.
             if ![34665, 34853, 40965, 37706].contains(tag.code) { #expect(sha(tag.raw) == p["raw_sha256"] as? String, "\(w): raw bytes") }
             // The decoded value, item by item: a float by its bits, an integer by its value, a string as decoded.
             if let s = p["value"] as? String { #expect(tag.text == s, "\(w): text"); continue }
@@ -158,10 +158,10 @@ import FormatoKitTestSupport
         if referencesPresent { #expect(r.files == files.count) }
     }
 
-    /// Gate B's files (Fixtures/refuter, pinned by `pins.py --owner` into refuter-pins.json): where RosettaSciIO raises,
+    /// The review files (Fixtures/refuter, pinned by `pins.py --owner` into refuter-pins.json): where RosettaSciIO raises,
     /// FormatoKit refuses; where it reads, the signals are equal, except the files FormatoKit refuses on purpose
-    /// (registration step 2 A2: tifffile's shaped, OME, several-series, pyramid, FillOrder, strip-offset-0 rules are not
-    /// ported) and one registered metadata deviation (a DateTime in non-ASCII digits, which Python's strptime reads).
+    /// (tifffile's shaped, OME, several-series, pyramid, FillOrder, strip-offset-0 rules are not
+    /// ported) and one deliberate metadata deviation (a DateTime in non-ASCII digits, which Python's strptime reads).
     @Test func testRefuterFilesAgreeOrAreRefused() throws {
         let object = try JSONSerialization.jsonObject(with: Data(contentsOf: Self.fixtures.appendingPathComponent("refuter-pins.json"))) as! [String: Any]
         let files = object["files"] as! [[String: Any]]

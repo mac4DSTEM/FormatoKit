@@ -1,6 +1,6 @@
 //
 //  FormatoGoldenTests.swift
-//  Gate M2 of docs/registration-step-1.md: the Velox reader's part of the inherited golden baseline, byte for byte.
+//  The Velox reader's part of the inherited golden baseline, byte for byte.
 //  The inherited 0.3.0 golden file `velox-tiny.txt` (baseline 71929a01, re-recorded
 //  on purpose at the inherited reader's 0.2.0) holds the reader's outputs in its lines 1-175 and `SpectrumImageOpener`'s and the EDX
 //  windows' after them; `Fixtures/velox-tiny-reader.txt` is those 175 lines verbatim. The dump below is the inherited

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pins RosettaSciIO's reading of step 3's planted Velox files (docs/registration-step-3.md §2, §4).
+"""Pins RosettaSciIO's reading of step 3's planted Velox files.
 
     References/rsciio-venv/bin/python -I -B tools/step-3/pins.py
         writes Tests/FormatoCoreTests/Fixtures/step-3-pins.json from the four Tests/FormatoEMDTests/Fixtures/velox-titles-*.emd

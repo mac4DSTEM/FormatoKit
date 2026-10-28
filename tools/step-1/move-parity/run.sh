@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Gate M3 of docs/registration-step-1.md (move parity). See README.md.
+# Move parity: See README.md.
 #
 #   tools/step-1/move-parity/run.sh [--owner] [--scratch DIR] [--jobs N] [--reuse]
 #

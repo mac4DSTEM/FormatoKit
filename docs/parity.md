@@ -73,7 +73,7 @@ every one of these, as D17 prescribes for readers.
 | h5py low-level | `HDF5Reader`, `HDF5AppendWriter`, `HDF5SlabReader` | pinned exact to h5py 3.16.0; compound, other enum, array and vlen data, references, external links not supported |
 | py4DSTEM EMD 1.0 4D datacube (py4DSTEM f050d207) | `HDF5Datacube` | pinned for explicit rank-four numeric datasets; nonlinear coordinates refused |
 | py4DSTEM BraggVectors | `BraggVectorsEMD`, `HDF5WriteSession.writeBraggVectors` | read and write pinned; origin maps and `_v_cal` not written |
-| EMD 1.0 bundle writers | `EMDDatacubeWriter`, `writeEMDCalibration`, maps | write pinned (design note archived in the suite folder) |
+| EMD 1.0 bundle writers | `EMDDatacubeWriter`, `writeEMDCalibration`, maps | write pinned |
 | PNG with text chunks | `FormatoPNG` | write pinned; no interlacing, palette |
 | TIFF app image (named option) | `TIFFAppImage` | pinned to macTEM cb6e164 on 149 cases |
 | `rsciio.load` (extension guess then plugin check) | `FormatoLoader.sniff/load` (product `Formato`, 0.9.0) | extension plus first bytes; 4D formats named, not loaded |
@@ -141,30 +141,30 @@ never written (RosettaSciIO tests `"General.item"`, a typo, as RosettaSciIO does
 - **DM post-processing:** RosettaSciIO's `to_signal1D` for a spectrum image and `squeeze` are HyperSpy's step; FormatoKit
   returns the file reader's dictionary, as RosettaSciIO's `file_reader` does.
 - **DM EDS axis names:** RosettaSciIO names an EDS energy axis "x" (its `("EDS", "EDX")` test never matches its own "EDS_TEM");
-  FormatoKit does the same on purpose (amendment A4.2). A fix belongs upstream first.
-- **DM big-endian files** are refused by name (the Gate B refuter generated some); none exists in the public set.
+  FormatoKit does the same on purpose. A fix belongs upstream first.
+- **DM big-endian files** are refused by name (a review generated some); none exists in the public set.
 - **Malformed DM files RosettaSciIO raises on** and FormatoKit reads with defaults: a calibration without `Units`, no
   `Calibrations`, no `ImageTags`, a `source` group without `Tags at creation`; and more calibration groups than dimensions
   (RosettaSciIO takes the last n, FormatoKit the first n); empty or array-only `spim` / `spim.eels` / `Monarc Spectrometer`
-  groups; tag names holding "."; strings over 4 KiB (registration A5). The moved DM walk does not expose these; a later
-  registered change of it can.
+  groups; tag names holding "."; strings over 4 KiB. The moved DM walk does not expose these; a later
+  deliberate change of it can.
 - **Velox images: stored type and titles (equal since step 3).** Every public, planted and owner image in its stored type
-  and with RosettaSciIO's title (`Operations`, `DetectorInformation`, the label maps); design note, archived in the suite's private folder. Left:
+  and with RosettaSciIO's title (`Operations`, `DetectorInformation`, the label maps). Left:
   an `Operations` kind or `Displays/ImageDisplay` stored as one dataset instead of a group is refused (Python iterates
   its JSON in written order); no file seen has one.
 - **Velox compound images** (FFT, DPC) are refused; RosettaSciIO returns them complex.
 - **Units outside FormatoUnits** (m and s with SI prefixes, their inverses, dimensionless) refuse the image: Pint also
-  reads "px", "Å", "nanometre" and more (registration A5, F7).
+  reads "px", "Å", "nanometre" and more.
 - **Velox spectrum images (equal since step 4).** EDS and EELS spectrum images as RosettaSciIO's `select_type="spectrum_image"`
-  returns them, every option, the counts wrapping in the stream's type as its jitted loop does (design note, archived in the suite's private folder).
-  Left, registered deviations (refused here where RosettaSciIO reads): a first image whose grid differs from ScanSize x
+  returns them, every option, the counts wrapping in the stream's type as its jitted loop does.
+  Left, deliberate deviations (refused here where RosettaSciIO reads): a first image whose grid differs from ScanSize x
   ScanArea; a stream that is not one uint16 column; a channel at or beyond the bin count (RosettaSciIO writes outside the
   voxel); frames not summed with no frame left or `last_frame` 0; streams of different bin counts read apart; no FrameTime with
   frames not summed; numpy dtype aliases as `StreamEncoding`; EELS in a type outside the ten or with string calibrations. Not
   ported: `lazy=True`, `load_SI_image_stack`; `select_type=None` is `FormatoLoader.load` (spectra, images, spectrum images in RosettaSciIO's order).
 - **Velox detector order (equal since 0.0.3):** `VeloxMetadata.detectors` follows the written order of the `Detectors` keys,
-  as RosettaSciIO's `json.loads`, so the energy axis and the detector-metadata match take the same entry (registration step 1
-  A7). Left: a key written twice in one object reads its first value here and its last in Python (no file seen has one).
+  as RosettaSciIO's `json.loads`, so the energy axis and the detector-metadata match take the same entry (since 0.0.3).
+  Left: a key written twice in one object reads its first value here and its last in Python (no file seen has one).
 - **Velox metadata mapping:** the image path maps the file name and the beam energy; `VeloxSpectrumSignals` (0.9.0) maps every field
   RosettaSciIO's `_get_mapping` maps for a single spectrum except `Sample.elements`. The images and spectrum images keep the narrower
   mapping (camera length, magnification, instrument and stage are in `AcquisitionMetadata.velox`; for a spectrum image
@@ -175,7 +175,7 @@ never written (RosettaSciIO tests `"General.item"`, a typo, as RosettaSciIO does
   against planted files, no RosettaSciIO value to compare; unvalidated beyond the one owner file's order of magnitude.
   **Pixel size (0.11.0):** `AcquisitionMetadata.pixelSize` (rows, columns, unit as stored) from `BinaryResult.PixelSize`, `.rosettaSciIO`
   only; equal to RosettaSciIO's axis scales after the conversion they went through.
-- **Lazy reading:** registered equal to eager (gate L1) for DM (positioned reads) and Velox images (per frame). Not yet
+- **Lazy reading:** registered equal to eager for DM (positioned reads) and Velox images (per frame). Not yet
   memory-mapped; no chunked HDF5 reads beyond the moved reader's blocks.
 - **Writing:** none for RosettaSciIO's formats. FormatoKit writes only the EMD 1.0 bundle writers (`EMDDatacubeWriter`, calibration, maps), `FormatoPNG`, `BraggVectorsEMD` (py4DSTEM EMD 1.0), `HDF5RootAttributes` (a sidecar's root string
   attributes) and `FormatoFileWrite` (a Foundation file replace helper); see the sections below.

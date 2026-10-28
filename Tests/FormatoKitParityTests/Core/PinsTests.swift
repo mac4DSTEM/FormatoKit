@@ -1,9 +1,9 @@
 //
 //  PinsTests.swift
-//  Gates P1 and L1 of docs/registration-step-1.md: every DM and Velox signal RosettaSciIO 049e7d70 returns from its public
+//  Every DM and Velox signal RosettaSciIO 049e7d70 returns from its public
 //  test files (Fixtures/step-1-pins.json, tools/step-1/pins.py) against FormatoDM's and FormatoEMD's adapters: shape, the
 //  data's sha256 over the stored bytes (Velox in its stored type since step 3; Float32 before), every axis field bit for
-//  bit, the signal type, the title (DM; Velox since step 3, gate P3) and the mapped metadata with its source; a type RosettaSciIO reads and FormatoKit does not is refused by
+//  bit, the signal type, the title (DM; Velox since step 3) and the mapped metadata with its source; a type RosettaSciIO reads and FormatoKit does not is refused by
 //  name (A1.1). And L1: for every signal read, seeded slabs of the lazy array equal the same slabs cut from the eager one.
 //  The public files are read from the pinned clone in References/ (tools/test.sh unzips the zips after checking their
 //  sha256); without References, only the committed copy of 3D/EELS_SI.dm4 runs.
@@ -99,7 +99,7 @@ import FormatoEMD
         }
     }
 
-    /// The owner's files (registration §2): run by tools/step-1/owner-check.sh, which writes RosettaSciIO's reading of them
+    /// The owner's files: run by tools/step-1/owner-check.sh, which writes RosettaSciIO's reading of them
     /// with `pins.py --owner` and passes FORMATO_OWNER_PINS (that JSON) and FORMATO_OWNER_FILES (their absolute paths, one
     /// per line). Never part of the gate: skipped without the variables.
     @Test(.enabled(if: ProcessInfo.processInfo.environment["FORMATO_OWNER_PINS"] != nil,
@@ -127,7 +127,7 @@ import FormatoEMD
         return velox.images.contains { (try? velox.signal($0)) == nil }
     }
 
-    /// Step 3's planted Velox files (registration step 3 §4; Tests/FormatoEMDTests/Fixtures/velox-titles-*.emd, pinned by
+    /// Step 3's planted Velox files (Tests/FormatoEMDTests/Fixtures/velox-titles-*.emd, pinned by
     /// tools/step-3/pins.py): every Operations kind and branch, DetectorInformation and the carried name, both label maps, the
     /// ten stored types. Compared as the public files are.
     @Test func testStep3PlantedVeloxFilesAgree() throws {
@@ -141,8 +141,7 @@ import FormatoEMD
         #expect(refused == 0)
     }
 
-    /// Step 3's Gate B files (Tests/FormatoEMDTests/Fixtures/refuter-step3, tools/step-3/refuter_pins.py; registration step 3
-    /// A1): 11 RosettaSciIO raises on (the detector-metadata lookup, root datasets, Acquisition, Version), refused here too;
+    /// Step 3's review files (Tests/FormatoEMDTests/Fixtures/refuter-step3, tools/step-3/refuter_pins.py): 11 RosettaSciIO raises on (the detector-metadata lookup, root datasets, Acquisition, Version), refused here too;
     /// 2 it reads, read equal.
     @Test func testStep3RefuterFilesAgreeOrAreRefused() throws {
         let files = try #require(try loadJSON("step-3-refuter-pins.json")["files"] as? [[String: Any]])
@@ -155,10 +154,10 @@ import FormatoEMD
         #expect(signals == 2)
     }
 
-    /// Gate B's files (Fixtures/refuter, tools/step-1/pins.py --set refuter): built by the refuter from RosettaSciIO's public
+    /// The review files (Fixtures/refuter, tools/step-1/pins.py --set refuter): built by the refuter from RosettaSciIO's public
     /// fei_example_tem_stack.emd with one metadata value changed each. Where RosettaSciIO raises, FormatoKit must refuse
     /// (F1-F3); where it reads, the signals must be equal; `u_stack_unit_px.emd` (Pint's "px") is refused on purpose
-    /// (registration A5: units outside FormatoUnits are refused, not guessed).
+    /// (units outside FormatoUnits are refused, not guessed).
     @Test func testRefuterFilesAgreeOrAreRefused() throws {
         let files = try #require(try loadJSON("refuter-pins.json")["files"] as? [[String: Any]])
         let dir = TestPaths.fixtures.appendingPathComponent("refuter")
@@ -228,7 +227,7 @@ import FormatoEMD
                     }
                     let lazy = try velox.signal(image), eager = try lazy.load()
                     assertAxes(eager.axes, p["axes"] as! [[String: Any]], what)
-                    // Step 3 (registration step 3, gate P3): the stored type, its bytes and RosettaSciIO's title.
+                    // Step 3: the stored type, its bytes and RosettaSciIO's title.
                     #expect(eager.data.dataType.rawValue == p["dtype"] as? String, "\(what): dtype")
                     #expect(eager.data.shape == p["shape"] as? [Int], "\(what): shape")
                     #expect(sha(eager.data.bytes) == p["data_sha256"] as? String, "\(what): data in the stored type")

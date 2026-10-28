@@ -2,8 +2,8 @@
 //  FormatoCancellation.swift
 //  The one cancellation contract of FormatoKit's long reads: a `cancelled` closure with the default
 //  `FormatoCancellation.task`, an optional `progress` closure (fraction 0…1), and `FormatoCancelled` thrown when the closure
-//  answers true; nothing partial is kept. Inherited (as `SpectroCancellation.swift`) with the names changed
-//  (docs/registration-step-1.md §1.1); the bodies are unchanged. `check` is public because long calls in other packages
+//  answers true; nothing partial is kept. Inherited (as `SpectroCancellation.swift`) with the names changed;
+//  the bodies are unchanged. `check` is public because long calls in other packages
 //  use it too.
 //
 

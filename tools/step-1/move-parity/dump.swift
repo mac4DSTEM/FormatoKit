@@ -1,6 +1,6 @@
 //
 //  dump.swift
-//  Gate M3 of docs/registration-step-1.md (move parity): one reader dump of one file, the same source on both sides.
+//  Move parity: one reader dump of one file, the same source on both sides.
 //  tools/step-1/move-parity/run.sh builds it twice, as the `reader-dump` executable of a copy of SpectroKit 0.3.0
 //  (with `import SpectroCore` prepended) and of a copy of FormatoKit's HEAD (with `import FormatoDM`, `FormatoEMD`,
 //  `FormatoCore` prepended); those import lines are the only difference. It sits inside the copied package, so the

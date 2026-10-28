@@ -1,10 +1,10 @@
-// Test partition (registration step 1 §1.1): the methods of DM4ExperimentTests that move with the EDX core;
+// Test partition: the methods of DM4ExperimentTests that move with the EDX core;
 // the rest stay in DM4ExperimentTests.swift. Helpers are duplicated, not shared, across the split.
 import Testing
 import Foundation
 import FormatoDM
 
-/// v5.0 WP1 lane B: `DM4Experiment` lists every image object of a GMS `.dm4`
+/// `DM4Experiment` lists every image object of a GMS `.dm4`
 /// ("one experiment") and reads a 2D one back. The files are synthetic, built
 /// tag by tag the way `FinalPolishDTests` builds its cube, but with the tag
 /// layout of the owner's `134_STEM SI.dm4` / `036_STEM SI.dm4` (measured

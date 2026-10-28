@@ -1,7 +1,7 @@
 // swift-tools-version: 6.2
 // FormatoKit consumer check: a SEPARATE package that depends on FormatoKit by path and touches the public API every consumer
 // reads (a consumer's measured list, typical application uses, the step-1 signal adapters). `package` access does not cross a
-// package boundary, so this compiles only if each named symbol is `public`. Gate H1: run.sh runs it with
+// package boundary, so this compiles only if each named symbol is `public`. run.sh runs it with
 // FORMATO_HDF5_PATH unset, so a Velox read proves the shipped libhdf5 is found with no setup.
 import Foundation
 import PackageDescription

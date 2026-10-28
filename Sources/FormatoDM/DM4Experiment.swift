@@ -19,7 +19,7 @@
 //  copy. Access only: no line of the walk or the decode changed.
 //  An EELS spectrum image is decoded by `readEELSSpectrumImage` (EELS slice 1b, public): the same walk, the
 //  same role rule, the same channel-block read as the EDS one, and E0 / alpha / beta from the tags RosettaSciIO maps.
-//  An EDS spectrum image is decoded by `readEDSSpectrumImage` (v5.0 WP2 R2): the
+//  An EDS spectrum image is decoded by `readEDSSpectrumImage`: the
 //  only object it reads whole, in channel blocks, never the 4D blob. No real GMS
 //  4D+EDS file existed when this was written; the layout is the simulator's guess
 //  (`docs/archive/v5/4d-edx-file-structure-2026-10-05.md` §4a) and the first real
@@ -781,7 +781,7 @@ public nonisolated enum DM4Experiment {
                         for _ in 0..<length { units.append(cursor.u16le()) }
                         strings[path] = String(decoding: units.filter { $0 > 0 }, as: UTF16.self)
                         if length <= 64 { arrays[path] = units.map(Double.init) }
-                    } else if nbytes < DM4Experiment.keptArrayBytes, (2...12).contains(elementType), elementType != 8, elementType != 4 {   // a ushort array is a string or nothing (registration 0.2.0 A2)
+                    } else if nbytes < DM4Experiment.keptArrayBytes, (2...12).contains(elementType), elementType != 8, elementType != 4 {   // a ushort array is a string or nothing
                         var values = [Double]()
                         for _ in 0..<length { values.append(cursor.value(elementType)) }
                         arrays[path] = values

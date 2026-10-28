@@ -1,10 +1,10 @@
 //
 //  SpectrumImagePinsTests.swift
-//  Gate P4 and the kernel pins of docs/registration-step-4.md: every (file, option set) of Fixtures/step-4-pins.json
+//  The kernel pins and every (file, option set) of Fixtures/step-4-pins.json
 //  (tools/step-4/pins.py: RosettaSciIO 049e7d70's `file_reader(select_type="spectrum_image", lazy=False)` with sparse and
 //  numba) against `VeloxSpectrumImageSignals`: where RosettaSciIO raises, FormatoKit refuses; where it reads, the signals in
 //  order are equal in type, shape, data sha256, every axis field exactly, title, signal type and metadata with source.
-//  The registered deviations (registration §3.3, §3.5, §3.6) are refused by name: the pins' `deviations`, and the runs whose
+//  The deliberate deviations are refused by name: the pins' `deviations`, and the runs whose
 //  axes RosettaSciIO leaves without a number or of another size than the data. And RosettaSciIO's `stream_to_array` on the
 //  synthetic streams of the kernel pins, exactly.
 //
@@ -54,7 +54,7 @@ import FormatoEMD
         return out
     }
 
-    /// Whether the pins name this run a registered deviation (refused here although RosettaSciIO reads).
+    /// Whether the pins name this run a deliberate deviation (refused here although RosettaSciIO reads).
     private func isDeviation(_ path: String, _ o: [String: Any], _ deviations: [String: [String]]) -> Bool {
         guard let d = deviations[path] else { return false }
         switch d[0] {
@@ -99,7 +99,7 @@ import FormatoEMD
 
     private struct Tally { var files = 0, runs = 0, raised = 0, deviated = 0, read = 0, signals = 0 }
 
-    /// Every run of a pins document: RosettaSciIO raises -> refused; a registered deviation -> refused ("all", "unsummed",
+    /// Every run of a pins document: RosettaSciIO raises -> refused; a deliberate deviation -> refused ("all", "unsummed",
     /// "not-run") or read ("reads"); else the signals equal.
     private func compare(_ doc: [String: Any], referencesPresent: Bool) throws -> Tally {
         let files = try #require(doc["files"] as? [[String: Any]])
@@ -120,7 +120,7 @@ import FormatoEMD
                 let pinned = run["signals"] as! [[String: Any]]
                 t.runs += 1
                 if deviations[path]?.first == "reads" {
-                    // Registered: read here where RosettaSciIO raises (amendment A1).
+                    // Registered: read here where RosettaSciIO raises.
                     #expect(run["raises"] as? [String: Any] != nil, "\(what): a 'reads' deviation where RosettaSciIO raises")
                     do { _ = try VeloxSpectrumImageSignals(path: url.path, options: try options(o)); t.read += 1 } catch {
                         Issue.record("\(what): registered as read here, refused: \(error)")
@@ -131,7 +131,7 @@ import FormatoEMD
                     || pinned.contains { $0["axes_numeric"] as? Bool == false || $0["axes_sizes_match_shape"] as? Bool == false }
                 if run["raises"] as? [String: Any] != nil || refusedByRule {
                     if run["raises"] as? [String: Any] != nil { t.raised += 1 } else { t.deviated += 1 }
-                    #expect(throws: (any Error).self, "\(what): RosettaSciIO \(run["raises"].map { "raises \($0)" } ?? "reads (a registered deviation)"); FormatoKit read it") {
+                    #expect(throws: (any Error).self, "\(what): RosettaSciIO \(run["raises"].map { "raises \($0)" } ?? "reads (a deliberate deviation)"); FormatoKit read it") {
                         _ = try VeloxSpectrumImageSignals(path: url.path, options: try options(o))
                     }
                     continue
@@ -154,7 +154,7 @@ import FormatoEMD
         let doc = try loadJSON("step-4-pins.json")
         let referencesPresent = FileManager.default.fileExists(atPath: TestPaths.rsciioData.path)
         let t = try compare(doc, referencesPresent: referencesPresent)
-        print("SpectrumImagePins: \(t.files) files, \(t.runs) runs: \(t.signals) signals equal, \(t.raised) refused where RosettaSciIO raises, \(t.deviated) registered deviations")
+        print("SpectrumImagePins: \(t.files) files, \(t.runs) runs: \(t.signals) signals equal, \(t.raised) refused where RosettaSciIO raises, \(t.deviated) deliberate deviations")
         if referencesPresent {
             #expect(t.files == (doc["files"] as! [Any]).count)
             #expect(t.runs == 226)
@@ -164,9 +164,9 @@ import FormatoEMD
         }
     }
 
-    /// Step 4's Gate B files (Tests/FormatoEMDTests/Fixtures/step4/refuter, tools/step-4/refuter_pins.py; amendment A1): the
+    /// Step 4's review files (Tests/FormatoEMDTests/Fixtures/step4/refuter, tools/step-4/refuter_pins.py): the
     /// fixes (Unicode digits, endFramePosition past Int64, a zero-frame first image, JSON decimals, the frame count's
-    /// overflow) and the registered deviations (fermi, a null image unit, a list DetectorName, LZF; a big-endian stream read).
+    /// overflow) and the deliberate deviations (fermi, a null image unit, a list DetectorName, LZF; a big-endian stream read).
     @Test func testStep4RefuterFilesAgreeOrAreRefused() throws {
         let doc = try loadJSON("step-4-refuter-pins.json")
         let t = try compare(doc, referencesPresent: true)
@@ -179,7 +179,7 @@ import FormatoEMD
         #expect(t.signals == 9)
     }
 
-    /// The owner's spectrum image (registration step 4 §2): run by tools/step-4/owner-check.sh, which writes RosettaSciIO's
+    /// The owner's spectrum image: run by tools/step-4/owner-check.sh, which writes RosettaSciIO's
     /// reading with `pins.py --owner` and passes FORMATO_OWNER_SI_PINS and FORMATO_OWNER_SI_FILE. Never part of the gate.
     @Test(.enabled(if: ProcessInfo.processInfo.environment["FORMATO_OWNER_SI_PINS"] != nil,
                    "the owner's spectrum image is checked by tools/step-4/owner-check.sh only"))

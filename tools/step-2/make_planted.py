@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Planted TIFFs for FormatoKit step 2 (docs/registration-step-2.md, section 4).
+"""Planted TIFFs for FormatoKit step 2.
 
     References/rsciio-venv/bin/python -I -B tools/step-2/make_planted.py [--out DIR]
 
@@ -462,7 +462,7 @@ def make_files():
         "note": "One private tag per classic TIFF datatype (65100-65112): the tag walker's types. 65110 is 'ab', NUL, 'cd', NUL; "
                 "65112 is 'abc' with no terminating NUL."})
 
-    # --- 9b. two behaviours of tifffile / RosettaSciIO the registration does not state ------------------------------------
+    # --- 9b. two behaviours of tifffile / RosettaSciIO that are easy to miss ------------------------------------------------
     bo = "<"
     tags = common_tags(bo, 2, 2, 8, sample_format=1) + [(270, T_ASCII, asc("hello")), (306, T_ASCII, asc("2026/10/14 22:11"))]
     add("datetime-slash-description.tif", bo, False, [{"tags": tags, "strips": [bytes([1, 2, 3, 4])]}], {
@@ -480,8 +480,8 @@ def make_files():
         "series": [{"tifffile_axes": "YX", "shape": [2, 2], "dtype": "uint8", "pixels": [[1, 2], [3, 4]], "axes": YX(2, 2),
                     "metadata": [md("General.original_filename", "unknown-tag-type.tif"), md("Signal.signal_type", "")]}],
         "note": "Tag 65200 has datatype 99 (4 bytes). tifffile logs 'invalid data type 99' and drops the tag from the page: it is "
-                "absent from the pins; the pixels read normally. A walker that keeps unknown types as bytes (registration "
-                "3.2) has one more tag than tifffile; the test asserts it and states why."})
+                "absent from the pins; the pixels read normally. A walker that keeps unknown types as bytes "
+                "has one more tag than tifffile; the test asserts it and states why."})
 
     # --- 10. refusals -------------------------------------------------------------------------------------------------
     bo = "<"

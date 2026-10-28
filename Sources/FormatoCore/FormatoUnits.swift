@@ -1,7 +1,6 @@
 //
 //  FormatoUnits.swift
-//  Role: The unit arithmetic the readers need, ported bit for bit from what RosettaSciIO does with Pint 0.26.1
-//        (docs/registration-step-1.md §3.1 and amendment A1.2-3):
+//  Role: The unit arithmetic the readers need, ported bit for bit from what RosettaSciIO does with Pint 0.26.1:
 //        - `convertUnits(_:from:to:)` is RosettaSciIO's `rsciio.utils._units.convert_units`, `(value * ureg(units)).to(to_units)`;
 //        - `convertScaleUnits(_:units:factor:)` is RosettaSciIO Velox's `_convert_scale_units`: the value times half the
 //          factor, Pint's `to_compact`, divided by half the factor again, and the compact unit's short form.
@@ -38,16 +37,15 @@ public nonisolated enum FormatoUnits {
                                 "deci", "", "deca", "hecto", "kilo", "mega", "giga", "tera", "peta", "exa", "zetta", "yotta",
                                 "ronna", "quetta"]
 
-    /// The whitespace Pint's parser skips around a unit: ASCII only (a no-break, zero-width or ideographic space makes Pint raise;
-    /// registration 0.2.0 A2).
+    /// The whitespace Pint's parser skips around a unit: ASCII only (a no-break, zero-width or ideographic space makes Pint raise).
     private static let pintWhitespace = CharacterSet(charactersIn: " \t\n\r\u{0B}\u{0C}")
 
     /// Parses the units strings the formats carry. nil for anything not handled (see the file header).
     public static func parse(_ text: String) -> Unit? {
         var s = text.trimmingCharacters(in: pintWhitespace)
         if s.isEmpty || s == "dimensionless" { return Unit(prefixIndex: unprefixed, base: "", power: 1) }
-        // Pint reads "fm" as the fermi, its own unit, not femto-metre: compacted it gives "Mfm", "mfm", ... (registration step 4
-        // A1, F6). Not converted.
+        // Pint reads "fm" as the fermi, its own unit, not femto-metre: compacted it gives "Mfm", "mfm" and so on.
+        // Not converted.
         if s == "fm" || s == "1/fm" || s == "1 / fm" { return nil }
         var power = 1
         if s.hasPrefix("1/") || s.hasPrefix("1 /") {
@@ -80,7 +78,7 @@ public nonisolated enum FormatoUnits {
         return value * factor(a, b)
     }
 
-    /// What `scaleOutcome` found. `convertScaleUnits` is nil for both failures; a policy tells them apart (registration 0.2.0 P1).
+    /// What `scaleOutcome` found. `convertScaleUnits` is nil for both failures; a policy tells them apart.
     package nonisolated enum ScaleOutcome: Sendable, Equatable {
         /// The compacted value and Pint's short form of the compact unit.
         case converted(value: Double, units: String)
@@ -111,7 +109,7 @@ public nonisolated enum FormatoUnits {
         let base = Unit(prefixIndex: unprefixed, base: unit.base, power: unit.power)
         let magnitude = scaled * self.factor(unit, base)
         // Pint takes `math.log10` of this magnitude and `math.floor` of the result: a magnitude that under- or overflowed to
-        // 0 or infinity raises there (ValueError, OverflowError). Not converted (Gate B F1).
+        // 0 or infinity raises there (ValueError, OverflowError). Not converted.
         guard magnitude != 0, magnitude.isFinite else { return .pintRaises }
         let l = log10(abs(magnitude)) / Double(unit.power) / 3
         let power = Int(unit.power > 0 ? l.rounded(.down) : l.rounded(.up)) * 3

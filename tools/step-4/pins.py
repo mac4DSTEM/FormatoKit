@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pins RosettaSciIO's reading of Velox spectrum images for FormatoKit step 4 (docs/registration-step-4.md §2, §4).
+"""Pins RosettaSciIO's reading of Velox spectrum images for FormatoKit step 4.
 
     References/rsciio-venv/bin/python -I -B tools/step-4/pins.py [--work DIR]
         writes Tests/FormatoCoreTests/Fixtures/step-4-pins.json
@@ -7,9 +7,9 @@
         writes the same records for the owner's file to PATH (scratch, never committed; the file recorded by basename)
 
 Every record is `rsciio.emd.file_reader(path, select_type="spectrum_image", lazy=False, **options)` for one file and one option
-set of registration §2 (O1-O10): RosettaSciIO's exception, or per returned dictionary in order its dtype, shape, data_sha256
-(little-endian C-order bytes), axes in list order (scale and offset as bits; HyperSpy keeps list order, registration §3.8),
-title, signal type and step 1's metadata entries. Needs `sparse` and `numba` in the venv (registration §2): the script stops
+set (O1-O10): RosettaSciIO's exception, or per returned dictionary in order its dtype, shape, data_sha256
+(little-endian C-order bytes), axes in list order (scale and offset as bits; HyperSpy keeps list order),
+title, signal type and step 1's metadata entries. Needs `sparse` and `numba` in the venv: the script stops
 without them, so the stream path is RosettaSciIO's real, jitted one.
 
 Files: the public Velox files with a spectrum stream or an EELS spectrum image (step 1's zips, unzipped into a fresh
@@ -17,7 +17,7 @@ directory), the planted files (tools/step-4/make_velox_si.py, regenerated here f
 ones), and the copies of SpectroKit's planted streams. For every planted file and option set RosettaSciIO's arrays must
 equal the planted truth (`make_velox_si.expected`), or the script stops.
 
-Kernel pins: RosettaSciIO's `stream_to_array` on synthetic streams given as runs [[value, repeat], ...] (registration §2).
+Kernel pins: RosettaSciIO's `stream_to_array` on synthetic streams given as runs [[value, repeat], ...].
 Outputs are byte-reproducible (sorted keys, no times, no absolute paths); two builds in the process must agree.
 """
 import argparse
@@ -53,7 +53,7 @@ def sha(b):
 
 def le_sha(data, np):
     """sha256 of the array's little-endian C-order bytes, as step 1's `le_bytes`, without copying an array that is already
-    little-endian and contiguous (the owner's SI is 1.6 GB; a copy took the oracle past the suite's 8 GB cap)."""
+    little-endian and contiguous (the owner's SI is 1.6 GB; a copy took the oracle past an 8 GB cap)."""
     a = np.ascontiguousarray(data)
     if a.dtype.byteorder == ">" or (a.dtype.byteorder == "=" and sys.byteorder == "big"):
         a = a.astype(a.dtype.newbyteorder("<"))
@@ -221,7 +221,7 @@ def require_stream_libraries():
         die(f"installed rsciio/{rel} differs from the pinned clone's")
     for name in ("sparse", "numba"):
         if importlib.util.find_spec(name) is None:
-            die(f"{name} is not installed in the venv (registration step 4 §2)")
+            die(f"{name} is not installed in the venv")
     import numba
     import sparse
     return {"numba": numba.__version__, "sparse": sparse.__version__}

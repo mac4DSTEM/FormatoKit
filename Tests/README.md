@@ -26,7 +26,7 @@ Every fixture, its sha256, and where it comes from. The moved ones are byte-iden
 | `FormatoEMDTests/Fixtures/velox-metadata-planted.emd` | `d977884f9147365c…` | SpectroKit 0.3.0 `tools/velox-metadata-parity/make_fixture.py` |
 | `FormatoEMDTests/Fixtures/velox-metadata-planted.truth.json` | `26e958d918cbc288…` | SpectroKit 0.3.0 `tools/velox-metadata-parity/make_fixture.py` |
 | `FormatoEMDTests/Fixtures/velox-tiny.emd` | `ab79b917db55e0a3…` | mac4DSTEM's Velox stream fixture, via SpectroKit 0.3.0 |
-| `FormatoGoldenTests/Fixtures/velox-tiny-reader.txt` | `cc0ba7890ec6f3a4…` | lines 1-175 of SpectroKit 0.3.0's golden `velox-tiny.txt` (registration §1.3) |
+| `FormatoGoldenTests/Fixtures/velox-tiny-reader.txt` | `cc0ba7890ec6f3a4…` | lines 1-175 of SpectroKit 0.3.0's golden `velox-tiny.txt` |
 
 ## Added in 0.9.0
 

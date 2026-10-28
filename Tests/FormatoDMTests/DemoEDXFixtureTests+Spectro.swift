@@ -1,11 +1,11 @@
-// Test partition (registration step 1 §1.1): the methods of DemoEDXFixtureTests that move with the EDX core;
+// Test partition: the methods of DemoEDXFixtureTests that move with the EDX core;
 // the rest stay in DemoEDXFixtureTests.swift. Helpers are duplicated, not shared, across the split.
 import Testing
 import Foundation
 import CryptoKit
 import FormatoDM
 
-/// v5.0 WP2 lane S: the simulated 4D-STEM + EDX dataset (`tools/demo-edx/`). The fixture is the TINY variant
+/// The simulated 4D-STEM + EDX dataset (`tools/demo-edx/`). The fixture is the TINY variant
 /// (6 x 4 scan, 16 x 16 detector, 512 channels at 20 eV, a perturbed energy axis, two 30 %-dead rows; 123 kB) written by `sim_edx.py --tiny` in the GMS
 /// multi-object layout of `docs/archive/v5/4d-edx-file-structure-2026-10-05.md` §4a, next to its truth file.
 /// The truth carries the SHA-256 of every array as WRITTEN (C order of the logical shape), so these tests compare

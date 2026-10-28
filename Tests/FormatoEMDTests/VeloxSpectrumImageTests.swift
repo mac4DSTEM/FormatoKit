@@ -4,9 +4,9 @@ import FormatoCore
 import FormatoEMD
 
 extension VeloxEMDSerialized {
-    /// Step 4 (docs/registration-step-4.md §5, "planted literals"): values typed here by hand from the planted counts and the
+    /// Step 4: values typed here by hand from the planted counts and the
     /// rules, without the pins: the type wraps, the frame rules, rebinning, the energy axis choice, the EELS layout and the
-    /// refusals of the registered deviations.
+    /// refusals of the deliberate deviations.
     @Suite final class VeloxSpectrumImageTests {
         private static let fixtures = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/step4")
 
@@ -53,7 +53,7 @@ extension VeloxEMDSerialized {
             #expect(value(try run(two, 1, 1, 2, last: 0, .uint16), [0, 0, 1]) == 2)
             // Rebin 2 sums channels 2 and 3 into bin 1.
             #expect(value(try run([2, 3, 3], 1, 1, 4, last: 1, rebin: 2, .uint16), [0, 0, 1]) == 3)
-            // A channel at the bin count is refused (registered deviation).
+            // A channel at the bin count is refused (deliberate deviation).
             #expect(throws: FormatoReadError.self) { _ = try run([4], 1, 1, 4, last: 1, .uint16) }
         }
 
@@ -91,12 +91,12 @@ extension VeloxEMDSerialized {
             #expect(s[0].signalType == "EELS" && s[0].metadata["General.original_filename"]?.value.text == "si-planted-eels.emd")
         }
 
-        /// The registered deviations are refused by name.
+        /// The deliberate deviations are refused by name.
         @Test func testDeviationsAreRefused() throws {
-            #expect { _ = try read("si-planted-grid.emd") } throws: { "\($0)".contains("§3.3") }
+            #expect { _ = try read("si-planted-grid.emd") } throws: { "\($0)".contains("ScanSize x ScanArea") }
             #expect(try read("si-planted-bins.emd").count == 1)
-            #expect { _ = try read("si-planted-bins.emd", .init(sumEDSDetectors: false)) } throws: { "\($0)".contains("§3.5") }
-            #expect { _ = try read("si-planted-v11.emd", .init(firstFrame: 2, lastFrame: 2, sumFrames: false)) } throws: { "\($0)".contains("§3.5") }
+            #expect { _ = try read("si-planted-bins.emd", .init(sumEDSDetectors: false)) } throws: { "\($0)".contains("refused here on purpose") }
+            #expect { _ = try read("si-planted-v11.emd", .init(firstFrame: 2, lastFrame: 2, sumFrames: false)) } throws: { "\($0)".contains("refused here on purpose") }
             #expect(throws: (any Error).self) { _ = try read("spectrokit/velox-stream-1stream-1frame.emd") }
         }
     }

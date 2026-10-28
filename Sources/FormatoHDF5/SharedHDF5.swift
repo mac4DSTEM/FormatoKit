@@ -72,7 +72,7 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
     package let h5tgetSize: H5TgetSize, h5tgetSign: H5TgetSign
     package let h5oopen: H5Oopen, h5oclose: H5Close, h5lvisit2: H5Lvisit2, h5freeMemory: H5freeMemory
     package let uint8: hid_t, uint16: hid_t, uint32: hid_t, uint64: hid_t, float32: hid_t
-    /// FormatoKit step 3 (registration step 3 §1.1): the native types a stored-type image read needs beside the above.
+    /// FormatoKit step 3: the native types a stored-type image read needs beside the above.
     package let int8: hid_t, int16: hid_t, int32: hid_t, int64: hid_t, float64: hid_t
     // Low-level access and append symbols (FormatoKit Unreleased: HDF5Reader, HDF5AppendWriter).
     package typealias H5Ldelete = @convention(c) (hid_t, UnsafePointer<CChar>?, hid_t) -> herr_t

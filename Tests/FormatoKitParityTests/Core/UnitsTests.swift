@@ -1,6 +1,6 @@
 //
 //  UnitsTests.swift
-//  Gate U1 of docs/registration-step-1.md: FormatoUnits against RosettaSciIO's own `convert_units` and Velox
+//  FormatoUnits against RosettaSciIO's own `convert_units` and Velox
 //  `_convert_scale_units` (Pint 0.26.1), on every call the public Velox files make, a seeded sweep and the
 //  planted cases (Fixtures/units-pins.json, tools/step-1/pins.py); and the planted closed forms of §4 as literals.
 //  D12: numerics are allowed a written tolerance; the asserts compare exactly today.
@@ -66,7 +66,7 @@ import FormatoCore
         #expect(inv.units == "1 / μm"); #expect(ulps(inv.value, 0.5268507664536564) <= 1)
         #expect(FormatoUnits.convertUnits(3, from: "µm", to: "nm").map { ulps($0, 3000) } ?? 99 <= 1)
         #expect(FormatoUnits.convertScaleUnits(1, units: "eV", factor: 2) == nil, "an unhandled unit is not converted")
-        // Gate B F1: where the value times the factor under- or overflows in the base unit, Pint raises; not converted, no trap.
+        // Where the value times the factor under- or overflows in the base unit, Pint raises; not converted, no trap.
         #expect(FormatoUnits.convertScaleUnits(5e-324, units: "nm", factor: 2) == nil)
         #expect(FormatoUnits.convertScaleUnits(1e308, units: "1/nm", factor: 2) == nil)
         #expect(FormatoUnits.convertScaleUnits(1e300, units: "Ym", factor: 64) == nil)

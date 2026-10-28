@@ -10,8 +10,8 @@ Listed first: functions slower than RosettaSciIO at their typical size (`docs/be
    read path in item 1.
 3. **Large rows of the benchmark are nightly** (`bench.py run --large`): decide threading for 4D loads above 100 MB there.
 
-Not done from the task list (each is a registration-sized change with its own pins):
-- The GMS EDS geometry (stage tilt, multi-segment list) so GMS absorption stops being refused: needs Paul's file (a GMS EDS `.dm4` with a spectrum image). Velox live and real times of `/Data/SpectrumImage` are read since 0.11.0 (`VeloxEMDReader.spectrumImageMetadata()`, the EDS signal's metadata); they are unvalidated against a second file, and an SI group with several streams or a disabled segment is covered only by planted files.
+Not done from the task list (each is a change that needs its own pins):
+- The GMS EDS geometry (stage tilt, multi-segment list) so GMS absorption stops being refused: needs a real file (a GMS EDS `.dm4` with a spectrum image). Velox live and real times of `/Data/SpectrumImage` are read since 0.11.0 (`VeloxEMDReader.spectrumImageMetadata()`, the EDS signal's metadata); they are unvalidated against a second file, and an SI group with several streams or a disabled segment is covered only by planted files.
 - TIFF series still refused by name: SubIFD series, OME, generic pyramids; a shaped description in a second ImageDescription tag (`description1`).
 - Header-less MIB; `small_datacube` rank-3 reshape; DM4 lazy 4D gather speed (the 4D row above is the eager load; the whole-scan Float32 tile case is the app's) and rank-3 or more than four dimensions; EMPAD `mode="acquire"` scan block; HDF5 version attributes int64 against int32; TIFF vendor branches (Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu), ImageJ "nm", FEI2 extended MRC header; unbounded allocation from file sizes in Velox (`markersPerFrame`, frame transformations, detector times).
 - Then-list: HSPY/ZSPY, compressed TIFF, NCEM/Berkeley EMD, SER/EMI, Bruker BCF, other writers.

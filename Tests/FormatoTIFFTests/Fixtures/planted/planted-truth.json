@@ -8935,7 +8935,7 @@
    "file": "unknown-tag-type.tif",
    "in_scope": true,
    "kind": "read",
-   "note": "Tag 65200 has datatype 99 (4 bytes). tifffile logs 'invalid data type 99' and drops the tag from the page: it is absent from the pins; the pixels read normally. A walker that keeps unknown types as bytes (registration 3.2) has one more tag than tifffile; the test asserts it and states why.",
+   "note": "Tag 65200 has datatype 99 (4 bytes). tifffile logs 'invalid data type 99' and drops the tag from the page: it is absent from the pins; the pixels read normally. A walker that keeps unknown types as bytes has one more tag than tifffile; the test asserts it and states why.",
    "pages": 1,
    "reading": {
     "bigtiff": false,

@@ -1,5 +1,5 @@
 #!/bin/zsh
-# The owner's Ceta TIFFs against RosettaSciIO and tifffile (registration step 2, sections 2 and 5): every `*Ceta.tif` under
+# The owner's Ceta TIFFs against RosettaSciIO and tifffile: every `*Ceta.tif` under
 # $MACEM_DATA/tem (default ../data), read by RosettaSciIO (`pins.py --owner`, into .build/owner-tiff, never committed) and by
 # FormatoTIFF (FormatoTIFFPinsTests, the owner test), compared exactly as the public pins are. Never part of the gate; its numbers
 # are cited with this log in docs/status.md, and every file read has a line in ../data/README.md.

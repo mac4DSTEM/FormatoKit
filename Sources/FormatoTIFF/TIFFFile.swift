@@ -1,6 +1,6 @@
 //
 //  TIFFFile.swift
-//  Role: the TIFF container (docs/registration-step-2.md §1.1, §3.2): the header (classic TIFF and BigTIFF, II and MM),
+//  Role: the TIFF container: the header (classic TIFF and BigTIFF, II and MM),
 //        every directory of the main chain, every tag with its code, type, count and value as stored, and the pixel
 //        data of a page (uncompressed, strips, contiguous, 1/3/4 samples of 8 to 64 bits). The tag walker is public, so
 //        a consumer reads any private tag (Thermo Fisher's Velox XML 34683, Gatan's 65027, TIA's) as it is stored.
@@ -190,14 +190,14 @@ public nonisolated struct TIFFFile: Sendable {
     /// `bytes2str` (used for INI text): up to the first NUL, UTF-8 or else cp1252, not stripped.
     static func bytes2str(_ raw: Data) -> String {
         let bytes = [UInt8](raw.prefix { $0 != 0 })
-        // Python's UTF-8 decode keeps a byte-order mark as U+FEFF, which Foundation drops: kept here (Gate B F15).
+        // Python's UTF-8 decode keeps a byte-order mark as U+FEFF, which Foundation drops: kept here.
         let bom = bytes.starts(with: [0xEF, 0xBB, 0xBF])
         guard let s = String(bytes: bytes, encoding: .utf8) else { return String(bytes: bytes, encoding: .windowsCP1252) ?? "" }
         return bom && !s.hasPrefix("\u{FEFF}") ? "\u{FEFF}" + s : s
     }
 
     /// Python's `str.splitlines()`: "\r\n", "\r", "\n", "\u{0B}", "\u{0C}", "\u{1C}"-"\u{1E}", "\u{85}", U+2028, U+2029
-    /// each end a line (Gate B F15).
+    /// each end a line.
     static func splitLines(_ s: String) -> [Substring] {
         s.split(omittingEmptySubsequences: false, whereSeparator: { c in
             c.isNewline || c == "\u{1C}" || c == "\u{1D}" || c == "\u{1E}" || c == "\u{0B}" || c == "\u{0C}"
@@ -230,7 +230,7 @@ nonisolated struct ByteReader {
         return bigEndian ? UInt64(bigEndian: v) : UInt64(littleEndian: v)
     }
     func u16(_ o: Int, _ name: String) throws -> UInt16 { try check(o, 2, name); return u16u(o) }
-    /// A BigTIFF count or offset as Int; one at or beyond 2^63 cannot address this file and is refused (Gate B F9).
+    /// A BigTIFF count or offset as Int; one at or beyond 2^63 cannot address this file and is refused.
     func int64(_ o: Int, _ name: String) throws -> Int {
         guard let v = Int(exactly: try u64(o, name)) else { throw TIFFError.truncated(name) }
         return v

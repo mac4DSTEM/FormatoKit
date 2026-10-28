@@ -1,5 +1,5 @@
 #!/bin/zsh
-# FormatoKit consumer checks (gate H1 and the public-API guard; then the README's own snippets): build tools/consumer-check (a separate package depending on
+# FormatoKit consumer checks (the bundled libhdf5 and the public-API guard; then the README's own snippets): build tools/consumer-check (a separate package depending on
 # FormatoKit by path) in DEBUG, as a consumer's Debug build does, with 0 warnings, and run it with FORMATO_HDF5_PATH
 # UNSET: its Velox reads then go through the libhdf5 FormatoKit ships. Exit 0 only if every check passed.
 set -euo pipefail
