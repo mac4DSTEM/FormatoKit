@@ -199,4 +199,3 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
             h5ogetInfoByName3: dlsym(handle, "H5Oget_info_by_name3").map { unsafeBitCast($0, to: H5OgetInfoByName3.self) })
     }
 }
-

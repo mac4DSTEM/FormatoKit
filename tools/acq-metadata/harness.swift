@@ -51,7 +51,6 @@ func dump(_ m: AcquisitionMetadata) -> [String: Any] {
      "mode": reading(m.mode), "unread": m.unread.map(\.rawValue).sorted()]
 }
 
-
 func axis(_ a: ImageAxis?) -> Any {
     guard let a else { return NSNull() }
     return ["origin": a.origin, "scale": a.scale, "units": a.units] as [String: Any]

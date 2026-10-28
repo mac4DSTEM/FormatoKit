@@ -18,7 +18,6 @@ import FormatoDM
     private func addTeardownBlock(_ block: @escaping () -> Void) { teardownBlocks.append(block) }
     deinit { for block in teardownBlocks.reversed() { block() } }
 
-
     // MARK: Synthetic DM4 writer
 
     private indirect enum Node {
