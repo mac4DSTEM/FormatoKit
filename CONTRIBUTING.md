@@ -43,7 +43,7 @@ FORMATO_LOCAL_XCFRAMEWORKS=1 swift test -c release
    `docs/parity.md` for format support).
 4. Make sure `swift test` passes.
 
-By contributing you agree that your work is licensed under GPL-3.0, like the rest of the package.
+By contributing you agree that your work is licensed under GPL-3.0-only, like the rest of the package.
 
 ## Reporting issues
 
