@@ -11,7 +11,7 @@ authors:
     given-names: Paul
 version: "0.11.0"
 date-released: "2026-10-22"
-license: GPL-3.0
+license: GPL-3.0-only
 repository-code: "https://github.com/mac4DSTEM/FormatoKit"
 keywords:
   - electron microscopy
