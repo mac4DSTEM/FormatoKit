@@ -201,7 +201,7 @@ func inflate(_ gz: URL, to destination: URL) throws {
 let msa = tests.appendingPathComponent("FormatoMSATests/Fixtures/public/example1.msa").path
 do {
     let spectrum = try MSAReader.read(path: msa)
-    check(spectrum.signal.data.shape == [20] && !spectrum.parameters.isEmpty, "MSAReader.read")
+    check(spectrum.signal.data.shape == [21] && !spectrum.parameters.isEmpty, "MSAReader.read")
 } catch { check(false, "MSAReader: \(error)") }
 do {
     let dir = FileManager.default.temporaryDirectory.appendingPathComponent("formato-consumer-4d-\(UUID().uuidString)")
