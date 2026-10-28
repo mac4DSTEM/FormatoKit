@@ -2,8 +2,13 @@
 
 # FormatoKit
 
+[![CI](https://github.com/mac4DSTEM/FormatoKit/actions/workflows/ci.yml/badge.svg)](https://github.com/mac4DSTEM/FormatoKit/actions/workflows/ci.yml)
+[![Docs](https://github.com/mac4DSTEM/FormatoKit/actions/workflows/docs.yml/badge.svg)](https://mac4dstem.github.io/FormatoKit/documentation/)
+[![Release](https://img.shields.io/github/v/tag/mac4DSTEM/FormatoKit?label=release&sort=semver)](https://github.com/mac4DSTEM/FormatoKit/tags)
+[![Licence: GPL-3.0](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
+
 A file-format library for macOS: the Mac counterpart of [RosettaSciIO](https://github.com/hyperspy/rosettasciio).
-A Swift package of readers (and later writers) for the electron-microscopy formats, one module per format over one data model,
+A Swift package of readers and writers for the electron-microscopy formats, one module per format over one data model,
 checked bit for bit against RosettaSciIO at commit `049e7d70` (its signals, axes, units and metadata; where it raises, so
 does FormatoKit, by name). No UI. Import it by tagged version. Swift 6 strict concurrency, headless, lazy where a file is
 large, one SwiftPM product per module.
@@ -13,7 +18,7 @@ large, one SwiftPM product per module.
 | `FormatoCore` | the data model: arrays as stored, axes, units (Pint's compact units, ported), metadata with provenance, lazy signals; cancellation; `FormatoPNG` (PNG with text chunks) | reads; `AcquisitionMetadata`, `GuardedXML`, `FormatoFileWrite` |
 | `FormatoDM` | Gatan DigitalMicrograph `.dm3` / `.dm4` (little-endian): every object as a signal, the tag tree, EDS and EELS spectrum images; complex, RGB and bool images are refused by name | reads; `AcquisitionMetadata.dm` |
 | `FormatoEMD` | Thermo Fisher Velox `.emd`: images as signals in their stored type, titled as RosettaSciIO titles them; EDS and EELS spectrum images as signals (`VeloxSpectrumImageSignals`, with `VeloxSpectrumImageOptions` for RosettaSciIO's six options); the sparse spectrum streams; single spectra (`VeloxSpectrumSignals`, 0.9.0, "DevelopersKit" files included). Not read: NCEM / Berkeley EMD | reads; `AcquisitionMetadata.velox` |
-| `FormatoHDF5` | `HDF5Datacube`: lazy rank-four numeric HDF5 / py4DSTEM EMD 1.0 hyperslabs in stored order, calibration axes, scalar metadata and lazy origin maps; the shared loader, lock and quit barrier. HSPY is not read. `BraggVectorsEMD`: write and read py4DSTEM BraggVectors (EMD 1.0 peak grid, shapes, calibration scalars), atomic publish, a hook for the caller's own attributes. EMD bundle writers: `EMDDatacubeWriter`, calibration and result maps on a write session, `HDF5NewFile` (design note, archived in the suite's private folder) | reads and writes, pinned; `HDF5RootAttributes` (sidecar file layer: write, read, publish) |
+| `FormatoHDF5` | `HDF5Datacube`: lazy rank-four numeric HDF5 / py4DSTEM EMD 1.0 hyperslabs in stored order, calibration axes, scalar metadata and lazy origin maps; the shared loader, lock and quit barrier. HSPY is not read. `BraggVectorsEMD`: write and read py4DSTEM BraggVectors (EMD 1.0 peak grid, shapes, calibration scalars), atomic publish, a hook for the caller's own attributes. EMD bundle writers: `EMDDatacubeWriter`, calibration and result maps on a write session, `HDF5NewFile` | reads and writes, pinned; `HDF5RootAttributes` (sidecar file layer: write, read, publish) |
 | `FormatoTIFF` | the TIFF container with a public tag walker (any private tag as stored); FEI, Gatan DM, ImageJ, tifffile-shaped and plain TIFF as signals. Compression, tiles and the other vendors' branches are refused by name | reads; `AcquisitionMetadata.tiff` (Velox XML, FEI INI, DM stream) |
 | `FormatoMRC` | MRC / MRC2014: `MRCReader` (lazy images and stacks as RosettaSciIO reads them), `MRCAppImage` (the consumer's Float32 reading), acquisition metadata (RosettaSciIO's 128-byte FEI sections, or the FEI1/FEI2 extended-header record) | reads, pinned |
 | `FormatoEMPAD` | EMPAD XML + raw, memory-mapped scan / image series with calibrations; 4D HDF5 later | reads, pinned |
@@ -23,13 +28,13 @@ large, one SwiftPM product per module.
 | `FormatoPeek` | `Peek.thumbnailFrame(url:maxPixels:)` and `Peek.summary(url:)`: one decimated frame and the header facts of a DM, Velox, TIFF, MRC, MSA or py4DSTEM HDF5 file, never more than one frame read (for Quick Look and Finder previews) | 0.10.0 |
 
 `docs/parity.md` is the checklist against RosettaSciIO's formats table and its reader options: what reads, what is pinned,
-what is next.
+what is next. The API reference (DocC, one page per module) is at <https://mac4dstem.github.io/FormatoKit/documentation/>.
 
 ## The first ten minutes
 
-Add the package to your `Package.swift`, from the 0.4.0 tag of the FormatoKit repository
-(`.package(url: <the repository URL>, from: "0.4.0")`, or `.package(path: "../FormatoKit")` for a clone), and the products
-you need (`FormatoDM`, `FormatoEMD`, `FormatoTIFF`; each brings `FormatoCore`).
+Add the package to your `Package.swift`
+(`.package(url: "https://github.com/mac4DSTEM/FormatoKit.git", from: "0.11.0")`, or `.package(path: "../FormatoKit")` for a
+clone), and the products you need (`FormatoDM`, `FormatoEMD`, `FormatoTIFF`; each brings `FormatoCore`).
 
 To try it on files you have in hand, use the ones in this repository: planted files made for the tests, under
 `Tests/*/Fixtures`. The snippets below name them relative to a clone's root, so run them from there. RosettaSciIO's own
@@ -128,7 +133,8 @@ attributes to the file, root or BraggVectors group.
 
 macOS 15 or later on Apple silicon, iOS 18 or later, Swift 6.2 tools (Xcode 26 or later). The pure-Swift modules (FormatoCore, FormatoDM,
 FormatoTIFF, FormatoMRC/EMPAD/MSA) build for iOS 18. FormatoHDF5 and FormatoEMD load the shipped arm64 macOS libhdf5 at run time: they
-are macOS-only in practice (on iOS they compile, and a Velox read refuses).
+are macOS-only in practice (on iOS they compile, and a Velox read refuses). The shipped binaries are arm64 only: an Intel
+Mac cannot load them.
 **libhdf5 is inside the package** (HDF5 2.1.1 with libsz and libaec, arm64, as three binary-target XCFrameworks that Xcode embeds and signs in an app), so `swift build`
 and `swift test` need nothing installed. The Velox reader looks for libhdf5 in this order: the path in the
 `FORMATO_HDF5_PATH` environment variable, the host app's `Frameworks` folder, the shipped copy (the `FormatoLibHDF5` framework), then the loader's path.
@@ -137,14 +143,14 @@ and `swift test` need nothing installed. The Velox reader looks for libhdf5 in t
 
 GPL-3.0 (`LICENSE`, `NOTICE`). The DM and Velox readers are inherited from an earlier GPL-3.0 package (named in `NOTICE`). The signal adapters port **RosettaSciIO**'s rules (GPL-3.0-or-later, the HyperSpy developers), which is also the
 oracle every reader is checked against; `FormatoUnits` ports what RosettaSciIO does with **Pint** (BSD-3-Clause) and carries
-Pint's conversion factors. HDF5, libaec and libsz are BSD-style (`Licenses/`). One GPL part makes the package GPL-3.0: an app
+Pint's conversion factors. HDF5, libaec and libsz are BSD-style; tifffile, whose TIFF rules FormatoTIFF ports, is BSD-3-Clause. Every third-party
+licence text is in `Licenses/`. One GPL part makes the package GPL-3.0: an app
 built on it must be GPL-compatible.
 
 ## Build and test
 
 ```sh
 tools/test.sh                      # the gate: swift test -c release, warning-checked
-tools/step-1/names.sh              # the 121 inherited test names are all here
 tools/consumer-check/run.sh        # two separate packages, public API only, Debug, no warnings, libhdf5 from the package;
                                    # the second runs this README's snippets
 ```
@@ -161,7 +167,7 @@ matches it. Tags are made by the maintainer; what each tag changes for a consume
   identity); checked only through `swift test` and the consumer check.
 - Big-endian DM files: none exists to test; not detected.
 - Velox: `lazy=True` is not ported; hostile grids and bin counts were run on FormatoKit only, not
-  refuted against RosettaSciIO. Registered deviations are listed in `docs/parity.md`.
+  refuted against RosettaSciIO. Deliberate deviations are listed in `docs/parity.md`.
 - Performance: `docs/benchmarks.md`. DM, TIFF and the 2048² Velox image read 1.2 to 2x slower than RosettaSciIO at typical sizes (`docs/open-items.md`); MIB, MSA, MRC, EMPAD, HDF5 4D and the Velox spectrum-image decode are at parity or faster.
 - TIFF: OME and SubIFD series, generic pyramids, compression and the other vendor branches are refused, not read (tifffile's shaped series are read since 0.11.0).
 - Validation: none. Agreement with RosettaSciIO and recovery of planted files are what is claimed.

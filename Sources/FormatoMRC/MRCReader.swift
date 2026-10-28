@@ -19,7 +19,9 @@
 import Foundation
 import FormatoCore
 
+/// An MRC or MRC2014 file read as RosettaSciIO reads it: one lazy signal, size-1 axes squeezed, axes in nanometres.
 public nonisolated struct MRCReader: Sendable {
+    /// The file's values, axes and metadata; nothing past the header is read until it is loaded or sliced.
     public let signal: FormatoLazySignal
 
     /// Opens the file at `path` lazily (the header and nothing else is read).

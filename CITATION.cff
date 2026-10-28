@@ -9,7 +9,8 @@ abstract: >-
 authors:
   - family-names: Lobpreis
     given-names: Paul
-    # TODO(Paul): add orcid: "https://orcid.org/…" and affiliation: "…" here
+version: "0.11.0"
+date-released: "2026-10-22"
 license: GPL-3.0
 repository-code: "https://github.com/mac4DSTEM/FormatoKit"
 keywords:
