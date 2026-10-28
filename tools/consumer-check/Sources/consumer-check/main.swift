@@ -210,13 +210,13 @@ do {
     let empad = tests.appendingPathComponent("FormatoEMPADTests/Fixtures")
     try inflate(empad.appendingPathComponent("scan_x3_y2.raw.gz"), to: dir.appendingPathComponent("scan_x3_y2.raw"))
     try FileManager.default.copyItem(at: empad.appendingPathComponent("modern.xml"), to: dir.appendingPathComponent("modern.xml"))
-    check(try EMPADReader(path: dir.appendingPathComponent("modern.xml").path).signal.shape == [2, 3, 128, 128], "EMPADReader")
+    check(try EMPADReader(path: dir.appendingPathComponent("modern.xml").path).signal.array.shape == [2, 3, 128, 128], "EMPADReader")
     let mib = tests.appendingPathComponent("FormatoMIBTests/Fixtures")
     try inflate(mib.appendingPathComponent("processed12-trigger.mib.gz"), to: dir.appendingPathComponent("processed12-trigger.mib"))
     try FileManager.default.copyItem(at: mib.appendingPathComponent("processed12-trigger.hdr"),
                                      to: dir.appendingPathComponent("processed12-trigger.hdr"))
     let merlin = try MIBReader(path: dir.appendingPathComponent("processed12-trigger.mib").path)
-    check(merlin.pixelCode == "U16" && merlin.signal.shape == [2, 3, 3, 4], "MIBReader")
+    check(merlin.pixelCode == "U16" && merlin.signal.array.shape == [2, 3, 3, 4], "MIBReader")
     check(FormatoLoader.sniff(path: dir.appendingPathComponent("processed12-trigger.mib").path) == .merlinMIB, "FormatoLoader.sniff MIB")
 } catch { check(false, "EMPAD and MIB: \(error)") }
 check(FormatoLoader.sniff(path: velox) == .veloxEMD && FormatoLoader.sniff(path: msa) == .msa, "FormatoLoader.sniff")
