@@ -361,7 +361,7 @@ def cmd_report(args):
             continue
         k, p = c.get("kit"), c.get("python")
         if c.get("nightly") or not k or not p:
-            rows.append(f"| {label} | {size} | {tier} | nightly | nightly | nightly | | |")
+            rows.append(f"| {label} | {size} | {tier} | not measured yet | not measured yet | not measured yet | | |")
             continue
         if "error" in k or "error" in p:
             rows.append(f"| {label} | {size} | {tier} | {k.get('error', 'ok')} | {p.get('error', 'ok')} | | | |")
