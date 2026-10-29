@@ -80,7 +80,7 @@ public nonisolated final class HDF5SlabReader: @unchecked Sendable {
     /// The same slab written into `buffer`, which must hold at least `count`'s elements times the element size. No allocation
     /// beyond HDF5's own: the loop entry for one pattern per call.
     public func read(start: [Int], count: [Int], into buffer: UnsafeMutableRawBufferPointer) throws {
-        do { try FormatoArray.checkSlab(start: start, count: count, shape: shape) } catch {
+        do { try FormatoArray.validateSlab(start: start, count: count, shape: shape) } catch {
             throw HDF5FileError.invalidArgument("slab \(start) of \(count) is outside \(path) of shape \(shape)")
         }
         let elements = try FormatoArray.elementCount(count)

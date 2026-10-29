@@ -713,7 +713,7 @@ public nonisolated struct TIFFSeriesArray: FormatoLazyArray {
     }
 
     public func read(start: [Int], count: [Int]) throws -> FormatoArray {
-        try FormatoArray.checkSlab(start: start, count: count, shape: shape)
+        try FormatoArray.validateSlab(start: start, count: count, shape: shape)
         let rank = shape.count
         let el = dataType.byteSize
         guard rowsAndColumns else { return try readFlat(start: start, count: count) }

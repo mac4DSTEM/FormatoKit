@@ -171,7 +171,7 @@ public nonisolated struct VeloxImageArray: FormatoLazyArray {
     public let dataType: FormatoDataType
 
     public func read(start: [Int], count: [Int]) throws -> FormatoArray {
-        try FormatoArray.checkSlab(start: start, count: count, shape: shape)
+        try FormatoArray.validateSlab(start: start, count: count, shape: shape)
         let frameShape = Array(shape.suffix(2))
         let frames = stacked ? Array(start[0]..<(start[0] + count[0])) : [0]
         var out = Data()

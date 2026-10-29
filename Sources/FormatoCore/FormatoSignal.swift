@@ -87,7 +87,7 @@ public nonisolated struct FormatoFileArray: FormatoLazyArray {
     }
 
     public func read(start: [Int], count: [Int]) throws -> FormatoArray {
-        try FormatoArray.checkSlab(start: start, count: count, shape: shape)
+        try FormatoArray.validateSlab(start: start, count: count, shape: shape)
         let size = dataType.byteSize
         let total = try FormatoArray.elementCount(count) * size
         let fd = open(path, O_RDONLY)
@@ -97,7 +97,7 @@ public nonisolated struct FormatoFileArray: FormatoLazyArray {
         var failure: FormatoReadError?
         out.withUnsafeMutableBytes { dst in
             var written = 0
-            FormatoArray.forEachRun(start: start, count: count, shape: shape) { element, length in
+            FormatoArray.forEachContiguousRun(start: start, count: count, shape: shape) { element, length in
                 guard failure == nil else { return }
                 let want = length * size
                 var done = 0

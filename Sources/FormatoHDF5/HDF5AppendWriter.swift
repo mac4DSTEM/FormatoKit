@@ -239,7 +239,7 @@ public nonisolated final class HDF5WriteSession {
                 guard start.count == found.shape.count, array.shape.count == found.shape.count else {
                     throw HDF5FileError.invalidArgument("rank \(array.shape.count) at \(start) into \(path) of shape \(found.shape)")
                 }
-                do { try FormatoArray.checkSlab(start: start, count: array.shape, shape: found.shape) } catch {
+                do { try FormatoArray.validateSlab(start: start, count: array.shape, shape: found.shape) } catch {
                     throw HDF5FileError.invalidArgument("slab \(start) of \(array.shape) is outside \(path) of shape \(found.shape)")
                 }
                 guard !array.bytes.isEmpty else { return }

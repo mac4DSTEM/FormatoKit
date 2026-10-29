@@ -176,7 +176,7 @@ private struct DM4GatherArray: FormatoLazyArray {
     let mapping: DM4Mapping; let offset: Int; let storedType: FormatoDataType; let dataType: FormatoDataType
     let storedShape: [Int]; let shape: [Int]; let permutation: [Int]
     func read(start: [Int], count: [Int]) throws -> FormatoArray {
-        try FormatoArray.checkSlab(start: start, count: count, shape: shape); try mapping.checkSize()
+        try FormatoArray.validateSlab(start: start, count: count, shape: shape); try mapping.checkSize()
         let elements = try FormatoArray.elementCount(count)
         let total = try FormatoArray.elementCount(count + [dataType.byteSize])
         var out = Data(count: total)
@@ -191,7 +191,7 @@ private struct DM4GatherArray: FormatoLazyArray {
         out.withUnsafeMutableBytes { (raw: UnsafeMutableRawBufferPointer) in
             var dst = raw.baseAddress!
             // Rows of the last output axis, left to right in the slab: one source start per row, then a constant stride.
-            FormatoArray.forEachRun(start: start, count: count, shape: shape) { first, length in
+            FormatoArray.forEachContiguousRun(start: start, count: count, shape: shape) { first, length in
                 var element = first, remaining = length
                 while remaining > 0 {
                     let column = element % inner
