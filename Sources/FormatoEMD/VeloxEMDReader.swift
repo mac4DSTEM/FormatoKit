@@ -621,6 +621,18 @@ public nonisolated struct VeloxEMDReader: Sendable {
     /// A sanity cap on the frames a file may declare (2^20).
     private static let maximumFrames = 1 << 20
 
+    /// A sanity cap on the bytes of a whole `Metadata` block the per-frame reads walk (1 GiB): every Velox file measured has 60000
+    /// rows, so this is about 17900 frames, while a crafted block within the frame and column caps could declare terabytes.
+    private static let maximumMetadataBytes = 1 << 30
+
+    /// Refuses a `Metadata` block of `rows` × `columns` bytes past `maximumMetadataBytes` before its first column is read.
+    private static func requireMetadataBytes(rows: Int, columns: Int, group: String) throws {
+        let (total, overflow) = rows.multipliedReportingOverflow(by: columns)
+        guard overflow || total > maximumMetadataBytes else { return }
+        let size = overflow ? "\(rows) × \(columns)" : "\(total)"
+        throw VeloxEMDError.readFailed("a Metadata block of \(size) bytes in \(group) (the limit is \(maximumMetadataBytes))")
+    }
+
     /// Refuses `count` frames declared by `what` of the stream at `group` before anything is allocated or looped from it: every
     /// frame holds at least one value of the stream's `Data` (its pixel markers), so a stream of n values has at most n frames,
     /// and never more than `maximumFrames`.
@@ -967,9 +979,10 @@ public nonisolated struct VeloxEMDReader: Sendable {
             guard let head = file.children(of: "/Data/SpectrumStream").first else { throw VeloxEMDError.noSpectrumStream }
             let group = "/Data/SpectrumStream/" + head
             let dataset = try file.open(group + "/Metadata")
-            let columns = dataset.dims.count == 2 ? dataset.dims[1] : 0
+            let rows = dataset.dims.count == 2 ? dataset.dims[0] : 0, columns = dataset.dims.count == 2 ? dataset.dims[1] : 0
             file.close(dataset)
             try Self.requireFrames(columns, "a Metadata block", group: group, file: file)
+            try Self.requireMetadataBytes(rows: rows, columns: columns, group: group)
             var out: [VeloxScanTransformation?] = []
             out.reserveCapacity(columns)
             for column in 0..<columns {
@@ -988,9 +1001,10 @@ public nonisolated struct VeloxEMDReader: Sendable {
             guard let head = file.children(of: "/Data/SpectrumStream").first else { throw VeloxEMDError.noSpectrumStream }
             let group = "/Data/SpectrumStream/" + head
             let dataset = try file.open(group + "/Metadata")
-            let columns = dataset.dims.count == 2 ? dataset.dims[1] : 0
+            let rows = dataset.dims.count == 2 ? dataset.dims[0] : 0, columns = dataset.dims.count == 2 ? dataset.dims[1] : 0
             file.close(dataset)
             try Self.requireFrames(columns, "a Metadata block", group: group, file: file)
+            try Self.requireMetadataBytes(rows: rows, columns: columns, group: group)
             var out: [[(name: String, realTime: Double?, liveTime: Double?)]] = []
             for column in 0..<columns {
                 let m = try VeloxMetadata.parse(jsonData: file.readMetadataJSON(group: group, column: column))
