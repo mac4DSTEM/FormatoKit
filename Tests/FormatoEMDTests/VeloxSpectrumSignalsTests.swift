@@ -1,4 +1,5 @@
 import Testing
+import Darwin
 import Foundation
 import FormatoCore
 import FormatoEMD
@@ -96,10 +97,26 @@ extension VeloxEMDSerialized {
                             wantedKeys.insert("General.time_zone")
                             let zoneName = signal.metadata["General.time_zone"]?.value.text
                             #expect(zoneName != nil, Comment(rawValue: label))
-                            // In the process's own zone (zone nil) the name is the tz database's, as `tzlocal().tzname()` gives.
+                            // In the process's own zone (zone nil) the name is the tz database's for TODAY, as
+                            // `tzlocal().tzname(datetime.today())` gives: `time.tzname[isdst]`. The pin froze the name of the day it was
+                            // generated, so it is one of the zone's two names, and today's name is the one Python would give now.
                             if TimeZone.current.identifier == zone {
                                 let own = try read(path: pathOf(name), zone: nil)
-                                #expect(own.first?.metadata["General.time_zone"]?.value.text == general["time_zone"] as? String, Comment(rawValue: label))
+                                // The zone's two libc names (`time.tzname`), from a January and a July day of this year; today's
+                                // is the one whose day has today's daylight-saving state.
+                                let calendar = Calendar(identifier: .gregorian)
+                                let year = calendar.component(.year, from: Date())
+                                let days = [1, 7].map { calendar.date(from: DateComponents(year: year, month: $0, day: 15))! }
+                                let names = days.map { day -> String in
+                                    var t = time_t(day.timeIntervalSince1970)
+                                    var parts = tm()
+                                    localtime_r(&t, &parts)
+                                    return String(cString: parts.tm_zone)
+                                }
+                                let isDST = TimeZone.current.isDaylightSavingTime(for: Date())
+                                let today = names[days.firstIndex { TimeZone.current.isDaylightSavingTime(for: $0) == isDST } ?? 0]
+                                #expect(names.contains(general["time_zone"] as? String ?? ""), Comment(rawValue: label))
+                                #expect(own.first?.metadata["General.time_zone"]?.value.text == today, Comment(rawValue: label))
                                 #expect(own.first?.metadata["General.time"]?.value.text == general["time"] as? String, Comment(rawValue: label))
                             }
                         }
