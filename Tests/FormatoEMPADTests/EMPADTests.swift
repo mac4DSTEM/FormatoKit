@@ -50,7 +50,7 @@ private func temporaryPair() throws -> URL {
         #expect(eager.signalType == "electron_diffraction")
         #expect(eager.axes.count == pin.axes.count)
         for (actual, expected) in zip(eager.axes, pin.axes) {
-            #expect(actual.isBitwiseEqual(to: FormatoAxis(name: expected.name, size: expected.size,
+            #expect(actual.bitwiseEquals(FormatoAxis(name: expected.name, size: expected.size,
                 scale: expected.scale, offset: expected.offset, units: expected.units ?? "", navigate: expected.navigate)))
         }
         let expectedMetadata = pin.metadata.flatMap { group, values in values.map { (group + "." + $0.key, $0.value) } }

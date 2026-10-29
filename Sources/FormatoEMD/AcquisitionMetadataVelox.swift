@@ -50,12 +50,12 @@ nonisolated extension AcquisitionMetadata {
         // Stage: tilts are radians in the file and degrees rounded to 3 decimals in the mapping (:951-960); the position
         // is metres as stored, rounded to 6 decimals (:961-972). Each position coordinate is read alone, as the mapping reads it.
         let degreesNote = "degrees from the stored radians, rounded to 3 decimals, as RosettaSciIO"
-        out.stageTiltAlphaDeg = m.stageAlphaRadians.map { MetadataReading(pythonRound(numpyDegrees($0), 3), note: degreesNote) }
-        out.stageTiltBetaDeg = m.stageBetaRadians.map { MetadataReading(pythonRound(numpyDegrees($0), 3), note: degreesNote) }
+        out.stageTiltAlphaDeg = m.stageAlphaRadians.map { MetadataReading(roundLikePython(degreesLikeNumPy($0), 3), note: degreesNote) }
+        out.stageTiltBetaDeg = m.stageBetaRadians.map { MetadataReading(roundLikePython(degreesLikeNumPy($0), 3), note: degreesNote) }
         let metresNote = "metres as stored, rounded to 6 decimals, as RosettaSciIO"
-        out.stageX = m.stageXMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
-        out.stageY = m.stageYMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
-        out.stageZ = m.stageZMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
+        out.stageX = m.stageXMeters.map { MetadataReading(roundLikePython($0, 6), note: metresNote) }
+        out.stageY = m.stageYMeters.map { MetadataReading(roundLikePython($0, 6), note: metresNote) }
+        out.stageZ = m.stageZMeters.map { MetadataReading(roundLikePython($0, 6), note: metresNote) }
         // The pixel size at the specimen: RosettaSciIO's axis scale, `PixelUnitX` for both axes as it reads them (rows from the
         // height, columns from the width). A pixel size that is not a finite positive number is no calibration (nil).
         if let size = m.pixelSizeMeters, size.width.isFinite, size.width > 0, size.height.isFinite, size.height > 0,

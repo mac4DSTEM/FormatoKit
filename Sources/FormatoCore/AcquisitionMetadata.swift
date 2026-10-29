@@ -147,13 +147,21 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     }
 
     /// Python's `round(x, digits)` of a double: the exact decimal value rounded half-even, as `String(format:)` does.
-    public static func pythonRound(_ x: Double, _ digits: Int) -> Double {
+    package static func roundLikePython(_ x: Double, _ digits: Int) -> Double {
         guard x.isFinite else { return x }
         return Double(String(format: "%.\(digits)f", x)) ?? x
     }
 
     /// NumPy's `degrees` of a double: `x * (180 / pi)`.
-    public static func numpyDegrees(_ x: Double) -> Double { x * (180.0 / Double.pi) }
+    package static func degreesLikeNumPy(_ x: Double) -> Double { x * (180.0 / Double.pi) }
+
+    /// Python's `round(x, digits)` of a double.
+    @available(*, deprecated, message: "An internal helper of the kit; it becomes package-only in 0.13.0.")
+    public static func pythonRound(_ x: Double, _ digits: Int) -> Double { roundLikePython(x, digits) }
+
+    /// NumPy's `degrees` of a double.
+    @available(*, deprecated, message: "An internal helper of the kit; it becomes package-only in 0.13.0.")
+    public static func numpyDegrees(_ x: Double) -> Double { degreesLikeNumPy(x) }
 
     /// Rule (a): text with surrounding whitespace removed, or nil when nothing is left.
     public static func text(_ s: String?) -> String? {

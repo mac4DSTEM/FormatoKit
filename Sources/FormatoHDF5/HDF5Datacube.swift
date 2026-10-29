@@ -83,7 +83,7 @@ public nonisolated struct HDF5Datacube: FormatoLazyArray {
 
     /// Read a rectangular hyperslab in stored order, preserving the numeric type and bits.
     public func read(start: [Int], count: [Int]) throws -> FormatoArray {
-        try FormatoArray.checkSlab(start: start, count: count, shape: shape)
+        try FormatoArray.validateSlab(start: start, count: count, shape: shape)
         return try storage.read(datasetPath, shape: shape, type: dataType, start: start, count: count)
     }
 }
@@ -99,7 +99,7 @@ private nonisolated struct CubeArray: FormatoLazyArray {
     let shape: [Int]
     let dataType: FormatoDataType
     func read(start: [Int], count: [Int]) throws -> FormatoArray {
-        try FormatoArray.checkSlab(start: start, count: count, shape: shape)
+        try FormatoArray.validateSlab(start: start, count: count, shape: shape)
         return try storage.read(path, shape: shape, type: dataType, start: start, count: count)
     }
 }

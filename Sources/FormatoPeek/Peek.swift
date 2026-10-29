@@ -338,7 +338,7 @@ private nonisolated struct StoredPlane: FormatoLazyArray {
         self.reader = reader; self.datasetPath = datasetPath; shape = info.shape; dataType = type
     }
     func read(start: [Int], count: [Int]) throws -> FormatoArray {
-        try FormatoArray.checkSlab(start: start, count: count, shape: shape)
+        try FormatoArray.validateSlab(start: start, count: count, shape: shape)
         return try reader.readDataset(datasetPath, start: start, count: count)
     }
 }

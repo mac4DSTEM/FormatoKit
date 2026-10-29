@@ -230,10 +230,10 @@ private struct EMPADArray: FormatoLazyArray {
     let shape: [Int]
     var dataType: FormatoDataType { .float32 }
     func read(start: [Int], count: [Int]) throws -> FormatoArray {
-        try FormatoArray.checkSlab(start: start, count: count, shape: shape)
+        try FormatoArray.validateSlab(start: start, count: count, shape: shape)
         try mapping.checkSize()
         var bytes = Data(capacity: try FormatoArray.elementCount(count) * 4)
-        FormatoArray.forEachRun(start: start, count: count, shape: shape) { element, length in
+        FormatoArray.forEachContiguousRun(start: start, count: count, shape: shape) { element, length in
             let frame = element / (128 * 128)
             let pixel = element % (128 * 128)
             bytes.append(mapping.pointer.advanced(by: (frame * 130 * 128 + pixel) * 4).assumingMemoryBound(to: UInt8.self), count: length * 4)
