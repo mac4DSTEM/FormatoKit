@@ -1,11 +1,16 @@
 // The consumer check's body: public API only, against the committed fixtures. Prints one line per failed check and a summary
 // `consumer-check summary: N checks, F failed`; exit 1 on any failure.
 import Foundation
+import Formato
 import FormatoCore
 import FormatoDM
 import FormatoEMD
+import FormatoEMPAD
 import FormatoHDF5
+import FormatoMIB
 import FormatoMRC
+import FormatoMSA
+import FormatoPeek
 import FormatoTIFF
 
 func need<T>(_ value: T?) throws -> T {
@@ -180,6 +185,50 @@ do {
 } catch { check(false, "EMD bundle and PNG: \(error)") }
 check(FormatoUnits.convertScaleUnits(1.5e-9, units: "m", factor: 100)?.units == "nm", "FormatoUnits")
 check(FormatoUnits.parse("µm")?.shortForm == "μm", "units parse")
+
+// Every other product (MSA, EMPAD, MIB, the Formato loader, FormatoPeek): one public read each, on the committed fixtures.
+func inflate(_ gz: URL, to destination: URL) throws {
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: "/usr/bin/gzip")
+    process.arguments = ["-dc", gz.path]
+    let pipe = Pipe(); process.standardOutput = pipe
+    try process.run()
+    let data = pipe.fileHandleForReading.readDataToEndOfFile()
+    process.waitUntilExit()
+    guard process.terminationStatus == 0 else { throw FormatoReadError.unsupported("gzip -dc \(gz.lastPathComponent) failed") }
+    try data.write(to: destination)
+}
+let msa = tests.appendingPathComponent("FormatoMSATests/Fixtures/public/example1.msa").path
+do {
+    let spectrum = try MSAReader.read(path: msa)
+    check(spectrum.signal.data.shape == [21] && !spectrum.parameters.isEmpty, "MSAReader.read")
+} catch { check(false, "MSAReader: \(error)") }
+do {
+    let dir = FileManager.default.temporaryDirectory.appendingPathComponent("formato-consumer-4d-\(UUID().uuidString)")
+    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: dir) }
+    let empad = tests.appendingPathComponent("FormatoEMPADTests/Fixtures")
+    try inflate(empad.appendingPathComponent("scan_x3_y2.raw.gz"), to: dir.appendingPathComponent("scan_x3_y2.raw"))
+    try FileManager.default.copyItem(at: empad.appendingPathComponent("modern.xml"), to: dir.appendingPathComponent("modern.xml"))
+    check(try EMPADReader(path: dir.appendingPathComponent("modern.xml").path).signal.array.shape == [2, 3, 128, 128], "EMPADReader")
+    let mib = tests.appendingPathComponent("FormatoMIBTests/Fixtures")
+    try inflate(mib.appendingPathComponent("processed12-trigger.mib.gz"), to: dir.appendingPathComponent("processed12-trigger.mib"))
+    try FileManager.default.copyItem(at: mib.appendingPathComponent("processed12-trigger.hdr"),
+                                     to: dir.appendingPathComponent("processed12-trigger.hdr"))
+    let merlin = try MIBReader(path: dir.appendingPathComponent("processed12-trigger.mib").path)
+    check(merlin.pixelCode == "U16" && merlin.signal.array.shape == [2, 3, 3, 4], "MIBReader")
+    check(FormatoLoader.sniff(path: dir.appendingPathComponent("processed12-trigger.mib").path) == .merlinMIB, "FormatoLoader.sniff MIB")
+} catch { check(false, "EMPAD and MIB: \(error)") }
+check(FormatoLoader.sniff(path: velox) == .veloxEMD && FormatoLoader.sniff(path: msa) == .msa, "FormatoLoader.sniff")
+do {
+    let signals = try FormatoLoader.load(path: planted)
+    check(!signals.isEmpty && signals.contains { (try? $0.get()) != nil }, "FormatoLoader.load")
+} catch { check(false, "FormatoLoader.load: \(error)") }
+do {
+    let frame = try Peek.thumbnailFrame(url: URL(fileURLWithPath: planted), maxPixels: 64)
+    check(frame.width > 0 && frame.height > 0 && frame.pixels.count == frame.width * frame.height, "Peek.thumbnailFrame")
+    check(try Peek.summary(url: URL(fileURLWithPath: planted)).format.isEmpty == false, "Peek.summary")
+} catch { check(false, "FormatoPeek: \(error)") }
 
 print("consumer-check summary: \(checks) checks, \(failed) failed")
 exit(failed == 0 ? 0 : 1)

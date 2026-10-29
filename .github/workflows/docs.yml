@@ -2,7 +2,7 @@
 # published to GitHub Pages at https://mac4dstem.github.io/FormatoKit/documentation/ on every tag.
 # On a pull request the site is built and uploaded as an artifact only, so a broken catalog fails before the tag.
 #
-# No swift-docc-plugin: the kit takes no package dependencies. `xcodebuild docbuild` builds the archives
+# No swift-docc-plugin: the kit adds no package dependency for its docs. `xcodebuild docbuild` builds the archives
 # from the package's own schemes; `docc merge` (Xcode 16+) joins them. Needs Pages enabled with source "GitHub Actions"
 # (repository Settings > Pages). Copied from CuboKit's pattern; the module list is read from the .docc catalogs.
 name: Docs
@@ -16,23 +16,24 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: docs-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Pinned like the apps: the macos-26 image's Xcode 26.6 (Swift 6.3, macOS 26 SDK). Bump on purpose.
+  DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-26
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
-      - name: Select the newest Xcode
+      - name: Toolchain on record
         run: |
-          xcode=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
-          sudo xcode-select -s "$xcode"
+          xcode-select -p
           xcodebuild -version
       - name: Build the site
         run: tools/build-docs.sh .docs-site /FormatoKit
@@ -44,6 +45,9 @@ jobs:
     needs: build
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

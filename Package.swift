@@ -13,8 +13,7 @@
 // so an app that embeds the kit gets them embedded and signed with its own identity at archive time. The readers still dlopen libhdf5.
 // Built by tools/xcframework/build.sh; the release assets are the zips it writes (the checksums below are its checksums.txt).
 // With FORMATO_LOCAL_XCFRAMEWORKS set (tools/test.sh, CI and the consumer check set it) the targets are the local build in dist/xcframeworks.
-// macOS 15 / iOS 18 (0.2.1). FormatoHDF5 and FormatoEMD load libhdf5 at run time and are macOS-only in practice: on iOS they
-// build (the binary targets are macOS-only and conditional), but a Velox read refuses (no libhdf5 for iOS). The other modules are pure Swift.
+// macOS 15 and later only: FormatoCore's guarded XML uses Foundation's macOS-only `XMLDocument`, and libhdf5 ships for macOS.
 import PackageDescription
 
 let settings: [SwiftSetting] = [
@@ -42,7 +41,7 @@ let binaryTargets: [Target] = xcframeworks.map { framework in
 
 let package = Package(
     name: "FormatoKit",
-    platforms: [.macOS(.v15), .iOS(.v18)],
+    platforms: [.macOS(.v15)],
     products: [
         .library(name: "FormatoCore", targets: ["FormatoCore"]),
         .library(name: "FormatoDM", targets: ["FormatoDM"]),
