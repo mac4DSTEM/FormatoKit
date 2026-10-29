@@ -112,11 +112,11 @@ public nonisolated struct FormatoArray: Sendable, Equatable {
     /// The hyperslab `[start, start + count)` per dimension, cut from this array in C order: the eager reference every lazy
     /// read is compared with (`ArrayTests`).
     public func slab(start: [Int], count: [Int]) throws -> FormatoArray {
-        try FormatoArray.checkSlab(start: start, count: count, shape: shape)
+        try FormatoArray.validateSlab(start: start, count: count, shape: shape)
         let size = dataType.byteSize
         var out = Data(capacity: try FormatoArray.elementCount(count) * size)
         bytes.withUnsafeBytes { src in
-            FormatoArray.forEachRun(start: start, count: count, shape: shape) { element, length in
+            FormatoArray.forEachContiguousRun(start: start, count: count, shape: shape) { element, length in
                 out.append(contentsOf: UnsafeRawBufferPointer(rebasing: src[(element * size)..<((element + length) * size)]))
             }
         }
@@ -124,7 +124,7 @@ public nonisolated struct FormatoArray: Sendable, Equatable {
     }
 
     /// Throws unless `start` and `count` have the array's rank and lie inside it (a zero count is allowed).
-    public static func checkSlab(start: [Int], count: [Int], shape: [Int]) throws {
+    package static func validateSlab(start: [Int], count: [Int], shape: [Int]) throws {
         guard start.count == shape.count, count.count == shape.count,
               zip(zip(start, count), shape).allSatisfy({ s, n in s.0 >= 0 && s.1 >= 0 && s.0 <= n && s.1 <= n - s.0 })
         else { throw FormatoArrayError.slabOutOfBounds(start: start, count: count, shape: shape) }
@@ -132,7 +132,7 @@ public nonisolated struct FormatoArray: Sendable, Equatable {
 
     /// Calls `body(firstElement, length)` for each contiguous run of the slab, in C order: a run is one row of the last
     /// dimension (the whole slab when it is the whole array). Element indices are into the full array.
-    public static func forEachRun(start: [Int], count: [Int], shape: [Int], _ body: (Int, Int) -> Void) {
+    package static func forEachContiguousRun(start: [Int], count: [Int], shape: [Int], _ body: (Int, Int) -> Void) {
         let rank = shape.count
         if rank == 0 { body(0, 1); return }
         if count.contains(0) { return }
@@ -153,5 +153,17 @@ public nonisolated struct FormatoArray: Sendable, Equatable {
             }
             if k < 0 { return }
         }
+    }
+
+    /// Throws unless `start` and `count` have the array's rank and lie inside it (a zero count is allowed).
+    @available(*, deprecated, message: "An internal helper of the kit; it becomes package-only in 0.13.0. Use slab(start:count:), which checks the bounds.")
+    public static func checkSlab(start: [Int], count: [Int], shape: [Int]) throws {
+        try validateSlab(start: start, count: count, shape: shape)
+    }
+
+    /// Calls `body(firstElement, length)` for each contiguous run of the slab, in C order.
+    @available(*, deprecated, message: "An internal helper of the kit; it becomes package-only in 0.13.0. Use slab(start:count:).")
+    public static func forEachRun(start: [Int], count: [Int], shape: [Int], _ body: (Int, Int) -> Void) {
+        forEachContiguousRun(start: start, count: count, shape: shape, body)
     }
 }

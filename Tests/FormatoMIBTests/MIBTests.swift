@@ -37,7 +37,7 @@ private func directory() throws -> URL {
         #expect(eager.data.bytes == (try inflate(pin.name + ".data.gz")))
         if !pin.app {
             #expect(eager.axes.count == pin.axes.count)
-            for (a, e) in zip(eager.axes, pin.axes) { #expect(a.isBitwiseEqual(to: FormatoAxis(name: e.name, size: e.size, scale: e.scale, offset: e.offset, units: e.units, navigate: e.navigate))) }
+            for (a, e) in zip(eager.axes, pin.axes) { #expect(a.bitwiseEquals(FormatoAxis(name: e.name, size: e.size, scale: e.scale, offset: e.offset, units: e.units, navigate: e.navigate))) }
             let entries = pin.metadata.flatMap { g,v in v.map { (g + "." + $0.key, $0.value) } }
             #expect(eager.metadata.keys.sorted() == entries.map(\.0).sorted())
             for (key, value) in entries {

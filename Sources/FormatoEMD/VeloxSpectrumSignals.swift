@@ -240,7 +240,7 @@ private nonisolated struct VeloxSpectrumRead {
             guard let x = veloxPythonFloat(raw) else { throw raises("\(path): float() refuses it") }
             md.set(entry(key, .text(format(x)), units: units, source: source + path, rule: rule))
         }
-        let degrees = { (x: Double) in AcquisitionMetadata.pythonRound(AcquisitionMetadata.numpyDegrees(x), 3) }
+        let degrees = { (x: Double) in AcquisitionMetadata.roundLikePython(AcquisitionMetadata.degreesLikeNumPy(x), 3) }
         try number("Optics.AccelerationVoltage", "Acquisition_instrument.TEM.beam_energy", units: "kV", rule: "rsciio emd velox mapping: float(x) / 1e3") { $0 / 1e3 }
         try number("Optics.CameraLength", "Acquisition_instrument.TEM.camera_length", units: "mm", rule: "rsciio emd velox mapping: float(x) * 1e3") { $0 * 1e3 }
         try number("CustomProperties.StemMagnification.value", "Acquisition_instrument.TEM.magnification", rule: "rsciio emd velox mapping: float") { $0 }
@@ -255,7 +255,7 @@ private nonisolated struct VeloxSpectrumRead {
         try number("Stage.BetaTilt", "Acquisition_instrument.TEM.Stage.tilt_beta", units: "°", rule: "rsciio emd velox mapping: round(np.degrees(float(x)), 3)", degrees)
         for axis in ["x", "y", "z"] {
             try number("Stage.Position.\(axis)", "Acquisition_instrument.TEM.Stage.\(axis)", units: "m", rule: "rsciio emd velox mapping: round(float(x), 6)") {
-                AcquisitionMetadata.pythonRound($0, 6)
+                AcquisitionMetadata.roundLikePython($0, 6)
             }
         }
         if let frames = node("ImportedDataParameter.Number_of_frames"), !(frames is NSNull) {
@@ -270,11 +270,11 @@ private nonisolated struct VeloxSpectrumRead {
                          rule: "rsciio emd velox mapping: as stored"))
         }
         try number("DetectorMetadata.ElevationAngle", "Acquisition_instrument.TEM.Detector.EDS.elevation_angle", units: "°",
-                   rule: "rsciio emd velox mapping: round(float(x), 3)") { AcquisitionMetadata.pythonRound($0, 3) }
+                   rule: "rsciio emd velox mapping: round(float(x), 3)") { AcquisitionMetadata.roundLikePython($0, 3) }
         try number("DetectorMetadata.Gain", "Signal.Noise_properties.Variance_linear_model.gain_factor", rule: "rsciio emd velox mapping: float") { $0 }
         try number("DetectorMetadata.Offset", "Signal.Noise_properties.Variance_linear_model.gain_offset", rule: "rsciio emd velox mapping: float") { $0 }
         try text("DetectorMetadata.AzimuthAngle", "Acquisition_instrument.TEM.Detector.EDS.azimuth_angle", units: "°",
-                 rule: "rsciio emd velox mapping: '{:.3f}'.format(np.degrees(float(x)))") { String(format: "%.3f", AcquisitionMetadata.numpyDegrees($0)) }
+                 rule: "rsciio emd velox mapping: '{:.3f}'.format(np.degrees(float(x)))") { String(format: "%.3f", AcquisitionMetadata.degreesLikeNumPy($0)) }
         try text("DetectorMetadata.LiveTime", "Acquisition_instrument.TEM.Detector.EDS.live_time", units: "s",
                  rule: "rsciio emd velox mapping: '{:.6f}'.format(float(x))") { String(format: "%.6f", $0) }
         try text("DetectorMetadata.RealTime", "Acquisition_instrument.TEM.Detector.EDS.real_time", units: "s",
