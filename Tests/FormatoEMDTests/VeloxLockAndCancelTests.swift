@@ -139,14 +139,18 @@ extension VeloxEMDSerialized {
             defer { VeloxHDF5Library.libraryCandidates = original }
             #expect(VeloxHDF5Library.libraryCandidates() == VeloxHDF5Library.defaultCandidates())
             #expect(VeloxHDF5Library.defaultCandidates().last == "libhdf5.dylib")
-            VeloxHDF5Library.libraryCandidates = { ["/nonexistent/libhdf5-not-here.dylib"] }
-            let error = #expect(throws: (any Error).self) { try reader().readSpectrumImage() }
-            if let error {
-                if case VeloxEMDError.libraryUnavailable(let why) = error {
-                    #expect(why.contains("libhdf5-not-here"), Comment(rawValue: why))
-                } else { Issue.record("\(error)") }
+            // The override lives inside one hold of the (recursive) HDF5 lock: a reader in another suite or target running
+            // side by side waits for the lock and never sees the bogus path.
+            HDF5Serial.run {
+                VeloxHDF5Library.libraryCandidates = { ["/nonexistent/libhdf5-not-here.dylib"] }
+                let error = #expect(throws: (any Error).self) { try reader().readSpectrumImage() }
+                if let error {
+                    if case VeloxEMDError.libraryUnavailable(let why) = error {
+                        #expect(why.contains("libhdf5-not-here"), Comment(rawValue: why))
+                    } else { Issue.record("\(error)") }
+                }
+                VeloxHDF5Library.libraryCandidates = original
             }
-            VeloxHDF5Library.libraryCandidates = original
             #expect(throws: Never.self) { try reader().readSpectrumImage() }
         }
     }
