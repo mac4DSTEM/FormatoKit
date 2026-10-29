@@ -618,6 +618,26 @@ public nonisolated struct VeloxEMDReader: Sendable {
     /// A sanity cap on ny * nx (2^28 pixels): a corrupt ScanSize must throw, not allocate gigabytes.
     private static let maximumPixels = 1 << 28
 
+    /// A sanity cap on the frames a file may declare (2^20).
+    private static let maximumFrames = 1 << 20
+
+    /// Refuses `count` frames declared by `what` of the stream at `group` before anything is allocated or looped from it: every
+    /// frame holds at least one value of the stream's `Data` (its pixel markers), so a stream of n values has at most n frames,
+    /// and never more than `maximumFrames`.
+    private static func requireFrames(_ count: Int, _ what: String, group: String, file: VeloxFile) throws {
+        let stream = try file.open(group + "/Data")
+        defer { file.close(stream) }
+        var values = 1
+        for d in stream.dims {
+            let (product, overflow) = values.multipliedReportingOverflow(by: d)
+            values = overflow ? Int.max : product
+        }
+        let limit = min(values, maximumFrames)
+        guard count <= limit else {
+            throw VeloxEMDError.readFailed("\(what) of \(count) frames in \(group) (the limit is \(limit): the stream's length, at most \(maximumFrames))")
+        }
+    }
+
     /// 32 M values (64 MB) a block: the stream is read in chunks, never whole.
     package static let defaultBlockValues = 32 << 20
 
@@ -901,6 +921,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
             let table = try file.open(group + "/FrameLocationTable")
             defer { file.close(table) }
             guard let n = table.dims.first, n > 0 else { return nil }
+            try Self.requireFrames(n, "a FrameLocationTable", group: group, file: file)
             var starts = [UInt64](repeating: 0, count: n)
             try starts.withUnsafeMutableBytes {
                 try file.readSlab(table, type: file.h5.uint64, start: table.dims.count == 2 ? [0, 0] : [0],
@@ -948,6 +969,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
             let dataset = try file.open(group + "/Metadata")
             let columns = dataset.dims.count == 2 ? dataset.dims[1] : 0
             file.close(dataset)
+            try Self.requireFrames(columns, "a Metadata block", group: group, file: file)
             var out: [VeloxScanTransformation?] = []
             out.reserveCapacity(columns)
             for column in 0..<columns {
@@ -968,6 +990,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
             let dataset = try file.open(group + "/Metadata")
             let columns = dataset.dims.count == 2 ? dataset.dims[1] : 0
             file.close(dataset)
+            try Self.requireFrames(columns, "a Metadata block", group: group, file: file)
             var out: [[(name: String, realTime: Double?, liveTime: Double?)]] = []
             for column in 0..<columns {
                 let m = try VeloxMetadata.parse(jsonData: file.readMetadataJSON(group: group, column: column))
