@@ -2,7 +2,7 @@
 //  AcquisitionMetadataDM.swift
 //  The Digital Micrograph (DM3/DM4) reader of `AcquisitionMetadata`: a pure function over one image object's ImageTags
 //  (`DM4ImageObject.imageTagNumbers` / `imageTagStrings`, keys relative to `ImageList.N.ImageTags.`; a TIFF tag 65027
-//  stream's keys are the same). Two conventions (`AcquisitionMetadataConvention`):
+//  stream's keys are the same; `dm(_:)` also reads the object's numeric structs, for the CCD pixel size). Two conventions (`AcquisitionMetadataConvention`):
 //
 //  `.rosettaSciIO` (default) is RosettaSciIO 049e7d70 `digitalmicrograph/_api.py` `get_mapping` (:887-1253) applied to
 //  an image signal, the way HyperSpy applies a returned mapping (a source path is slugified: spaces to underscores,
@@ -231,7 +231,8 @@ nonisolated enum DMDateTime {
 
 extension AcquisitionMetadata {
     /// The acquisition values of one DM image object from its ImageTags maps (keys relative to `ImageList.N.ImageTags.`).
-    /// Total and pure: every missing, empty or unreadable tag is a nil field.
+    /// Total and pure: every missing, empty or unreadable tag is a nil field. The scalar maps do not carry the two-number
+    /// CCD pixel size, so `cameraPixelPitch` and a CL signal's `Detector.pixel_size` stay nil here: use `dm(_:convention:)`.
     public static func dm(numbers: [String: Double], strings: [String: String],
                           convention: AcquisitionMetadataConvention = .rosettaSciIO) -> AcquisitionMetadata {
         switch convention {
@@ -240,13 +241,37 @@ extension AcquisitionMetadata {
         }
     }
 
-    /// The acquisition values of a DM image object (`DM4Experiment.list`).
+    /// The acquisition values of a DM image object (`DM4Experiment.list`). As `dm(numbers:strings:convention:)`, and also
+    /// `cameraPixelPitch` (and, for a CL signal under `.rosettaSciIO`, RosettaSciIO's `Detector.pixel_size`), which GMS stores as a
+    /// two-number struct the scalar maps do not carry. The key follows each convention's rule: `.rosettaSciIO` reads the
+    /// stack-builder copy instead of the direct tags when the image has one; `.app` reads the direct key, else the copy.
     public static func dm(_ object: DM4ImageObject, convention: AcquisitionMetadataConvention = .rosettaSciIO) -> AcquisitionMetadata {
-        dm(numbers: object.imageTagNumbers, strings: object.imageTagStrings, convention: convention)
+        switch convention {
+        case .app:
+            var meta = dmApp(numbers: object.imageTagNumbers, strings: object.imageTagStrings)
+            let arrays = object.imageTagArrays
+            meta.cameraPixelPitch = dmCameraPitch(arrays[dmDevicePitchKey] ?? arrays[dmCreationPrefix + dmDevicePitchKey])
+            return meta
+        case .rosettaSciIO:
+            return dmReference(numbers: object.imageTagNumbers, strings: object.imageTagStrings, arrays: object.imageTagArrays)
+        }
     }
 
-    private static func dmReference(numbers: [String: Double], strings: [String: String]) -> AcquisitionMetadata {
-        let creation = "source.Tags at creation."
+    private static let dmDevicePitchKey = "Acquisition.Device.CCD.Pixel Size (um)"
+    private static let dmCreationPrefix = "source.Tags at creation."
+
+    /// `Acquisition.Device.CCD.Pixel Size (um)` as a pitch: exactly two finite positive numbers (x, y), else nil. `unvalidated`
+    /// adds `unvalidatedNote` (`.rosettaSciIO` on a signal RosettaSciIO does not map the tag for).
+    private static func dmCameraPitch(_ stored: [Double]?, unvalidated: Bool = false) -> MetadataReading<PixelSize>? {
+        guard let stored, stored.count == 2, stored.allSatisfy({ $0.isFinite && $0 > 0 }) else { return nil }
+        let notes = [stored[0] == stored[1] ? nil : unequalPitchNote, unvalidated ? unvalidatedNote : nil].compactMap { $0 }
+        return MetadataReading(PixelSize(rows: stored[1], columns: stored[0], units: "um"),
+                               note: notes.isEmpty ? nil : notes.joined(separator: "; "))
+    }
+
+    private static func dmReference(numbers: [String: Double], strings: [String: String],
+                                    arrays: [String: [Double]] = [:]) -> AcquisitionMetadata {
+        let creation = dmCreationPrefix
         let stacked = numbers.keys.contains { $0.hasPrefix(creation) } || strings.keys.contains { $0.hasPrefix(creation) }
         let prefix = stacked ? creation : ""
         func number(_ key: String) -> Double? { numbers[prefix + key] }
@@ -413,6 +438,13 @@ extension AcquisitionMetadata {
             raw("Acquisition.Parameters.High Level.CCD Read Area", "Detector.sensor_roi")
             raw("Acquisition.Parameters.High Level.Processing", "Detector.processing")
             raw("Acquisition.Device.CCD.Pixel Size (um)", "Detector.pixel_size")
+            // GMS stores the tag as a two-number struct, which the scalar maps do not carry: RosettaSciIO's function
+            // (`x[0] if (isinstance(x, tuple) and x[0] == x[1]) else x`) gives a number when the first two are equal and keeps
+            // the tuple otherwise, which a number cannot hold (then absent here).
+            if let stored = arrays[prefix + "Acquisition.Device.CCD.Pixel Size (um)"], stored.count >= 2, stored[0] == stored[1] {
+                meta.signalTexts["Detector.pixel_size"] = nil
+                meta.signalNumbers["Detector.pixel_size"] = MetadataReading(stored[0])
+            }
             raw("CL.Acquisition.Dwell time (s)", "Detector.integration_time")
             raw("CL.Acquisition.Start wavelength (nm)", "Spectrometer.start_wavelength")
             raw("CL.Acquisition.Step-size (nm)", "Spectrometer.step_size")
@@ -426,6 +458,9 @@ extension AcquisitionMetadata {
 
         // RosettaSciIO maps no detector: the camera name as stored, labelled.
         if let name = text(string("Acquisition.Device.Name")) { meta.detector = MetadataReading(name, note: unvalidatedNote) }
+        // The camera pitch, every signal type: the tag as stored. RosettaSciIO maps it for CL only (`Detector.pixel_size` above),
+        // so on any other signal it is the consumer's rule, labelled.
+        meta.cameraPixelPitch = dmCameraPitch(arrays[prefix + dmDevicePitchKey], unvalidated: signalType != "CL")
         return meta
     }
 }

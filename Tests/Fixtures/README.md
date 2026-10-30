@@ -1,13 +1,13 @@
 # Test fixtures
 
 One row per committed fixture file under `Tests/*/Fixtures/`: size, the script under `tools/` that names it (the generator or its
-pin script; a few scripts write a whole directory; a script found only by file-name prefix, tool-folder name or test module is marked so), and a note where the origin is not the kit's own pinned reference. 593 files.
+pin script; a few scripts write a whole directory; a script found only by file-name prefix, tool-folder name or test module is marked so), and a note where the origin is not the kit's own pinned reference. 595 files.
 
 Licence: every fixture is generated from this kit's own code and the pinned Python reference (named in the README) and ships under the kit's GPL-3.0-or-later licence, except the rows marked *third party*. Nothing here is the owner's data: the committed text fixtures carry no owner path or name (checked by search), and real datasets are read from `$MACEM_DATA` and never copied into the repo.
 
 ## Third party
 
-13 files, listed in the table below with the note *third party*. Keep their licence line when the files move.
+15 files, listed in the table below with the note *third party*. Keep their licence line when the files move.
 
 ## Needs an origin line
 
@@ -148,6 +148,8 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoDMTests/Fixtures/gather/scan-9.dm4` | 1.5 KB | `tools/dm4-gather/generate.py` |  |
 | `FormatoDMTests/Fixtures/rsciio-EELS_SI.dm4` | 332.1 KB | `tools/dm4-gather/generate.py` (module only) | third party: RosettaSciIO public test data (GPL-3.0-or-later), copied unchanged |
 | `FormatoDMTests/Fixtures/rsciio-EELS_SI.truth.json` | 2.5 KB | `tools/dm4-gather/generate.py` (module only) | third party: RosettaSciIO public test data (GPL-3.0-or-later), copied unchanged |
+| `FormatoDMTests/Fixtures/rsciio-MonarcCL_spectrum-ccd.dm4` | 316.6 KB | none (copied; read by `CameraPixelPitchTests`) | third party: RosettaSciIO public test data (GPL-3.0-or-later), copied unchanged |
+| `FormatoDMTests/Fixtures/rsciio-MonoCL_spectrum-ccd.dm4` | 320.1 KB | none (copied; read by `CameraPixelPitchTests`) | third party: RosettaSciIO public test data (GPL-3.0-or-later), copied unchanged |
 | `FormatoEMDTests/Fixtures/acq-metadata/acq-pins.json` | 6.5 KB | `tools/acq-metadata/generate.py` |  |
 | `FormatoEMDTests/Fixtures/acq-metadata/velox-acquisition.emd` | 48.7 KB | `tools/acq-metadata/generate.py` |  |
 | `FormatoEMDTests/Fixtures/image-readers/pins.json` | 9.8 KB | `tools/acq-metadata/generate.py`, `tools/bragg-writer/check.py`, `tools/bragg-writer/generate.py` +16 |  |

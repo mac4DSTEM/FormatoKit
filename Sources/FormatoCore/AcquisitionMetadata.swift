@@ -123,6 +123,18 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     /// it, labelled unvalidated: no published reader reads the stored value.
     public var convergenceAngleMrad: MetadataReading<Double>?
 
+    // MARK: Added after 0.11.0 (additive). Read by the DM reader from an image object (`AcquisitionMetadata.dm(_:convention:)`), under
+    // both conventions; every other reader, and `dm(numbers:strings:)`, leave it nil.
+
+    /// The camera's own pixel pitch, where the file records it: the sensor's physical pixel, before any binning; not the pixel
+    /// at the specimen (`pixelSize`). DM: `Acquisition.Device.CCD.Pixel Size (um)`, two numbers stored as (x, y), so `columns`
+    /// is the first and `rows` the second, units "um" as the tag names them; the note says so when the two differ. Not the
+    /// binned frame pixel (`Acquisition.Frame.CCD.Pixel Size (um)`). Nil when the tag is absent, does not hold exactly two
+    /// numbers, or holds one that is not finite and positive. RosettaSciIO maps the tag for a CL signal only (its
+    /// `Detector.pixel_size`, also in `signalNumbers`); on any other signal `.rosettaSciIO` labels it `unvalidatedNote`. The
+    /// `.app` convention reads it too (an extension of the consumer's rule set, which has no pitch), unlabelled.
+    public var cameraPixelPitch: MetadataReading<PixelSize>?
+
     /// The fields this file's FORMAT reader cannot read yet, though the file may record them: shown "Not read from this
     /// format yet", never "Not recorded" (a reader that does not expose them yet). Empty for every other format.
     public var unread: Set<Field> = []
@@ -141,6 +153,8 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     public static let localTimeNote = "local time, zone not stored"
     /// The note an MRC date carries (rule e): the pinned files disagree on the clock (local vs UTC).
     public static let writerClockNote = "clock of the writer, zone not stored"
+    /// The note `cameraPixelPitch` carries when its two stored numbers differ.
+    public static let unequalPitchNote = "the two differ: columns from the first stored number, rows from the second (the stored order)"
 
     /// Rule (b): a strictly positive quantity, or nil.
     public static func positive(_ v: Double?) -> Double? {

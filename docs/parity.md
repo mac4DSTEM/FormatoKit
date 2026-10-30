@@ -265,15 +265,25 @@ RosettaSciIO plugin to compare with: its calibrations are the file's (`R/Q_pixel
 | EDS (TEM) elevation, azimuth, solid angle, live and real time | R (X-ray signal) | - | - | - | per detector in the spectrum-image readers | - | - |
 | CL spectrometer, detector, grating, wavelengths, frames, integration time, format; SI mode and drift | R (CL signal) | - | - | - | - | - | - |
 | Velox EDS number of frames, detector gain/offset | - | - | - | - | read by the spectrum-image readers (`VeloxSpectrumImageSignals`) | - | - |
+| camera pixel pitch (`cameraPixelPitch`, after 0.11.0) | R (CL signal, as `Detector.pixel_size` too); every other signal: the tag as stored | - | - | - | not read yet | - | - |
 
 "Probe area" is mapped by none of the RosettaSciIO plugins compared here. Conversions follow RosettaSciIO per format and are named in each reading's
 `note` (DM stage position stored value x 1e-3; Velox degrees to 3 decimals and metres to 6; MRC and the FEI INI as stored): RosettaSciIO's own units
 are not uniform across formats. Edges: the DM signal-type groups are keyed by RosettaSciIO's spelling of the tag names (spaces, as DM writes them);
-array-valued tags (CCD read area, pixel size as a pair, binning pair) are not in the kit's scalar tag maps and are not read. DM EELS scan dwell is
+array-valued tags (CCD read area, binning pair) are not in the kit's scalar tag maps and are not read. The CCD pixel size pair
+(`Acquisition.Device.CCD.Pixel Size (um)`, a struct of two numbers) is read from the image object (after 0.11.0): `AcquisitionMetadata.dm(_:)`
+gives it as `cameraPixelPitch` (rows, columns, "um"; columns from the first stored number) under both conventions, and for a CL signal
+RosettaSciIO's `Detector.pixel_size` (the first number when the first two are equal, else absent: RosettaSciIO keeps the tuple). Pinned on
+RosettaSciIO's public `test-MonoCL_spectrum-ccd.dm4` and `test-MonarcCL_spectrum-ccd.dm4` (20.0, its own tests' value; fetched at 8363d24,
+the same bytes and the same mapping line as the pinned 049e7d70) and on `EELS_SI.dm4` (14.0, a US1000 behind a spectrometer; RosettaSciIO maps
+nothing there, so `.rosettaSciIO` labels it unvalidated; `.app` reads it as well, an extension of the consumer's rules); `dm(numbers:strings:)`
+cannot see it. The binned frame pixel
+(`Acquisition.Frame.CCD.Pixel Size (um)`: 2000 x 20 and 364 x 14 on those files) is not read. DM EELS scan dwell is
 `seconds x 1e6` in `dwellUS` (the pin divides back; exact for dyadic times). RosettaSciIO's other TIFF vendor mappings (JEOL SightX, Zeiss SEM, TVIPS)
 are out of scope: the kit refuses those branches by name. The Velox `.emd` reader reads each stage coordinate alone since 0.3.1.
 
-**Still missing at 0.3.1.** (1) Array-valued DM tags (CCD read area, pixel size as a pair, binning pair): the kit's tag maps are scalar. (2) DM signal-group tag names are matched in DM's own spelling, not slug-equivalent; a differently spelled tag is missed (checking needs a real vendor file). (3) RosettaSciIO's other TIFF vendor mappings (JEOL SightX, Zeiss SEM, TVIPS): refused by name. (4) Probe area: mapped by none of the compared plugins. (5) EMPAD and MIB have no `AcquisitionMetadata` (their RosettaSciIO `metadata` is returned on the signal, pinned). (6) 4D HDF5 / EMD 1.0: no RosettaSciIO plugin to compare with.
+**Still missing at 0.3.1.** (1) Array-valued DM tags (CCD read area, binning pair): the kit's tag maps are scalar (the pixel size pair is read since, above, from a DM image object only: a GMS TIFF's tag 65027 stream and
+`dm(numbers:strings:)` still lose it, and an unequal pair on a CL signal has no `Detector.pixel_size`, where RosettaSciIO keeps the tuple). (2) DM signal-group tag names are matched in DM's own spelling, not slug-equivalent; a differently spelled tag is missed (checking needs a real vendor file). (3) RosettaSciIO's other TIFF vendor mappings (JEOL SightX, Zeiss SEM, TVIPS): refused by name. (4) Probe area: mapped by none of the compared plugins. (5) EMPAD and MIB have no `AcquisitionMetadata` (their RosettaSciIO `metadata` is returned on the signal, pinned). (6) 4D HDF5 / EMD 1.0: no RosettaSciIO plugin to compare with.
 
 ## Image readers (round 4)
 

@@ -134,6 +134,11 @@ public nonisolated struct DM4ImageObject: Sendable, Equatable {
     /// and the short UTF-16 arrays (units, dates). Each is cut at the walk's kept length (4 KiB by default, `DMReadOptions.maximumStringBytes`),
     /// so a longer UTF-16 string is absent and a longer type-18 string is cut. Added 2026-10-12.
     public let imageTagStrings: [String: String]
+    /// The numeric structs and short numeric arrays under this object's `ImageTags`, prefix removed, each in stored order
+    /// (`Acquisition.Device.CCD.Pixel Size (um)` = [20, 20]): the walk's array rule (a struct's numeric fields; a numeric array
+    /// under 4096 bytes; a ushort array of 64 or fewer elements, which is also a string). Read by `AcquisitionMetadata.dm(_:)`.
+    /// Part of the synthesized `==`, so two objects can differ here alone.
+    package let imageTagArrays: [String: [Double]]
     /// Where the pixel blob starts in the file and how many bytes the tag declares.
     public let dataOffset: Int
     public let dataByteCount: Int
@@ -831,6 +836,8 @@ public nonisolated enum DM4Experiment {
                 var tagNumbers = [String: Double](), tagStrings = [String: String]()
                 for (k, v) in numbers where k.hasPrefix(tags) { tagNumbers[String(k.dropFirst(tags.count))] = v }
                 for (k, v) in strings where k.hasPrefix(tags) { tagStrings[String(k.dropFirst(tags.count))] = v }
+                var tagArrays = [String: [Double]]()
+                for (k, v) in arrays where k.hasPrefix(tags) { tagArrays[String(k.dropFirst(tags.count))] = v }
                 let name = strings[root + "Name"] ?? ""
                 // Do not rely on the keyword POSITIONS (.1 = ID, .2 = Label, as seen in the
                 // owner's files): scan every `Experiment keywords.N` for a known Label and an ID.
@@ -877,7 +884,7 @@ public nonisolated enum DM4Experiment {
                     dataOrderSwapped: numbers[tags + "Meta Data.Data Order Swapped"].map { $0 != 0 },
                     metaDataFormat: strings[tags + "Meta Data.Format"],
                     metaDataSignal: signal,
-                    imageTagNumbers: tagNumbers, imageTagStrings: tagStrings,
+                    imageTagNumbers: tagNumbers, imageTagStrings: tagStrings, imageTagArrays: tagArrays,
                     dataOffset: blob.offset, dataByteCount: blob.bytes))
             }
             return out
