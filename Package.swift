@@ -112,7 +112,7 @@ let package = Package(
         // The comparisons with the pinned RosettaSciIO, Pint and tifffile values and the inherited golden baseline, byte for byte
         // (`swift test -c release --parallel --skip FormatoKitParityTests` leaves them out). Fixtures stay in the old test folders.
         .testTarget(name: "FormatoKitParityTests",
-                    dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoTIFF", "FormatoKitTestSupport"],
+                    dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoTIFF", "FormatoPeek", "FormatoKitTestSupport"],
                     swiftSettings: settings),
     ],
     swiftLanguageModes: [.v6]
