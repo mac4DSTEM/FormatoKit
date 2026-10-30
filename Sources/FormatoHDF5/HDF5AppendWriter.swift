@@ -343,25 +343,6 @@ public nonisolated final class HDF5WriteSession {
         }
     }
 
-    /// Sets the scalar attribute `name` on the object at `path` stored as int32, replacing an existing one: the EMD file identity
-    /// (`version_major`, `version_minor`) as the app's writer stored it. `setAttribute(_:on:_:)` stores every integer as int64.
-    package func setInt32Attribute(_ name: String, on path: String, _ value: Int32) throws {
-        let parts = try HDF5Ops.components(path)
-        guard !name.isEmpty, !name.utf8.contains(0) else { throw HDF5FileError.invalidPath(name) }
-        try open { file in
-            try HDF5Ops.withObject(h5, file, path, parts) { object in
-                let exists = name.withCString { h5.h5aexists(object, $0) }
-                guard exists >= 0 else { throw HDF5RootAttributes.failure("looking for the \(name) attribute", h5) }
-                if exists > 0 {
-                    guard name.withCString({ h5.h5adelete(object, $0) }) >= 0 else {
-                        throw HDF5RootAttributes.failure("replacing the \(name) attribute", h5)
-                    }
-                }
-                try writeNumbers(name, [value], scalar: true, type: h5.int32, on: object)
-            }
-        }
-    }
-
     /// Sets the text attribute `name` on the object at `path` as variable-length text (UTF-8), the way h5py writes a Python
     /// `str` attribute and py4DSTEM / emdfile's group attributes are stored; `setAttribute(_:on:_:)` stores fixed-length text.
     /// Replaces an existing attribute (deleted first). A NUL byte throws `embeddedNUL`.

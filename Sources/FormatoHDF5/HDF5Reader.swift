@@ -112,8 +112,10 @@ public nonisolated struct HDF5Reader: Sendable {
     /// integer; `notFound` when absent. For the writers' tests: `attribute(_:of:)` widens every integer to Int64.
     package func storedIntegerAttributeBytes(_ name: String, of path: String) throws -> Int? {
         let parts = try HDF5Ops.components(path)
+        guard !name.isEmpty, !name.utf8.contains(0) else { throw HDF5FileError.invalidPath(name) }
         return try withFile { h5, file in try HDF5Ops.withObject(h5, file, path, parts) { obj in
             let exists = name.withCString { h5.h5aexists(obj, $0) }
+            guard exists >= 0 else { throw HDF5RootAttributes.hdf5Failure("looking for the \(name) attribute", h5) }
             guard exists > 0 else { throw HDF5FileError.notFound(path + "@" + name) }
             let attribute = name.withCString { h5.h5aopen(obj, $0, 0) }
             guard attribute >= 0 else { throw HDF5RootAttributes.hdf5Failure("opening the \(name) attribute", h5) }
