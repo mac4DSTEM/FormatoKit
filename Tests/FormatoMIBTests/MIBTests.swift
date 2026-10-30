@@ -203,3 +203,50 @@ private func directory() throws -> URL {
     }
     #expect(widths == ["U08", "U16", "U32"])
 }
+
+/// A header with no detector width and height, or one whose width and height disagree with its assembly: the app read the frames by the
+/// assembly (1x1 = 256, 2x2 = 512, 2x2G = 514) and the header size, so `.appScanXY` does too, giving the bytes of the same file with a
+/// regular header. RosettaSciIO refuses both (it needs the width and height; a disagreeing pair is read by the header, a different shape).
+@Test func mibHeaderWithoutOrAgainstItsShapeIsReadByTheAssemblyInTheAppConvention() throws {
+    let pins = try JSONDecoder().decode(Pins.self, from: Data(contentsOf: fixtures.appendingPathComponent("pins.json")))
+    let dir = try directory(); defer { try? FileManager.default.removeItem(at: dir) }
+    var checked = 0
+    for pin in pins.cases where pin.app {
+        let source = try inflate(pin.name + ".mib.gz")
+        let fields = String(decoding: source.prefix(384), as: UTF8.self).components(separatedBy: ",")
+        let width = try #require(Int(fields[4])), height = try #require(Int(fields[5]))
+        let bytes = try #require(["U08": 1, "U16": 2, "U32": 4][fields[6]])
+        let headerSize = try #require(Int(fields[2]))
+        let stride = headerSize + width * height * bytes
+        try #require(source.count % stride == 0)
+        let plainPath = dir.appendingPathComponent(pin.name + ".mib")
+        try source.write(to: plainPath)
+        let hdr = fixtures.appendingPathComponent(pin.name + ".hdr")
+        try FileManager.default.copyItem(at: hdr, to: plainPath.deletingPathExtension().appendingPathExtension("hdr"))
+        let expected = try MIBReader(path: plainPath.path, convention: .appScanXY).signal.load()
+        // Each variant rewrites fields 4 and 5 of every frame header with text of the same length.
+        let blank = String(repeating: " ", count: fields[4].count), blankHeight = String(repeating: " ", count: fields[5].count)
+        let other = String(format: "%0\(fields[4].count)d", 17), otherHeight = String(format: "%0\(fields[5].count)d", 9)
+        for (label, w, h) in [("headerless", blank, blankHeight), ("disagree", other, otherHeight)] {
+            var data = Data()
+            for frame in 0..<(source.count / stride) {
+                var parts = String(decoding: source[(frame * stride)..<(frame * stride + headerSize)], as: UTF8.self).components(separatedBy: ",")
+                parts[4] = w; parts[5] = h
+                let header = Data(parts.joined(separator: ",").utf8)
+                try #require(header.count == headerSize)
+                data += header + source[(frame * stride + headerSize)..<((frame + 1) * stride)]
+            }
+            let path = dir.appendingPathComponent(pin.name + "-" + label + ".mib")
+            try data.write(to: path)
+            try FileManager.default.copyItem(at: hdr, to: path.deletingPathExtension().appendingPathExtension("hdr"))
+            let reader = try MIBReader(path: path.path, convention: .appScanXY)
+            #expect(reader.pixelCode == fields[6])
+            let read = try reader.signal.load()
+            #expect(read.data == expected.data, "\(pin.name) \(label)")
+            #expect(read.data.bytes == (try inflate(pin.name + ".data.gz")), "\(pin.name) \(label) against the pinned bytes")
+            if label == "headerless" { #expect(throws: MIBError.self) { try MIBReader(path: path.path) } }
+            checked += 1
+        }
+    }
+    #expect(checked == 10)
+}
