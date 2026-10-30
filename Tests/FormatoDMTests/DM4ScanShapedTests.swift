@@ -130,7 +130,8 @@ struct PlantedDMFile {
         let a = try app.signal.load()
         #expect(a.data.shape == [3, 4, 3, 5])
         #expect(a.data.dataType == .float32)
-        #expect(a.data.doubles() == (0..<180).map { Double($0 * 3 + 7) })
+        let expected: [Double] = (0..<180).map { (i: Int) -> Double in Double(i * 3 + 7) }
+        #expect(a.data.doubles() == expected)
         #expect(a.axes.map(\.name) == ["Ry", "Rx", "Qy", "Qx"])
         #expect(a.axes.map(\.scale) == [0.75, 0.75, 0.5, 0.25])
         #expect(app.calibrationNote == nil)
