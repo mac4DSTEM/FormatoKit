@@ -1,4 +1,5 @@
 import Testing
+import Darwin
 import Foundation
 import FormatoCore
 import FormatoEMD
@@ -17,11 +18,14 @@ extension VeloxEMDSerialized {
             try VeloxSpectrumSignals(path: path, timeZone: zone.flatMap { TimeZone(identifier: $0) }).signals
         }
 
+        /// Where tools/test.sh unzips the public files of RosettaSciIO's clone (absent without the clone).
+        private static let publicRoot = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().appendingPathComponent(".build/rsciio-unzipped/emd")
+
         /// The public files of RosettaSciIO's clone, unzipped by tools/test.sh; nil when absent.
         private func publicPath(_ key: String) -> String? {
             let parts = key.split(separator: "/", maxSplits: 1).map(String.init)
-            let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-            let path = root.appendingPathComponent(".build/rsciio-unzipped/emd/\(parts[0])/\(parts[1])").path
+            let path = Self.publicRoot.appendingPathComponent("\(parts[0])/\(parts[1])").path
             return FileManager.default.fileExists(atPath: path) ? path : nil
         }
 
@@ -38,14 +42,15 @@ extension VeloxEMDSerialized {
             try check(cases) { Self.fixtures.appendingPathComponent("spectra/\($0).emd").path }
         }
 
-        /// RosettaSciIO's public Velox files with spectra (and the ones without), as its own reader returns them.
-        @Test func testPublicFilesEqualRosettaSciIO() throws {
+        /// RosettaSciIO's public Velox files with spectra (and the ones without), as its own reader returns them. Skipped
+        /// without the clone; the planted cases above stand then.
+        @Test(.enabled(if: FileManager.default.fileExists(atPath: publicRoot.path), "RosettaSciIO's public Velox files are not unzipped"))
+        func testPublicFilesEqualRosettaSciIO() throws {
             let data = try Data(contentsOf: Self.fixtures.appendingPathComponent("spectra-pins.json"))
             let pins = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
             let all = try #require(pins["public"] as? [String: [String: Any]])
             let present = all.filter { publicPath($0.key) != nil }
-            guard !present.isEmpty else { return }   // a clone without References: the planted cases above stand
-            #expect(present.count == all.count, "every public file is unzipped or none")
+            #expect(present.count == all.count, "every public file is unzipped")
             try check(present) { publicPath($0)! }
         }
 
@@ -96,10 +101,26 @@ extension VeloxEMDSerialized {
                             wantedKeys.insert("General.time_zone")
                             let zoneName = signal.metadata["General.time_zone"]?.value.text
                             #expect(zoneName != nil, Comment(rawValue: label))
-                            // In the process's own zone (zone nil) the name is the tz database's, as `tzlocal().tzname()` gives.
+                            // In the process's own zone (zone nil) the name is the tz database's for TODAY, as
+                            // `tzlocal().tzname(datetime.today())` gives: `time.tzname[isdst]`. The pin froze the name of the day it was
+                            // generated, so it is one of the zone's two names, and today's name is the one Python would give now.
                             if TimeZone.current.identifier == zone {
                                 let own = try read(path: pathOf(name), zone: nil)
-                                #expect(own.first?.metadata["General.time_zone"]?.value.text == general["time_zone"] as? String, Comment(rawValue: label))
+                                // The zone's two libc names (`time.tzname`), from a January and a July day of this year; today's
+                                // is the one whose day has today's daylight-saving state.
+                                let calendar = Calendar(identifier: .gregorian)
+                                let year = calendar.component(.year, from: Date())
+                                let days = [1, 7].map { calendar.date(from: DateComponents(year: year, month: $0, day: 15))! }
+                                let names = days.map { day -> String in
+                                    var t = time_t(day.timeIntervalSince1970)
+                                    var parts = tm()
+                                    localtime_r(&t, &parts)
+                                    return String(cString: parts.tm_zone)
+                                }
+                                let isDST = TimeZone.current.isDaylightSavingTime(for: Date())
+                                let today = names[days.firstIndex { TimeZone.current.isDaylightSavingTime(for: $0) == isDST } ?? 0]
+                                #expect(names.contains(general["time_zone"] as? String ?? ""), Comment(rawValue: label))
+                                #expect(own.first?.metadata["General.time_zone"]?.value.text == today, Comment(rawValue: label))
                                 #expect(own.first?.metadata["General.time"]?.value.text == general["time"] as? String, Comment(rawValue: label))
                             }
                         }
@@ -114,7 +135,8 @@ extension VeloxEMDSerialized {
                             default: Issue.record("unexpected pin value for \(key)")
                             }
                         }
-                        #expect(Set(signal.metadata.keys) == wantedKeys, "\(label): the metadata keys")
+                        // `Sample.elements` is HyperSpy's step on RosettaSciIO's mapping: pinned apart (VeloxSpectrumElementsTests).
+                        #expect(Set(signal.metadata.keys).subtracting(["Sample.elements"]) == wantedKeys, "\(label): the metadata keys")
                     }
                 }
             }

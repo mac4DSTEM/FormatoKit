@@ -201,7 +201,7 @@ root-attribute file layer. The libhdf5 XCFramework is NOT in 0.3.0 (the asset up
 compatible, not binary compatible). The test-support target `FormatoAcquisitionPins` is not a product. Keep a raw file unchanged while its EMPAD or MIB
 reader or lazy signal exists.
 
-## 0.2.1
+## 0.2.1 (2026-10-15)
 
 - The platform floor drops to macOS 15 and iOS 18 (was macOS 27). The bundled HDF5 2.1.1, libsz and libaec are rebuilt with
   `MACOSX_DEPLOYMENT_TARGET=15.0` (recipe and hashes in `NOTICE`); every pin and test is unchanged.

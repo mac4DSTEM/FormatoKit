@@ -302,15 +302,15 @@ nonisolated extension AcquisitionMetadata {
             // The EMD mapping's stage (`_emd_velox.py:951-972`): radians to degrees rounded to 3 decimals; metres rounded to 6.
             let degrees = "degrees from the stored radians, rounded to 3 decimals, as RosettaSciIO"
             if let a = number(stored("Stage/AlphaTilt")) {
-                out.stageTiltAlphaDeg = reading(pythonRound(numpyDegrees(a), 3), "Stage/AlphaTilt", note: degrees)
+                out.stageTiltAlphaDeg = reading(roundLikePython(degreesLikeNumPy(a), 3), "Stage/AlphaTilt", note: degrees)
             }
             if let b = number(stored("Stage/BetaTilt")) {
-                out.stageTiltBetaDeg = reading(pythonRound(numpyDegrees(b), 3), "Stage/BetaTilt", note: degrees)
+                out.stageTiltBetaDeg = reading(roundLikePython(degreesLikeNumPy(b), 3), "Stage/BetaTilt", note: degrees)
             }
             let metres = "metres as stored, rounded to 6 decimals, as RosettaSciIO"
-            if let x = number(stored("Stage/Position/x")) { out.stageX = reading(pythonRound(x, 6), "Stage/Position/x", note: metres) }
-            if let y = number(stored("Stage/Position/y")) { out.stageY = reading(pythonRound(y, 6), "Stage/Position/y", note: metres) }
-            if let z = number(stored("Stage/Position/z")) { out.stageZ = reading(pythonRound(z, 6), "Stage/Position/z", note: metres) }
+            if let x = number(stored("Stage/Position/x")) { out.stageX = reading(roundLikePython(x, 6), "Stage/Position/x", note: metres) }
+            if let y = number(stored("Stage/Position/y")) { out.stageY = reading(roundLikePython(y, 6), "Stage/Position/y", note: metres) }
+            if let z = number(stored("Stage/Position/z")) { out.stageZ = reading(roundLikePython(z, 6), "Stage/Position/z", note: metres) }
         } else if let model {
             out.instrument = reading(model, "Instrument/InstrumentModel")
         }

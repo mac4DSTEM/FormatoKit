@@ -15,4 +15,4 @@ Not done from the task list (each is a change that needs its own pins):
 - TIFF series still refused by name: SubIFD series, OME, generic pyramids; a shaped description in a second ImageDescription tag (`description1`).
 - Header-less MIB; `small_datacube` rank-3 reshape; DM4 lazy 4D gather speed (the 4D row above is the eager load; the whole-scan Float32 tile case is the app's) and rank-3 or more than four dimensions; EMPAD `mode="acquire"` scan block; HDF5 version attributes int64 against int32; TIFF vendor branches (Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu), ImageJ "nm", FEI2 extended MRC header; unbounded allocation from file sizes in Velox (`markersPerFrame`, frame transformations, detector times).
 - Then-list: HSPY/ZSPY, compressed TIFF, NCEM/Berkeley EMD, SER/EMI, Bruker BCF, other writers.
-- `Sample.elements` (element selection) is not mapped for Velox single spectra; the four metadata groups are not parsed on that path.
+- `Sample.elements` (element selection) is not mapped for Velox spectrum images (single spectra map it since #10); `_parse_image_display` is not run on the single-spectrum path of a SpectrumStream file.

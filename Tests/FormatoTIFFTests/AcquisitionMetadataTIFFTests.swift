@@ -8,7 +8,7 @@
 
 import Foundation
 import Testing
-import FormatoAcquisitionPins
+import FormatoKitTestSupport
 import FormatoCore
 import FormatoDM
 import FormatoTIFF

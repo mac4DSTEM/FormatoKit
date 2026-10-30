@@ -28,7 +28,7 @@ every one of these, as D17 prescribes for readers.
 | Plugin | Extensions | Writes | Kit symbol | State | RosettaSciIO test and tolerance | Priority | Note |
 |---|---|---|---|---|---|---|---|
 | DigitalMicrograph | dm3, dm4 | no | `FormatoDM` `DMFile`, `DM4Datacube` | **partial** | test_digitalmicrograph.py: allclose, approx, array_equal, explicit rtol/atol/decimal in places | study | complex, RGB, bool, big-endian refused; metadata mapping partial; scan pixel size of EELS/EDS spectrum images (`xAxis`, `yAxis`, 0.11.0) and of 4D scans pinned to the bit |
-| EMD | emd, de5 | yes | `FormatoEMD` `VeloxImageSignals`, `VeloxSpectrumImageSignals`, `VeloxSpectrumSignals` (0.9.0) | **partial** | test_emd_ncem.py, test_emd_prismatic.py, test_emd_velox.py: allclose, almost_equal, array_equal, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | Velox: images, spectrum images (live and real time per detector from the SI group, 0.11.0), single spectra, "DevelopersKit" accepted; compound FFT/DPC, `lazy=True` SI, `load_SI_image_stack`, `Sample.elements` not. NCEM/Berkeley EMD, prismatic and DE5: missing (useful) |
+| EMD | emd, de5 | yes | `FormatoEMD` `VeloxImageSignals`, `VeloxSpectrumImageSignals`, `VeloxSpectrumSignals` (0.9.0) | **partial** | test_emd_ncem.py, test_emd_prismatic.py, test_emd_velox.py: allclose, almost_equal, array_equal, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | Velox: images, spectrum images (live and real time per detector from the SI group, 0.11.0), single spectra (with `Sample.elements`), "DevelopersKit" accepted; compound FFT/DPC, `lazy=True` SI, `load_SI_image_stack`, `Sample.elements` of a spectrum image not. NCEM/Berkeley EMD, prismatic and DE5: missing (useful) |
 | TIFF | tif, tiff | yes (some dims) | `FormatoTIFF` `TIFFSignals`, `TIFFAppImage` | **partial** | test_tiff.py: allclose, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | uncompressed strips; FEI, Gatan, ImageJ, plain, tifffile shaped series (0.11.0); OME, SubIFD series, generic pyramids, Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu, compression, tiles refused by name |
 | MRC | mrc, ali | no | `FormatoMRC` `MRCReader`, `MRCAppImage` | **partial** | test_mrc.py, test_mrcz.py: almost_equal, array_almost_equal, array_equal, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | modes 0,1,2,6,12 and 4 refused (complex); DE movie options (`virtual_images`, `external_images`, `scan_file`), `navigation_shape`, `metadata_file` missing |
 | EMPAD | xml | no | `FormatoEMPAD` `EMPADReader` | **partial** | test_empad.py: allclose | study | `remove_nans` default false only |
@@ -166,7 +166,20 @@ never written (RosettaSciIO tests `"General.item"`, a typo, as RosettaSciIO does
   as RosettaSciIO's `json.loads`, so the energy axis and the detector-metadata match take the same entry (since 0.0.3).
   Left: a key written twice in one object reads its first value here and its last in Python (no file seen has one).
 - **Velox metadata mapping:** the image path maps the file name and the beam energy; `VeloxSpectrumSignals` (0.9.0) maps every field
-  RosettaSciIO's `_get_mapping` maps for a single spectrum except `Sample.elements`. The images and spectrum images keep the narrower
+  RosettaSciIO's `_get_mapping` maps for a single spectrum. **`Sample.elements` of a single spectrum:** a `FormatoValue.texts` list, as
+  HyperSpy 2.4.0 sets it when it applies RosettaSciIO's `_convert_element_list` (`d.keys()[0]` works only on HyperSpy's
+  `DictionaryTreeBrowser`, whose `keys()` sorts the slugified keys; the version picks `SharedProperties/EDSSpectrumQuantificationSettings`
+  from 11 on, `Operations/ImageQuantificationOperation` before; `atomic_number2name` 1 to 119). Where Python raises (no entry, an entry
+  that is not an object, `int()` refusing, an atomic number outside the table, `int(version)` refusing) the read is refused, as HyperSpy's
+  `load` raises. The four file-level groups are parsed as `read_file` parses them, so a malformed entry refuses the read. Exact against
+  planted files and, when unzipped by `tools/test.sh`, the public ones (`tools/velox-elements/pins.py`). Left, refused here where Python
+  reads (no file has one): two keys of the settings group or of one entry that slugify alike (HyperSpy merges them); an empty entry
+  dataset in the four groups (RosettaSciIO logs a warning and keeps what it read); `NaN`/`Infinity` in their JSON (`json.loads` accepts
+  them, `JSONSerialization` does not). `_parse_image_display` is not run for a SpectrumStream file's spectra. **Live and real time of a single
+  spectrum:** RosettaSciIO maps only `DetectorMetadata.LiveTime`/`.RealTime`, which no public single spectrum holds; Velox 4 to 13 store
+  them per segment in `Detectors`. `VeloxEMDReader.spectrumMetadata()` gives each spectrum's metadata and
+  `VeloxMetadata.binaryResultSegmentTimes` the segments whose name contains `BinaryResult.Detector` (not disabled), to the bit against
+  `float()` of RosettaSciIO's `original_metadata`; not in the signals' metadata. The images and spectrum images keep the narrower
   mapping (camera length, magnification, instrument and stage are in `AcquisitionMetadata.velox`; for a spectrum image
   `AcquisitionMetadata.velox(spectrumImage:)` from `VeloxEMDReader.spectrumImageMetadata()`, 0.11.0, camera length, magnification and beam
   energy to the bit against RosettaSciIO's returned mapping). **Live and real time of a spectrum image (0.11.0):** RosettaSciIO maps none
@@ -175,6 +188,14 @@ never written (RosettaSciIO tests `"General.item"`, a typo, as RosettaSciIO does
   against planted files, no RosettaSciIO value to compare; unvalidated beyond the one owner file's order of magnitude.
   **Pixel size (0.11.0):** `AcquisitionMetadata.pixelSize` (rows, columns, unit as stored) from `BinaryResult.PixelSize`, `.rosettaSciIO`
   only; equal to RosettaSciIO's axis scales after the conversion they went through.
+  **EELS spectrum images:** RosettaSciIO maps nothing for them (its EELS dictionaries hold the title and file name only, asserted by
+  `tools/velox-eels/pins.py`), so the EELS signals stay that. `VeloxEMDReader.eelsSpectrumImageMetadata()` reads each
+  `Data/EelsSpectrumImage/<id>/Metadata` in the signals' order, and `AcquisitionMetadata.velox(eelsSpectrumImage:)` gives the beam energy
+  (exact against RosettaSciIO's mapping for the EDS signal of the same file and pyEELSMODEL eed9f072's E0), the collection semi-angle
+  `EnergyFilter.CollectionAngleRange.End` × 1e3 mrad (exact against pyEELSMODEL's `emd_reader` beta) and the convergence semi-angle
+  `Optics.BeamConvergence` × 1e3 mrad (no published reader reads it: labelled unvalidated), `.rosettaSciIO` only. A stored angle that is
+  not a finite positive number is nil (pyEELSMODEL passes a 0 through as beta). Planted file, plus RosettaSciIO's public EELS file when
+  unzipped.
 - **Lazy reading:** registered equal to eager for DM (positioned reads) and Velox images (per frame). Not yet
   memory-mapped; no chunked HDF5 reads beyond the moved reader's blocks.
 - **Writing:** none for RosettaSciIO's formats. FormatoKit writes only the EMD 1.0 bundle writers (`EMDDatacubeWriter`, calibration, maps), `FormatoPNG`, `BraggVectorsEMD` (py4DSTEM EMD 1.0), `HDF5RootAttributes` (a sidecar's root string
@@ -214,7 +235,8 @@ cb6e164 and pinned. Pins: synthetic files written byte by byte (`generate.py`), 
 For each format FormatoKit reads: what RosettaSciIO 049e7d70 maps into `metadata` (its `original_metadata` to `metadata` mapping, applied as HyperSpy
 applies it) against what `AcquisitionMetadata` (`.rosettaSciIO` convention) or the reader's own signal metadata exposes. **R** = read and pinned to
 RosettaSciIO; **N** = RosettaSciIO maps it, the file can carry it, FormatoKit does not read it; **-** = RosettaSciIO maps nothing for this format
-(or the file does not carry it); **L** = read by the consumer's rule and labelled `unvalidated`. EMPAD and MIB have no `AcquisitionMetadata`: their
+(or the file does not carry it); **L** = read by the consumer's rule and labelled `unvalidated`; **P** = RosettaSciIO maps nothing,
+read and pinned to another published reader (pyEELSMODEL for the Velox EELS collection angle). EMPAD and MIB have no `AcquisitionMetadata`: their
 RosettaSciIO `metadata` is returned whole on the signal (pinned, `docs/parity.md` rows above). The 4D HDF5 (py4DSTEM EMD 1.0) reader has no
 RosettaSciIO plugin to compare with: its calibrations are the file's (`R/Q_pixel_size`, `probe_semiangle`), not acquisition metadata.
 
@@ -223,8 +245,8 @@ RosettaSciIO plugin to compare with: its calibrations are the file's (`R/Q_pixel
 | beam energy | R | - | R | R | R | - | - |
 | magnification | R | R | - | L | R | - | - |
 | camera length | R | - | - | R | R | - | - |
-| convergence angle | R (EELS signal) | - | - | - | - | - | - |
-| collection angle | R (EELS signal) | - | - | - | - | - | - |
+| convergence angle | R (EELS signal) | - | - | - | L (EELS SI) | - | - |
+| collection angle | R (EELS signal) | - | - | - | P (EELS SI) | - | - |
 | dwell time | R (image, CL, EELS scan) | - | R | L | L | - | R |
 | exposure time | R (image, EELS) | R | - | L | R | - | - |
 | microscope | R | - | R | R (`InstrumentClass`) | R (`InstrumentClass`) | - | - |

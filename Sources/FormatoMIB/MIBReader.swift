@@ -237,7 +237,7 @@ private struct MIBArray: FormatoLazyArray {
     let mapping: MIBMapping; let header: MIBHeader; let storedType: FormatoDataType
     let dataType: FormatoDataType; let shape: [Int]; let first: Int; let stride: Int; let flip: Bool
     func read(start: [Int], count: [Int]) throws -> FormatoArray {
-        try FormatoArray.checkSlab(start: start, count: count, shape: shape); try mapping.checkSize()
+        try FormatoArray.validateSlab(start: start, count: count, shape: shape); try mapping.checkSize()
         let elements = try FormatoArray.elementCount(count)
         let outSize = dataType.byteSize, inSize = storedType.byteSize
         var bytes = Data(count: elements * outSize)
@@ -246,7 +246,7 @@ private struct MIBArray: FormatoLazyArray {
         var failure: MIBError?
         var written = 0
         bytes.withUnsafeMutableBytes { out in
-            FormatoArray.forEachRun(start: start, count: count, shape: shape) { element, length in
+            FormatoArray.forEachContiguousRun(start: start, count: count, shape: shape) { element, length in
                 guard failure == nil else { return }
                 // A run is cut where the source leaves a frame or the flip's row changes, so each piece is contiguous in the file.
                 var i = element

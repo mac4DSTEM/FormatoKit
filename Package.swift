@@ -1,19 +1,9 @@
 // swift-tools-version: 6.2
 // SPDX-License-Identifier: GPL-3.0-only
-// FormatoKit — a file-format library for electron microscopy on the Mac, the counterpart of RosettaSciIO: readers (and later writers)
-// for the electron-microscopy formats, one module per format, over one data model (FormatoCore: axes, units, metadata
-// with provenance, lazy signals). Checked bit for bit against RosettaSciIO (GPL-3.0) at a pinned commit; the DM and Velox
-// readers are inherited from an earlier GPL-3.0 package.
-//
-// Swift 6 language mode, nonisolated by default (no `.defaultIsolation`), the three upcoming features that
-// the settings below enable, no unsafe flags (a versioned dependency cannot carry them): a consumer builds the kit optimised itself,
-// and tools/test.sh runs this package's tests with `-c release`. One product per module. What one module needs from
-// another is `package`, never `public`; what a consumer reads is `public` and is guarded by tools/consumer-check.
-// libhdf5 ships as three binary targets (FormatoLibHDF5, FormatoLibSZ, FormatoLibAEC: dynamic-framework XCFrameworks, arm64 macOS, minos 15),
-// so an app that embeds the kit gets them embedded and signed with its own identity at archive time. The readers still dlopen libhdf5.
-// Built by tools/xcframework/build.sh; the release assets are the zips it writes (the checksums below are its checksums.txt).
-// With FORMATO_LOCAL_XCFRAMEWORKS set (tools/test.sh, CI and the consumer check set it) the targets are the local build in dist/xcframeworks.
-// macOS 15 and later only: FormatoCore's guarded XML uses Foundation's macOS-only `XMLDocument`, and libhdf5 ships for macOS.
+// FormatoKit: electron-microscopy file formats for the Mac, checked bit for bit against RosettaSciIO at a pinned commit.
+// Swift 6 mode, no unsafe flags. What one module needs from another is `package`, never `public`; what a consumer reads
+// is `public` and is guarded by tools/consumer-check. libhdf5 ships as three binary XCFramework targets (arm64 macOS,
+// built by tools/xcframework/build.sh); with FORMATO_LOCAL_XCFRAMEWORKS set they are the local build in dist/xcframeworks.
 import PackageDescription
 
 let settings: [SwiftSetting] = [
@@ -79,9 +69,9 @@ let package = Package(
         .target(name: "FormatoPeek",
                 dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoHDF5", "FormatoMRC", "FormatoMSA", "FormatoTIFF", "Formato"],
                 swiftSettings: settings),
-        // The first ten minutes: `swift run formato-info <file>` prints every signal of a DM, Velox or TIFF file (public API
-        // only). An example, not a product.
+        // Examples, not products. `swift run formato-peek <file>`: one decimated frame and the header facts.
         .executableTarget(name: "formato-peek", dependencies: ["FormatoPeek"], path: "Examples/formato-peek", swiftSettings: settings),
+        // The first ten minutes: `swift run formato-info <file>` prints every signal of a DM, Velox or TIFF file (public API only).
         .executableTarget(name: "formato-info", dependencies: ["FormatoCore", "Formato"],
                           path: "Examples/formato-info", swiftSettings: settings),
 
@@ -94,12 +84,12 @@ let package = Package(
         // FormatoCore's own tests: the data model, units, lazy = eager, and the pins against RosettaSciIO.
         .testTarget(name: "FormatoCoreTests", dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD"],
                     exclude: ["Fixtures"], swiftSettings: settings),
-        // The moved tests, names unchanged, and the adapters' own.
-        // Test support: the pinned acquisition-metadata comparisons (tools/acq-metadata). Not a product.
-        .target(name: "FormatoAcquisitionPins", dependencies: ["FormatoCore"], path: "Tests/FormatoAcquisitionPins", swiftSettings: settings),
-        .testTarget(name: "FormatoDMTests", dependencies: ["FormatoDM", "FormatoCore", "FormatoAcquisitionPins"], exclude: ["Fixtures"],
+        // Test support, not a product: the fixture folders (FixtureDirs) and the pinned acquisition-metadata comparisons
+        // (tools/acq-metadata).
+        .target(name: "FormatoKitTestSupport", dependencies: ["FormatoCore"], path: "Tests/FormatoKitTestSupport", swiftSettings: settings),
+        .testTarget(name: "FormatoDMTests", dependencies: ["FormatoDM", "FormatoCore", "FormatoKitTestSupport"], exclude: ["Fixtures"],
                     swiftSettings: settings),
-        .testTarget(name: "FormatoEMDTests", dependencies: ["FormatoEMD", "FormatoCore", "FormatoHDF5", "FormatoAcquisitionPins"],
+        .testTarget(name: "FormatoEMDTests", dependencies: ["FormatoEMD", "FormatoCore", "FormatoHDF5", "FormatoKitTestSupport"],
                     exclude: ["Fixtures"], swiftSettings: settings),
         .testTarget(name: "FormatoHDF5Tests", dependencies: ["FormatoHDF5", "FormatoCore", "FormatoEMD", "FormatoHDF5ExitProbe"],
                     exclude: ["Fixtures"],
@@ -108,11 +98,10 @@ let package = Package(
         // its own process). Not a product; FormatoHDF5Tests depends on it only so `swift test` builds it.
         .executableTarget(name: "FormatoHDF5ExitProbe", dependencies: ["FormatoEMD", "FormatoHDF5"],
                           path: "Tests/FormatoHDF5ExitProbe", swiftSettings: settings),
-        // The Velox reader's part of the inherited golden baseline, byte for byte.
-        // Step 2: the TIFF container and TIFF files as signals, against RosettaSciIO and tifffile.
-        .testTarget(name: "FormatoTIFFTests", dependencies: ["FormatoTIFF", "FormatoDM", "FormatoCore", "FormatoAcquisitionPins", "FormatoKitTestSupport"], exclude: ["Fixtures"],
+        // The TIFF container and TIFF files as signals, against RosettaSciIO and tifffile.
+        .testTarget(name: "FormatoTIFFTests", dependencies: ["FormatoTIFF", "FormatoDM", "FormatoCore", "FormatoKitTestSupport"], exclude: ["Fixtures"],
                     swiftSettings: settings),
-        .testTarget(name: "FormatoMRCTests", dependencies: ["FormatoMRC", "FormatoCore", "FormatoAcquisitionPins"], exclude: ["Fixtures"],
+        .testTarget(name: "FormatoMRCTests", dependencies: ["FormatoMRC", "FormatoCore", "FormatoKitTestSupport"], exclude: ["Fixtures"],
                     swiftSettings: settings),
         .testTarget(name: "FormatoEMPADTests", dependencies: ["FormatoEMPAD", "FormatoCore"], exclude: ["Fixtures"],
                     swiftSettings: settings),
@@ -120,11 +109,10 @@ let package = Package(
         .testTarget(name: "FormatoMSATests", dependencies: ["FormatoMSA", "FormatoCore"], exclude: ["Fixtures"], swiftSettings: settings),
         .testTarget(name: "FormatoPeekTests", dependencies: ["FormatoPeek", "FormatoCore", "FormatoHDF5", "FormatoKitTestSupport"], swiftSettings: settings),
         .testTarget(name: "FormatoLoaderTests", dependencies: ["Formato", "FormatoCore"], swiftSettings: settings),
-        // The comparisons with the pinned RosettaSciIO, Pint and tifffile values and the inherited golden baseline
+        // The comparisons with the pinned RosettaSciIO, Pint and tifffile values and the inherited golden baseline, byte for byte
         // (`swift test -c release --parallel --skip FormatoKitParityTests` leaves them out). Fixtures stay in the old test folders.
-        .target(name: "FormatoKitTestSupport", path: "Tests/FormatoKitTestSupport", swiftSettings: settings),
         .testTarget(name: "FormatoKitParityTests",
-                    dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoTIFF", "FormatoKitTestSupport"],
+                    dependencies: ["FormatoCore", "FormatoDM", "FormatoEMD", "FormatoTIFF", "FormatoPeek", "FormatoKitTestSupport"],
                     swiftSettings: settings),
     ],
     swiftLanguageModes: [.v6]

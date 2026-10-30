@@ -452,7 +452,7 @@ nonisolated enum HDF5Ops {
             }
         }
         let start = start ?? [Int](repeating: 0, count: found.shape.count), count = count ?? found.shape
-        do { try FormatoArray.checkSlab(start: start, count: count, shape: found.shape) } catch {
+        do { try FormatoArray.validateSlab(start: start, count: count, shape: found.shape) } catch {
             throw HDF5FileError.invalidArgument("slab \(start) of \(count) is outside \(path) of shape \(found.shape)")
         }
         let elements = try FormatoArray.elementCount(count)

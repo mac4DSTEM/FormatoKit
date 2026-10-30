@@ -16,6 +16,8 @@
 # the local build runs, and Xcode re-signs on embed.
 #
 # Output: <outdir>/<Name>.xcframework, <Name>.xcframework.zip and checksums.txt ("<Name> <swift package compute-checksum>").
+# Each zip is checked as a consumer unpacks it: no AppleDouble ._* entry, and codesign --verify --deep --strict passes on the
+# unzipped framework (a ._* file inside a framework fails it with "file added").
 set -euo pipefail
 local=0; [[ ${1:-} == --local ]] && { local=1; shift }
 here=${0:A:h}
@@ -78,7 +80,17 @@ for name in FormatoLibAEC FormatoLibSZ FormatoLibHDF5; do
   fi
   rm -rf $out/$name.xcframework $out/$name.xcframework.zip
   xcodebuild -create-xcframework -framework $work/$name.framework -output $out/$name.xcframework >/dev/null
-  (cd $out && ditto -c -k --keepParent $name.xcframework $name.xcframework.zip)
+  # --norsrc --noextattr: no AppleDouble ._* entries, which an unzip turns into files inside the signed bundle
+  (cd $out && ditto -c -k --norsrc --noextattr --keepParent $name.xcframework $name.xcframework.zip)
+  # the zip as a consumer gets it: no ._* entry, and the unzipped framework passes codesign --strict
+  if unzip -Z1 $out/$name.xcframework.zip | grep -E '(^|/)\._'; then
+    print -u2 "build.sh: $name.xcframework.zip carries AppleDouble ._* entries"; exit 1
+  fi
+  mkdir $work/unzip-$name
+  unzip -q $out/$name.xcframework.zip -d $work/unzip-$name
+  if ! codesign --verify --deep --strict $work/unzip-$name/$name.xcframework/macos-arm64/$name.framework; then
+    print -u2 "build.sh: $name.framework from the zip fails codesign --verify --deep --strict"; exit 1
+  fi
 done
 : > $out/checksums.txt
 for name in FormatoLibHDF5 FormatoLibSZ FormatoLibAEC; do

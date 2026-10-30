@@ -1,0 +1,52 @@
+{
+ "file": "si-eels-optics.emd",
+ "generator": "tools/velox-eels/pins.py",
+ "planted": {
+  "beam_convergence_rad": 0.02143377827928146,
+  "energy_offsets_ev": [
+   -21.5026,
+   480.00000000000006
+  ],
+  "groups": [
+   "e1",
+   "e2"
+  ]
+ },
+ "pyeelsmodel": [
+  {
+   "beam_voltage_v": 300000,
+   "collection_angle_begin_rad": {
+    "bits": "0000000000000000",
+    "value": 0.0
+   },
+   "collection_angle_end_rad": {
+    "bits": "3f6b63ee5bb01af8",
+    "value": 0.0033435492928249842
+   }
+  },
+  {
+   "beam_voltage_v": 300000,
+   "collection_angle_begin_rad": {
+    "bits": "3f40624dd2f1a9fc",
+    "value": 0.0005
+   },
+   "collection_angle_end_rad": {
+    "bits": "3f8999999999999a",
+    "value": 0.0125
+   }
+  }
+ ],
+ "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.emd.file_reader, select_type=spectrum_image); pyEELSMODEL eed9f0721d5b47788c00c8f81509f0e3006df6f4 (io_tools/emd_reader.py open_emd)",
+ "rosettasciio": {
+  "eds_beam_energy_kv": {
+   "bits": "4072c00000000000",
+   "source": "Optics.AccelerationVoltage",
+   "value": 300.0
+  },
+  "eels_signals": 2
+ },
+ "rosettasciio_eels_energy_offsets_ev": [
+  -21.5026,
+  480.00000000000006
+ ]
+}

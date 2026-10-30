@@ -16,7 +16,9 @@
 //
 //  FormatoKit 0.11.0 adds `pixelSize` (`BinaryResult.PixelSize` in its stated unit; RosettaSciIO uses it as the axis scale, so
 //  the note says it is not a metadata mapping) under `.rosettaSciIO`, and `velox(spectrumImage:)`, the same fields for the metadata
-//  of a spectrum image (`VeloxEMDReader.spectrumImageMetadata()`).
+//  of a spectrum image (`VeloxEMDReader.spectrumImageMetadata()`). `velox(eelsSpectrumImage:)` reads the same fields from one EELS
+//  spectrum image's metadata (`VeloxEMDReader.eelsSpectrumImageMetadata()`) plus the collection and convergence semi-angles, where
+//  RosettaSciIO maps nothing (the collection angle as pyEELSMODEL reads it; the convergence angle labelled unvalidated).
 //
 //  `.app` is the consumer's reading of the same entry, pinned to its source: high tension, detector, instrument, start
 //  date and dwell only; magnification, camera length, exposure and mode are `unread` (the consumer's reader predated the
@@ -50,12 +52,12 @@ nonisolated extension AcquisitionMetadata {
         // Stage: tilts are radians in the file and degrees rounded to 3 decimals in the mapping (:951-960); the position
         // is metres as stored, rounded to 6 decimals (:961-972). Each position coordinate is read alone, as the mapping reads it.
         let degreesNote = "degrees from the stored radians, rounded to 3 decimals, as RosettaSciIO"
-        out.stageTiltAlphaDeg = m.stageAlphaRadians.map { MetadataReading(pythonRound(numpyDegrees($0), 3), note: degreesNote) }
-        out.stageTiltBetaDeg = m.stageBetaRadians.map { MetadataReading(pythonRound(numpyDegrees($0), 3), note: degreesNote) }
+        out.stageTiltAlphaDeg = m.stageAlphaRadians.map { MetadataReading(roundLikePython(degreesLikeNumPy($0), 3), note: degreesNote) }
+        out.stageTiltBetaDeg = m.stageBetaRadians.map { MetadataReading(roundLikePython(degreesLikeNumPy($0), 3), note: degreesNote) }
         let metresNote = "metres as stored, rounded to 6 decimals, as RosettaSciIO"
-        out.stageX = m.stageXMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
-        out.stageY = m.stageYMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
-        out.stageZ = m.stageZMeters.map { MetadataReading(pythonRound($0, 6), note: metresNote) }
+        out.stageX = m.stageXMeters.map { MetadataReading(roundLikePython($0, 6), note: metresNote) }
+        out.stageY = m.stageYMeters.map { MetadataReading(roundLikePython($0, 6), note: metresNote) }
+        out.stageZ = m.stageZMeters.map { MetadataReading(roundLikePython($0, 6), note: metresNote) }
         // The pixel size at the specimen: RosettaSciIO's axis scale, `PixelUnitX` for both axes as it reads them (rows from the
         // height, columns from the width). A pixel size that is not a finite positive number is no calibration (nil).
         if let size = m.pixelSizeMeters, size.width.isFinite, size.width > 0, size.height.isFinite, size.height > 0,
@@ -79,6 +81,26 @@ nonisolated extension AcquisitionMetadata {
                              convention: AcquisitionMetadataConvention = .rosettaSciIO) -> AcquisitionMetadata {
         velox(VeloxImageInfo(id: "", detectorName: metadata.binaryResultDetector ?? "", height: 0, width: 0, frameCount: 0,
                              elementType: nil, metadata: metadata), timeZone: timeZone, convention: convention)
+    }
+
+    /// The fields one EELS spectrum image's metadata records (`VeloxEMDReader.eelsSpectrumImageMetadata()`): those of
+    /// `velox(spectrumImage:)`, among them the beam energy `Optics.AccelerationVoltage` / 1e3 (kV, RosettaSciIO's mapping for
+    /// the EDS signal of the same file; pyEELSMODEL's `emd_reader` reads the same volts as E0), and the two angles in mrad:
+    /// the collection semi-angle `EnergyFilter.CollectionAngleRange.End` × 1e3 (pyEELSMODEL's beta, radians as stored) and
+    /// the convergence semi-angle `Optics.BeamConvergence` × 1e3 (no published reader reads it: unvalidated). An angle that is
+    /// not a finite positive number is nil (pyEELSMODEL passes a stored 0 through as beta; here 0 is no collection angle). The
+    /// angles are read under `.rosettaSciIO` only; `.app` gives what `velox(spectrumImage:)` gives.
+    public static func velox(eelsSpectrumImage metadata: VeloxMetadata, timeZone: TimeZone = .current,
+                             convention: AcquisitionMetadataConvention = .rosettaSciIO) -> AcquisitionMetadata {
+        var out = velox(spectrumImage: metadata, timeZone: timeZone, convention: convention)
+        guard convention == .rosettaSciIO else { return out }
+        if let beta = positive(metadata.collectionAngleEndRadians) {
+            out.collectionAngleMrad = MetadataReading(beta * 1e3, note: "EnergyFilter.CollectionAngleRange.End in radians × 1e3, the beta pyEELSMODEL's emd_reader reads")
+        }
+        if let alpha = positive(metadata.beamConvergenceRadians) {
+            out.convergenceAngleMrad = MetadataReading(alpha * 1e3, note: "Optics.BeamConvergence in radians × 1e3; " + veloxUnvalidated)
+        }
+        return out
     }
 
     static func veloxApp(_ entry: VeloxImageInfo, timeZone: TimeZone) -> AcquisitionMetadata {

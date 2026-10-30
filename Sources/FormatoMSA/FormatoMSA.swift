@@ -147,21 +147,6 @@ private nonisolated func pySplit(_ t: PyText, _ sep: PyText) -> [PyText] {
     return out
 }
 
-/// `s.split()`: runs of whitespace separate, none at the ends.
-private nonisolated func pySplitWhitespace(_ t: PyText) -> [PyText] {
-    var out: [PyText] = []
-    var current: PyText = []
-    for s in t {
-        if pyIsSpace(s) {
-            if !current.isEmpty { out.append(current); current = [] }
-        } else {
-            current.append(s)
-        }
-    }
-    if !current.isEmpty { out.append(current) }
-    return out
-}
-
 // MARK: strptime (the three formats RosettaSciIO uses)
 
 private nonisolated func regexMatch(_ pattern: String, _ text: String) -> [String]? {
@@ -506,6 +491,8 @@ public nonisolated enum MSAWriter {
                 case .text(let t): set(keyword.name, .text(t))
                 case .number(let d): set(keyword.name, .number(d))
                 case .flag(let b): set(keyword.name, .text(b ? "True" : "False"))
+                // Python's `str(list)` of plain strings; no MSA keyword maps to a list today.
+                case .texts(let l): set(keyword.name, .text("[" + l.map { "'\($0)'" }.joined(separator: ", ") + "]"))
                 }
             }
         }

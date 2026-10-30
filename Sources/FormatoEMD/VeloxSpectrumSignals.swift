@@ -7,9 +7,10 @@
 //        and the mapping HyperSpy applies to `original_metadata` (`_get_mapping`) for every key the spectrum's metadata holds.
 //        RosettaSciIO reads spectra only from a file whose `Data` has no `Image` group (type `Spectrum`) or has both `Image` and
 //        `SpectrumImage` (type `SpectrumStream`); in any other file it returns none, and so does this.
-//        Eager: a spectrum is a few thousand counts. Registered deviations (the SI path's, docs/parity.md): the four metadata
-//        groups (`Displays`, `Operations`, `SharedProperties`, `Features`) are not parsed, so a malformed entry there does not
-//        refuse the read; `Sample.elements` (the element selection) is not mapped.
+//        Eager: a spectrum is a few thousand counts. The four metadata groups (`Displays`, `Operations`, `SharedProperties`,
+//        `Features`) are parsed as `read_file` parses them (a malformed entry refuses the read), and `Sample.elements` is mapped as
+//        HyperSpy applies RosettaSciIO's `_convert_element_list` (VeloxSampleElements.swift). Registered deviation (docs/parity.md):
+//        `_parse_image_display`, which RosettaSciIO runs for a SpectrumStream file before reading its spectra, is not run here.
 //
 
 import Foundation
@@ -60,6 +61,9 @@ private nonisolated struct VeloxSpectrumRead {
         guard let versionText = file.readString("/Version"),
               let version = (try? JSONSerialization.jsonObject(with: Data(versionText.utf8))) as? [String: Any],
               veloxAcceptsFormat(version["format"] as? String) else { throw VeloxEMDError.notVeloxFile(fileName) }
+        // `read_file`: `_parse_json(f["Version"][0])["version"]` (a KeyError without it), then the four metadata groups.
+        guard let versionValue = version["version"] else { throw raises("its Version has no version key") }
+        let groups = try VeloxFileGroups.read(file: file) { raises($0) }
         guard file.exists("/Data"), !isDataset("/Data") else { throw raises("no Data group") }
         // `_check_im_type`: Image + SpectrumImage is a stream, Image alone is images, no Image is a spectrum.
         let hasImage = file.exists("/Data/Image"), hasSpectrumImage = file.exists("/Data/SpectrumImage")
@@ -69,12 +73,12 @@ private nonisolated struct VeloxSpectrumRead {
         var out: [FormatoSignal] = []
         for key in file.children(of: "/Data/Spectrum") {
             try FormatoCancellation.check(cancelled)
-            out.append(try spectrum(key))
+            out.append(try spectrum(key, version: versionValue, groups: groups))
         }
         return out
     }
 
-    func spectrum(_ key: String) throws -> FormatoSignal {
+    func spectrum(_ key: String, version: Any, groups: [String: [String: VeloxFileGroups.Entry]]) throws -> FormatoSignal {
         let group = "/Data/Spectrum/" + key
         guard file.exists(group + "/Data") else { throw raises("\(group) has no Data") }
         guard file.exists(group + "/Metadata") else { throw raises("\(group) has no Metadata") }
@@ -108,7 +112,16 @@ private nonisolated struct VeloxSpectrumRead {
         axes.append(FormatoAxis(name: "Energy", size: data.bins, scale: energy.scale, offset: energy.offset, units: "keV", navigate: false))
         let shape = data.stack > 1 ? [data.stack, data.bins] : [data.bins]
         let array = try FormatoArray(dataType: data.type, shape: shape, bytes: data.bytes)
-        let md = try metadata(om: om, source: source)
+        var md = try metadata(om: om, source: source)
+        // `_get_mapping()`: `int(self.version)` picks the settings group; `original_metadata.update(self.original_metadata)` put the
+        // four groups beside the spectrum's own keys, so the mapping finds the group's entries there.
+        guard let versionNumber = pythonIntValue(version) else { throw raises("int() refuses its Version's version") }
+        let (groupName, entryName) = VeloxSampleElements.settingsPath(version: versionNumber)
+        if let settings = groups[groupName]?[entryName] {
+            let (elements, elementsSource) = try VeloxSampleElements.convert(settings.value, path: String(settings.path.dropFirst())) { raises($0) }
+            md.set(entry("Sample.elements", .texts(elements), source: elementsSource,
+                         rule: "rsciio emd velox mapping _convert_element_list, as HyperSpy applies it: the first of keys() (sorted), atomic_number2name[int(z)]"))
+        }
         return FormatoSignal(title: md["General.title"]?.value.text ?? "EDS", signalType: "EDS_TEM", axes: axes, metadata: md, data: array)
     }
 
@@ -240,7 +253,7 @@ private nonisolated struct VeloxSpectrumRead {
             guard let x = veloxPythonFloat(raw) else { throw raises("\(path): float() refuses it") }
             md.set(entry(key, .text(format(x)), units: units, source: source + path, rule: rule))
         }
-        let degrees = { (x: Double) in AcquisitionMetadata.pythonRound(AcquisitionMetadata.numpyDegrees(x), 3) }
+        let degrees = { (x: Double) in AcquisitionMetadata.roundLikePython(AcquisitionMetadata.degreesLikeNumPy(x), 3) }
         try number("Optics.AccelerationVoltage", "Acquisition_instrument.TEM.beam_energy", units: "kV", rule: "rsciio emd velox mapping: float(x) / 1e3") { $0 / 1e3 }
         try number("Optics.CameraLength", "Acquisition_instrument.TEM.camera_length", units: "mm", rule: "rsciio emd velox mapping: float(x) * 1e3") { $0 * 1e3 }
         try number("CustomProperties.StemMagnification.value", "Acquisition_instrument.TEM.magnification", rule: "rsciio emd velox mapping: float") { $0 }
@@ -255,7 +268,7 @@ private nonisolated struct VeloxSpectrumRead {
         try number("Stage.BetaTilt", "Acquisition_instrument.TEM.Stage.tilt_beta", units: "°", rule: "rsciio emd velox mapping: round(np.degrees(float(x)), 3)", degrees)
         for axis in ["x", "y", "z"] {
             try number("Stage.Position.\(axis)", "Acquisition_instrument.TEM.Stage.\(axis)", units: "m", rule: "rsciio emd velox mapping: round(float(x), 6)") {
-                AcquisitionMetadata.pythonRound($0, 6)
+                AcquisitionMetadata.roundLikePython($0, 6)
             }
         }
         if let frames = node("ImportedDataParameter.Number_of_frames"), !(frames is NSNull) {
@@ -270,11 +283,11 @@ private nonisolated struct VeloxSpectrumRead {
                          rule: "rsciio emd velox mapping: as stored"))
         }
         try number("DetectorMetadata.ElevationAngle", "Acquisition_instrument.TEM.Detector.EDS.elevation_angle", units: "°",
-                   rule: "rsciio emd velox mapping: round(float(x), 3)") { AcquisitionMetadata.pythonRound($0, 3) }
+                   rule: "rsciio emd velox mapping: round(float(x), 3)") { AcquisitionMetadata.roundLikePython($0, 3) }
         try number("DetectorMetadata.Gain", "Signal.Noise_properties.Variance_linear_model.gain_factor", rule: "rsciio emd velox mapping: float") { $0 }
         try number("DetectorMetadata.Offset", "Signal.Noise_properties.Variance_linear_model.gain_offset", rule: "rsciio emd velox mapping: float") { $0 }
         try text("DetectorMetadata.AzimuthAngle", "Acquisition_instrument.TEM.Detector.EDS.azimuth_angle", units: "°",
-                 rule: "rsciio emd velox mapping: '{:.3f}'.format(np.degrees(float(x)))") { String(format: "%.3f", AcquisitionMetadata.numpyDegrees($0)) }
+                 rule: "rsciio emd velox mapping: '{:.3f}'.format(np.degrees(float(x)))") { String(format: "%.3f", AcquisitionMetadata.degreesLikeNumPy($0)) }
         try text("DetectorMetadata.LiveTime", "Acquisition_instrument.TEM.Detector.EDS.live_time", units: "s",
                  rule: "rsciio emd velox mapping: '{:.6f}'.format(float(x))") { String(format: "%.6f", $0) }
         try text("DetectorMetadata.RealTime", "Acquisition_instrument.TEM.Detector.EDS.real_time", units: "s",
