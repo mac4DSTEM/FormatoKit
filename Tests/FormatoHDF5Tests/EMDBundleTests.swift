@@ -90,6 +90,21 @@ import FormatoHDF5
         #expect(floats(read).map(\.bitPattern) == pixels.map(\.bitPattern))
     }
 
+    /// The app wrote `version_major` / `version_minor` as int32 (its files here, measured with h5py); `HDF5Reader.attribute` widens every
+    /// integer, so the stored width is read directly. (The Bragg-vector writer keeps int64, as py4DSTEM's emdfile writes it.)
+    @Test func versionAttributesAreInt32AsTheAppWroteThem() throws {
+        let dir = try scratch(); defer { cleanup(dir) }
+        let out = dir.appendingPathComponent("versions.h5")
+        let (layout, pixels) = try cubeLayout()
+        try EMDDatacubeWriter.write(pixels, layout: layout, to: out)
+        for name in ["version_major", "version_minor"] {
+            #expect(try HDF5Reader(url: app("app-datacube.h5")).storedIntegerAttributeBytes(name, of: "/") == 4, "\(name), the app file")
+            #expect(try HDF5Reader(url: out).storedIntegerAttributeBytes(name, of: "/") == 4, "\(name), the kit file")
+        }
+        #expect(try HDF5Reader(url: out).attribute("version_major", of: "/") == .integer(1))
+        #expect(try HDF5Reader(url: out).attribute("version_minor", of: "/") == .integer(0))
+    }
+
     @Test func wholeCubeWriteEqualsTheAppsFileAndLeavesNoScratch() throws {
         let dir = try scratch(); defer { cleanup(dir) }
         let out = dir.appendingPathComponent("whole.h5")
