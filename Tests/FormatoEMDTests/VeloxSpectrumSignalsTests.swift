@@ -18,11 +18,14 @@ extension VeloxEMDSerialized {
             try VeloxSpectrumSignals(path: path, timeZone: zone.flatMap { TimeZone(identifier: $0) }).signals
         }
 
+        /// Where tools/test.sh unzips the public files of RosettaSciIO's clone (absent without the clone).
+        private static let publicRoot = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().appendingPathComponent(".build/rsciio-unzipped/emd")
+
         /// The public files of RosettaSciIO's clone, unzipped by tools/test.sh; nil when absent.
         private func publicPath(_ key: String) -> String? {
             let parts = key.split(separator: "/", maxSplits: 1).map(String.init)
-            let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-            let path = root.appendingPathComponent(".build/rsciio-unzipped/emd/\(parts[0])/\(parts[1])").path
+            let path = Self.publicRoot.appendingPathComponent("\(parts[0])/\(parts[1])").path
             return FileManager.default.fileExists(atPath: path) ? path : nil
         }
 
@@ -39,14 +42,15 @@ extension VeloxEMDSerialized {
             try check(cases) { Self.fixtures.appendingPathComponent("spectra/\($0).emd").path }
         }
 
-        /// RosettaSciIO's public Velox files with spectra (and the ones without), as its own reader returns them.
-        @Test func testPublicFilesEqualRosettaSciIO() throws {
+        /// RosettaSciIO's public Velox files with spectra (and the ones without), as its own reader returns them. Skipped
+        /// without the clone; the planted cases above stand then.
+        @Test(.enabled(if: FileManager.default.fileExists(atPath: publicRoot.path), "RosettaSciIO's public Velox files are not unzipped"))
+        func testPublicFilesEqualRosettaSciIO() throws {
             let data = try Data(contentsOf: Self.fixtures.appendingPathComponent("spectra-pins.json"))
             let pins = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
             let all = try #require(pins["public"] as? [String: [String: Any]])
             let present = all.filter { publicPath($0.key) != nil }
-            guard !present.isEmpty else { return }   // a clone without References: the planted cases above stand
-            #expect(present.count == all.count, "every public file is unzipped or none")
+            #expect(present.count == all.count, "every public file is unzipped")
             try check(present) { publicPath($0)! }
         }
 

@@ -144,9 +144,11 @@ import FormatoKitTestSupport
 
     /// RosettaSciIO's public TVIPS test file, when `tools/test.sh` has unpacked it: skipped when absent. It is read as generic
     /// if its layout is one this reader reads, and then it carries the flag; a layout refusal is also acceptable.
-    @Test func testThePublicTVIPSFileReadsAsGenericWhenItsLayoutIsRead() throws {
-        let url = FixtureDirs.unpackedTIFF.appendingPathComponent("tiff/TVIPS_bin4.zip/TVIPS_bin4.tif")
-        guard FileManager.default.fileExists(atPath: url.path) else { return }
+    private static let publicTVIPS = FixtureDirs.unpackedTIFF.appendingPathComponent("tiff/TVIPS_bin4.zip/TVIPS_bin4.tif")
+
+    @Test(.enabled(if: FileManager.default.fileExists(atPath: publicTVIPS.path), "RosettaSciIO's TVIPS file is not unpacked"))
+    func testThePublicTVIPSFileReadsAsGenericWhenItsLayoutIsRead() throws {
+        let url = Self.publicTVIPS
         let named = #expect(throws: (any Error).self) { _ = try TIFFSignals(path: url.path) }
         #expect(named.map { "\($0)".contains("TVIPS") } == true, "\(String(describing: named))")
         do {

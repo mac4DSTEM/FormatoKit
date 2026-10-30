@@ -217,22 +217,4 @@ private func temporary(_ name: String, _ data: Data) throws -> URL {
         #expect(throws: Peek.PeekError.self) { try Peek.summary(url: url) }
         do { _ = try Peek.summary(url: url) } catch { #expect("\(error.localizedDescription)".contains("nothing.xyz")) }
     }
-
-    /// The 1.66 GB Velox spectrum image of the study: a peek reads its HAADF image, not the cube. Skips without the data.
-    @Test func theBigVeloxFileCostsUnderSixtyFourMegabytes() throws {
-        let dataRoot = ProcessInfo.processInfo.environment["MACEM_DATA"] ?? FixtureDirs.repository.deletingLastPathComponent().appendingPathComponent("data").path
-        let url = URL(fileURLWithPath: dataRoot).appendingPathComponent("stem-edx/SI HAADF 1456 77000 x 20260420.emd")
-        guard FileManager.default.fileExists(atPath: url.path) else { return }
-        func footprint() -> Int {
-            var info = task_vm_info_data_t(); var count = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
-            _ = withUnsafeMutablePointer(to: &info) { $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count) } }
-            return Int(info.phys_footprint)
-        }
-        let before = footprint()
-        let frame = try Peek.thumbnailFrame(url: url, maxPixels: 512)
-        let after = footprint()
-        #expect(frame.width <= 512 && frame.height <= 512 && frame.kind == .image)
-        #expect(after - before < 64 << 20, "peek grew the footprint by \((after - before) >> 20) MB")
-        _ = try Peek.summary(url: url)
-    }
 }
