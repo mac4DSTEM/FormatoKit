@@ -491,6 +491,8 @@ public nonisolated enum MSAWriter {
                 case .text(let t): set(keyword.name, .text(t))
                 case .number(let d): set(keyword.name, .number(d))
                 case .flag(let b): set(keyword.name, .text(b ? "True" : "False"))
+                // Python's `str(list)` of plain strings; no MSA keyword maps to a list today.
+                case .texts(let l): set(keyword.name, .text("[" + l.map { "'\($0)'" }.joined(separator: ", ") + "]"))
                 }
             }
         }

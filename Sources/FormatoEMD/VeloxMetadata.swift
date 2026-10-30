@@ -183,6 +183,19 @@ public nonisolated struct VeloxMetadata: Sendable {
     public var alphaDegrees: Double? { stageAlphaRadians.map { $0 * 180 / .pi } }
     public var betaDegrees: Double? { stageBetaRadians.map { $0 * 180 / .pi } }
 
+    /// The live and real time (s) of each X-ray segment that is not disabled and whose `DetectorName` contains `BinaryResult.Detector`
+    /// (the name match of RosettaSciIO's energy axis, `_get_dispersion_offset`), in the file's order, as stored. For a single spectrum
+    /// (`VeloxEMDReader.spectrumMetadata()`): RosettaSciIO's public `fei_emd_spectrum.emd` (Velox 4) names "SuperXG2", all four
+    /// segments, each stating the same times; a Velox 6 spectrum names one ("SuperXG24"). Unlike the energy axis, every matching
+    /// `AnalyticalDetector` entry is kept, not the first. Velox 4 to 13 store them as `Detectors.Detector-<n>.LiveTime` / `.RealTime`; RosettaSciIO maps only
+    /// `DetectorMetadata.LiveTime` / `.RealTime`, which no public single spectrum has. Empty when `BinaryResult.Detector` is absent.
+    public var binaryResultSegmentTimes: [VeloxSegmentTimes] {
+        guard let named = binaryResultDetector else { return [] }
+        return superXDetectors.filter { $0.enabled != false && (named.isEmpty || $0.name.contains(named)) }.map {
+            VeloxSegmentTimes(name: $0.name, liveTimeSeconds: $0.liveTimeColumn0, realTimeSeconds: $0.realTimeColumn0)
+        }
+    }
+
     /// The grid `ScanSize x ScanArea` implies, `(ny, nx)`; nil unless both are
     /// integers to within 1/100 of a pixel (the Velox rasters are exact binary fractions).
     public var derivedGrid: (ny: Int, nx: Int)? {

@@ -1,0 +1,1560 @@
+{
+ "files": {
+  "el-bad-json": {
+   "raises": "JSONDecodeError"
+  },
+  "el-bad-number": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "raises": "ValueError"
+    }
+   }
+  ],
+  "el-digit-string": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "value": [
+      "O",
+      "He"
+     ]
+    }
+   }
+  ],
+  "el-empty-group": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "raises": "IndexError"
+    }
+   }
+  ],
+  "el-empty-selection": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "value": []
+    }
+   }
+  ],
+  "el-empty-string": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "value": []
+    }
+   }
+  ],
+  "el-entry-not-object": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "raises": "AttributeError"
+    }
+   }
+  ],
+  "el-no-version-key": {
+   "raises": "KeyError"
+  },
+  "el-none": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ]
+   }
+  ],
+  "el-null-selection": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "raises": "TypeError"
+    }
+   }
+  ],
+  "el-settings-list": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "raises": "AttributeError"
+    }
+   }
+  ],
+  "el-slug-order": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "value": [
+      "Fe"
+     ]
+    }
+   }
+  ],
+  "el-v11-operations-only": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ]
+   }
+  ],
+  "el-v11-two-settings": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "value": [
+      "Ca",
+      "Cu",
+      "H",
+      "Uue"
+     ]
+    }
+   },
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "value": [
+      "Ca",
+      "Cu",
+      "H",
+      "Uue"
+     ]
+    }
+   }
+  ],
+  "el-v13-disabled": [
+   {
+    "binary_result_detector": "UltraX",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": "true",
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "400741d664254386",
+       "value": 2.9071472
+      },
+      "name": "UltraX1",
+      "real_time_s": {
+       "bits": "400741d664254386",
+       "value": 2.9071472
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": "true",
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "400741d664254386",
+       "value": 2.9071472
+      },
+      "name": "UltraX2",
+      "real_time_s": {
+       "bits": "400741d664254386",
+       "value": 2.9071472
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": "false",
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "400741d664254386",
+       "value": 2.9071472
+      },
+      "name": "UltraX3",
+      "real_time_s": {
+       "bits": "400741d664254386",
+       "value": 2.9071472
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": "true",
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "400a000000000000",
+       "value": 3.25
+      },
+      "name": "UltraX4",
+      "real_time_s": {
+       "bits": "400c000000000000",
+       "value": 3.5
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "value": [
+      "O",
+      "Fe",
+      "Co"
+     ]
+    }
+   }
+  ],
+  "el-v4": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "value": [
+      "Nb",
+      "O"
+     ]
+    }
+   }
+  ],
+  "el-v6-one-segment": [
+   {
+    "binary_result_detector": "SuperXG24",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "403b951bcb368b5c",
+       "value": 27.58245534974718
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4040624eb42d9996",
+       "value": 32.76802685
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "403bd1befa684e54",
+       "value": 27.819320345368695
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4040624d759ee88e",
+       "value": 32.767988875
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "403be81d4ff9cfd3",
+       "value": 27.906697271813595
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "40406245260f5e42",
+       "value": 32.76773525
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "403bb335b231a35b",
+       "value": 27.700038087004355
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4040624f10088bc0",
+       "value": 32.7680378
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "value": [
+      "Fe",
+      "Co",
+      "O",
+      "Si"
+     ]
+    }
+   }
+  ],
+  "el-version-text": {
+   "raises": "ValueError"
+  },
+  "el-z-0": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "raises": "KeyError"
+    }
+   }
+  ],
+  "el-z-120": [
+   {
+    "binary_result_detector": "SuperXG2",
+    "detectors": [
+     {
+      "enabled": null,
+      "key": "Detector-0",
+      "live_time_s": null,
+      "name": "HAADF",
+      "real_time_s": null,
+      "type": "ScanningDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-1",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG21",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-2",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG22",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-3",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG23",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     },
+     {
+      "enabled": null,
+      "key": "Detector-4",
+      "live_time_s": {
+       "bits": "40241f74c46cc830",
+       "value": 10.061437738684702
+      },
+      "name": "SuperXG24",
+      "real_time_s": {
+       "bits": "4026bace71b2cac3",
+       "value": 11.36485629375
+      },
+      "type": "AnalyticalDetector"
+     }
+    ],
+    "elements": {
+     "raises": "KeyError"
+    }
+   }
+  ]
+ },
+ "generator": "tools/velox-elements/pins.py",
+ "public": {
+  "fei_emd_files.zip/fei_SI_EDS-HAADF-4detectors_2frames.emd": [
+   {
+    "elements": {
+     "value": []
+    }
+   },
+   {
+    "elements": {
+     "value": []
+    }
+   },
+   {
+    "elements": {
+     "value": []
+    }
+   },
+   {
+    "elements": {
+     "value": []
+    }
+   }
+  ],
+  "fei_emd_files.zip/fei_SI_SuperX-HAADF_10frames_10x50.emd": [],
+  "fei_emd_files.zip/fei_emd_image.emd": [],
+  "fei_emd_files.zip/fei_emd_si.emd": [],
+  "fei_emd_files.zip/fei_emd_spectrum.emd": [
+   {
+    "elements": null
+   }
+  ],
+  "velox_EELS_EDS.zip/example_velox_EELS_EDS.emd": [
+   {
+    "elements": {
+     "value": [
+      "O",
+      "Fe",
+      "Co"
+     ]
+    }
+   },
+   {
+    "elements": {
+     "value": [
+      "O",
+      "Fe",
+      "Co"
+     ]
+    }
+   },
+   {
+    "elements": {
+     "value": [
+      "O",
+      "Fe",
+      "Co"
+     ]
+    }
+   },
+   {
+    "elements": {
+     "value": [
+      "O",
+      "Fe",
+      "Co"
+     ]
+    }
+   },
+   {
+    "elements": {
+     "value": [
+      "O",
+      "Fe",
+      "Co"
+     ]
+    }
+   },
+   {
+    "elements": {
+     "value": [
+      "O",
+      "Fe",
+      "Co"
+     ]
+    }
+   }
+  ],
+  "velox_emd_version11.zip/Test SI 16x16 215 kx.emd": [
+   {
+    "elements": {
+     "value": [
+      "C",
+      "O",
+      "Ca",
+      "Cu"
+     ]
+    }
+   },
+   {
+    "elements": {
+     "value": [
+      "C",
+      "O",
+      "Ca",
+      "Cu"
+     ]
+    }
+   },
+   {
+    "elements": {
+     "value": [
+      "C",
+      "O",
+      "Ca",
+      "Cu"
+     ]
+    }
+   },
+   {
+    "elements": {
+     "value": [
+      "C",
+      "O",
+      "Ca",
+      "Cu"
+     ]
+    }
+   }
+  ],
+  "velox_emd_version11.zip/Test SI 16x16 ReducedData 215 kx.emd": [
+   {
+    "elements": {
+     "value": [
+      "C",
+      "O",
+      "Ca",
+      "Cu"
+     ]
+    }
+   },
+   {
+    "elements": {
+     "value": [
+      "C",
+      "O",
+      "Ca",
+      "Cu"
+     ]
+    }
+   },
+   {
+    "elements": {
+     "value": [
+      "C",
+      "O",
+      "Ca",
+      "Cu"
+     ]
+    }
+   },
+   {
+    "elements": {
+     "value": [
+      "C",
+      "O",
+      "Ca",
+      "Cu"
+     ]
+    }
+   }
+  ]
+ },
+ "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.emd.file_reader, select_type=single_spectrum); the mapping applied with HyperSpy 2.4.0's DictionaryTreeBrowser as hyperspy/io.py dict2signal applies it",
+ "sha256": {
+  "el-bad-json": "a481682ba9e75395fc3e079b8671b0c7295ca5361e5756bb58dd53400b4bec01",
+  "el-bad-number": "09ea351789d4684ae9458e8108b5e10bc2d9c786d4cbe93d1c200cf48dc15470",
+  "el-digit-string": "bf371a15c9a40e0c06c9aabb789a001f4726562d0864025339fc0380b05e917c",
+  "el-empty-group": "be8f2088e8b02e336a9ec476fd5a4432ff9305fdd9b78ab2603ae432a457cf73",
+  "el-empty-selection": "9941130daf9c9c45888620abde34a32eb1c6247e60cc75bd01df9bd641bf55f2",
+  "el-empty-string": "14d48db91d3b9dd015b875be67198bff8385d0afb20258cd5bae53b6093c0f21",
+  "el-entry-not-object": "bb2fe6dc477e39e3ae300a6eda340550c3a1db522ab9d014dc1cc44b9324fa5b",
+  "el-no-version-key": "376936a40bb4cf1c2b31363f4d66842602b3e02fb8a9b13e3b3ebdcf9bf334d3",
+  "el-none": "5055061c2b67e6879129f622a219ac35671a490ebee5ac807fdec14b8e3704e1",
+  "el-null-selection": "81077aa6f8334982284cee730b8d990e36d97d68ab8b590c9ee66bbd771d4bbe",
+  "el-settings-list": "72ada0cdab1892078e02d14ddad6d5f7f64f43f41293f9e825589e6c2f34a68f",
+  "el-slug-order": "721699a97a1b1552e493d020f75348f4e77724e70152d822827664845eb3f841",
+  "el-v11-operations-only": "0f21b2736a352c02a4c7b4d6e128ac2f264571cc0e9cd02428d6134094712b3c",
+  "el-v11-two-settings": "0f899f3896fcbd2d5ffe69dbecba5e1dfa2f8d43c36580e4b652cf35bd84e3de",
+  "el-v13-disabled": "c8cb608d494cc80c70f79b3e55946a8773eba82545a559236c58f973fe2a2af3",
+  "el-v4": "77316431d966e8c65866e52a41f14873a22803ffc9855199d1eed8fae2fe1a79",
+  "el-v6-one-segment": "0211f7301c3de36fe54078dbf7ede73cd0637fd719e88f2f93ff21efcaa05fe6",
+  "el-version-text": "6510421008157b7a51aa4d69e7ad07f7ef6ded76ac7df7bd64733c44aae39731",
+  "el-z-0": "e809b8792c4eeb581fc663c295bf7447721b1346fa62d88516262e18d09097e5",
+  "el-z-120": "f7ec224ace72419b6567ee9cf3958205417aa8c6b61d6409b51050e9ea3a10a0"
+ }
+}

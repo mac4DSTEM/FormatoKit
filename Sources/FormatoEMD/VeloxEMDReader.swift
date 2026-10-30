@@ -1014,6 +1014,31 @@ public nonisolated struct VeloxEMDReader: Sendable {
         }
     }
 
+    // MARK: Single spectra
+
+    /// The metadata of each single spectrum, column 0 of `Data/Spectrum/<id>/Metadata`, in the order `VeloxSpectrumSignals` returns the
+    /// spectra (empty where it returns none: no `Data/Spectrum`, or `Data/Image` without `Data/SpectrumImage`). The live and real time
+    /// of the segments a spectrum sums are `binaryResultSegmentTimes`; they are not in the signals' metadata, which stays RosettaSciIO's.
+    /// Throws `missingMetadata` for a spectrum without a Metadata JSON object (RosettaSciIO raises there too), and as `images()` does
+    /// for a damaged file.
+    public func spectrumMetadata(cancelled: @Sendable () -> Bool = FormatoCancellation.task) throws -> [VeloxMetadata] {
+        try HDF5Serial.run {
+            try FormatoCancellation.check(cancelled)
+            let file = try Self.openVeloxFile(path: path)
+            if file.exists("/Data/Image") && !file.exists("/Data/SpectrumImage") { return [] }
+            return try file.children(of: "/Data/Spectrum").map { id in
+                try FormatoCancellation.check(cancelled)
+                let group = "/Data/Spectrum/" + id
+                guard file.exists(group + "/Metadata") else { throw VeloxEMDError.missingMetadata("Data/Spectrum/\(id)/Metadata") }
+                let json = try file.readMetadataJSON(group: group, column: 0)
+                guard let metadata = try? VeloxMetadata.parse(jsonData: json) else {
+                    throw VeloxEMDError.missingMetadata("a JSON object in Data/Spectrum/\(id)/Metadata")
+                }
+                return metadata
+            }
+        }
+    }
+
     // MARK: Stored element selection
 
     /// Symbols by atomic number minus one (H to Lr), the same table rsciio's `atomic_number2name` spells for 1...103.
