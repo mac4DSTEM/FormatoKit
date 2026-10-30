@@ -829,6 +829,29 @@ public nonisolated struct VeloxEMDReader: Sendable {
         }
     }
 
+    /// The metadata of each EELS spectrum image, `Data/EelsSpectrumImage/<id>/Metadata`, in the order `VeloxSpectrumImageSignals`
+    /// returns the EELS signals (one per energy range of a Zebra detector). Each carries the optics the EELS signal's own metadata
+    /// does not: RosettaSciIO maps nothing for an EELS spectrum image, so its signals keep only the title and file name. Read
+    /// `AcquisitionMetadata.velox(eelsSpectrumImage:)` from these for the beam energy and the angles. Empty for a file with
+    /// no EELS spectrum image. Throws `missingMetadata` for a group without a Metadata JSON object (RosettaSciIO raises there
+    /// too), and as `images()` does for a damaged file.
+    public func eelsSpectrumImageMetadata(cancelled: @Sendable () -> Bool = FormatoCancellation.task) throws -> [VeloxMetadata] {
+        try HDF5Serial.run {
+            try FormatoCancellation.check(cancelled)
+            let file = try Self.openVeloxFile(path: path)
+            return try file.children(of: "/Data/EelsSpectrumImage").map { id in
+                try FormatoCancellation.check(cancelled)
+                let group = "/Data/EelsSpectrumImage/" + id
+                guard file.exists(group + "/Metadata") else { throw VeloxEMDError.missingMetadata("Data/EelsSpectrumImage/\(id)/Metadata") }
+                let json = try file.readMetadataJSON(group: group, column: 0)
+                guard let metadata = try? VeloxMetadata.parse(jsonData: json) else {
+                    throw VeloxEMDError.missingMetadata("a JSON object in Data/EelsSpectrumImage/\(id)/Metadata")
+                }
+                return metadata
+            }
+        }
+    }
+
     /// One frame of one image as `height * width` Float32, row-major (y, then x). HDF5 converts the stored type on read, so every
     /// `VeloxImageElementType` is read the same way. DEVIATION: rsciio returns the stored dtype; here int32, uint32, 64-bit values
     /// beyond 2^24 and float64 round to the nearest Float32 (int8, int16, uint8, uint16 and float32 are exact); a float64 above

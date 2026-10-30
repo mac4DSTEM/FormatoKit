@@ -109,7 +109,8 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     /// texts as the tag holds them (RosettaSciIO's `None` mapping), or as its named function returns them (`docs/parity.md`).
     public var signalNumbers: [String: MetadataReading<Double>] = [:]
     public var signalTexts: [String: MetadataReading<String>] = [:]
-    /// EELS collection semi-angle in mrad.
+    /// EELS collection semi-angle in mrad. A Velox EELS spectrum image (`velox(eelsSpectrumImage:)`, `.rosettaSciIO` only) also
+    /// fills it, where RosettaSciIO maps nothing: from the value pyEELSMODEL reads, named in the `note`.
     public var collectionAngleMrad: MetadataReading<Double>?
 
     // MARK: Added in 0.11.0 (additive). Read by the Velox reader under `.rosettaSciIO`; every other reader and the `.app` convention
@@ -118,7 +119,8 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     /// The pixel size of the image at the specimen (Velox `BinaryResult.PixelSize`), in the unit the file states, as stored:
     /// RosettaSciIO uses it as the axis scale, not as metadata, so the `note` says what the file does not settle.
     public var pixelSize: MetadataReading<PixelSize>?
-    /// Convergence semi-angle in mrad.
+    /// Convergence semi-angle in mrad. A Velox EELS spectrum image (`velox(eelsSpectrumImage:)`, `.rosettaSciIO` only) also fills
+    /// it, labelled unvalidated: no published reader reads the stored value.
     public var convergenceAngleMrad: MetadataReading<Double>?
 
     /// The fields this file's FORMAT reader cannot read yet, though the file may record them: shown "Not read from this
