@@ -3,8 +3,10 @@
 # On a pull request the site is built and uploaded as an artifact only, so a broken catalog fails before the tag.
 #
 # No swift-docc-plugin: the kit adds no package dependency for its docs. `xcodebuild docbuild` builds the archives
-# from the package's own schemes; `docc merge` (Xcode 16+) joins them. Needs Pages enabled with source "GitHub Actions"
-# (repository Settings > Pages). Copied from CuboKit's pattern; the module list is read from the .docc catalogs.
+# from the package's own schemes; `docc merge` (Xcode 16+) joins them. Pages source is "GitHub Actions" and the
+# github-pages environment allows tags `*.*.*`. A release-please tag starts no workflow (GITHUB_TOKEN), so
+# release-please.yml dispatches this workflow on the new tag. Copied from CuboKit's pattern; the module list is read
+# from the .docc catalogs.
 name: Docs
 
 on:
