@@ -13,7 +13,7 @@
     "result_rotation_21ac415f": "RealSlice",
     "result_strain_exx_42329a38": "RealSlice"
    },
-   "sha256": "a35c4d08cde831b5a0a84f3818662a3cbe3580727e9e66744d28186c65d06d92"
+   "sha256": "655ce5ebafaf3cebb7539333ba6f8fc2ce6a1c684a93d254cde138df67c4229b"
   },
   "swift-datacube-default.h5": {
    "checks": {
@@ -24,7 +24,7 @@
     "structure_equal": true
    },
    "py4dstem_class": "DataCube",
-   "sha256": "cadc6bacd19ae2d35e1ca7e116a9380104471c40344ec49d66e8b1e1d7dfb3b4"
+   "sha256": "28a719b1a79ad36c1bc4d39e6caeeaa35e6dcfe136b1719b8de612b545576340"
   },
   "swift-datacube.h5": {
    "checks": {
@@ -35,7 +35,7 @@
     "structure_equal": true
    },
    "py4dstem_class": "DataCube",
-   "sha256": "5259bb4aa03daec03dbb96c750694dda2c896c96d37ee72688b6e7552be33fe9"
+   "sha256": "c6bc97e397f1f8bcc54a655745a95b10ae4a82de314020b58625bf3d19230222"
   },
   "swift-sidecar.h5": {
    "checks": {
@@ -51,9 +51,9 @@
     "result_orientation_map_da0dee04": "Array",
     "result_strain_exx_42329a38": "RealSlice"
    },
-   "sha256": "b1055f692ebfa2774922ea4d77c4f3a9c8ad840649fbc8c858c98e72373946da"
+   "sha256": "ff96a74efb1c99cd4ac05c0218b81282cdfe9101afb8c9bf8ba0346dbda8bb75"
   }
  },
- "h5py_version": "3.11.0",
+ "h5py_version": "3.16.0",
  "py4dstem_version": "0.14.19"
 }
