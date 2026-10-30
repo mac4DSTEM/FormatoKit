@@ -710,13 +710,16 @@ public nonisolated enum DM4Experiment {
                 // (the convention DM4Reader and ncempy use).
                 let label = labelLen > 0 ? cursor.string(labelLen) : String(sibling + 1)
                 let path = prefix.isEmpty ? label : prefix + "." + label
-                if version == 4 { _ = cursor.special(version) }
-                if tag == 21 { try dataTag(path: path, label: label) }
+                // DM4 gives every entry its size (from here to the end of the entry); DM3 has none.
+                let entrySize: Int? = version == 4 ? Int(exactly: cursor.special(version)) : nil
+                let entryStart = cursor.offset
+                if tag == 21 { try dataTag(path: path, label: label, entryEnd: entrySize.flatMap { $0 > 0 ? entryStart + $0 : nil }) }
                 else if tag == 20 { try group(prefix: path, depth: depth + 1) }
             }
         }
 
-        mutating func dataTag(path: String, label: String) throws {
+        /// `entryEnd`: where the entry ends by its DM4 size, nil for DM3 or a size of 0.
+        mutating func dataTag(path: String, label: String, entryEnd: Int?) throws {
             guard cursor.bytes(4) == [37, 37, 37, 37] else { throw cursor.overran ? cursor.failure : DM4Error.truncated }
             let ninfo = try int(cursor.special(version))
             guard ninfo >= 0, ninfo <= 4096 else { throw DM4Error.truncated }
@@ -764,7 +767,19 @@ public nonisolated enum DM4Experiment {
                     elemSize = DM4Experiment.tagTypeSize(elementType)
                 }
                 guard lengthIndex < info.count else { throw DM4Error.truncated }
-                let length = try int(info[lengthIndex])
+                var length = try int(info[lengthIndex])
+                if label == "Data", length == 0, elemSize > 0 {
+                    // A pixel array that declares length 0 (some writers omit it). DM4: the entry's own size gives the bytes.
+                    // DM3 records no other length, so the tags after it cannot be found: refused, not walked through the pixels.
+                    // A DM4 entry of size 0 keeps the old reading: an empty blob, the dimensions give the length.
+                    if let entryEnd {
+                        let payload = entryEnd - cursor.offset
+                        guard payload >= 0, payload % elemSize == 0 else { throw DM4Error.truncated }
+                        length = payload / elemSize
+                    } else if version == 3 {
+                        throw DM4Error.cannotOpen("\(path) declares length 0, and a DM3 file records no other length for its pixel array, so the tags after it cannot be read.")
+                    }
+                }
                 let (nbytes, o1) = length.multipliedReportingOverflow(by: elemSize)
                 let start = cursor.offset
                 let (end, o2) = start.addingReportingOverflow(nbytes)
