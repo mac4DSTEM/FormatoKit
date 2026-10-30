@@ -2,6 +2,7 @@ import Foundation
 import Testing
 import FormatoCore
 import FormatoEMPAD
+import FormatoKitTestSupport
 
 private let fixtures = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures")
 private struct Pins: Decodable { let cases: [Pin] }
@@ -15,17 +16,8 @@ private struct Pin: Decodable {
 private struct Axis: Decodable {
     let name: String; let size: Int; let scale: Double; let offset: Double; let units: String?; let navigate: Bool
 }
-private func inflate(_ name: String) throws -> Data {
-    let process = Process()
-    process.executableURL = URL(fileURLWithPath: "/usr/bin/gzip")
-    process.arguments = ["-dc", fixtures.appendingPathComponent(name).path]
-    let pipe = Pipe(); process.standardOutput = pipe
-    try process.run()
-    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    process.waitUntilExit()
-    #expect(process.terminationStatus == 0)
-    return data
-}
+/// In this process, not a gzip child: a child would hold copies of other tests' HDF5 descriptors (FormatoKit#49).
+private func inflate(_ name: String) throws -> Data { try Gunzip.contents(of: fixtures.appendingPathComponent(name)) }
 private func temporaryPair() throws -> URL {
     let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
