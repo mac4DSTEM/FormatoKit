@@ -87,7 +87,8 @@ public nonisolated enum FormatoLoader {
             func memory(_ s: FormatoSignal) -> Result<FormatoLazySignal, any Error> {
                 .success(FormatoLazySignal(title: s.title, signalType: s.signalType, axes: s.axes, metadata: s.metadata, array: FormatoInMemoryArray(s.data)))
             }
-            out += try VeloxSpectrumSignals(path: path).signals.map(memory)
+            // A refused spectrum (an element selection HyperSpy rejects, say) is its failure; the images still load.
+            do { out += try VeloxSpectrumSignals(path: path).signals.map(memory) } catch { out.append(.failure(error)) }
             let images = try VeloxImageSignals(path: path)
             out += images.images.map { image in Result { try images.signal(image) } }
             do { out += try VeloxSpectrumImageSignals(path: path).signals.map(memory) } catch { out.append(.failure(error)) }

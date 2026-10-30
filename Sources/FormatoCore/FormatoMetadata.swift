@@ -11,9 +11,12 @@ public nonisolated enum FormatoValue: Sendable, Equatable {
     case number(Double)
     case text(String)
     case flag(Bool)
+    /// A list of strings, in order (RosettaSciIO's `Sample.elements` of a Velox single spectrum).
+    case texts([String])
 
     public var number: Double? { if case .number(let v) = self { return v }; return nil }
     public var text: String? { if case .text(let v) = self { return v }; return nil }
+    public var texts: [String]? { if case .texts(let v) = self { return v }; return nil }
 }
 
 /// Where a metadata value came from.

@@ -135,7 +135,8 @@ extension VeloxEMDSerialized {
                             default: Issue.record("unexpected pin value for \(key)")
                             }
                         }
-                        #expect(Set(signal.metadata.keys) == wantedKeys, "\(label): the metadata keys")
+                        // `Sample.elements` is HyperSpy's step on RosettaSciIO's mapping: pinned apart (VeloxSpectrumElementsTests).
+                        #expect(Set(signal.metadata.keys).subtracting(["Sample.elements"]) == wantedKeys, "\(label): the metadata keys")
                     }
                 }
             }

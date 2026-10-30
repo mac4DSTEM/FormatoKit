@@ -23,8 +23,7 @@ nonisolated struct VeloxTitles: Sendable {
     let byImage: [String: Title]
 
     private struct Fallback: Error {}   // Python's KeyError inside `_get_detector_name`
-    /// A child of one of the four file-level groups: a group's datasets by name (as `{name: json}`), or one dataset's JSON.
-    private struct Entry { let path: String; let isGroup: Bool; let value: Any }
+    private typealias Entry = VeloxFileGroups.Entry
     private static let kinds = ["CameraInputOperation", "StemInputOperation", "SurfaceReconstructionOperation",
                                 "MathematicsOperation", "DpcOperation", "IntegrationOperation", "FftOperation"]
 
@@ -50,23 +49,7 @@ nonisolated struct VeloxTitles: Sendable {
               version.keys.contains("version") else {
             throw refuse("its Version has no version key")
         }
-        var groups: [String: [String: Entry]] = [:]
-        for name in ["Displays", "Operations", "SharedProperties", "Features"] where file.exists("/" + name) {
-            // `_parse_metadata_group` on a dataset: `_get_keys_from_group` raises AttributeError.
-            guard !isDataset("/" + name) else { throw refuse("/\(name) is a dataset, not a group") }
-            var entries: [String: Entry] = [:]
-            for child in file.children(of: "/" + name) {
-                let path = "/\(name)/\(child)"
-                if isDataset(path) {
-                    entries[child] = Entry(path: path, isGroup: false, value: try json(path))
-                } else {
-                    var sub: [String: Any] = [:]
-                    for leaf in file.children(of: path) { sub[leaf] = try json(path + "/" + leaf) }
-                    entries[child] = Entry(path: path, isGroup: true, value: sub)
-                }
-            }
-            groups[name] = entries
-        }
+        let groups = try VeloxFileGroups.read(file: file, refuse: refuse)
         let allImages = file.children(of: "/Data/Image")
         let images = firstImageOnly ? Array(allImages.prefix(1)) : allImages
         let spectrumStream = file.exists("/Data/Image") && file.exists("/Data/SpectrumImage")

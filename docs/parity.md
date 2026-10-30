@@ -28,7 +28,7 @@ every one of these, as D17 prescribes for readers.
 | Plugin | Extensions | Writes | Kit symbol | State | RosettaSciIO test and tolerance | Priority | Note |
 |---|---|---|---|---|---|---|---|
 | DigitalMicrograph | dm3, dm4 | no | `FormatoDM` `DMFile`, `DM4Datacube` | **partial** | test_digitalmicrograph.py: allclose, approx, array_equal, explicit rtol/atol/decimal in places | study | complex, RGB, bool, big-endian refused; metadata mapping partial; scan pixel size of EELS/EDS spectrum images (`xAxis`, `yAxis`, 0.11.0) and of 4D scans pinned to the bit |
-| EMD | emd, de5 | yes | `FormatoEMD` `VeloxImageSignals`, `VeloxSpectrumImageSignals`, `VeloxSpectrumSignals` (0.9.0) | **partial** | test_emd_ncem.py, test_emd_prismatic.py, test_emd_velox.py: allclose, almost_equal, array_equal, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | Velox: images, spectrum images (live and real time per detector from the SI group, 0.11.0), single spectra, "DevelopersKit" accepted; compound FFT/DPC, `lazy=True` SI, `load_SI_image_stack`, `Sample.elements` not. NCEM/Berkeley EMD, prismatic and DE5: missing (useful) |
+| EMD | emd, de5 | yes | `FormatoEMD` `VeloxImageSignals`, `VeloxSpectrumImageSignals`, `VeloxSpectrumSignals` (0.9.0) | **partial** | test_emd_ncem.py, test_emd_prismatic.py, test_emd_velox.py: allclose, almost_equal, array_equal, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | Velox: images, spectrum images (live and real time per detector from the SI group, 0.11.0), single spectra (with `Sample.elements`), "DevelopersKit" accepted; compound FFT/DPC, `lazy=True` SI, `load_SI_image_stack`, `Sample.elements` of a spectrum image not. NCEM/Berkeley EMD, prismatic and DE5: missing (useful) |
 | TIFF | tif, tiff | yes (some dims) | `FormatoTIFF` `TIFFSignals`, `TIFFAppImage` | **partial** | test_tiff.py: allclose, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | uncompressed strips; FEI, Gatan, ImageJ, plain, tifffile shaped series (0.11.0); OME, SubIFD series, generic pyramids, Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu, compression, tiles refused by name |
 | MRC | mrc, ali | no | `FormatoMRC` `MRCReader`, `MRCAppImage` | **partial** | test_mrc.py, test_mrcz.py: almost_equal, array_almost_equal, array_equal, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | modes 0,1,2,6,12 and 4 refused (complex); DE movie options (`virtual_images`, `external_images`, `scan_file`), `navigation_shape`, `metadata_file` missing |
 | EMPAD | xml | no | `FormatoEMPAD` `EMPADReader` | **partial** | test_empad.py: allclose | study | `remove_nans` default false only |
@@ -166,7 +166,20 @@ never written (RosettaSciIO tests `"General.item"`, a typo, as RosettaSciIO does
   as RosettaSciIO's `json.loads`, so the energy axis and the detector-metadata match take the same entry (since 0.0.3).
   Left: a key written twice in one object reads its first value here and its last in Python (no file seen has one).
 - **Velox metadata mapping:** the image path maps the file name and the beam energy; `VeloxSpectrumSignals` (0.9.0) maps every field
-  RosettaSciIO's `_get_mapping` maps for a single spectrum except `Sample.elements`. The images and spectrum images keep the narrower
+  RosettaSciIO's `_get_mapping` maps for a single spectrum. **`Sample.elements` of a single spectrum:** a `FormatoValue.texts` list, as
+  HyperSpy 2.4.0 sets it when it applies RosettaSciIO's `_convert_element_list` (`d.keys()[0]` works only on HyperSpy's
+  `DictionaryTreeBrowser`, whose `keys()` sorts the slugified keys; the version picks `SharedProperties/EDSSpectrumQuantificationSettings`
+  from 11 on, `Operations/ImageQuantificationOperation` before; `atomic_number2name` 1 to 119). Where Python raises (no entry, an entry
+  that is not an object, `int()` refusing, an atomic number outside the table, `int(version)` refusing) the read is refused, as HyperSpy's
+  `load` raises. The four file-level groups are parsed as `read_file` parses them, so a malformed entry refuses the read. Exact against
+  planted files and, when unzipped by `tools/test.sh`, the public ones (`tools/velox-elements/pins.py`). Left, refused here where Python
+  reads (no file has one): two keys of the settings group or of one entry that slugify alike (HyperSpy merges them); an empty entry
+  dataset in the four groups (RosettaSciIO logs a warning and keeps what it read); `NaN`/`Infinity` in their JSON (`json.loads` accepts
+  them, `JSONSerialization` does not). `_parse_image_display` is not run for a SpectrumStream file's spectra. **Live and real time of a single
+  spectrum:** RosettaSciIO maps only `DetectorMetadata.LiveTime`/`.RealTime`, which no public single spectrum holds; Velox 4 to 13 store
+  them per segment in `Detectors`. `VeloxEMDReader.spectrumMetadata()` gives each spectrum's metadata and
+  `VeloxMetadata.binaryResultSegmentTimes` the segments whose name contains `BinaryResult.Detector` (not disabled), to the bit against
+  `float()` of RosettaSciIO's `original_metadata`; not in the signals' metadata. The images and spectrum images keep the narrower
   mapping (camera length, magnification, instrument and stage are in `AcquisitionMetadata.velox`; for a spectrum image
   `AcquisitionMetadata.velox(spectrumImage:)` from `VeloxEMDReader.spectrumImageMetadata()`, 0.11.0, camera length, magnification and beam
   energy to the bit against RosettaSciIO's returned mapping). **Live and real time of a spectrum image (0.11.0):** RosettaSciIO maps none
