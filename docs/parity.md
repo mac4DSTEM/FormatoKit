@@ -175,6 +175,14 @@ never written (RosettaSciIO tests `"General.item"`, a typo, as RosettaSciIO does
   against planted files, no RosettaSciIO value to compare; unvalidated beyond the one owner file's order of magnitude.
   **Pixel size (0.11.0):** `AcquisitionMetadata.pixelSize` (rows, columns, unit as stored) from `BinaryResult.PixelSize`, `.rosettaSciIO`
   only; equal to RosettaSciIO's axis scales after the conversion they went through.
+  **EELS spectrum images:** RosettaSciIO maps nothing for them (its EELS dictionaries hold the title and file name only, asserted by
+  `tools/velox-eels/pins.py`), so the EELS signals stay that. `VeloxEMDReader.eelsSpectrumImageMetadata()` reads each
+  `Data/EelsSpectrumImage/<id>/Metadata` in the signals' order, and `AcquisitionMetadata.velox(eelsSpectrumImage:)` gives the beam energy
+  (exact against RosettaSciIO's mapping for the EDS signal of the same file and pyEELSMODEL eed9f072's E0), the collection semi-angle
+  `EnergyFilter.CollectionAngleRange.End` × 1e3 mrad (exact against pyEELSMODEL's `emd_reader` beta) and the convergence semi-angle
+  `Optics.BeamConvergence` × 1e3 mrad (no published reader reads it: labelled unvalidated), `.rosettaSciIO` only. A stored angle that is
+  not a finite positive number is nil (pyEELSMODEL passes a 0 through as beta). Planted file, plus RosettaSciIO's public EELS file when
+  unzipped.
 - **Lazy reading:** registered equal to eager for DM (positioned reads) and Velox images (per frame). Not yet
   memory-mapped; no chunked HDF5 reads beyond the moved reader's blocks.
 - **Writing:** none for RosettaSciIO's formats. FormatoKit writes only the EMD 1.0 bundle writers (`EMDDatacubeWriter`, calibration, maps), `FormatoPNG`, `BraggVectorsEMD` (py4DSTEM EMD 1.0), `HDF5RootAttributes` (a sidecar's root string
@@ -214,7 +222,8 @@ cb6e164 and pinned. Pins: synthetic files written byte by byte (`generate.py`), 
 For each format FormatoKit reads: what RosettaSciIO 049e7d70 maps into `metadata` (its `original_metadata` to `metadata` mapping, applied as HyperSpy
 applies it) against what `AcquisitionMetadata` (`.rosettaSciIO` convention) or the reader's own signal metadata exposes. **R** = read and pinned to
 RosettaSciIO; **N** = RosettaSciIO maps it, the file can carry it, FormatoKit does not read it; **-** = RosettaSciIO maps nothing for this format
-(or the file does not carry it); **L** = read by the consumer's rule and labelled `unvalidated`. EMPAD and MIB have no `AcquisitionMetadata`: their
+(or the file does not carry it); **L** = read by the consumer's rule and labelled `unvalidated`; **P** = RosettaSciIO maps nothing,
+read and pinned to another published reader (pyEELSMODEL for the Velox EELS collection angle). EMPAD and MIB have no `AcquisitionMetadata`: their
 RosettaSciIO `metadata` is returned whole on the signal (pinned, `docs/parity.md` rows above). The 4D HDF5 (py4DSTEM EMD 1.0) reader has no
 RosettaSciIO plugin to compare with: its calibrations are the file's (`R/Q_pixel_size`, `probe_semiangle`), not acquisition metadata.
 
@@ -223,8 +232,8 @@ RosettaSciIO plugin to compare with: its calibrations are the file's (`R/Q_pixel
 | beam energy | R | - | R | R | R | - | - |
 | magnification | R | R | - | L | R | - | - |
 | camera length | R | - | - | R | R | - | - |
-| convergence angle | R (EELS signal) | - | - | - | - | - | - |
-| collection angle | R (EELS signal) | - | - | - | - | - | - |
+| convergence angle | R (EELS signal) | - | - | - | L (EELS SI) | - | - |
+| collection angle | R (EELS signal) | - | - | - | P (EELS SI) | - | - |
 | dwell time | R (image, CL, EELS scan) | - | R | L | L | - | R |
 | exposure time | R (image, EELS) | R | - | L | R | - | - |
 | microscope | R | - | R | R (`InstrumentClass`) | R (`InstrumentClass`) | - | - |
