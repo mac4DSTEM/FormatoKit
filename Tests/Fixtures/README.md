@@ -285,7 +285,7 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoHDF5Tests/Fixtures/emd-bundle/app-datacube.h5` | 23.1 KB | `tools/emd-bundle/check.py`, `tools/emd-bundle/oracle/main.swift` |  |
 | `FormatoHDF5Tests/Fixtures/emd-bundle/app-sidecar.h5` | 24.4 KB | `tools/emd-bundle/check.py`, `tools/emd-bundle/oracle/main.swift` |  |
 | `FormatoHDF5Tests/Fixtures/emd-bundle/check-result.json` | 1.5 KB | `tools/bragg-writer/check.py`, `tools/emd-bundle/check.py`, `tools/hdf5-append/generate.py` +1 |  |
-| `FormatoHDF5Tests/Fixtures/emd-bundle/swift-bundle.h5` | 22.3 KB | `tools/emd-bundle/check.py` |  |
+| `FormatoHDF5Tests/Fixtures/emd-bundle/swift-bundle.h5` | 22.4 KB | `tools/emd-bundle/check.py` |  |
 | `FormatoHDF5Tests/Fixtures/emd-bundle/swift-datacube-default.h5` | 24.8 KB | `tools/emd-bundle/check.py` |  |
 | `FormatoHDF5Tests/Fixtures/emd-bundle/swift-datacube.h5` | 24.8 KB | `tools/emd-bundle/check.py` |  |
 | `FormatoHDF5Tests/Fixtures/emd-bundle/swift-sidecar.h5` | 32.3 KB | `tools/emd-bundle/check.py` |  |
