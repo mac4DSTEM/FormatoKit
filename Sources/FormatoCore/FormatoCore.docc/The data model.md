@@ -28,7 +28,7 @@ Two arrays are equal when their type, shape and bytes are equal. That equality i
 ``FormatoMetadata`` is an ordered list of ``FormatoMetadataEntry`` values. Each entry has:
 
 - a key, under RosettaSciIO's metadata name;
-- a value, a number or a text (``FormatoValue``);
+- a value: a number, a text, a flag or a list of texts (``FormatoValue``);
 - an optional unit;
 - a ``FormatoProvenance`` that names the file, the place in the file the value came from, and the rule that turned it into the entry.
 

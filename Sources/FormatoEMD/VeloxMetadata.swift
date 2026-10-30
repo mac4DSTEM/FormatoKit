@@ -160,6 +160,16 @@ public nonisolated struct VeloxMetadata: Sendable {
     /// matches, or when `BinaryResult.Detector` is absent or empty (an entry without `DetectorName` is listed with the
     /// name "" and never matches).
     public let exposureTimeSeconds: Double?
+    /// `Optics.BeamConvergence`, radians as stored: the probe's convergence semi-angle. RosettaSciIO maps it for no signal,
+    /// and no published Velox reader reads it. nil when absent or not a number.
+    public let beamConvergenceRadians: Double?
+    /// `CustomProperties["EnergyFilter.CollectionAngleRange.Begin"].value`, radians as stored: the inner edge of the EELS
+    /// spectrometer's collection range (0 in RosettaSciIO's public EELS file). nil when absent or not a number.
+    public let collectionAngleBeginRadians: Double?
+    /// `CustomProperties["EnergyFilter.CollectionAngleRange.End"].value`, radians as stored: the outer edge of the collection
+    /// range, the collection semi-angle that pyEELSMODEL's `emd_reader` reads as beta (`collection_angle_end`) from each
+    /// `Data/EelsSpectrumImage/<id>/Metadata`. RosettaSciIO maps it for no signal. nil when absent or not a number.
+    public let collectionAngleEndRadians: Double?
 
     public var superXDetectors: [VeloxDetectorInfo] { detectors.filter { $0.isAnalytical } }
 
@@ -182,6 +192,19 @@ public nonisolated struct VeloxMetadata: Sendable {
     }
     public var alphaDegrees: Double? { stageAlphaRadians.map { $0 * 180 / .pi } }
     public var betaDegrees: Double? { stageBetaRadians.map { $0 * 180 / .pi } }
+
+    /// The live and real time (s) of each X-ray segment that is not disabled and whose `DetectorName` contains `BinaryResult.Detector`
+    /// (the name match of RosettaSciIO's energy axis, `_get_dispersion_offset`), in the file's order, as stored. For a single spectrum
+    /// (`VeloxEMDReader.spectrumMetadata()`): RosettaSciIO's public `fei_emd_spectrum.emd` (Velox 4) names "SuperXG2", all four
+    /// segments, each stating the same times; a Velox 6 spectrum names one ("SuperXG24"). Unlike the energy axis, every matching
+    /// `AnalyticalDetector` entry is kept, not the first. Velox 4 to 13 store them as `Detectors.Detector-<n>.LiveTime` / `.RealTime`; RosettaSciIO maps only
+    /// `DetectorMetadata.LiveTime` / `.RealTime`, which no public single spectrum has. Empty when `BinaryResult.Detector` is absent.
+    public var binaryResultSegmentTimes: [VeloxSegmentTimes] {
+        guard let named = binaryResultDetector else { return [] }
+        return superXDetectors.filter { $0.enabled != false && (named.isEmpty || $0.name.contains(named)) }.map {
+            VeloxSegmentTimes(name: $0.name, liveTimeSeconds: $0.liveTimeColumn0, realTimeSeconds: $0.realTimeColumn0)
+        }
+    }
 
     /// The grid `ScanSize x ScanArea` implies, `(ny, nx)`; nil unless both are
     /// integers to within 1/100 of a pixel (the Velox rasters are exact binary fractions).
@@ -364,6 +387,8 @@ public nonisolated struct VeloxMetadata: Sendable {
            let a21 = entry("A21"), let a22 = entry("A22"), let a23 = entry("A23") {
             transformation = VeloxScanTransformation(a11: a11, a12: a12, a13: a13, a21: a21, a22: a22, a23: a23)
         }
+        // The EELS collection range: flat dotted keys, as Velox writes them and pyEELSMODEL reads them.
+        func collection(_ k: String) -> Double? { jsonDouble(dict(custom, "EnergyFilter.CollectionAngleRange." + k)?["value"]) }
 
         let optics = dict(root, "Optics")
         // An empty BinaryResult.Detector names no detector (an entry without DetectorName is listed with name "").
@@ -395,6 +420,8 @@ public nonisolated struct VeloxMetadata: Sendable {
             stemMagnification: jsonDouble(dict(custom, "StemMagnification")?["value"]),
             cameraLengthMeters: jsonDouble(optics?["CameraLength"]),
             operatingMode: optics?["OperatingMode"] as? String, projectorMode: optics?["ProjectorMode"] as? String,
-            exposureTimeSeconds: exposure)
+            exposureTimeSeconds: exposure,
+            beamConvergenceRadians: jsonDouble(optics?["BeamConvergence"]),
+            collectionAngleBeginRadians: collection("Begin"), collectionAngleEndRadians: collection("End"))
     }
 }
