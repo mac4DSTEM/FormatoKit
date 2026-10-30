@@ -146,3 +146,32 @@ private func temporaryPair() throws -> URL {
     let preferred = try EMPADReader(path: xml.path, preferScanResolution: true)
     #expect(preferred.signal.array.shape.prefix(2) == [2, 3])
 }
+
+/// Two `scan_parameters` blocks, the acquisition first: its `scan_resolution_x/y` are the scan, wherever the block sits (the app read
+/// the `mode="acquire"` block). `series_count` keeps RosettaSciIO 049e7d70: its XML dictionary keeps the LAST block (measured: acquire
+/// series_count 3 then search 9 reads 9), so a planted pair gives the last block there.
+@Test func empadTheAcquireBlockGivesTheScanWhereverItSits() throws {
+    let dir = try temporaryPair()
+    defer { try? FileManager.default.removeItem(at: dir) }
+    let original = dir.appendingPathComponent("scan_x3_y2.raw")
+    let expected = try EMPADReader(rawPath: original.path).signal.load().data
+    try FileManager.default.copyItem(at: original, to: dir.appendingPathComponent("capture.raw"))
+    let acquire = "<scan_parameters mode='acquire'><scan_resolution_x>3</scan_resolution_x><scan_resolution_y>2</scan_resolution_y></scan_parameters>"
+    let search = "<scan_parameters mode='search'><scan_resolution_x>9</scan_resolution_x><scan_resolution_y>9</scan_resolution_y></scan_parameters>"
+    let first: String = acquire + search, last: String = search + acquire
+    let cases: [(String, String)] = [("first", first), ("last", last)]
+    for (name, blocks) in cases {
+        let xml = dir.appendingPathComponent(name + ".xml")
+        let text: String = "<root><raw_file filename='capture.raw'/>" + blocks + "</root>"
+        try Data(text.utf8).write(to: xml)
+        for prefer in [false, true] {
+            let reader = try EMPADReader(path: xml.path, preferScanResolution: prefer)
+            #expect(reader.signal.array.shape == [2, 3, 128, 128], "\(name) \(prefer)")
+            #expect(try reader.signal.load().data == expected, "\(name) \(prefer)")
+        }
+    }
+    // series_count: the last block, as RosettaSciIO (6 frames as a series of 6; the acquire block says 3, which the length refuses).
+    let series = dir.appendingPathComponent("series.xml")
+    try Data("<root><raw_file filename='capture.raw'/><scan_parameters mode='acquire'><series_count>3</series_count></scan_parameters><scan_parameters mode='search'><series_count>6</series_count></scan_parameters></root>".utf8).write(to: series)
+    #expect(try EMPADReader(path: series.path).signal.array.shape == [6, 128, 128])
+}
