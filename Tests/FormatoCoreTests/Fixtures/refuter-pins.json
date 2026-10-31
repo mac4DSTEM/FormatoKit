@@ -331,7 +331,7 @@
    "spectrum_stream_not_read": false
   }
  ],
- "generator": "tools/step-1/pins.py",
+ "generator": "tools/dm-velox-pins/pins.py",
  "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.digitalmicrograph.file_reader; rsciio.emd.file_reader, select_type='images')",
  "set": "owner",
  "skipped": [],
