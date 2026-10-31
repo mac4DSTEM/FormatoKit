@@ -13,11 +13,14 @@ let settings: [SwiftSetting] = [
 ]
 
 // The release the three zips are attached to, and their SwiftPM checksums (written by a release run of tools/xcframework/build.sh).
+// The asset names carry the rebuild: `-r2` are the zips without AppleDouble `._*` entries (#32). The first build's zips stay on
+// the release under their own names, so every tag up to 0.11.0 still resolves with the checksums it pins.
 let xcframeworkRelease = "0.4.0"
+let xcframeworkRebuild = "-r2"
 let xcframeworks: [(name: String, checksum: String)] = [
-    ("FormatoLibHDF5", "8b6b74bc65088e4ba28e6bb5c897ef85e5f17a24ad3ab6ce0dae18531788d236"),
-    ("FormatoLibSZ", "52388745a16c0856d162a8ed7efc1befa23f8274cdb7b169ee320e10d8f0a28d"),
-    ("FormatoLibAEC", "bef7dd2368f3caf3c8d878ddd30784f1f4bf2570820a2384c693e0f5d6d28518"),
+    ("FormatoLibHDF5", "c16fd49b1935fd3c1be47bc391417894ecd0e1122dfda999f91129060b41925e"),
+    ("FormatoLibSZ", "c41dd18fedd12bcbc9dbbb79cc331c7244ac9d3ec3e4f712b20457d3063fdb52"),
+    ("FormatoLibAEC", "fd8fed678701cc671ba4a7880f577485b0283634113e39ca05f949cbcee759ad"),
 ]
 let useLocalXCFrameworks = Context.environment["FORMATO_LOCAL_XCFRAMEWORKS"] != nil
 let binaryTargets: [Target] = xcframeworks.map { framework in
@@ -25,7 +28,7 @@ let binaryTargets: [Target] = xcframeworks.map { framework in
         ? .binaryTarget(name: framework.name, path: "dist/xcframeworks/\(framework.name).xcframework")
         : .binaryTarget(
             name: framework.name,
-            url: "https://github.com/mac4DSTEM/FormatoKit/releases/download/\(xcframeworkRelease)/\(framework.name).xcframework.zip",
+            url: "https://github.com/mac4DSTEM/FormatoKit/releases/download/\(xcframeworkRelease)/\(framework.name)\(xcframeworkRebuild).xcframework.zip",
             checksum: framework.checksum)
 }
 
