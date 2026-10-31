@@ -4,7 +4,8 @@
 //        defaults, over the parts of tifffile 2026.9.20 it relies on: the series (ImageJ,
 //        else uniform or generic grouping), the FEI INI tags, the ImageJ description, the Gatan DM tags. Data as stored;
 //        RGB as one element per pixel. Out of step 2, refused by name: Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX,
-//        Hamamatsu streak (unless `TIFFReadOptions.vendorBranches` is `.readAsGeneric`), compressed or tiled pages.
+//        Hamamatsu streak (unless `TIFFReadOptions.vendorBranches` is `.readAsGeneric`, or `.readWithVendorAxes`, which
+//        reads the Zeiss SEM, TVIPS and JEOL SightX axes as RosettaSciIO does: TIFFVendorAxes.swift), compressed or tiled pages.
 //
 
 import Foundation
@@ -178,6 +179,8 @@ public nonisolated struct TIFFSignals: Sendable {
     public let vendorBranch: String?
 
     let veloxCalibration: Bool
+    /// `TIFFVendorBranches.readWithVendorAxes`: the vendor branch's axes are read as RosettaSciIO reads them.
+    let vendorAxes: Bool
 
     /// Reads the file with the default options: a vendor branch that is not ported is refused by name.
     public init(path: String) throws {
@@ -195,12 +198,13 @@ public nonisolated struct TIFFSignals: Sendable {
             switch options.vendorBranches {
             case .refuse:
                 throw FormatoReadError.unsupported("\(formatoDisplayFileName(path)) is a \(refusal) TIFF, whose reading is not ported yet.")
-            case .readAsGeneric:
+            case .readAsGeneric, .readWithVendorAxes:
                 branch = refusal
             }
         }
         vendorBranch = branch
         veloxCalibration = options.veloxCalibration
+        vendorAxes = options.vendorBranches == .readWithVendorAxes
         series = try Self.buildSeries(file)
     }
 
@@ -361,7 +365,11 @@ public nonisolated struct TIFFSignals: Sendable {
         }
         let names = codes.map(Self.axisName)
         var axes: [FormatoAxis]
-        do { axes = try Self.axes(page: page, shape: shape, names: names) } catch {
+        do {
+            if vendorAxes, let vendorBranch,
+               let v = try Self.vendorAxes(vendorBranch, page: page, file: file, shape: shape, names: names) { axes = v }
+            else { axes = try Self.axes(page: page, shape: shape, names: names) }
+        } catch {
             // `_read_tiff`: any exception while parsing the scale gives the default dictionaries.
             axes = Self.dictionaries(shape: shape, names: names, scales: nil, offsets: nil, units: nil)
         }
@@ -395,11 +403,16 @@ public nonisolated struct TIFFSignals: Sendable {
             metadata.set(FormatoMetadataEntry(
                 key: "FormatoKit.policy.vendor_branch", value: .text(vendorBranch), units: nil,
                 provenance: FormatoProvenance(file: name, source: "(the page's vendor tags)",
-                                              rule: "FormatoKit policy, not RosettaSciIO's: read as a plain TIFF, the \(vendorBranch) branch is not ported")))
+                                              rule: vendorAxes && Self.vendorAxesPorted.contains(vendorBranch)
+                                                ? "FormatoKit policy, not RosettaSciIO's: the \(vendorBranch) branch's axes are read, its metadata mapping is not ported"
+                                                : "FormatoKit policy, not RosettaSciIO's: read as a plain TIFF, the \(vendorBranch) branch is not ported")))
         }
         return FormatoLazySignal(title: "", signalType: "", axes: axes, metadata: metadata,
                                  array: TIFFSeriesArray(path: file.path, series: s, shape: shape))
     }
+
+    /// The vendor branches whose axes `readWithVendorAxes` reads (TIFFVendorAxes.swift).
+    static let vendorAxesPorted: Set<String> = ["Zeiss SEM", "TVIPS", "JEOL SightX"]
 
     /// The keys of RosettaSciIO's `axes_label_codes`.
     static let axisCodes: Set<Character> = ["X", "Y", "S", "P", "I", "Z", "C", "E", "T", "R", "A", "F", "H", "L", "V", "Q", "_"]
