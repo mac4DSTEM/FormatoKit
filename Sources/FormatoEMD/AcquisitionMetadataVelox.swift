@@ -12,7 +12,9 @@
 //  ScanningDetector, the exposure of the detector the image names (`VeloxMetadata.exposureTimeSeconds`), the magnification
 //  `Optics.NominalMagnification` when no `StemMagnification` is stored, the mode `Optics.OperatingMode` as the stored
 //  code (an `.emd` stores a code, not a name), the start `Acquisition.AcquisitionStartDatetime` (Unix seconds shown on
-//  the given zone's clock, as RosettaSciIO shows its time zone).
+//  the given zone's clock, as RosettaSciIO shows its time zone). Under `.rosettaSciIO` an entry without
+//  `AcquisitionStartDatetime` is dated as RosettaSciIO's `_get_metadata_dict` dates it, by
+//  `CustomProperties["Detectors[BM-Ceta].TimeStamp"].value` / 1e6 (whole seconds; `.app` reads the start only).
 //
 //  FormatoKit 0.11.0 adds `pixelSize` (`BinaryResult.PixelSize` in its stated unit; RosettaSciIO uses it as the axis scale, so
 //  the note says it is not a metadata mapping) under `.rosettaSciIO`, and `velox(spectrumImage:)`, the same fields for the metadata
@@ -39,6 +41,11 @@ nonisolated extension AcquisitionMetadata {
         guard convention == .rosettaSciIO else { return out }
         let m = entry.metadata
         out.unread = []
+        // The start date: without `AcquisitionStartDatetime`, RosettaSciIO dates the image by the Ceta camera's stamp.
+        if out.acquired == nil, let seconds = m.cetaTimeStampUnixTime, let shown = veloxStamp(seconds, timeZone: timeZone) {
+            out.acquired = MetadataReading(shown, note: veloxClockNote(seconds, timeZone: timeZone)
+                + "; CustomProperties Detectors[BM-Ceta].TimeStamp / 1e6, as RosettaSciIO reads it without AcquisitionStartDatetime; whole seconds")
+        }
         out.highTensionKV = m.accelerationVoltageVolts.map { MetadataReading($0 / 1e3) }
         out.cameraLengthMM = m.cameraLengthMeters.map { MetadataReading($0 * 1e3) }
         if let stem = m.stemMagnification {
