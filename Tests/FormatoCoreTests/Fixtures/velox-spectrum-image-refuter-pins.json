@@ -1147,7 +1147,7 @@
    "sha256": "0921f49beba2d93ba13d107034fc4d7d2f1397eada351044c885737bea6c3267"
   }
  ],
- "generator": "tools/step-4/refuter_pins.py",
+ "generator": "tools/velox-spectrum-image/refuter_pins.py",
  "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.digitalmicrograph.file_reader; rsciio.emd.file_reader, select_type='images')",
  "set": "step-4-refuter",
  "versions": {
