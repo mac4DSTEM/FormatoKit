@@ -7,13 +7,11 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 
 ## Third party
 
-13 files, listed in the table below with the note *third party*. Keep their licence line when the files move.
+12 files, listed in the table below with the note *third party*. Keep their licence line when the files move.
 
 ## Needs an origin line
 
-1 fixtures that no script under `tools/` names. They may be written by a directory-level script, by hand, or copied from an earlier kit; a Mac session with the pin scripts fills in the origin and removes the file from this list.
-
-- `FormatoEMDTests/Fixtures/policy/si-units-px.emd`
+None: every fixture names its script or its source.
 
 ## All fixtures
 
@@ -84,16 +82,16 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoDMTests/Fixtures/demo-edx-tiny.truth.json` | 362.3 KB | `tools/emd-bundle/oracle/main.swift` (name prefix) |  |
 | `FormatoDMTests/Fixtures/dm-tag65027-saved-with-DM.dm4` | 10.3 KB | `tools/dm4-gather/generate.py` (module only) |  |
 | `FormatoDMTests/Fixtures/dm-tag65027-saved-with-DM.truth.json` | 8.1 KB | `tools/dm4-gather/generate.py` (module only) |  |
-| `FormatoDMTests/Fixtures/eels-planted.dm4` | 38.6 KB | `tools/dm4-gather/generate.py` (module only) |  |
-| `FormatoDMTests/Fixtures/eels-planted.truth.json` | 38.5 KB | `tools/dm4-gather/generate.py` (module only) |  |
-| `FormatoDMTests/Fixtures/eels-refused-long.dm4` | 2.0 KB | `tools/dm4-gather/generate.py` (module only) |  |
-| `FormatoDMTests/Fixtures/eels-refused-long.truth.json` | 487 B | `tools/dm4-gather/generate.py` (module only) |  |
-| `FormatoDMTests/Fixtures/eels-refused-short.dm4` | 2.0 KB | `tools/dm4-gather/generate.py` (module only) |  |
-| `FormatoDMTests/Fixtures/eels-refused-short.truth.json` | 488 B | `tools/dm4-gather/generate.py` (module only) |  |
-| `FormatoDMTests/Fixtures/eels-refused-zero.dm4` | 1.9 KB | `tools/dm4-gather/generate.py` (module only) |  |
-| `FormatoDMTests/Fixtures/eels-refused-zero.truth.json` | 486 B | `tools/dm4-gather/generate.py` (module only) |  |
-| `FormatoDMTests/Fixtures/eels-refused-zerodim.dm4` | 1.8 KB | `tools/dm4-gather/generate.py` (module only) |  |
-| `FormatoDMTests/Fixtures/eels-refused-zerodim.truth.json` | 445 B | `tools/dm4-gather/generate.py` (module only) |  |
+| `FormatoDMTests/Fixtures/eels-planted.dm4` | 38.6 KB | `tools/eels-reader/make_planted.py` |  |
+| `FormatoDMTests/Fixtures/eels-planted.truth.json` | 38.5 KB | `tools/eels-reader/truth.py` |  |
+| `FormatoDMTests/Fixtures/eels-refused-long.dm4` | 2.0 KB | `tools/eels-reader/make_planted.py` |  |
+| `FormatoDMTests/Fixtures/eels-refused-long.truth.json` | 487 B | `tools/eels-reader/truth.py` |  |
+| `FormatoDMTests/Fixtures/eels-refused-short.dm4` | 2.0 KB | `tools/eels-reader/make_planted.py` |  |
+| `FormatoDMTests/Fixtures/eels-refused-short.truth.json` | 488 B | `tools/eels-reader/truth.py` |  |
+| `FormatoDMTests/Fixtures/eels-refused-zero.dm4` | 1.9 KB | `tools/eels-reader/make_planted.py` |  |
+| `FormatoDMTests/Fixtures/eels-refused-zero.truth.json` | 486 B | `tools/eels-reader/truth.py` |  |
+| `FormatoDMTests/Fixtures/eels-refused-zerodim.dm4` | 1.8 KB | `tools/eels-reader/make_planted.py` |  |
+| `FormatoDMTests/Fixtures/eels-refused-zerodim.truth.json` | 445 B | `tools/eels-reader/truth.py` |  |
 | `FormatoDMTests/Fixtures/gather/detector-1.app.bin` | 480 B | `tools/dm4-gather/generate.py` |  |
 | `FormatoDMTests/Fixtures/gather/detector-1.bin` | 240 B | `tools/dm4-gather/generate.py` |  |
 | `FormatoDMTests/Fixtures/gather/detector-1.dm3` | 1.1 KB | `tools/dm4-gather/generate.py` |  |
@@ -146,13 +144,13 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoDMTests/Fixtures/gather/scan-9.app.bin` | 480 B | `tools/dm4-gather/generate.py` |  |
 | `FormatoDMTests/Fixtures/gather/scan-9.bin` | 120 B | `tools/dm4-gather/generate.py` |  |
 | `FormatoDMTests/Fixtures/gather/scan-9.dm4` | 1.5 KB | `tools/dm4-gather/generate.py` |  |
-| `FormatoDMTests/Fixtures/rsciio-EELS_SI.dm4` | 332.1 KB | `tools/dm4-gather/generate.py` (module only) | third party: RosettaSciIO public test data (GPL-3.0-or-later), copied unchanged |
-| `FormatoDMTests/Fixtures/rsciio-EELS_SI.truth.json` | 2.5 KB | `tools/dm4-gather/generate.py` (module only) | third party: RosettaSciIO public test data (GPL-3.0-or-later), copied unchanged |
+| `FormatoDMTests/Fixtures/rsciio-EELS_SI.dm4` | 332.1 KB | copied (sha256 checked by `tools/eels-reader/truth.py`) | third party: RosettaSciIO public test data (GPL-3.0-or-later), copied unchanged |
+| `FormatoDMTests/Fixtures/rsciio-EELS_SI.truth.json` | 2.5 KB | `tools/eels-reader/truth.py` | RosettaSciIO's reading of its public test file |
 | `FormatoEMDTests/Fixtures/acq-metadata/acq-pins.json` | 6.5 KB | `tools/acq-metadata/generate.py` |  |
 | `FormatoEMDTests/Fixtures/acq-metadata/velox-acquisition.emd` | 48.7 KB | `tools/acq-metadata/generate.py` |  |
 | `FormatoEMDTests/Fixtures/image-readers/pins.json` | 9.8 KB | `tools/acq-metadata/generate.py`, `tools/bragg-writer/check.py`, `tools/bragg-writer/generate.py` +16 |  |
 | `FormatoEMDTests/Fixtures/image-readers/velox-objects.emd` | 76.7 KB | `tools/acq-metadata/generate.py` |  |
-| `FormatoEMDTests/Fixtures/policy/si-units-px.emd` | 26.8 KB | none found |  |
+| `FormatoEMDTests/Fixtures/policy/si-units-px.emd` | 26.8 KB | `tools/velox-policy/make_policy_fixtures.py` |  |
 | `FormatoEMDTests/Fixtures/refuter-step3/A1_ops_named_no_Detectors_key.emd` | 21.3 KB | `tools/velox-titles/refuter_pins.py` |  |
 | `FormatoEMDTests/Fixtures/refuter-step3/A2_ops_named_detector_without_name.emd` | 21.3 KB | `tools/velox-titles/refuter_pins.py` |  |
 | `FormatoEMDTests/Fixtures/refuter-step3/A3_ops_unrecognized_detector_without_name.emd` | 21.3 KB | `tools/velox-titles/refuter_pins.py` |  |
@@ -217,12 +215,12 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-axis-order.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
 | `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-unterminated.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
 | `FormatoEMDTests/Fixtures/step4/spectrokit/velox-streams-truth.json` | 78.7 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/velox-flags-planted.emd` | 66.6 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
+| `FormatoEMDTests/Fixtures/velox-flags-planted.emd` | 66.6 KB | `tools/velox-flags/make_velox_flags.py` |  |
 | `FormatoEMDTests/Fixtures/velox-metadata-planted.emd` | 52.7 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
 | `FormatoEMDTests/Fixtures/velox-metadata-planted.truth.json` | 3.6 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
-| `FormatoEMDTests/Fixtures/velox-stream-axis-order.emd` | 48.4 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
-| `FormatoEMDTests/Fixtures/velox-stream-axis-order.pin.json` | 381 B | `tools/velox-spectrum/pins.py` (tool folder name) |  |
-| `FormatoEMDTests/Fixtures/velox-tiny.emd` | 42.6 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
+| `FormatoEMDTests/Fixtures/velox-stream-axis-order.emd` | 48.4 KB | copied from SpectroKit c5a9a5e (sha256 checked by `tools/velox-axis-order/pin_axis_order.py`) |  |
+| `FormatoEMDTests/Fixtures/velox-stream-axis-order.pin.json` | 381 B | `tools/velox-axis-order/pin_axis_order.py` |  |
+| `FormatoEMDTests/Fixtures/velox-tiny.emd` | 42.6 KB | mac4DSTEM's Velox stream fixture, via SpectroKit 0.3.0 (`Tests/README.md`) |  |
 | `FormatoEMDTests/Fixtures/velox-titles-v11-labels.emd` | 39.0 KB | `tools/velox-titles/make_velox_titles.py` |  |
 | `FormatoEMDTests/Fixtures/velox-titles-v11-noops.emd` | 48.7 KB | `tools/velox-titles/make_velox_titles.py` |  |
 | `FormatoEMDTests/Fixtures/velox-titles-v6-image.emd` | 159.2 KB | `tools/velox-titles/make_velox_titles.py` |  |

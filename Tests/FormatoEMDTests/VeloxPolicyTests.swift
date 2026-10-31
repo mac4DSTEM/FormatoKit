@@ -7,7 +7,7 @@ import FormatoCore
 extension VeloxEMDSerialized {
     /// FormatoKit's Velox policies. P2 (the grid) against RosettaSciIO's own
     /// reading in step-4-pins.json, P1 (an unhandled pixel unit) against literals typed here for the planted `si-units-px.emd`
-    /// (tools/policy/make_policy_fixtures.py), P3 (the array cap) at its boundary, P8 (the block size) by equal results and by
+    /// (tools/velox-policy/make_policy_fixtures.py), P3 (the array cap) at its boundary, P8 (the block size) by equal results and by
     /// the blocks it makes.
     @Suite final class VeloxPolicyTests {
         private static let tests = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
