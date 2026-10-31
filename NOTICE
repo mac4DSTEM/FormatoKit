@@ -74,13 +74,17 @@ tifffile and macTEM (FormatoTIFF, step 2)
 Sources/FormatoTIFF/ ports the parts of tifffile 2026.9.20 that RosettaSciIO's tiff
 reader relies on: the tag value rules (TiffTag._process_value), the FEI INI parser
 (read_fei_metadata, astype, asbool), the ImageJ description parser
-(imagej_description_metadata) and the ImageJ series rule (series_imagej); every
+(imagej_description_metadata), the ImageJ series rule (series_imagej), the Zeiss
+SEM tag parser (read_cz_sem, its unnamed values) and the TVIPS header layout
+(read_tvips_header, TVIPS_HEADER_V1 and V2); every
 TIFF is compared with tifffile's and RosettaSciIO's reading (tools/step-2/pins.py).
 macTEM's TIFF reader (Sources/TEMCore/Data/TIFFImageReader.swift at commit a58c84c,
 GPL-3.0) was read as the seed. The planted TIFFs under Tests/FormatoTIFFTests/
 Fixtures/planted are written byte by byte by tools/step-2/make_planted.py; the
 public TIFFs the pins name are RosettaSciIO's test data (GPL-3.0-or-later), read
-from the pinned clone and not committed.
+from the pinned clone and not committed; the vendor axes (Tests/FormatoTIFFTests/
+TIFFVendorAxesTests.swift) are compared on its TVIPS_bin4.zip, tiff_Zeiss_SEM.zip
+and JEOL-SightX-*-dummy.tif.gz files.
 
     tifffile - https://github.com/cgohlke/tifffile, version 2026.9.20
     Copyright (c) 2008-2026, Christoph Gohlke

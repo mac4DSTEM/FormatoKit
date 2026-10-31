@@ -13,6 +13,12 @@ public nonisolated enum TIFFVendorBranches: Sendable, Equatable {
     /// standard tags only, and the signal carries the metadata entry `FormatoKit.policy.vendor_branch` naming the branch.
     /// Layout refusals (compression, tiles, unsupported sample layouts) still refuse.
     case readAsGeneric
+    /// Read the file with the axes RosettaSciIO's branch gives it: the pixel size of a Zeiss SEM (tag 34118), TVIPS
+    /// (tag 37706, else the resolution tags) or JEOL SightX (the description's TEM MAG or DIFF mode over the resolution
+    /// tags) file, exactly. Olympus SIS and Hamamatsu streak files are read as under ``readAsGeneric``. The branches'
+    /// metadata mappings are not ported, so the signal carries the metadata entry `FormatoKit.policy.vendor_branch`
+    /// naming the branch. Layout refusals still refuse.
+    case readWithVendorAxes
 }
 
 /// The options of `TIFFSignals.init(path:options:)`. The defaults give exactly the behaviour of `TIFFSignals.init(path:)`.
