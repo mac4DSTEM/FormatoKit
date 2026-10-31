@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Planted Velox image files: the title rule and the stored types.
 
-    References/rsciio-venv/bin/python -I -B tools/velox-titles/make_velox_titles.py [--out DIR]
+    References/venv/bin/python -I -B tools/velox-titles/make_velox_titles.py [--out DIR]
 
 writes four files into DIR (default Tests/FormatoEMDTests/Fixtures) and prints EXPECT as JSON. THE TRUTH IS EXPECT, typed
 by hand below from RosettaSciIO 049e7d70's title rules; no reader is consulted here.

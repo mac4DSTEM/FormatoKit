@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Pins RosettaSciIO's readings of the public DM and Velox files, and its unit conversions.
 
-    References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py [--work DIR]
+    References/venv/bin/python -I -B tools/dm-velox-pins/pins.py [--work DIR]
         writes Tests/FormatoCoreTests/Fixtures/dm-velox-pins.json   (the public DM and Velox files of the pinned clone)
                Tests/FormatoCoreTests/Fixtures/units-pins.json    (RosettaSciIO's own unit functions, called, not retyped)
-    References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
+    References/venv/bin/python -I -B tools/dm-velox-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
         writes the same per-file records for files given on the command line to PATH (scratch, never committed; the path
         of each file is recorded as its basename only)
 
-The script stops unless `rsciio.__file__` is inside References/rsciio-venv, the clone's HEAD is the pin, and the installed
+The script stops unless `rsciio.__file__` is inside References/venv, the clone's HEAD is the pin, and the installed
 `rsciio` sources used here are byte-equal to the clone's. Outputs are byte-reproducible (sorted keys, indent 1, no times,
 no absolute paths); every build runs twice in the process and the script stops if the two outputs differ.
 Public files are checked against the clone's `rsciio/tests/registry.txt`; zips are unzipped (member by member, names
@@ -59,7 +59,7 @@ def cap_memory():
 cap_memory()
 
 CLONE = ROOT / "References" / "rosettasciio-049e7d70"
-VENV = ROOT / "References" / "rsciio-venv"
+VENV = ROOT / "References" / "venv"
 PIN = "049e7d7070e84779b499adaf3295beee9facb004"
 FIXTURES = ROOT / "Tests" / "FormatoCoreTests" / "Fixtures"
 DATA = CLONE / "rsciio" / "tests" / "data"

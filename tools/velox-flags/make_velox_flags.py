@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A planted Velox spectrum-stream file for the two reader flags made public in 0.0.3 for SpectroKit.
 
-    References/rsciio-venv/bin/python -I -B tools/velox-flags/make_velox_flags.py [--out DIR]
+    References/venv/bin/python -I -B tools/velox-flags/make_velox_flags.py [--out DIR]
 
 writes DIR/velox-flags-planted.emd (DIR defaults to Tests/FormatoEMDTests/Fixtures). Layout as SpectroKit's
 tools/edx-stages/make_velox_streams.py (c5a9a5e), which copies the Velox structure RosettaSciIO reads:

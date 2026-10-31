@@ -17,7 +17,7 @@ n=$(wc -l < $out/files-abs.txt | tr -d ' ')
 print "owner-check: $n files"
 [[ $n -gt 0 ]] || { print "owner-check: no *Ceta.tif under $data/tem"; exit 1; }
 if [[ ! -s $out/owner-pins.json || $out/owner-pins.json -ot $out/files-abs.txt && ${OWNER_REUSE_PINS:-0} == 0 ]]; then
-  tr '\n' '\0' < $out/files-abs.txt | xargs -0 References/rsciio-venv/bin/python -I -B tools/tiff-pins/pins.py --work $out --out $out/owner-pins.json --owner
+  tr '\n' '\0' < $out/files-abs.txt | xargs -0 References/venv/bin/python -I -B tools/tiff-pins/pins.py --work $out --out $out/owner-pins.json --owner
 fi
 export FORMATO_OWNER_TIFF_PINS=$out/owner-pins.json FORMATO_OWNER_TIFF_FILES=$out/files-abs.txt
 swift test -c release --filter FormatoTIFFPinsTests 2>&1 | tee $out/owner-check.log | grep -E "OwnerTIFFPins:|error|Executed .* tests" | tail -8

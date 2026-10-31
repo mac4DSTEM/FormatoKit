@@ -1,7 +1,7 @@
 """Checks the Swift-written PNG fixtures (FormatoPNG) with Pillow and zlib, and the oracle's.
 
   FORMATO_PNG_FIXTURE_DIR=$PWD/Tests/FormatoCoreTests/Fixtures/png swift test -c release --jobs 4 --filter PNGTests
-  <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/png/check.py
+  References/venv/bin/python -I -B tools/png/check.py
 
 For each swift-*.png and for mactem-inserted.png (the first consumer's own insertion, tools/png/oracle.sh):
   crc_valid       every chunk's CRC-32 equals zlib.crc32 of its type and body; the signature and IEND are there.

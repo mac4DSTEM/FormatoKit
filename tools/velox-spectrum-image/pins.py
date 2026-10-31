@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Pins RosettaSciIO's reading of Velox spectrum images.
 
-    References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/pins.py [--work DIR]
+    References/venv/bin/python -I -B tools/velox-spectrum-image/pins.py [--work DIR]
         writes Tests/FormatoCoreTests/Fixtures/velox-spectrum-image-pins.json
-    References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/pins.py --owner FILE --out PATH [--options O1,O4,...]
+    References/venv/bin/python -I -B tools/velox-spectrum-image/pins.py --owner FILE --out PATH [--options O1,O4,...]
         writes the same records for the owner's file to PATH (scratch, never committed; the file recorded by basename)
 
 Every record is `rsciio.emd.file_reader(path, select_type="spectrum_image", lazy=False, **options)` for one file and one option

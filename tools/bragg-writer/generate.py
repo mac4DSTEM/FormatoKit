@@ -1,5 +1,5 @@
-"""Pinned py4DSTEM BraggVectors (EMD 1.0) fixtures. Run using References/python/py4dstem/bin/python -I -B,
-under a memory cap. MACEM_SUITE may locate References from a worktree.
+"""Pinned py4DSTEM BraggVectors (EMD 1.0) fixtures. Run using References/venv/bin/python -I -B,
+under a memory cap. In a worktree, References/ is a link to the main checkout's.
 
 Writes Tests/FormatoHDF5Tests/Fixtures/bragg/: py4DSTEM-written files, the peaks as little-endian float64
 (qx, qy, intensity) triples in scan row-major order, and pins.json with the h5py structure and the values.
@@ -8,9 +8,8 @@ import os, pathlib, subprocess, json
 import numpy as np
 import h5py, py4DSTEM, emdfile
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-SUITE = pathlib.Path(os.environ.get('MACEM_SUITE', ROOT.parent))
 PIN = 'f050d207851f8accd3aa550365baaf1f38230428'
-assert subprocess.check_output(['git','-C',str(SUITE/'References/CuboKit/py4DSTEM-f050d207'),'rev-parse','HEAD'],text=True).strip() == PIN
+assert subprocess.check_output(['git','-C',str(ROOT/'References/py4DSTEM-f050d207'),'rev-parse','HEAD'],text=True).strip() == PIN
 assert py4DSTEM.__version__ == '0.14.19'
 OUT = ROOT/'Tests/FormatoHDF5Tests/Fixtures/bragg'
 OUT.mkdir(parents=True, exist_ok=True)

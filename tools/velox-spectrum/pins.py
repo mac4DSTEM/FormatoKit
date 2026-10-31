@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Planted Velox single-spectrum files and RosettaSciIO's reading of them (FormatoKit 0.9.0, `VeloxSpectrumSignals`).
 
-    References/rsciio-venv/bin/python -I -B tools/velox-spectrum/pins.py
+    References/venv/bin/python -I -B tools/velox-spectrum/pins.py
 
 writes Tests/FormatoEMDTests/Fixtures/spectra/*.emd and Tests/FormatoEMDTests/Fixtures/spectra-pins.json.
 Every record is `rsciio.emd.file_reader(path, select_type="single_spectrum", lazy=False)`: its exception, or per returned

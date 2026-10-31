@@ -77,6 +77,14 @@ jobs:
             echo "Private references above; this repo is public."; exit 1
           fi
 
+  fixture-index:
+    name: Fixture index is current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Tests/Fixtures/README.md is what tools/fixture-index/index.py writes
+        run: python3 -I -B tools/fixture-index/index.py --check
+
   lint:
     name: Lint (shared SwiftLint and SwiftFormat config)
     runs-on: ubuntu-latest
