@@ -1,6 +1,6 @@
 //
 //  SpectrumImagePinsTests.swift
-//  The kernel pins and every (file, option set) of Fixtures/step-4-pins.json
+//  The kernel pins and every (file, option set) of Fixtures/velox-spectrum-image-pins.json
 //  (tools/velox-spectrum-image/pins.py: RosettaSciIO 049e7d70's `file_reader(select_type="spectrum_image", lazy=False)` with sparse and
 //  numba) against `VeloxSpectrumImageSignals`: where RosettaSciIO raises, FormatoKit refuses; where it reads, the signals in
 //  order are equal in type, shape, data sha256, every axis field exactly, title, signal type and metadata with source.
@@ -151,7 +151,7 @@ import FormatoEMD
     }
 
     @Test func testEveryPinnedSpectrumImageAgreesOrIsRefused() throws {
-        let doc = try loadJSON("step-4-pins.json")
+        let doc = try loadJSON("velox-spectrum-image-pins.json")
         let referencesPresent = FileManager.default.fileExists(atPath: TestPaths.rsciioData.path)
         let t = try compare(doc, referencesPresent: referencesPresent)
         print("SpectrumImagePins: \(t.files) files, \(t.runs) runs: \(t.signals) signals equal, \(t.raised) refused where RosettaSciIO raises, \(t.deviated) deliberate deviations")
@@ -202,7 +202,7 @@ import FormatoEMD
 
     /// RosettaSciIO's `stream_to_array` (jitted) on the kernel pins' synthetic streams.
     @Test func testKernelEqualsRosettaSciIOStreamToArray() throws {
-        let cases = try #require(try loadJSON("step-4-pins.json")["kernel"] as? [[String: Any]])
+        let cases = try #require(try loadJSON("velox-spectrum-image-pins.json")["kernel"] as? [[String: Any]])
         #expect(cases.count == 20)
         for c in cases {
             let name = c["name"] as! String

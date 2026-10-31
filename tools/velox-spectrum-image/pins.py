@@ -2,7 +2,7 @@
 """Pins RosettaSciIO's reading of Velox spectrum images.
 
     References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/pins.py [--work DIR]
-        writes Tests/FormatoCoreTests/Fixtures/step-4-pins.json
+        writes Tests/FormatoCoreTests/Fixtures/velox-spectrum-image-pins.json
     References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/pins.py --owner FILE --out PATH [--options O1,O4,...]
         writes the same records for the owner's file to PATH (scratch, never committed; the file recorded by basename)
 
@@ -31,7 +31,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "Tests" / "FormatoCoreTests" / "Fixtures" / "step-4-pins.json"
+OUT = ROOT / "Tests" / "FormatoCoreTests" / "Fixtures" / "velox-spectrum-image-pins.json"
 PLANTED = ROOT / "Tests" / "FormatoEMDTests" / "Fixtures" / "step4"
 
 
