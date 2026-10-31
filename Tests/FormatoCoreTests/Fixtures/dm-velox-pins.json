@@ -8407,7 +8407,7 @@
      "velox_image_id": "7d37124c3fdb4093b74813e100bf5dc9"
     }
    ],
-   "spectrum_stream_not_read": true
+   "spectrum_stream_not_read": false
   },
   {
    "bytes": 3332696,
@@ -8474,7 +8474,7 @@
      "velox_image_id": "f7d057810df64a86b5dca3ec2c448b12"
     }
    ],
-   "spectrum_stream_not_read": true
+   "spectrum_stream_not_read": false
   },
   {
    "bytes": 5736400,
@@ -8541,7 +8541,7 @@
      "velox_image_id": "0c78be253dc844b68f00de87d863dfe7"
     }
    ],
-   "spectrum_stream_not_read": true
+   "spectrum_stream_not_read": false
   },
   {
    "bytes": 5592512,
@@ -8608,7 +8608,7 @@
      "velox_image_id": "fcb71071c4c94896bdcf856fb6f885ff"
     }
    ],
-   "spectrum_stream_not_read": true
+   "spectrum_stream_not_read": false
   },
   {
    "bytes": 644216,
@@ -8742,7 +8742,7 @@
      "velox_image_id": "9f4e9989c30045d490f40dcf5ca5cd9d"
     }
    ],
-   "spectrum_stream_not_read": true
+   "spectrum_stream_not_read": false
   },
   {
    "bytes": 2647704,
@@ -9211,7 +9211,7 @@
      "velox_image_id": "ffb235ab446f4b448ded4639b279b1ad"
     }
    ],
-   "spectrum_stream_not_read": true
+   "spectrum_stream_not_read": false
   },
   {
    "bytes": 1959636,
@@ -9278,7 +9278,7 @@
      "velox_image_id": "8e128a965174400b822b63050e92e2a9"
     }
    ],
-   "spectrum_stream_not_read": true
+   "spectrum_stream_not_read": false
   },
   {
    "bytes": 2023240,
@@ -9569,7 +9569,7 @@
      "velox_image_id": "f03a0d4a7c05495f95856e6708f94863"
     }
    ],
-   "spectrum_stream_not_read": true
+   "spectrum_stream_not_read": false
   },
   {
    "bytes": 1041592,
@@ -9860,10 +9860,10 @@
      "velox_image_id": "f03a0d4a7c05495f95856e6708f94863"
     }
    ],
-   "spectrum_stream_not_read": true
+   "spectrum_stream_not_read": false
   }
  ],
- "generator": "tools/step-1/pins.py",
+ "generator": "tools/dm-velox-pins/pins.py",
  "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.digitalmicrograph.file_reader; rsciio.emd.file_reader, select_type='images')",
  "set": "public",
  "skipped_non_velox_emd": [
