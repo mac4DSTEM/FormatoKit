@@ -31,7 +31,7 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoCoreTests/Fixtures/png/swift-rgb8-stored.png` | 9.1 KB | `tools/png/check.py` | written by the kit, checked by the script |
 | `FormatoCoreTests/Fixtures/png/swift-rgb8.png` | 215 B | `tools/png/check.py` | written by the kit, checked by the script |
 | `FormatoCoreTests/Fixtures/png/swift-rgba8.png` | 128 B | `tools/png/check.py` | written by the kit, checked by the script |
-| `FormatoCoreTests/Fixtures/refuter-pins.json` | 8.4 KB | `tools/velox-titles/refuter_pins.py` | RosettaSciIO 049e7d70 |
+| `FormatoCoreTests/Fixtures/refuter-pins.json` | 8.4 KB | `tools/dm-velox-pins/pins.py --owner … --set refuter` | RosettaSciIO 049e7d70 |
 | `FormatoCoreTests/Fixtures/refuter/p_stack_offset_no_x.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` | planted review file |
 | `FormatoCoreTests/Fixtures/refuter/p_stack_offset_nonnum_x.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` | planted review file |
 | `FormatoCoreTests/Fixtures/refuter/p_stack_pixelsize_no_width.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` | planted review file |
@@ -624,7 +624,7 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoTIFFTests/Fixtures/planted/tag-zoo.tif` | 366 B | `tools/tiff-pins/make_planted.py` | planted; truth tifffile 2026.9.20 |
 | `FormatoTIFFTests/Fixtures/planted/tiled.tif` | 414 B | `tools/tiff-pins/make_planted.py` | planted; truth tifffile 2026.9.20 |
 | `FormatoTIFFTests/Fixtures/planted/unknown-tag-type.tif` | 162 B | `tools/tiff-pins/make_planted.py` | planted; truth tifffile 2026.9.20 |
-| `FormatoTIFFTests/Fixtures/refuter-pins.json` | 129.3 KB | `tools/velox-titles/refuter_pins.py` | RosettaSciIO 049e7d70, tifffile 2026.9.20 |
+| `FormatoTIFFTests/Fixtures/refuter-pins.json` | 129.3 KB | `tools/tiff-pins/pins.py --owner …` | RosettaSciIO 049e7d70, tifffile 2026.9.20 |
 | `FormatoTIFFTests/Fixtures/refuter/dm_stack_mix_series.tif` | 652 B | `tools/velox-titles/refuter_pins.py` | planted review file |
 | `FormatoTIFFTests/Fixtures/refuter/dt_09.tif` | 190 B | `tools/velox-titles/refuter_pins.py` | planted review file |
 | `FormatoTIFFTests/Fixtures/refuter/dt_13.tif` | 192 B | `tools/velox-titles/refuter_pins.py` | planted review file |

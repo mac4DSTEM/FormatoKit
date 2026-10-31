@@ -289,7 +289,8 @@ def dm_file(path, label, set_name, R, np):
 # ---------------------------------------------------------------------------------------------------------------- Velox
 
 class sparse_stub:
-    """The venv has no `sparse` (an optional dependency, for the EDS spectrum stream). rsciio's `_read_data` reads the images of
+    """For an environment without `sparse` (an optional dependency, for the EDS spectrum stream; `tools/requirements.txt`
+    installs it, so in References/venv this is a no-op and `spectrum_stream_not_read` is false). rsciio's `_read_data` reads the images of
     a SpectrumStream file first and only then raises ModuleNotFoundError before `_read_spectrum_stream()`, so with the
     library absent `file_reader` raises on every such file even for select_type="images". Inside this block the single
     `find_spec("sparse")` check reports 'present' and `_read_spectrum_stream` does nothing; the image path runs unchanged.

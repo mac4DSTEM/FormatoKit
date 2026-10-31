@@ -4,7 +4,7 @@ under a memory cap. In a worktree, References/ is a link to the main checkout's.
 Writes Tests/FormatoHDF5Tests/Fixtures/bragg/: py4DSTEM-written files, the peaks as little-endian float64
 (qx, qy, intensity) triples in scan row-major order, and pins.json with the h5py structure and the values.
 """
-import os, pathlib, subprocess, json
+import os, pathlib, subprocess, json, uuid
 import numpy as np
 import h5py, py4DSTEM, emdfile
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -19,6 +19,14 @@ _spec = importlib.util.spec_from_file_location('bragg_structure', ROOT / 'tools/
 _h = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_h)
 plain, structure = _h.plain, _h.structure
 
+def fixed_uuid(path):
+    """emdfile writes a random uuid4 into the root `UUID` attribute at every save; the fixture gets one derived from its
+    name instead (uuid5), so a rerun is byte-identical. The kit's readers never read `UUID`."""
+    value = str(uuid.uuid5(uuid.NAMESPACE_URL, 'FormatoKit/' + path.relative_to(ROOT).as_posix()))
+    with h5py.File(path, 'r+') as f:
+        assert len(f.attrs['UUID']) == len(value)
+        f.attrs.modify('UUID', value)
+
 def build(name, scan, det, cells, calib):
     bv = py4DSTEM.BraggVectors(scan, det, name='braggvectors')
     for (ry, rx), peaks in cells.items():
@@ -28,6 +36,7 @@ def build(name, scan, det, cells, calib):
         getattr(bv.calibration, 'set_' + k)(v)
     path = OUT / (name + '.h5')
     py4DSTEM.save(str(path), bv, mode='o')
+    fixed_uuid(path)
     got = py4DSTEM.read(str(path))
     assert isinstance(got, py4DSTEM.BraggVectors)
     counts, flat = [], []

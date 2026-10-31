@@ -22,7 +22,8 @@ RSCIIO_PUBLIC = "third party: RosettaSciIO public test data (GPL-3.0-or-later), 
 SK030 = "SpectroKit 0.3.0 (tag 14c6acf8), byte-identical copy"
 ACQ = "planted; pins " + RSCIIO + " and the consumer's readers"
 
-# (pattern under Tests/, generator under tools/ or None, source). A pattern's `*` also crosses `/`.
+# (pattern under Tests/, generator under tools/ or None, source). A pattern's `*` also crosses `/`. A generator may carry
+# its arguments after the script path (the first word must be a file under tools/).
 RULES = [
     # FormatoCoreTests
     ("FormatoCoreTests/Fixtures/png/check-result.json", "png/check.py", "the check of the Swift-written PNGs"),
@@ -30,7 +31,7 @@ RULES = [
     ("FormatoCoreTests/Fixtures/png/mactem-inserted.png", "png/oracle.sh", "the first consumer's text-chunk insertion"),
     ("FormatoCoreTests/Fixtures/png/swift-*.png", "png/check.py", "written by the kit, checked by the script"),
     ("FormatoCoreTests/Fixtures/refuter/*", "velox-titles/refuter_pins.py", "planted review file"),
-    ("FormatoCoreTests/Fixtures/refuter-pins.json", "velox-titles/refuter_pins.py", RSCIIO),
+    ("FormatoCoreTests/Fixtures/refuter-pins.json", "dm-velox-pins/pins.py --owner … --set refuter", RSCIIO),
     ("FormatoCoreTests/Fixtures/dm-velox-pins.json", "dm-velox-pins/pins.py", RSCIIO + ", Pint 0.26.1"),
     ("FormatoCoreTests/Fixtures/units-pins.json", "dm-velox-pins/pins.py", RSCIIO + ", Pint 0.26.1"),
     ("FormatoCoreTests/Fixtures/velox-titles-pins.json", "velox-titles/pins.py", RSCIIO),
@@ -96,7 +97,7 @@ RULES = [
     ("FormatoTIFFTests/Fixtures/shaped/*", "shaped-tiff/pins.py", "tifffile 2026.9.20"),
     ("FormatoTIFFTests/Fixtures/shaped-pins.json", "shaped-tiff/pins.py", RSCIIO + ", tifffile 2026.9.20"),
     ("FormatoTIFFTests/Fixtures/refuter/*", "velox-titles/refuter_pins.py", "planted review file"),
-    ("FormatoTIFFTests/Fixtures/refuter-pins.json", "velox-titles/refuter_pins.py", RSCIIO + ", tifffile 2026.9.20"),
+    ("FormatoTIFFTests/Fixtures/refuter-pins.json", "tiff-pins/pins.py --owner …", RSCIIO + ", tifffile 2026.9.20"),
     ("FormatoTIFFTests/Fixtures/acq-metadata/*", "acq-metadata/generate.py", ACQ),
     ("FormatoTIFFTests/Fixtures/app-image/*", "acq-metadata/generate.py", "planted; pins the consumer's readers"),
     ("FormatoTIFFTests/Fixtures/image-readers/*", "acq-metadata/generate.py", ACQ),
@@ -142,7 +143,7 @@ def fixtures():
 def render():
     errors = []
     for _, gen, _ in RULES:
-        if gen is not None and not (ROOT / "tools" / gen).is_file():
+        if gen is not None and not (ROOT / "tools" / gen.split()[0]).is_file():
             errors.append(f"rule names tools/{gen}, which is not a file")
     used = set()
     rows = []
