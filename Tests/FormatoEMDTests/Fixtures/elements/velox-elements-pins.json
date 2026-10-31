@@ -1534,7 +1534,87 @@
    }
   ]
  },
- "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.emd.file_reader, select_type=single_spectrum); the mapping applied with HyperSpy 2.4.0's DictionaryTreeBrowser as hyperspy/io.py dict2signal applies it",
+ "public_spectrum_images": {
+  "fei_emd_files.zip/fei_SI_EDS-HAADF-4detectors_2frames.emd": [
+   {
+    "elements": {
+     "value": []
+    },
+    "signal_type": "EDS_TEM",
+    "title": "EDS"
+   }
+  ],
+  "fei_emd_files.zip/fei_SI_SuperX-HAADF_10frames_10x50.emd": [
+   {
+    "elements": {
+     "value": [
+      "Nb"
+     ]
+    },
+    "signal_type": "EDS_TEM",
+    "title": "EDS"
+   }
+  ],
+  "fei_emd_files.zip/fei_emd_si.emd": [
+   {
+    "elements": {
+     "value": []
+    },
+    "signal_type": "EDS_TEM",
+    "title": "EDS"
+   }
+  ],
+  "velox_EELS_EDS.zip/example_velox_EELS_EDS.emd": [
+   {
+    "signal_type": "EELS",
+    "title": "EELS"
+   },
+   {
+    "signal_type": "EELS",
+    "title": "EELS"
+   },
+   {
+    "signal_type": "EELS",
+    "title": "EELS"
+   },
+   {
+    "elements": {
+     "value": [
+      "O",
+      "Fe",
+      "Co"
+     ]
+    },
+    "signal_type": "EDS_TEM",
+    "title": "EDS"
+   }
+  ],
+  "velox_emd_v11_elementSelection.zip/SI_empty selection.emd": [
+   {
+    "elements": {
+     "value": []
+    },
+    "signal_type": "EDS_TEM",
+    "title": "EDS"
+   }
+  ],
+  "velox_emd_version11.zip/Test SI 16x16 215 kx.emd": [
+   {
+    "elements": {
+     "value": [
+      "C",
+      "O",
+      "Ca",
+      "Cu"
+     ]
+    },
+    "signal_type": "EDS_TEM",
+    "title": "EDS"
+   }
+  ],
+  "velox_emd_version11.zip/Test SI 16x16 ReducedData 215 kx.emd": []
+ },
+ "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.emd.file_reader, select_type=single_spectrum and spectrum_image); the mapping applied with HyperSpy 2.4.0's DictionaryTreeBrowser as hyperspy/io.py dict2signal applies it",
  "sha256": {
   "el-bad-json": "a481682ba9e75395fc3e079b8671b0c7295ca5361e5756bb58dd53400b4bec01",
   "el-bad-number": "09ea351789d4684ae9458e8108b5e10bc2d9c786d4cbe93d1c200cf48dc15470",
@@ -1555,6 +1635,215 @@
   "el-v6-one-segment": "0211f7301c3de36fe54078dbf7ede73cd0637fd719e88f2f93ff21efcaa05fe6",
   "el-version-text": "6510421008157b7a51aa4d69e7ad07f7ef6ded76ac7df7bd64733c44aae39731",
   "el-z-0": "e809b8792c4eeb581fc663c295bf7447721b1346fa62d88516262e18d09097e5",
-  "el-z-120": "f7ec224ace72419b6567ee9cf3958205417aa8c6b61d6409b51050e9ea3a10a0"
+  "el-z-120": "f7ec224ace72419b6567ee9cf3958205417aa8c6b61d6409b51050e9ea3a10a0",
+  "si-el-empty-selection": "7b9a8d7d9793e20f6dcc69100f820816105a5eaf91fb574b920bca3ad6b56558",
+  "si-el-entry-not-object": "990752fc0408cffcbab2d9ed3816ca668a2a558687186e94ea4319201191c860",
+  "si-el-none": "60d57d138ccaf26adfa460b9093c9f6523842225fd1c5fd2a187e3611b8a69cf",
+  "si-el-pruned-z-120": "57396e619f285be49dd6d883cedf6141f0f4a4e1de01080eafb6e3c1497a6b43",
+  "si-el-v11": "7d60ebdebd56e6f2cc54e5837d99e249f009279aa26261018d8da65c3264c673",
+  "si-el-v11-operations-only": "463fbeb4cbe4dd87753e0d35ca1678357fbc6dae76421cc1f73f8b1530ec24ed",
+  "si-el-v9": "0d6f980053f22fa8365484b657270368586e8edec717436a0c704fe902557391",
+  "si-el-z-120": "ebb841f3225f2f6b207847e990602e6afc5c1dd143a82e25b4899c6d3c5a3824"
+ },
+ "spectrum_images": {
+  "si-el-empty-selection": {
+   "default": [
+    {
+     "elements": {
+      "value": []
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ],
+   "per_stream": [
+    {
+     "elements": {
+      "value": []
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    },
+    {
+     "elements": {
+      "value": []
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ]
+  },
+  "si-el-entry-not-object": {
+   "default": [
+    {
+     "elements": {
+      "raises": "AttributeError"
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ],
+   "per_stream": [
+    {
+     "elements": {
+      "raises": "AttributeError"
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    },
+    {
+     "elements": {
+      "raises": "AttributeError"
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ]
+  },
+  "si-el-none": {
+   "default": [
+    {
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ],
+   "per_stream": [
+    {
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    },
+    {
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ]
+  },
+  "si-el-pruned-z-120": {
+   "default": [],
+   "per_stream": []
+  },
+  "si-el-v11": {
+   "default": [
+    {
+     "elements": {
+      "value": [
+       "Ca",
+       "Cu",
+       "O"
+      ]
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ],
+   "per_stream": [
+    {
+     "elements": {
+      "value": [
+       "Ca",
+       "Cu",
+       "O"
+      ]
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    },
+    {
+     "elements": {
+      "value": [
+       "Ca",
+       "Cu",
+       "O"
+      ]
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ]
+  },
+  "si-el-v11-operations-only": {
+   "default": [
+    {
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ],
+   "per_stream": [
+    {
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    },
+    {
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ]
+  },
+  "si-el-v9": {
+   "default": [
+    {
+     "elements": {
+      "value": [
+       "Fe",
+       "O",
+       "Si"
+      ]
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ],
+   "per_stream": [
+    {
+     "elements": {
+      "value": [
+       "Fe",
+       "O",
+       "Si"
+      ]
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    },
+    {
+     "elements": {
+      "value": [
+       "Fe",
+       "O",
+       "Si"
+      ]
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ]
+  },
+  "si-el-z-120": {
+   "default": [
+    {
+     "elements": {
+      "raises": "KeyError"
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ],
+   "per_stream": [
+    {
+     "elements": {
+      "raises": "KeyError"
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    },
+    {
+     "elements": {
+      "raises": "KeyError"
+     },
+     "signal_type": "EDS_TEM",
+     "title": "EDS"
+    }
+   ]
+  }
  }
 }

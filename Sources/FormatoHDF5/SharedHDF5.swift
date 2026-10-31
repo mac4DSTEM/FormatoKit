@@ -61,6 +61,9 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
     package let h5sgetNpoints: H5SgetNpoints, h5ogetNativeInfo: H5OgetNativeInfo, h5eprint2: H5Eprint2?
     /// `H5P_CLS_FILE_ACCESS_ID_g`'s value: the file-access property class.
     package let fileAccessClass: hid_t
+    // File locking (FormatoKit#53). `hbool_t` is C `bool` in libhdf5 2.x. Nil when the library lacks it.
+    package typealias H5PsetFileLocking = @convention(c) (hid_t, Bool, Bool) -> herr_t
+    package let h5psetFileLocking: H5PsetFileLocking?
 
     package let h5aopen: H5Aopen, h5aread: H5Aread, h5aclose: H5Close
     package let h5agetSpace: H5DgetSpace, h5agetType: H5DgetType
@@ -161,6 +164,7 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
             h5ogetNativeInfo: try symbol("H5Oget_native_info", as: H5OgetNativeInfo.self),
             h5eprint2: dlsym(handle, "H5Eprint2").map { unsafeBitCast($0, to: H5Eprint2.self) },
             fileAccessClass: try global("H5P_CLS_FILE_ACCESS_ID_g"),
+            h5psetFileLocking: dlsym(handle, "H5Pset_file_locking").map { unsafeBitCast($0, to: H5PsetFileLocking.self) },
             h5aopen: try symbol("H5Aopen", as: H5Aopen.self), h5aread: try symbol("H5Aread", as: H5Aread.self),
             h5aclose: try symbol("H5Aclose", as: H5Close.self),
             h5agetSpace: try symbol("H5Aget_space", as: H5DgetSpace.self), h5agetType: try symbol("H5Aget_type", as: H5DgetType.self),
@@ -197,5 +201,30 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
             datasetCreateClass: try global("H5P_CLS_DATASET_CREATE_ID_g"),
             h5lgetInfo2: dlsym(handle, "H5Lget_info2").map { unsafeBitCast($0, to: H5LgetInfo2.self) },
             h5ogetInfoByName3: dlsym(handle, "H5Oget_info_by_name3").map { unsafeBitCast($0, to: H5OgetInfoByName3.self) })
+    }
+
+    // MARK: Scratch files (FormatoKit#53)
+
+    /// Turns libhdf5's file locking off on the file-access list `fapl`, for a file the kit writes at a private scratch path and
+    /// publishes by atomic rename. libhdf5 `flock`s a file opened for writing (LOCK_EX); the lock belongs to the open file
+    /// description, so a copy of the descriptor (a child process started meanwhile holds one until its `exec`) keeps it past
+    /// `H5Fclose`, and the published file then refuses a read with errno 35. Nobody else opens a scratch path, so the lock
+    /// guards nothing there. Reads keep their lock. A library without `H5Pset_file_locking` leaves the list as it is.
+    /// The environment variable `HDF5_USE_FILE_LOCKING` overrides this list in libhdf5: `TRUE` brings the lock back here,
+    /// `FALSE` drops it from reads too.
+    package func disableFileLocking(_ fapl: hid_t) throws {
+        guard let set = h5psetFileLocking else { return }
+        guard set(fapl, false, true) >= 0 else {
+            throw HDF5FileError.cannotWrite(operation: "turning file locking off", detail: "H5Pset_file_locking refused")
+        }
+    }
+
+    /// `body` with a file-access list for a scratch file (`disableFileLocking`), closed afterwards.
+    package func withScratchFileAccess<T>(_ body: (hid_t) throws -> T) throws -> T {
+        let fapl = h5pcreate(fileAccessClass)
+        guard fapl >= 0 else { throw HDF5FileError.cannotWrite(operation: "making the file-access properties", detail: "H5Pcreate refused") }
+        defer { _ = h5pclose(fapl) }
+        try disableFileLocking(fapl)
+        return try body(fapl)
     }
 }

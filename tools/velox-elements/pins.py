@@ -18,6 +18,9 @@ Per file: RosettaSciIO's exception, or per spectrum the elements (a list, absent
 the mapping raises: HyperSpy's `load` raises it too), `BinaryResult.Detector` and every `Detectors` entry of the spectrum's
 `original_metadata` in written order (name, type, `Enabled`, `float()` of `LiveTime` and `RealTime` with their bits). RosettaSciIO
 maps no live or real time for these files: their spectra hold no `DetectorMetadata` (asserted).
+Spectrum images (`si-el-*.emd`, built with tools/step-4/make_velox_si.py's helpers, and RosettaSciIO's public SI files): read with
+`select_type="spectrum_image"` (with the defaults, and with `sum_EDS_detectors=False`), per signal its title, signal type and elements
+by the same mapping loop.
 Built twice in the process, the outputs compared.
 """
 import hashlib
@@ -47,6 +50,7 @@ def module(name, path):
 
 step1 = module("step1_pins", ROOT / "tools" / "step-1" / "pins.py")
 SP = module("velox_spectrum_pins", ROOT / "tools" / "velox-spectrum" / "pins.py")
+SI = module("velox_si_builder", ROOT / "tools" / "step-4" / "make_velox_si.py")
 
 
 def tree_class():
@@ -153,6 +157,96 @@ def build(out):
         SP.add_spectrum(f, "s0", ramp, times_doc(FOUR, "SuperXG2"))
 
 
+def build_si(out):
+    """Spectrum-image files (`si-el-*.emd`): one 3 x 4 image, one frame, two EDS streams (16 channels, one event per pixel), the
+    settings group as the single-spectrum files plant it. Built with tools/step-4/make_velox_si.py's helpers."""
+    ny, nx, area = 3, 4, (0.25, 0, 0.75, 0.5)   # ScanSize 8 x 6 over that area is the image's 3 x 4 grid
+    det = SI.detectors_doc([("Detector-0", "HAADF", None, None), ("Detector-1", "SuperXG21", "10", "-50"),
+                            ("Detector-2", "SuperXG22", "10", "-50")])
+
+    def make(name, version, settings=None, extra=None, pruned=False):
+        with SI.new_file(str(out / f"{name}.emd"), version, "v11" if version >= 11 else "v9") as f:
+            SI.add_image(f, "img0", np.arange(ny * nx, dtype=np.uint16).reshape(ny, nx, 1), SI.image_doc((8, 6), area))
+            SI.add_si_settings(f, {"startFramePosition": "0", "endFramePosition": "1"})
+            if pruned:   # Velox 11's pruned file: an empty SpectrumStream group, no EDS signal, so no mapping
+                f.create_group("Data/SpectrumStream")
+            for s, (stream, detector, index) in enumerate([] if pruned else [("s0", "SuperXG21", "1"), ("s1", "SuperXG22", "2")]):
+                values = [v for p in range(ny * nx) for v in ((p + 5 * s) % 16, SI.MARK)]
+                SI.add_stream(f, stream, values, 16, "uint16", SI.base_doc(det, detector, index, (8, 6), area))
+            if settings is not None:
+                write_group(f, settings[0], settings[1])
+            for path, entries in (extra or []):
+                write_group(f, path, entries)
+
+    # Velox 11: two entries, the first in HyperSpy's sorted order taken ("Number_0b4c" before "a24a..."); Operations ignored.
+    make("si-el-v11", 11, (V11_SETTINGS, [("a24a64ef30da49beb12dabaa598d9f16", {"elementSelection": ["6", "8"]}),
+                                          ("0b4c", {"elementSelection": ["20", "29", "8"]})]),
+         extra=[(V4_SETTINGS, [("zz", {"elementSelection": ["79"]})])])
+    # Velox 9: Operations; numbers and strings; SharedProperties ignored.
+    make("si-el-v9", 9, (V4_SETTINGS, [("80e138836ebd4b7aad5be7d3dd071f47", {"elementSelection": [26, "8", " 1_4 "]})]),
+         extra=[(V11_SETTINGS, [("e1", {"elementSelection": ["79"]})])])
+    make("si-el-pruned-z-120", 11, (V11_SETTINGS, [("e1", {"elementSelection": ["120"]})]), pruned=True)
+    make("si-el-empty-selection", 11, (V11_SETTINGS, [("0ea5", {"other": "x"})]))
+    make("si-el-v11-operations-only", 11, extra=[(V4_SETTINGS, [("80e1", {"elementSelection": ["8"]})])])
+    make("si-el-none", 11)
+    make("si-el-z-120", 11, (V11_SETTINGS, [("e1", {"elementSelection": ["120"]})]))
+    make("si-el-entry-not-object", 11, (V11_SETTINGS, [("e1", ["8"])]))
+
+
+def si_record(path, tree, **options):
+    """`rsciio.emd.file_reader(select_type="spectrum_image")`: RosettaSciIO's exception, or per signal its title, signal type and
+    `Sample.elements` as `dict2signal` sets it (absent when the mapping does not apply, or the exception it raises). Only the
+    elements entry may raise (asserted)."""
+    from rsciio.emd import file_reader
+    try:
+        dicts = file_reader(str(path), select_type="spectrum_image", lazy=False, **options)
+    except Exception as e:  # noqa: BLE001
+        return {"raises": type(e).__name__}
+    out = []
+    for d in dicts:
+        rec = {"title": d["metadata"]["General"]["title"], "signal_type": d["metadata"]["Signal"]["signal_type"]}
+        browser = tree()
+        browser.add_dictionary(d["original_metadata"])
+        md = tree()
+        for opattr, (mpattr, function) in d.get("mapping", {}).items():
+            if opattr not in browser:
+                continue
+            try:
+                value = browser.get_item(opattr)
+                if function is not None:
+                    value = function(value)
+            except Exception as e:  # noqa: BLE001
+                assert mpattr == "Sample.elements", (path, opattr, e)
+                rec["elements"] = {"raises": type(e).__name__}
+                break
+            if value is not None:
+                md.set_item(mpattr, value)
+        else:
+            if md.has_item("Sample.elements"):
+                rec["elements"] = {"value": list(md.get_item("Sample.elements"))}
+        out.append(rec)
+    return out
+
+
+SI_PUBLIC = [("fei_emd_files.zip", "fei_SI_EDS-HAADF-4detectors_2frames.emd"), ("fei_emd_files.zip", "fei_emd_si.emd"),
+             ("fei_emd_files.zip", "fei_SI_SuperX-HAADF_10frames_10x50.emd"), ("velox_emd_version11.zip", "Test SI 16x16 215 kx.emd"),
+             ("velox_emd_version11.zip", "Test SI 16x16 ReducedData 215 kx.emd"), ("velox_EELS_EDS.zip", "example_velox_EELS_EDS.emd"),
+             ("velox_emd_v11_elementSelection.zip", "SI_empty selection.emd")]
+
+
+def public_si(tree):
+    """RosettaSciIO's public Velox spectrum-image files, unzipped into a fresh folder: each signal's title and elements."""
+    import zipfile
+    data = step1.CLONE / "rsciio" / "tests" / "data" / "emd"
+    out = {}
+    with tempfile.TemporaryDirectory() as tmp:
+        for zname in sorted({z for z, _ in SI_PUBLIC}):
+            zipfile.ZipFile(data / zname).extractall(Path(tmp) / zname)
+        for zname, fname in SI_PUBLIC:
+            out[f"{zname}/{fname}"] = si_record(Path(tmp) / zname / fname, tree)
+    return out
+
+
 def float_record(raw):
     if raw is None:
         return None
@@ -214,13 +308,18 @@ def run(out, tree):
     step1.load_rsciio()
     out.mkdir(parents=True, exist_ok=True)
     build(out)
-    names = sorted(p.stem for p in out.glob("*.emd"))
+    build_si(out)
+    names = sorted(p.stem for p in out.glob("el-*.emd"))
+    si_names = sorted(p.stem for p in out.glob("si-el-*.emd"))
     pins = {"generator": "tools/velox-elements/pins.py",
             "public": public(tree),
-            "reference": f"RosettaSciIO {step1.PIN} (rsciio.emd.file_reader, select_type=single_spectrum); the mapping applied with "
-                         f"HyperSpy {HYPERSPY_VERSION}'s DictionaryTreeBrowser as hyperspy/io.py dict2signal applies it",
+            "public_spectrum_images": public_si(tree),
+            "reference": f"RosettaSciIO {step1.PIN} (rsciio.emd.file_reader, select_type=single_spectrum and spectrum_image); the "
+                         f"mapping applied with HyperSpy {HYPERSPY_VERSION}'s DictionaryTreeBrowser as hyperspy/io.py dict2signal applies it",
             "files": {n: record(out / f"{n}.emd", tree) for n in names},
-            "sha256": {n: hashlib.sha256((out / f"{n}.emd").read_bytes()).hexdigest() for n in names}}
+            "spectrum_images": {n: {"default": si_record(out / f"{n}.emd", tree),
+                                    "per_stream": si_record(out / f"{n}.emd", tree, sum_EDS_detectors=False)} for n in si_names},
+            "sha256": {n: hashlib.sha256((out / f"{n}.emd").read_bytes()).hexdigest() for n in names + si_names}}
     return json.dumps(pins, indent=1, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n"
 
 
