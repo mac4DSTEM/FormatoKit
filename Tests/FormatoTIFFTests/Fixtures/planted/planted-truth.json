@@ -10307,7 +10307,7 @@
    ]
   }
  ],
- "generator": "tools/step-2/make_planted.py",
+ "generator": "tools/tiff-pins/make_planted.py",
  "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004, tifffile 2026.9.20 (the readings; the truth is written by hand)",
  "versions": {
   "dateutil": "2.9.0.post0",
