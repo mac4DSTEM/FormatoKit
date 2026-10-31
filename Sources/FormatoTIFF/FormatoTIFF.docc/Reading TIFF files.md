@@ -39,4 +39,4 @@ The data is kept as stored. A colour page is one element per pixel, so an RGB pa
 
 ## What the module refuses
 
-The reader reads uncompressed pages with strips and contiguous samples. A compressed page, or a tiled one, is refused with ``TIFFError/unsupportedLayout(_:)``, and so is a file from a vendor format that the module does not read yet. Each refusal names the reason, so no page is decoded into a wrong array.
+The reader reads uncompressed pages with strips and contiguous samples. A compressed page, or a tiled one, is refused with ``TIFFError/unsupportedLayout(_:)``, and so is a file from a vendor format that the module does not read yet. A multi-page file whose pages do not make one series this reader takes (an OME-TIFF, a pyramid of reduced-resolution pages, pages of several shapes or types, an ImageJ or shaped stack it cannot place) is refused with ``TIFFError/unsupportedSeries(file:series:)``, which carries the file name and the kind of series. Each refusal names the reason, so no page is decoded into a wrong array.

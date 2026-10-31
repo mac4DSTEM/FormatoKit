@@ -64,6 +64,9 @@ public nonisolated enum TIFFError: Error, Equatable, LocalizedError {
     case loop(String)
     /// A page layout this reader refuses rather than guesses: compression, tiles, planar 2, a sample layout.
     case unsupportedLayout(String)
+    /// A series of pages this reader refuses rather than guesses, named: the file's display name and the kind of series
+    /// ("an OME-TIFF series", "a pyramid of reduced-resolution pages", "3 series of pages that differ in shape or type", ...).
+    case unsupportedSeries(file: String, series: String)
 
     public var errorDescription: String? {
         switch self {
@@ -71,6 +74,7 @@ public nonisolated enum TIFFError: Error, Equatable, LocalizedError {
         case .truncated(let n): return "\(n) ends before its data does."
         case .loop(let n): return "\(n)'s directory chain loops."
         case .unsupportedLayout(let why): return why
+        case .unsupportedSeries(let file, let series): return "\(file) holds \(series), which this reader does not read."
         }
     }
 }
