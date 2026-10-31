@@ -2,7 +2,7 @@
 """Pins RosettaSciIO's readings of the public DM and Velox files, and its unit conversions.
 
     References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py [--work DIR]
-        writes Tests/FormatoCoreTests/Fixtures/step-1-pins.json   (the public DM and Velox files of the pinned clone)
+        writes Tests/FormatoCoreTests/Fixtures/dm-velox-pins.json   (the public DM and Velox files of the pinned clone)
                Tests/FormatoCoreTests/Fixtures/units-pins.json    (RosettaSciIO's own unit functions, called, not retyped)
     References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
         writes the same per-file records for files given on the command line to PATH (scratch, never committed; the path
@@ -717,7 +717,7 @@ def main():
     if first[0] != second[0] or first[1] != second[1]:
         die("two builds differ: not byte-reproducible")
     FIXTURES.mkdir(parents=True, exist_ok=True)
-    for name, text in (("step-1-pins.json", first[0]), ("units-pins.json", first[1])):
+    for name, text in (("dm-velox-pins.json", first[0]), ("units-pins.json", first[1])):
         (FIXTURES / name).write_text(text, encoding="utf-8")
         print(f"{name}: {len(text.encode('utf-8'))} bytes, sha256 {sha256_bytes(text.encode('utf-8'))}")
     n, dtypes = summarize(first[2])

@@ -9,7 +9,7 @@ Agreement with RosettaSciIO is agreement with an independent reading of the same
     References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py [--work DIR]
     References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
 
-- Default mode writes `Tests/FormatoCoreTests/Fixtures/step-1-pins.json` (public files) and `units-pins.json`.
+- Default mode writes `Tests/FormatoCoreTests/Fixtures/dm-velox-pins.json` (public files) and `units-pins.json`.
 - `--owner` writes the same per-file records for the files named on the command line (`.dm3`/`.dm4`, and `.emd` that are
   Velox; others are listed under `skipped`) to PATH. PATH is scratch: never commit it. The path of each file is recorded as
   its basename only. A file where the oracle's own checks fail (see "stops" below) gets `oracle_check_failed` instead of
@@ -33,7 +33,7 @@ raises on every file that has a `Data/SpectrumImage` group. Inside the single `f
 `find_spec("sparse")` answer "present" and makes `_read_spectrum_stream` do nothing (`sparse_stub`); the image path runs
 unchanged. Those files carry `"spectrum_stream_not_read": true`. With `sparse` installed the stub does nothing.
 
-## `step-1-pins.json`
+## `dm-velox-pins.json`
 
 Top level: `generator`, `reference`, `versions` (python, numpy, h5py, pint), `set`, `files`, `skipped_non_velox_emd`
 (every loose `.emd` of `emd/` whose root `Version` is not `format: "Velox"`, with the format found, null when there is no

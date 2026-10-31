@@ -1,7 +1,7 @@
 //
 //  PinsTests.swift
 //  Every DM and Velox signal RosettaSciIO 049e7d70 returns from its public
-//  test files (Fixtures/step-1-pins.json, tools/dm-velox-pins/pins.py) against FormatoDM's and FormatoEMD's adapters: shape, the
+//  test files (Fixtures/dm-velox-pins.json, tools/dm-velox-pins/pins.py) against FormatoDM's and FormatoEMD's adapters: shape, the
 //  data's sha256 over the stored bytes (Velox in its stored type since step 3; Float32 before), every axis field bit for
 //  bit, the signal type, the title (DM; Velox since step 3) and the mapped metadata with its source; a type RosettaSciIO reads and FormatoKit does not is refused by
 //  name (A1.1). And L1: for every signal read, seeded slabs of the lazy array equal the same slabs cut from the eager one.
@@ -86,7 +86,7 @@ import FormatoEMD
     }
 
     @Test func testEveryPinnedSignalAgreesWithRosettaSciIO() throws {
-        let files = try #require(try loadJSON("step-1-pins.json")["files"] as? [[String: Any]])
+        let files = try #require(try loadJSON("dm-velox-pins.json")["files"] as? [[String: Any]])
         let referencesPresent = FileManager.default.fileExists(atPath: TestPaths.rsciioData.path)
         let (read, signals, refused) = try compare(files, locate: locate, mustFind: referencesPresent)
         if referencesPresent {
