@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """RosettaSciIO 049e7d70's energy axis for the planted axis-order file (pinned for SpectroKit at 0.0.3).
 
-    References/rsciio-venv/bin/python -I -B tools/velox-axis-order/pin_axis_order.py
+    References/venv/bin/python -I -B tools/velox-axis-order/pin_axis_order.py
 
 Reads Tests/FormatoEMDTests/Fixtures/velox-stream-axis-order.emd (SpectroKit c5a9a5e, sha256 checked) through RosettaSciIO's
 own stream path: `rsciio.utils.hdf5._parse_sub_data_group_metadata` on the first stream (name order, as `_read_spectrum_stream`

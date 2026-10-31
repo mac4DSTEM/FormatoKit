@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pins RosettaSciIO's reading of tifffile-written TIFFs with tifffile's shaped description (FormatoKit 0.11.0).
 
-    References/rsciio-venv/bin/python -I -B tools/shaped-tiff/pins.py
+    References/venv/bin/python -I -B tools/shaped-tiff/pins.py
         writes Tests/FormatoTIFFTests/Fixtures/shaped/*.tif   (small files, tifffile's own writer, seeded content)
         and   Tests/FormatoTIFFTests/Fixtures/shaped-pins.json
 

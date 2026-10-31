@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pins RosettaSciIO's reading of the Velox spectrum-image review files.
 
-    References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/refuter_pins.py
+    References/venv/bin/python -I -B tools/velox-spectrum-image/refuter_pins.py
         writes Tests/FormatoCoreTests/Fixtures/velox-spectrum-image-refuter-pins.json from Tests/FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/
 
 The refuter's files on the frozen 4ac6df0 (one each per finding), with the option sets it found them under; each record as

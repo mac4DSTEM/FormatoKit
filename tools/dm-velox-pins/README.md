@@ -6,8 +6,8 @@ Agreement with RosettaSciIO is agreement with an independent reading of the same
 
 ## Run
 
-    References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py [--work DIR]
-    References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
+    References/venv/bin/python -I -B tools/dm-velox-pins/pins.py [--work DIR]
+    References/venv/bin/python -I -B tools/dm-velox-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
 
 - Default mode writes `Tests/FormatoCoreTests/Fixtures/dm-velox-pins.json` (public files) and `units-pins.json`.
 - `--owner` writes the same per-file records for the files named on the command line (`.dm3`/`.dm4`, and `.emd` that are
@@ -16,7 +16,7 @@ Agreement with RosettaSciIO is agreement with an independent reading of the same
   signals.
 - `--work DIR` (an existing directory, default the system temp dir) is where each public zip is unzipped, into a fresh
   directory made for it. The clone is never written to.
-- The script stops unless `rsciio.__file__` is inside `References/rsciio-venv`, the clone's HEAD is the pin, and the
+- The script stops unless `rsciio.__file__` is inside `References/venv`, the clone's HEAD is the pin, and the
   installed `digitalmicrograph/_api.py`, `emd/_api.py`, `emd/_emd_velox.py`, `utils/_units.py`, `utils/hdf5.py` equal the
   clone's, byte for byte. Each public file and zip is checked against `rsciio/tests/registry.txt`. It builds everything twice
   in the process and stops if the two outputs differ. Output: sorted keys, indent 1, UTF-8, no times, no absolute paths,

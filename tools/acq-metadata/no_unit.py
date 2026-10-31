@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A Velox file whose images have PixelSize but no PixelUnitX (FormatoKit 0.11.0, AcquisitionMetadata.velox pixelSize).
 
-    References/rsciio-venv/bin/python -I -B tools/acq-metadata/no_unit.py
+    References/venv/bin/python -I -B tools/acq-metadata/no_unit.py
         copies Tests/FormatoEMDTests/Fixtures/acq-metadata/velox-acquisition.emd, deletes BinaryResult.PixelUnitX from every
         image's metadata, writes velox-no-unit.emd and velox-no-unit.pin.json (RosettaSciIO 049e7d70's axes for it:
         `.get("PixelUnitX", "")` gives an empty unit and keeps the scale, so the pixel size is kept with units "").

@@ -21,7 +21,7 @@ f=$(find $data/stem-edx -iname '*.emd' -type f | sort | head -1)
 print -r -- "${f:A}" > $out/file.txt
 print "owner-check spectrum image: ${f:t}"
 if [[ ! -s $out/owner-pins.json || ${OWNER_REUSE_PINS:-0} == 0 ]]; then
-  /usr/bin/time -p $cap References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/pins.py --owner "${f:A}" --out $out/owner-pins.json --options O1,O4,O11 2>&1 | grep -v WARNING
+  /usr/bin/time -p $cap References/venv/bin/python -I -B tools/velox-spectrum-image/pins.py --owner "${f:A}" --out $out/owner-pins.json --options O1,O4,O11 2>&1 | grep -v WARNING
 fi
 export FORMATO_OWNER_SI_PINS=$out/owner-pins.json FORMATO_OWNER_SI_FILE=${f:A}
 [[ -d dist/xcframeworks/FormatoLibHDF5.xcframework ]] || tools/xcframework/build.sh --local > /dev/null 2>&1

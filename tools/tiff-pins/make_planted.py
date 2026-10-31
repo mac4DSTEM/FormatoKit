@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Planted TIFFs for FormatoTIFF.
 
-    References/rsciio-venv/bin/python -I -B tools/tiff-pins/make_planted.py [--out DIR]
+    References/venv/bin/python -I -B tools/tiff-pins/make_planted.py [--out DIR]
 
 Writes small TIFFs with known content into Tests/FormatoTIFFTests/Fixtures/planted/ with Python's `struct` only, byte by byte
 (not tifffile's writer, not RosettaSciIO's), and `planted-truth.json` next to them: for each file the literal values the Swift

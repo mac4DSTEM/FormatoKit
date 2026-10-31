@@ -1,6 +1,6 @@
 """Acquisition-metadata fixtures and pins (FormatoCore AcquisitionMetadata; FormatoDM/MRC/TIFF/EMD readers).
 
-    MACEM_SUITE=<suite> <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/acq-metadata/generate.py
+    MACEM_SUITE=<suite> References/venv/bin/python -I -B tools/acq-metadata/generate.py
 
 Writes small synthetic DM4, MRC, TIFF and Velox EMD files (struct/h5py only, byte by byte) under Tests/*/Fixtures/acq-metadata/ and,
 for each, two pins:
@@ -27,7 +27,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SUITE = pathlib.Path(os.environ['MACEM_SUITE'])
 PIN = '049e7d7070e84779b499adaf3295beee9facb004'
 APP = 'cb6e164f9227bf716185ed515bb6a2afb3a8841f'
-assert subprocess.check_output(['git', '-C', str(SUITE / 'References/FormatoKit/rosettasciio-049e7d70'), 'rev-parse', 'HEAD'], text=True).strip() == PIN
+assert subprocess.check_output(['git', '-C', str(ROOT / 'References/rosettasciio-049e7d70'), 'rev-parse', 'HEAD'], text=True).strip() == PIN
 assert rsciio.__version__ == '0.14.1.dev96+g049e7d707'
 HERE = pathlib.Path(__file__).resolve().parent
 OUT = {k: ROOT / f'Tests/{k}Tests/Fixtures/acq-metadata' for k in ('FormatoDM', 'FormatoMRC', 'FormatoTIFF', 'FormatoEMD')}

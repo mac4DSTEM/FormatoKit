@@ -2,7 +2,7 @@
 """Writes Sources/FormatoCore/FormatoUnitsFactors.swift: Pint 0.26.1's conversion factors between the SI-prefixed forms of
 a base unit, for powers +1 and -1, as Pint computes them (`Quantity(1.0, src).to(dst).magnitude`) (D12: tolerance allowed; the output is exact today).
 
-    References/rsciio-venv/bin/python -I -B tools/units/pint_factors.py
+    References/venv/bin/python -I -B tools/units/pint_factors.py
 
 Why a table: Pint derives each factor from its definition file through its root-unit machinery, and the result is not the
 quotient of the two prefix scales (1e-30 m -> 1e-15 m is 9.999999999999999e-16, not 1e-15). A conversion of `value` from

@@ -2,7 +2,7 @@
 """A planted Velox EELS spectrum image with its optics, and what RosettaSciIO and pyEELSMODEL read from it.
 
     PYEELSMODEL=<clone of github.com/joverbee/pyEELSMODEL at eed9f072> \
-    References/rsciio-venv/bin/python -I -B tools/velox-eels/pins.py
+    References/venv/bin/python -I -B tools/velox-eels/pins.py
         writes Tests/FormatoEMDTests/Fixtures/eels/si-eels-optics.emd and velox-eels-pins.json
 
 The file is built with the helpers of tools/velox-spectrum-image/make_velox_si.py (h5py, no data of the owner's): a Velox 11 file with one

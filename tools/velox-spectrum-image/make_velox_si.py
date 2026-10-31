@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Planted Velox spectrum-image files.
 
-    References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/make_velox_si.py [--out DIR]
+    References/venv/bin/python -I -B tools/velox-spectrum-image/make_velox_si.py [--out DIR]
 
 writes the files into DIR (default Tests/FormatoEMDTests/Fixtures/velox-spectrum-image). THE TRUTH IS THE PLANTED COUNTS: each file's
 counts per stream, frame, pixel and channel are drawn from a seed (or typed) HERE, the stream is encoded from them, and

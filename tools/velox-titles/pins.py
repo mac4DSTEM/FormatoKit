@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pins RosettaSciIO's reading of the planted Velox title files.
 
-    References/rsciio-venv/bin/python -I -B tools/velox-titles/pins.py
+    References/venv/bin/python -I -B tools/velox-titles/pins.py
         writes Tests/FormatoCoreTests/Fixtures/velox-titles-pins.json from the four Tests/FormatoEMDTests/Fixtures/velox-titles-*.emd
 
 Each file gets step 1's Velox record (tools/dm-velox-pins/pins.py `velox_file`: rsciio.emd.file_reader(select_type="images") per

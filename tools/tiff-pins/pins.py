@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Pins RosettaSciIO's and tifffile's readings of TIFF files.
 
-    References/rsciio-venv/bin/python -I -B tools/tiff-pins/pins.py [--work DIR]
+    References/venv/bin/python -I -B tools/tiff-pins/pins.py [--work DIR]
         writes Tests/FormatoTIFFTests/Fixtures/tiff-pins.json   (every TIFF of the pinned clone's tests/data/tiff, and the
                                                                    planted files of Fixtures/planted/, run make_planted.py first)
-    References/rsciio-venv/bin/python -I -B tools/tiff-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
+    References/venv/bin/python -I -B tools/tiff-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
         writes the same per-file records for the files named on the command line to PATH (scratch, never committed; the path of
         each file is recorded as its basename only, "set" is "owner")
 
-The script stops unless `rsciio.__file__` and `tifffile.__file__` are inside References/rsciio-venv, the clone's HEAD is the pin,
+The script stops unless `rsciio.__file__` and `tifffile.__file__` are inside References/venv, the clone's HEAD is the pin,
 tifffile is 2026.9.20 and NumPy 2.5.4, python-dateutil is importable, and the installed `rsciio/tiff/_api.py` and
 `rsciio/utils/rgb.py` equal the clone's, byte for byte. Public files are checked against `rsciio/tests/registry.txt`
 (loose files, `.gz` files and zips; a zip member is checked through its zip). Zips and gz files are unpacked (member by member,
@@ -32,7 +32,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CLONE = ROOT / "References" / "rosettasciio-049e7d70"
-VENV = ROOT / "References" / "rsciio-venv"
+VENV = ROOT / "References" / "venv"
 PIN = "049e7d7070e84779b499adaf3295beee9facb004"
 TIFFFILE_VERSION = "2026.9.20"
 NUMPY_VERSION = "2.5.4"

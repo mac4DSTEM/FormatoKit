@@ -18,7 +18,7 @@ carries its own 0.14.0 and this must not be that one). Agreement with RosettaSci
 of the same bytes; what the planted file holds is also written out as literals in the Swift test.
 
 Run it with the RosettaSciIO venv's interpreter, isolated (tools/README.md):
-    References/rsciio-venv/bin/python -I -B tools/eels-reader/truth.py [--references DIR]
+    References/venv/bin/python -I -B tools/eels-reader/truth.py [--references DIR]
 Only the standard library and NumPy are used besides rsciio. The output is byte-reproducible (sorted keys, no times, no
 absolute paths); the script runs the reading twice and stops if the two outputs differ.
 
