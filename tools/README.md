@@ -24,8 +24,14 @@ Some scripts also read a pinned clone of a consumer app (located by `MACEM_SUITE
 checkouts) or of pyEELSMODEL by commit; they say which.
 
 The committed fixtures were written before the one environment, in two (RosettaSciIO's, Python 3.14; py4DSTEM's,
-Python 3.12, with pillow 13.0.0 and tifffile 2026.10.15). The scripts only changed where they look; a fixture is
-regenerated in `References/venv` when its generator next runs, and one that changes is its own commit.
+Python 3.12, with pillow 13.0.0, tifffile 2026.10.15, and h5py 3.11.0, NumPy 2.5.0 and emdfile 0.0.15, the versions its
+fixtures record). The scripts only
+changed where they look; a fixture is regenerated in `References/venv` when its generator next runs, and one that
+changes is its own commit. The py4DSTEM-side fixtures (`4d/`, `bragg/` and the two `check-result.json`) were
+regenerated in `References/venv` on 2026-10-31 and now record h5py 3.16.0, NumPy 2.5.4 and emdfile 0.0.16.
+
+Two sources of run-to-run change are pinned: the emdfile writers (`hdf5-4d`, `bragg-writer`) replace the random root `UUID` with one
+derived from the fixture path, and `velox-spectrum/pins.py` names the time zones on a fixed summer day.
 
 ## Fixture generators
 

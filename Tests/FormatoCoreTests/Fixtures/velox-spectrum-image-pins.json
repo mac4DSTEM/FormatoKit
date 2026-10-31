@@ -18089,7 +18089,7 @@
    "sha256": "5fb8100f76e030c83a0dd88e7df98c33ce70151e8a8b36469ce7f8ad094dae3b"
   }
  ],
- "generator": "tools/step-4/pins.py",
+ "generator": "tools/velox-spectrum-image/pins.py",
  "kernel": [
   {
    "channels": 4,

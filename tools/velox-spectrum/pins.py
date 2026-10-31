@@ -8,7 +8,8 @@ Every record is `rsciio.emd.file_reader(path, select_type="single_spectrum", laz
 dictionary the dtype, shape, data sha256 (little-endian C-order bytes), the axes, the General and Signal metadata and the
 `mapping` RosettaSciIO returns applied the way HyperSpy applies it (`hyperspy/io.py` `dict2signal`: when the dotted path is in
 `original_metadata`, value = function(value), set when not None); an exception inside a function is recorded. The date, time and
-time zone are recorded under four process time zones (TZ + tzset, which `dateutil.tz.tzlocal` reads at every call).
+time zone are recorded under four process time zones (TZ + tzset, which `dateutil.tz.tzlocal` reads at every call); the
+zone names are those of a fixed summer day (`pin_today`), so the pins do not change with the season of the run.
 The planted data is typed here; the reader's output must equal it (checked before anything is written).
 """
 import hashlib
@@ -191,8 +192,29 @@ def dotted_in(d, path):
     return True, cur
 
 
+SUMMER_DAY = (2026, 7, 15, 12)
+
+
+def pin_today():
+    """RosettaSciIO names the zone `tz.tzlocal().tzname(datetime.today())` (`_emd_velox._get_local_time_zone`): the name is
+    the one of the day the script runs, so Europe/Berlin gave CEST in summer and CET in winter, and America/New_York
+    EDT or EST. Setting TZ cannot fix that (the script already sets each zone with TZ + tzset); the day can. The module's
+    `datetime` becomes a subclass whose `today()` is a fixed July day, the summer-time names the committed pins hold, so
+    a rerun gives the same names in every season. Everything else (`fromtimestamp`) is the real `datetime`."""
+    import datetime as _dt
+    import rsciio.emd._emd_velox as velox
+
+    class _FixedDay(_dt.datetime):
+        @classmethod
+        def today(cls):
+            return cls(*SUMMER_DAY)
+
+    velox.datetime = _FixedDay
+
+
 def record(path):
     from rsciio.emd import file_reader
+    pin_today()
     try:
         dicts = file_reader(path, select_type="single_spectrum", lazy=False)
     except Exception as e:  # noqa: BLE001

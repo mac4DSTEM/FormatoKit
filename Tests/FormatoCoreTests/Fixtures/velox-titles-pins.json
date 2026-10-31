@@ -1146,7 +1146,7 @@
      "velox_image_id": "c2"
     }
    ],
-   "spectrum_stream_not_read": true
+   "spectrum_stream_not_read": false
   },
   {
    "bytes": 37496,
@@ -1269,10 +1269,10 @@
      "velox_image_id": "d2"
     }
    ],
-   "spectrum_stream_not_read": true
+   "spectrum_stream_not_read": false
   }
  ],
- "generator": "tools/step-3/pins.py",
+ "generator": "tools/velox-titles/pins.py",
  "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.digitalmicrograph.file_reader; rsciio.emd.file_reader, select_type='images')",
  "set": "step-3-planted",
  "versions": {

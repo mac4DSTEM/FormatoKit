@@ -54,6 +54,6 @@
    "sha256": "b1055f692ebfa2774922ea4d77c4f3a9c8ad840649fbc8c858c98e72373946da"
   }
  },
- "h5py_version": "3.11.0",
+ "h5py_version": "3.16.0",
  "py4dstem_version": "0.14.19"
 }

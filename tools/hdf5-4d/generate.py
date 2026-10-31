@@ -1,7 +1,7 @@
 """Pinned py4DSTEM/EMD 1.0 fixtures. Run using References/venv/bin/python -I -B,
 under a memory cap. In a worktree, References/ is a link to the main checkout's.
 """
-import os, pathlib, subprocess, json
+import os, pathlib, subprocess, json, uuid
 import numpy as np
 import h5py, py4DSTEM, emdfile
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -10,6 +10,13 @@ assert subprocess.check_output(['git','-C',str(ROOT/'References/py4DSTEM-f050d20
 assert py4DSTEM.__version__ == '0.14.19'
 OUT = ROOT/'Tests/FormatoHDF5Tests/Fixtures/4d'
 OUT.mkdir(parents=True, exist_ok=True)
+def fixed_uuid(path):
+    """emdfile writes a random uuid4 into the root `UUID` attribute at every save; the fixture gets one derived from its
+    name instead (uuid5), so a rerun is byte-identical. The kit's readers never read `UUID`."""
+    value = str(uuid.uuid5(uuid.NAMESPACE_URL, 'FormatoKit/' + path.relative_to(ROOT).as_posix()))
+    with h5py.File(path, 'r+') as f:
+        assert len(f.attrs['UUID']) == len(value)
+        f.attrs.modify('UUID', value)
 pins = dict(py4dstem_commit=PIN, py4dstem_version=py4DSTEM.__version__, h5py_version=h5py.__version__, numpy_version=np.__version__, emdfile_version=emdfile.__version__, cases=[])
 for name,dtype,shape in [('float32','<f4',(4,4,16,16)),('uint16','<u2',(4,4,16,16)),('singleton','<f4',(1,4,16,16))]:
     a = np.arange(np.prod(shape)).reshape(shape).astype(dtype)
@@ -27,6 +34,7 @@ for name,dtype,shape in [('float32','<f4',(4,4,16,16)),('uint16','<u2',(4,4,16,1
         getattr(cube.calibration, 'set_'+key)(np.arange(np.prod(shape[:2]),dtype='<f8').reshape(shape[:2])/8+i)
     path = OUT/(name+'.h5')
     py4DSTEM.save(str(path), cube, mode='o')
+    fixed_uuid(path)
     with h5py.File(path) as f:
         paths=[]
         f.visititems(lambda p,o: paths.append(p) if isinstance(o,h5py.Dataset) and o.ndim==4 else None)

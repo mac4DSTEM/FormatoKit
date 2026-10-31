@@ -5950,7 +5950,7 @@
    ]
   }
  ],
- "generator": "tools/step-2/pins.py --owner",
+ "generator": "tools/tiff-pins/pins.py --owner",
  "reference": "RosettaSciIO 049e7d7070e84779b499adaf3295beee9facb004 (rsciio.tiff.file_reader, defaults); tifffile 2026.9.20",
  "versions": {
   "dateutil": "2.9.0.post0",
