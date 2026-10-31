@@ -123,8 +123,9 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     /// it, labelled unvalidated: no published reader reads the stored value.
     public var convergenceAngleMrad: MetadataReading<Double>?
 
-    // MARK: Added after 0.11.0 (additive). Read by the DM reader from an image object (`AcquisitionMetadata.dm(_:convention:)`), under
-    // both conventions; every other reader, and `dm(numbers:strings:)`, leave it nil.
+    // MARK: Added after 0.11.0 (additive). Read by the DM reader from an image object (`AcquisitionMetadata.dm(_:convention:)`), and
+    // by the TIFF reader from a GMS TIFF's tag 65027 stream by the same rules, under both conventions; every other reader, and
+    // `dm(numbers:strings:)`, leave it nil.
 
     /// The camera's own pixel pitch, where the file records it: the sensor's physical pixel, before any binning; not the pixel
     /// at the specimen (`pixelSize`). DM: `Acquisition.Device.CCD.Pixel Size (um)`, two numbers stored as (x, y), so `columns`
