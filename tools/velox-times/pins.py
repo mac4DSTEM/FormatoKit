@@ -4,7 +4,7 @@
     References/rsciio-venv/bin/python -I -B tools/velox-times/pins.py
         writes Tests/FormatoEMDTests/Fixtures/times/si-times-planted.emd, si-times-differ.emd and velox-times-pins.json
 
-The files are built with the helpers of tools/step-4/make_velox_si.py (h5py, no data of the owner's): a Velox 11 file with one
+The files are built with the helpers of tools/velox-spectrum-image/make_velox_si.py (h5py, no data of the owner's): a Velox 11 file with one
 image, one Super-X spectrum stream and a `Data/SpectrumImage` group whose Metadata states the optics (camera length, STEM
 magnification), the pixel size and, per X-ray detector segment, the RealTime and LiveTime. In the first file three segments are
 enabled and state the same times and the fourth is disabled (0); in the second the enabled segments state different times.
@@ -37,8 +37,8 @@ def module(name, path):
     return m
 
 
-step1 = module("step1_pins", ROOT / "tools" / "step-1" / "pins.py")
-M = module("make_velox_si", ROOT / "tools" / "step-4" / "make_velox_si.py")
+step1 = module("step1_pins", ROOT / "tools" / "dm-velox-pins" / "pins.py")
+M = module("make_velox_si", ROOT / "tools" / "velox-spectrum-image" / "make_velox_si.py")
 
 ENABLED_TIMES = ("4187.7267542261652", "1423.1050950000008")
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Planted Velox image files for step 3: the title rule and the stored types.
+"""Planted Velox image files: the title rule and the stored types.
 
-    References/rsciio-venv/bin/python -I -B tools/step-3/make_velox_titles.py [--out DIR]
+    References/rsciio-venv/bin/python -I -B tools/velox-titles/make_velox_titles.py [--out DIR]
 
 writes four files into DIR (default Tests/FormatoEMDTests/Fixtures) and prints EXPECT as JSON. THE TRUTH IS EXPECT, typed
 by hand below from RosettaSciIO 049e7d70's title rules; no reader is consulted here.
-tools/step-3/pins.py reads the files with RosettaSciIO and stops if it disagrees with EXPECT.
+tools/velox-titles/pins.py reads the files with RosettaSciIO and stops if it disagrees with EXPECT.
 
 Every image is (2, 3, 1) (y, x, frame), its values distinct and chosen so a wrong stored type shows: uint64 and int64 beyond
 2^53, float64 that float32 does not hold, int8 negatives. Every image's metadata has what RosettaSciIO's `_read_image`

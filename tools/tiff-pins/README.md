@@ -1,4 +1,4 @@
-# tools/step-2: the oracle pins and the planted files of FormatoTIFF
+# tools/tiff-pins: the oracle pins and the planted files of FormatoTIFF
 
 These scripts pin what RosettaSciIO and tifffile read. Python only; the Swift tests (`FormatoTIFFPinsTests`,
 `PlantedTIFFTests`) read what they write. Agreement with RosettaSciIO and tifffile is agreement with an independent reading of the same
@@ -6,10 +6,10 @@ bytes, not truth; truth is a planted file.
 
 ## Run
 
-    References/rsciio-venv/bin/python -I -B tools/step-2/make_planted.py [--out DIR]
-    References/rsciio-venv/bin/python -I -B tools/step-2/pins.py [--work DIR]
-    References/rsciio-venv/bin/python -I -B tools/step-2/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
-    tools/step-2/owner-check.sh
+    References/rsciio-venv/bin/python -I -B tools/tiff-pins/make_planted.py [--out DIR]
+    References/rsciio-venv/bin/python -I -B tools/tiff-pins/pins.py [--work DIR]
+    References/rsciio-venv/bin/python -I -B tools/tiff-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
+    tools/tiff-pins/owner-check.sh
 
 Order: `make_planted.py` first (`pins.py` reads `Fixtures/planted/planted-truth.json` and stops if a planted file's sha256 differs
 from it), then `pins.py`.
@@ -21,7 +21,7 @@ from it), then `pins.py`.
   never commit it (it holds the files' metadata, the Ceta XML included).
 - `owner-check.sh` finds `$MACEM_DATA/tem/*Ceta.tif` (default `../data`), writes `.build/owner-tiff/owner-pins.json` and
   `files-abs.txt`, then runs `swift test -c release --filter FormatoTIFFPinsTests` with `FORMATO_OWNER_TIFF_PINS` and
-  `FORMATO_OWNER_TIFF_FILES` set. The Swift test does not exist until the Swift lane of step 2 lands.
+  `FORMATO_OWNER_TIFF_FILES` set. FormatoTIFFPinsTests reads them.
 
 Both scripts stop unless `rsciio.__file__` and `tifffile.__file__` are inside `References/rsciio-venv`, the clone's HEAD is the
 pin `049e7d70`, tifffile is 2026.9.20, NumPy 2.5.4, python-dateutil imports, and the installed `rsciio/tiff/_api.py`,

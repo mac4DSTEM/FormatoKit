@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Planted Velox spectrum-image files for step 4.
+"""Planted Velox spectrum-image files.
 
-    References/rsciio-venv/bin/python -I -B tools/step-4/make_velox_si.py [--out DIR]
+    References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/make_velox_si.py [--out DIR]
 
 writes the files into DIR (default Tests/FormatoEMDTests/Fixtures/step4). THE TRUTH IS THE PLANTED COUNTS: each file's
 counts per stream, frame, pixel and channel are drawn from a seed (or typed) HERE, the stream is encoded from them, and
 `expected(name, options)` computes every option set's arrays from those counts by these definitions (frames
 first_frame <= f < last_frame, last_frame 0 never stopping, rebinning, `+= 1` in the target type), without RosettaSciIO's code.
-tools/step-4/pins.py reads the files with RosettaSciIO and stops if it disagrees.
+tools/velox-spectrum-image/pins.py reads the files with RosettaSciIO and stops if it disagrees.
 
 The `sk-<case>.emd` files take SpectroKit 0.4.0's planted streams and HAADF data VERBATIM from the copies in
 DIR/spectrokit/ (PROVENANCE.md there); their truth is SpectroKit's draw (DIR/spectrokit/velox-streams-truth.json), not a

@@ -45,7 +45,7 @@ def module(name, path):
     return m
 
 
-step1 = module("step1_pins", ROOT / "tools" / "step-1" / "pins.py")
+step1 = module("step1_pins", ROOT / "tools" / "dm-velox-pins" / "pins.py")
 SP = module("velox_spectrum_pins", ROOT / "tools" / "velox-spectrum" / "pins.py")
 
 

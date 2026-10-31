@@ -86,7 +86,7 @@ do {
 } catch { check(false, "DM4Experiment: \(error)") }
 do { _ = try DM4Experiment.list(path: "/nonexistent.dm4") } catch { check(error is DM4Error, "DM4Error") }
 
-// The step-1 adapters and FormatoCore.
+// The DM and Velox signal adapters and FormatoCore.
 do {
     let dm = try DMFile(path: planted)
     let s: FormatoSignal = try dm.signal(index: 2).load()
@@ -94,17 +94,17 @@ do {
     check(s.metadata["General.title"]?.provenance.source == "ImageList.2.Name", "metadata provenance")
     let slab = try dm.signal(index: 2).array.read(start: [1, 0, 1], count: [2, 2, 2])
     check(slab == (try s.data.slab(start: [1, 0, 1], count: [2, 2, 2])), "lazy slab = eager slab")
-    // RosettaSciIO raises on the moved metadata fixture (KeyError 'Scan'); since step 3 VeloxImageSignals refuses it too.
+    // RosettaSciIO raises on the moved metadata fixture (KeyError 'Scan'); VeloxImageSignals refuses it too.
     check((try? VeloxImageSignals(path: tests.appendingPathComponent("FormatoEMDTests/Fixtures/velox-metadata-planted.emd").path)) == nil,
           "VeloxImageSignals refuses a file RosettaSciIO raises on")
-    // Step 3: the stored type and RosettaSciIO's title through the public API (planted file).
+    // Velox titles: the stored type and RosettaSciIO's title through the public API (planted file).
     let titled = try VeloxImageSignals(path: tests.appendingPathComponent("FormatoEMDTests/Fixtures/velox-titles-v6-image.emd").path)
     check(titled.images.count == 14, "VeloxImageSignals lists the images")
     if let a08 = titled.images.first(where: { $0.id == "a08" }) {
         let s = try titled.signal(a08).load()
         check(s.data.dataType == .uint64 && s.title == "DPC" && titled.title(of: a08) == "DPC", "stored type and title")
     } else { check(false, "the planted title file lists a08") }
-    // Step 4: a spectrum image through the public API, defaults and two options (planted file).
+    // A Velox spectrum image through the public API, defaults and two options (planted file).
     let si = tests.appendingPathComponent("FormatoEMDTests/Fixtures/step4/sk-1stream-3frames.emd").path
     let eds = try VeloxSpectrumImageSignals(path: si).signals
     check(eds.count == 1 && eds[0].data.shape == [3, 4, 4096] && eds[0].data.dataType == .uint16 && eds[0].signalType == "EDS_TEM",

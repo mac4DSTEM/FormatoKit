@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Pins RosettaSciIO's reading of step 4's review files.
+"""Pins RosettaSciIO's reading of the Velox spectrum-image review files.
 
-    References/rsciio-venv/bin/python -I -B tools/step-4/refuter_pins.py
+    References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/refuter_pins.py
         writes Tests/FormatoCoreTests/Fixtures/step-4-refuter-pins.json from Tests/FormatoEMDTests/Fixtures/step4/refuter/
 
 The refuter's files on the frozen 4ac6df0 (one each per finding), with the option sets it found them under; each record as
-tools/step-4/pins.py's. `deviations` names the files FormatoKit treats differently on purpose (A1): "all" refused although
+tools/velox-spectrum-image/pins.py's. `deviations` names the files FormatoKit treats differently on purpose (A1): "all" refused although
 RosettaSciIO reads, "reads" read although RosettaSciIO raises, "not-run" never given to RosettaSciIO (it would allocate past
-the memory cap; FormatoKit must refuse it without allocating). The memory watchdog of tools/step-1/pins.py is on.
+the memory cap; FormatoKit must refuse it without allocating). The memory watchdog of tools/dm-velox-pins/pins.py is on.
 """
 import importlib.util
 import sys
@@ -25,7 +25,7 @@ def module(name, path):
     return m
 
 
-pins4 = module("step4_pins", ROOT / "tools" / "step-4" / "pins.py")
+pins4 = module("step4_pins", ROOT / "tools" / "velox-spectrum-image" / "pins.py")
 step1 = pins4.step1
 
 FRAMES = {"O1": {}, "O2": {"sum_frames": False}}
@@ -69,7 +69,7 @@ def build(R, np, h5py, pint):
         files.append({"set": "refuter", "path": name, "sha256": pins4.sha(raw), "bytes": len(raw),
                       "runs": {"O1": {"options": {}, "raises": {"type": "NotRun", "message": NOT_RUN[name]}, "signals": []}}})
     out = step1.header(np, h5py, pint, "step-4-refuter")
-    out["generator"] = "tools/step-4/refuter_pins.py"
+    out["generator"] = "tools/velox-spectrum-image/refuter_pins.py"
     out["versions"].update(pins4.require_stream_libraries())
     out["deviations"] = DEVIATIONS
     out["files"] = files
@@ -86,7 +86,7 @@ def main():
     if a != b:
         step1.die("two builds differ")
     OUT.write_text(a)
-    print(f"step-4 refuter pins: {len(FILES) + len(NOT_RUN)} files -> {OUT.relative_to(ROOT)}")
+    print(f"spectrum-image refuter pins: {len(FILES) + len(NOT_RUN)} files -> {OUT.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

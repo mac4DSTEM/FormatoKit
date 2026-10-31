@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Pins RosettaSciIO's and tifffile's readings of TIFF files for FormatoKit step 2.
+"""Pins RosettaSciIO's and tifffile's readings of TIFF files.
 
-    References/rsciio-venv/bin/python -I -B tools/step-2/pins.py [--work DIR]
+    References/rsciio-venv/bin/python -I -B tools/tiff-pins/pins.py [--work DIR]
         writes Tests/FormatoTIFFTests/Fixtures/step-2-pins.json   (every TIFF of the pinned clone's tests/data/tiff, and the
                                                                    planted files of Fixtures/planted/, run make_planted.py first)
-    References/rsciio-venv/bin/python -I -B tools/step-2/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
+    References/rsciio-venv/bin/python -I -B tools/tiff-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
         writes the same per-file records for the files named on the command line to PATH (scratch, never committed; the path of
         each file is recorded as its basename only, "set" is "owner")
 
@@ -15,7 +15,7 @@ tifffile is 2026.9.20 and NumPy 2.5.4, python-dateutil is importable, and the in
 names checked, sizes bounded) into a fresh empty directory made under --work (default: the system temp dir), never into the clone.
 Everything is built twice in the process and the script stops if the two outputs differ. Output: sorted keys, indent 1, UTF-8,
 no times, no absolute paths, non-finite numbers as null (the *_bits fields carry them).
-See tools/step-2/README.md for the fields.
+See tools/tiff-pins/README.md for the fields.
 """
 import argparse
 import gzip
@@ -341,7 +341,7 @@ def ordered_scalars(d, np):
 # ---------------------------------------------------------------------------------------------------------------- one file
 
 def file_record(path, label, set_name, R, container=None):
-    """The record of one TIFF file (fields in tools/step-2/README.md)."""
+    """The record of one TIFF file (fields in tools/tiff-pins/README.md)."""
     np = R["np"]
     tifffile = R["tifffile"]
     path = Path(path)
@@ -481,13 +481,13 @@ def public_plan(work):
 def planted_plan():
     truth_path = PLANTED / "planted-truth.json"
     if not truth_path.is_file():
-        die(f"{truth_path} does not exist: run tools/step-2/make_planted.py first")
+        die(f"{truth_path} does not exist: run tools/tiff-pins/make_planted.py first")
     truth = json.loads(truth_path.read_text(encoding="utf-8"))
     plan = []
     for f in truth["files"]:
         p = PLANTED / f["file"]
         if not p.is_file() or sha256_file(p) != f["sha256"]:
-            die(f"{p} is missing or differs from planted-truth.json: run tools/step-2/make_planted.py")
+            die(f"{p} is missing or differs from planted-truth.json: run tools/tiff-pins/make_planted.py")
         plan.append((p, "planted/" + f["file"], None))
     return plan
 
@@ -517,7 +517,7 @@ def build_default(work):
     plan, skipped = public_plan(work)
     files = [file_record(p, label, "public", R, container) for p, label, container in plan]
     files += [file_record(p, label, "planted", R, container) for p, label, container in planted_plan()]
-    out = {"generator": "tools/step-2/pins.py",
+    out = {"generator": "tools/tiff-pins/pins.py",
            "reference": f"RosettaSciIO {PIN} (rsciio.tiff.file_reader, defaults); tifffile {TIFFFILE_VERSION}",
            "versions": versions(R["np"]), "files": files, "skipped_non_tiff": skipped}
     return dump(out), files
@@ -526,7 +526,7 @@ def build_default(work):
 def build_owner(paths, work):
     R = load_oracle()
     files = [file_record(Path(p), Path(p).name, "owner", R) for p in paths]
-    out = {"generator": "tools/step-2/pins.py --owner",
+    out = {"generator": "tools/tiff-pins/pins.py --owner",
            "reference": f"RosettaSciIO {PIN} (rsciio.tiff.file_reader, defaults); tifffile {TIFFFILE_VERSION}",
            "versions": versions(R["np"]), "files": files}
     return dump(out), files

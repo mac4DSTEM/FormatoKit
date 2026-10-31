@@ -1,12 +1,12 @@
 # Test fixtures
 
 Every fixture, its sha256, and where it comes from. The moved ones are byte-identical copies of SpectroKit 0.3.0's (tag `14c6acf8`;
-`tools/step-1/names.sh` and git blob ids checked at the move); their generators stay in SpectroKit at that tag, named here.
+the moved test names and git blob ids checked at the move, by a one-off script retired since); their generators stay in SpectroKit at that tag, named here.
 
 | File | sha256 | Origin |
 |---|---|---|
-| `FormatoCoreTests/Fixtures/step-1-pins.json` | `ab0f445b18b8a5ae…` | `tools/step-1/pins.py` (RosettaSciIO 049e7d70, Pint 0.26.1) |
-| `FormatoCoreTests/Fixtures/units-pins.json` | `b4caad6c457ed567…` | `tools/step-1/pins.py` (RosettaSciIO 049e7d70, Pint 0.26.1) |
+| `FormatoCoreTests/Fixtures/step-1-pins.json` | `ab0f445b18b8a5ae…` | `tools/dm-velox-pins/pins.py` (RosettaSciIO 049e7d70, Pint 0.26.1) |
+| `FormatoCoreTests/Fixtures/units-pins.json` | `b4caad6c457ed567…` | `tools/dm-velox-pins/pins.py` (RosettaSciIO 049e7d70, Pint 0.26.1) |
 | `FormatoDMTests/Fixtures/demo-edx-tiny.dm4` | `a50a8fa52b0ec715…` | mac4DSTEM's EDX demo simulator, via SpectroKit 0.3.0 |
 | `FormatoDMTests/Fixtures/demo-edx-tiny.truth.json` | `6530e81a858473aa…` | mac4DSTEM's EDX demo simulator, via SpectroKit 0.3.0 |
 | `FormatoDMTests/Fixtures/dm-tag65027-saved-with-DM.dm4` | `9eb167ef95396b6a…` | a DM-saved TIFF tag stream, via SpectroKit 0.3.0 |

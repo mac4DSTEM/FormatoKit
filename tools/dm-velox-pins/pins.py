@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Pins RosettaSciIO's readings for FormatoKit step 1.
+"""Pins RosettaSciIO's readings of the public DM and Velox files, and its unit conversions.
 
-    References/rsciio-venv/bin/python -I -B tools/step-1/pins.py [--work DIR]
+    References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py [--work DIR]
         writes Tests/FormatoCoreTests/Fixtures/step-1-pins.json   (the public DM and Velox files of the pinned clone)
                Tests/FormatoCoreTests/Fixtures/units-pins.json    (RosettaSciIO's own unit functions, called, not retyped)
-    References/rsciio-venv/bin/python -I -B tools/step-1/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
+    References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
         writes the same per-file records for files given on the command line to PATH (scratch, never committed; the path
         of each file is recorded as its basename only)
 
@@ -13,7 +13,7 @@ The script stops unless `rsciio.__file__` is inside References/rsciio-venv, the 
 no absolute paths); every build runs twice in the process and the script stops if the two outputs differ.
 Public files are checked against the clone's `rsciio/tests/registry.txt`; zips are unzipped (member by member, names
 checked) into a fresh empty directory made under --work (default: the system temp dir), never into the clone.
-See tools/step-1/README.md for the fields.
+See tools/dm-velox-pins/README.md for the fields.
 """
 import argparse
 import hashlib
@@ -463,7 +463,7 @@ def public_plan(unzipped):
 def header(np, h5py, pint, set_name):
     import sys as _s
     return {
-        "generator": "tools/step-1/pins.py",
+        "generator": "tools/dm-velox-pins/pins.py",
         "reference": f"RosettaSciIO {PIN} (rsciio.digitalmicrograph.file_reader; rsciio.emd.file_reader, select_type='images')",
         "versions": {"python": _s.version.split()[0], "numpy": np.__version__, "h5py": h5py.__version__, "pint": pint.__version__},
         "set": set_name,
@@ -615,7 +615,7 @@ def build_units(velox_paths, R, np, pint):
     for v, u, to in planted_conv:
         add(conv_record(R, v, u, to, "planted"))
     return {
-        "generator": "tools/step-1/pins.py",
+        "generator": "tools/dm-velox-pins/pins.py",
         "reference": f"RosettaSciIO {PIN}: rsciio.emd._emd_velox.FeiEMDReader._convert_scale_units, rsciio.utils._units.convert_units",
         "versions": {"python": sys.version.split()[0], "numpy": np.__version__, "pint": pint.__version__},
         "sweep": {"seed": SEED, "rng": "numpy.random.default_rng(seed)",

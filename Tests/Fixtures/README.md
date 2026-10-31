@@ -29,24 +29,24 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoCoreTests/Fixtures/png/swift-rgb8-stored.png` | 9.1 KB | `tools/png/check.py` |  |
 | `FormatoCoreTests/Fixtures/png/swift-rgb8.png` | 215 B | `tools/png/check.py` |  |
 | `FormatoCoreTests/Fixtures/png/swift-rgba8.png` | 128 B | `tools/png/check.py` |  |
-| `FormatoCoreTests/Fixtures/refuter-pins.json` | 8.4 KB | `tools/step-3/refuter_pins.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/refuter/p_stack_offset_no_x.emd` | 192.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/refuter/p_stack_offset_nonnum_x.emd` | 192.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/refuter/p_stack_pixelsize_no_width.emd` | 192.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/refuter/s_frametime_str.emd` | 192.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/refuter/s_scan_missing.emd` | 192.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/refuter/t_trap_overflow.emd` | 192.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/refuter/t_trap_subnormal.emd` | 192.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/refuter/u_stack_pixelsize_missing.emd` | 192.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/refuter/u_stack_pixelsize_nonnum.emd` | 192.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/refuter/u_stack_unit_nm.emd` | 192.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/refuter/u_stack_unit_px.emd` | 192.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/step-1-pins.json` | 225.5 KB | `tools/step-1/pins.py` |  |
-| `FormatoCoreTests/Fixtures/step-3-pins.json` | 30.7 KB | `tools/step-3/pins.py` |  |
-| `FormatoCoreTests/Fixtures/step-3-refuter-pins.json` | 6.9 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/step-4-pins.json` | 450.2 KB | `tools/step-4/pins.py` |  |
-| `FormatoCoreTests/Fixtures/step-4-refuter-pins.json` | 28.0 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoCoreTests/Fixtures/units-pins.json` | 685.4 KB | `tools/step-1/pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter-pins.json` | 8.4 KB | `tools/velox-titles/refuter_pins.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter/p_stack_offset_no_x.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter/p_stack_offset_nonnum_x.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter/p_stack_pixelsize_no_width.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter/s_frametime_str.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter/s_scan_missing.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter/t_trap_overflow.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter/t_trap_subnormal.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter/u_stack_pixelsize_missing.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter/u_stack_pixelsize_nonnum.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter/u_stack_unit_nm.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/refuter/u_stack_unit_px.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/step-1-pins.json` | 225.5 KB | `tools/dm-velox-pins/pins.py` |  |
+| `FormatoCoreTests/Fixtures/step-3-pins.json` | 30.7 KB | `tools/velox-titles/pins.py` |  |
+| `FormatoCoreTests/Fixtures/step-3-refuter-pins.json` | 6.9 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/step-4-pins.json` | 450.2 KB | `tools/velox-spectrum-image/pins.py` |  |
+| `FormatoCoreTests/Fixtures/step-4-refuter-pins.json` | 28.0 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/units-pins.json` | 685.4 KB | `tools/dm-velox-pins/pins.py` |  |
 | `FormatoDMTests/Fixtures/acq-metadata/ambiguous-date.dm4` | 1.3 KB | `tools/acq-metadata/generate.py` |  |
 | `FormatoDMTests/Fixtures/acq-metadata/angles-without-eels-signal.dm4` | 1.2 KB | `tools/acq-metadata/generate.py` |  |
 | `FormatoDMTests/Fixtures/acq-metadata/cl-databar-wins.dm4` | 1.4 KB | `tools/acq-metadata/generate.py` |  |
@@ -153,19 +153,19 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoEMDTests/Fixtures/image-readers/pins.json` | 9.8 KB | `tools/acq-metadata/generate.py`, `tools/bragg-writer/check.py`, `tools/bragg-writer/generate.py` +16 |  |
 | `FormatoEMDTests/Fixtures/image-readers/velox-objects.emd` | 76.7 KB | `tools/acq-metadata/generate.py` |  |
 | `FormatoEMDTests/Fixtures/policy/si-units-px.emd` | 26.8 KB | none found |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/A1_ops_named_no_Detectors_key.emd` | 21.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/A2_ops_named_detector_without_name.emd` | 21.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/A3_ops_unrecognized_detector_without_name.emd` | 21.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/A4_ops_named_Detectors_is_list.emd` | 21.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/C10_md_acq_no_start_custom_str.emd` | 20.7 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/C10_md_acq_no_start_no_custom.emd` | 20.7 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/C10_md_no_acq.emd` | 20.7 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/C7_displays_dataset_root_img.emd` | 20.7 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/C7_features_dataset_root_img.emd` | 20.7 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/C7_ops_dataset_root.emd` | 20.7 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/G_ver_missing_key_image.emd` | 20.7 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/G_ver_nbsp.emd` | 29.2 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/refuter-step3/G_ver_zerowidth.emd` | 29.2 KB | `tools/step-3/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/A1_ops_named_no_Detectors_key.emd` | 21.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/A2_ops_named_detector_without_name.emd` | 21.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/A3_ops_unrecognized_detector_without_name.emd` | 21.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/A4_ops_named_Detectors_is_list.emd` | 21.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/C10_md_acq_no_start_custom_str.emd` | 20.7 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/C10_md_acq_no_start_no_custom.emd` | 20.7 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/C10_md_no_acq.emd` | 20.7 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/C7_displays_dataset_root_img.emd` | 20.7 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/C7_features_dataset_root_img.emd` | 20.7 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/C7_ops_dataset_root.emd` | 20.7 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/G_ver_missing_key_image.emd` | 20.7 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/G_ver_nbsp.emd` | 29.2 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/refuter-step3/G_ver_zerowidth.emd` | 29.2 KB | `tools/velox-titles/refuter_pins.py` |  |
 | `FormatoEMDTests/Fixtures/spectra-pins.json` | 138.9 KB | `tools/velox-spectrum/pins.py` |  |
 | `FormatoEMDTests/Fixtures/spectra/sp-bad-dispersion.emd` | 19.4 KB | `tools/velox-spectrum/pins.py` |  |
 | `FormatoEMDTests/Fixtures/spectra/sp-bad-voltage.emd` | 19.4 KB | `tools/velox-spectrum/pins.py` |  |
@@ -182,51 +182,51 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoEMDTests/Fixtures/spectra/sp-stack.emd` | 19.4 KB | `tools/velox-spectrum/pins.py` |  |
 | `FormatoEMDTests/Fixtures/spectra/sp-stream.emd` | 32.3 KB | `tools/velox-spectrum/pins.py` |  |
 | `FormatoEMDTests/Fixtures/spectra/sp-two.emd` | 23.4 KB | `tools/velox-spectrum/pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/detectorname-list.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/dispersion-arabic-digits.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/endframe-1e30.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/endframe-arabic-digit.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/image-pixelunitx-null.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/image-zero-frames.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/overflow-grid-no-endframe.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/stream-bigendian-u2.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/stream-lzf.emd` | 28.3 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/unit-am-ulp.emd` | 34.2 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/unit-fm-fermi.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/unit-m-ulp-width2.7e-4-nx5.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/unit-m-ulp-width3.85e-4-nx5.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/unit-ym-ulp.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/version-underscore.emd` | 25.8 KB | `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-bins.emd` | 31.8 KB | `tools/step-4/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-eels.emd` | 50.9 KB | `tools/step-4/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-endframe.emd` | 25.8 KB | `tools/step-4/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-grid.emd` | 25.8 KB | `tools/step-4/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-v11.emd` | 37.8 KB | `tools/step-4/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-v9.emd` | 26.8 KB | `tools/step-4/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-1stream-1frame.emd` | 42.2 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-1stream-3frames.emd` | 188.3 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-4streams-2frames.emd` | 96.8 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-axis-decoy.emd` | 42.2 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-axis-order.emd` | 42.2 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-unterminated.emd` | 42.2 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/PROVENANCE.md` | 1.5 KB | `tools/step-4/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-1stream-1frame.emd` | 48.4 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-1stream-3frames.emd` | 201.8 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-4streams-2frames.emd` | 103.1 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-axis-decoy.emd` | 48.4 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-axis-order.emd` | 48.4 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-unterminated.emd` | 48.4 KB | `tools/step-4/make_velox_si.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-streams-truth.json` | 78.7 KB | `tools/step-4/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/detectorname-list.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/dispersion-arabic-digits.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/endframe-1e30.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/endframe-arabic-digit.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/image-pixelunitx-null.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/image-zero-frames.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/overflow-grid-no-endframe.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/stream-bigendian-u2.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/stream-lzf.emd` | 28.3 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/unit-am-ulp.emd` | 34.2 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/unit-fm-fermi.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/unit-m-ulp-width2.7e-4-nx5.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/unit-m-ulp-width3.85e-4-nx5.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/unit-ym-ulp.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/refuter/version-underscore.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/si-planted-bins.emd` | 31.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/step4/si-planted-eels.emd` | 50.9 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/step4/si-planted-endframe.emd` | 25.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/step4/si-planted-grid.emd` | 25.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/step4/si-planted-v11.emd` | 37.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/step4/si-planted-v9.emd` | 26.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/step4/sk-1stream-1frame.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/sk-1stream-3frames.emd` | 188.3 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/sk-4streams-2frames.emd` | 96.8 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/sk-axis-decoy.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/sk-axis-order.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/sk-unterminated.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/spectrokit/PROVENANCE.md` | 1.5 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-1stream-1frame.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-1stream-3frames.emd` | 201.8 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-4streams-2frames.emd` | 103.1 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-axis-decoy.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-axis-order.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-unterminated.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-streams-truth.json` | 78.7 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
 | `FormatoEMDTests/Fixtures/velox-flags-planted.emd` | 66.6 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
 | `FormatoEMDTests/Fixtures/velox-metadata-planted.emd` | 52.7 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
 | `FormatoEMDTests/Fixtures/velox-metadata-planted.truth.json` | 3.6 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
 | `FormatoEMDTests/Fixtures/velox-stream-axis-order.emd` | 48.4 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
 | `FormatoEMDTests/Fixtures/velox-stream-axis-order.pin.json` | 381 B | `tools/velox-spectrum/pins.py` (tool folder name) |  |
 | `FormatoEMDTests/Fixtures/velox-tiny.emd` | 42.6 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
-| `FormatoEMDTests/Fixtures/velox-titles-v11-labels.emd` | 39.0 KB | `tools/step-3/make_velox_titles.py` |  |
-| `FormatoEMDTests/Fixtures/velox-titles-v11-noops.emd` | 48.7 KB | `tools/step-3/make_velox_titles.py` |  |
-| `FormatoEMDTests/Fixtures/velox-titles-v6-image.emd` | 159.2 KB | `tools/step-3/make_velox_titles.py` |  |
-| `FormatoEMDTests/Fixtures/velox-titles-v9-labels.emd` | 36.6 KB | `tools/step-3/make_velox_titles.py` |  |
+| `FormatoEMDTests/Fixtures/velox-titles-v11-labels.emd` | 39.0 KB | `tools/velox-titles/make_velox_titles.py` |  |
+| `FormatoEMDTests/Fixtures/velox-titles-v11-noops.emd` | 48.7 KB | `tools/velox-titles/make_velox_titles.py` |  |
+| `FormatoEMDTests/Fixtures/velox-titles-v6-image.emd` | 159.2 KB | `tools/velox-titles/make_velox_titles.py` |  |
+| `FormatoEMDTests/Fixtures/velox-titles-v9-labels.emd` | 36.6 KB | `tools/velox-titles/make_velox_titles.py` |  |
 | `FormatoEMPADTests/Fixtures/legacy.data.gz` | 3.0 KB | `tools/empad/generate.py` |  |
 | `FormatoEMPADTests/Fixtures/legacy.xml` | 327 B | `tools/empad/generate.py` |  |
 | `FormatoEMPADTests/Fixtures/modern.data.gz` | 3.0 KB | `tools/empad/generate.py` |  |
@@ -235,8 +235,8 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoEMPADTests/Fixtures/override.xml` | 234 B | `tools/empad/generate.py` |  |
 | `FormatoEMPADTests/Fixtures/pins.json` | 5.9 KB | `tools/acq-metadata/generate.py`, `tools/bragg-writer/check.py`, `tools/bragg-writer/generate.py` +16 |  |
 | `FormatoEMPADTests/Fixtures/scan_x3_y2.raw.gz` | 3.1 KB | `tools/empad/generate.py` |  |
-| `FormatoEMPADTests/Fixtures/series.data.gz` | 3.0 KB | `tools/empad/generate.py`, `tools/step-2/make_planted.py`, `tools/step-2/pins.py` |  |
-| `FormatoEMPADTests/Fixtures/series.xml` | 217 B | `tools/empad/generate.py`, `tools/step-2/make_planted.py`, `tools/step-2/pins.py` |  |
+| `FormatoEMPADTests/Fixtures/series.data.gz` | 3.0 KB | `tools/empad/generate.py`, `tools/tiff-pins/make_planted.py`, `tools/tiff-pins/pins.py` |  |
+| `FormatoEMPADTests/Fixtures/series.xml` | 217 B | `tools/empad/generate.py`, `tools/tiff-pins/make_planted.py`, `tools/tiff-pins/pins.py` |  |
 | `FormatoEMPADTests/Fixtures/singleton.data.gz` | 3.0 KB | `tools/acq-metadata/generate.py`, `tools/empad/generate.py`, `tools/hdf5-4d/generate.py` +1 |  |
 | `FormatoEMPADTests/Fixtures/singleton.xml` | 184 B | `tools/acq-metadata/generate.py`, `tools/empad/generate.py`, `tools/hdf5-4d/generate.py` +1 |  |
 | `FormatoGoldenTests/Fixtures/velox-tiny-reader.txt` | 11.6 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
@@ -359,7 +359,7 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoMRCTests/Fixtures/acq-metadata/fei2-zero-and-clear-bits.mrc` | 1.9 KB | `tools/acq-metadata/generate.py` |  |
 | `FormatoMRCTests/Fixtures/acq-metadata/no-extended-header.mrc` | 1.1 KB | `tools/acq-metadata/generate.py` |  |
 | `FormatoMRCTests/Fixtures/acq-metadata/pins.json` | 3.2 KB | `tools/acq-metadata/generate.py`, `tools/bragg-writer/check.py`, `tools/bragg-writer/generate.py` +16 |  |
-| `FormatoMRCTests/Fixtures/image-readers/axis-order.mrc` | 1.0 KB | `tools/acq-metadata/generate.py`, `tools/step-4/make_velox_si.py` |  |
+| `FormatoMRCTests/Fixtures/image-readers/axis-order.mrc` | 1.0 KB | `tools/acq-metadata/generate.py`, `tools/velox-spectrum-image/make_velox_si.py` |  |
 | `FormatoMRCTests/Fixtures/image-readers/big-endian.mrc` | 1.0 KB | `tools/acq-metadata/generate.py`, `tools/hdf5-4d/generate.py`, `tools/png/check.py` +2 |  |
 | `FormatoMRCTests/Fixtures/image-readers/complex64.mrc` | 1.0 KB | `tools/acq-metadata/generate.py` |  |
 | `FormatoMRCTests/Fixtures/image-readers/extended-64.mrc` | 1.1 KB | `tools/acq-metadata/generate.py` |  |
@@ -391,7 +391,7 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoMSATests/Fixtures/public/minimum_metadata.msa` | 412 B | `tools/msa/pins.py` | third party: RosettaSciIO public test data (GPL-3.0-or-later), copied unchanged |
 | `FormatoTIFFTests/Fixtures/acq-metadata/dm-tag-65027.tif` | 987 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/acq-metadata/fei-first-field-day.tif` | 337 B | `tools/acq-metadata/generate.py` |  |
-| `FormatoTIFFTests/Fixtures/acq-metadata/fei-helios.tif` | 340 B | `tools/step-2/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/acq-metadata/fei-helios.tif` | 340 B | `tools/tiff-pins/make_planted.py` |  |
 | `FormatoTIFFTests/Fixtures/acq-metadata/fei-sfeg-zero.tif` | 333 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/acq-metadata/fei-stage-beam.tif` | 473 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/acq-metadata/pins.json` | 9.9 KB | `tools/acq-metadata/generate.py`, `tools/bragg-writer/check.py`, `tools/bragg-writer/generate.py` +16 |  |
@@ -460,7 +460,7 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoTIFFTests/Fixtures/app-image/imagej-micron-fractional.tif` | 212 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/app-image/imagej-micron-non-square.tif` | 212 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/app-image/imagej-micron-over-dm.tif` | 316 B | `tools/acq-metadata/generate.py` |  |
-| `FormatoTIFFTests/Fixtures/app-image/imagej-micron.tif` | 212 B | `tools/step-2/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/app-image/imagej-micron.tif` | 212 B | `tools/tiff-pins/make_planted.py` |  |
 | `FormatoTIFFTests/Fixtures/app-image/imagej-nm-keeps-dm-units.tif` | 312 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/app-image/imagej-nm.tif` | 208 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/app-image/imagej-no-unit-keeps-dm.tif` | 264 B | `tools/acq-metadata/generate.py` |  |
@@ -529,7 +529,7 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoTIFFTests/Fixtures/app-image/strips-cut-by-one.tif` | 133 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/app-image/strips-cut-short.tif` | 128 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/app-image/tag-value-outside-file.tif` | 154 B | `tools/acq-metadata/generate.py` |  |
-| `FormatoTIFFTests/Fixtures/app-image/tiled.tif` | 182 B | `tools/step-2/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/app-image/tiled.tif` | 182 B | `tools/tiff-pins/make_planted.py` |  |
 | `FormatoTIFFTests/Fixtures/app-image/too-short.tif` | 7 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/app-image/velox-MM-disagree.tif` | 370 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/app-image/velox-MM-u16.tif` | 382 B | `tools/acq-metadata/generate.py` |  |
@@ -563,52 +563,52 @@ Licence: every fixture is generated from this kit's own code and the pinned Pyth
 | `FormatoTIFFTests/Fixtures/image-readers/velox-refused-xml.tif` | 339 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/image-readers/velox-xml-only.tif` | 309 B | `tools/acq-metadata/generate.py` |  |
 | `FormatoTIFFTests/Fixtures/image-readers/velox-zero-x.tif` | 303 B | `tools/acq-metadata/generate.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/be-u16-3strips.tif` | 298 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/bigtiff-f32.tif` | 352 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/datetime-slash-description.tif` | 198 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/dm-tags-stack.tif` | 548 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/dm-tags.tif` | 266 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/fei-helios-asym.tif` | 450 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/fei-helios.tif` | 310 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/fei-irbeam.tif` | 230 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/imagej-micron-asym.tif` | 242 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/imagej-micron.tif` | 412 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/imagej-virtual.tif` | 274 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/le-u16-3strips.tif` | 282 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/lzw.tif` | 150 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/planted-truth.json` | 207.5 KB | `tools/step-2/make_planted.py`, `tools/step-2/pins.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/rgb8.tif` | 186 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/rgba16.tif` | 222 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/stack-i16.tif` | 308 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/strip-past-end.tif` | 150 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/tag-zoo.tif` | 366 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/tiled.tif` | 414 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/planted/unknown-tag-type.tif` | 162 B | `tools/step-2/make_planted.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter-pins.json` | 129.3 KB | `tools/step-3/refuter_pins.py`, `tools/step-4/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/dm_stack_mix_series.tif` | 652 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/dt_09.tif` | 190 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/dt_13.tif` | 192 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/dt_15.tif` | 194 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/dt_16.tif` | 190 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/f_257_val_1.tif` | 512 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/fd_015.tif` | 210 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/fei_bom.tif` | 226 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/fei_ir_resx_zero.tif` | 256 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/fei_x1c.tif` | 236 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/h_nophoto.tif` | 198 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/h_off0.tif` | 210 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/h_photo6.tif` | 210 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/ij_desc_07.tif` | 442 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/ij_ovf_fs_1p.tif` | 238 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/ij_pages2_images4.tif` | 440 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/ij_res_1.tif` | 276 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/ij_spacing_3280_true.tif` | 634 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/m_photo_diff.tif` | 356 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/m_rps_diff.tif` | 396 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/mut_00015_ff.tif` | 360 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/o_fill2_u8.tif` | 222 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/o_pred2_u8.tif` | 222 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/pyr_half.tif` | 5.3 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/tf_stack2.tif` | 482 B | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/refuter/w_ome_tzcyx.ome.tif` | 4.4 KB | `tools/step-3/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/step-2-pins.json` | 860.1 KB | `tools/step-2/pins.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/be-u16-3strips.tif` | 298 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/bigtiff-f32.tif` | 352 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/datetime-slash-description.tif` | 198 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/dm-tags-stack.tif` | 548 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/dm-tags.tif` | 266 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/fei-helios-asym.tif` | 450 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/fei-helios.tif` | 310 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/fei-irbeam.tif` | 230 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/imagej-micron-asym.tif` | 242 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/imagej-micron.tif` | 412 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/imagej-virtual.tif` | 274 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/le-u16-3strips.tif` | 282 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/lzw.tif` | 150 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/planted-truth.json` | 207.5 KB | `tools/tiff-pins/make_planted.py`, `tools/tiff-pins/pins.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/rgb8.tif` | 186 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/rgba16.tif` | 222 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/stack-i16.tif` | 308 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/strip-past-end.tif` | 150 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/tag-zoo.tif` | 366 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/tiled.tif` | 414 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/planted/unknown-tag-type.tif` | 162 B | `tools/tiff-pins/make_planted.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter-pins.json` | 129.3 KB | `tools/velox-titles/refuter_pins.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/dm_stack_mix_series.tif` | 652 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/dt_09.tif` | 190 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/dt_13.tif` | 192 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/dt_15.tif` | 194 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/dt_16.tif` | 190 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/f_257_val_1.tif` | 512 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/fd_015.tif` | 210 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/fei_bom.tif` | 226 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/fei_ir_resx_zero.tif` | 256 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/fei_x1c.tif` | 236 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/h_nophoto.tif` | 198 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/h_off0.tif` | 210 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/h_photo6.tif` | 210 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/ij_desc_07.tif` | 442 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/ij_ovf_fs_1p.tif` | 238 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/ij_pages2_images4.tif` | 440 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/ij_res_1.tif` | 276 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/ij_spacing_3280_true.tif` | 634 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/m_photo_diff.tif` | 356 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/m_rps_diff.tif` | 396 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/mut_00015_ff.tif` | 360 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/o_fill2_u8.tif` | 222 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/o_pred2_u8.tif` | 222 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/pyr_half.tif` | 5.3 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/tf_stack2.tif` | 482 B | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/refuter/w_ome_tzcyx.ome.tif` | 4.4 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoTIFFTests/Fixtures/step-2-pins.json` | 860.1 KB | `tools/tiff-pins/pins.py` |  |

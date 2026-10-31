@@ -1,6 +1,6 @@
 //
 //  PlantedTIFFTests.swift
-//  Planted TIFFs written byte by byte by tools/step-2/make_planted.py (struct only), their values
+//  Planted TIFFs written byte by byte by tools/tiff-pins/make_planted.py (struct only), their values
 //  stated here as literals, independent of RosettaSciIO and tifffile. Planned mutants caught here: 1 (big-endian not
 //  swapped), 2 (RowsPerStrip default, by a file built in the test), 5 (rationals), 6 (the height/width cross-over), 7 (micron), 8 (IRBeam), 9 (DM
 //  65009), 12 (RGB planar), 13 (tiles), 14 (beam energy).

@@ -1,7 +1,7 @@
 //
 //  SpectrumImagePinsTests.swift
 //  The kernel pins and every (file, option set) of Fixtures/step-4-pins.json
-//  (tools/step-4/pins.py: RosettaSciIO 049e7d70's `file_reader(select_type="spectrum_image", lazy=False)` with sparse and
+//  (tools/velox-spectrum-image/pins.py: RosettaSciIO 049e7d70's `file_reader(select_type="spectrum_image", lazy=False)` with sparse and
 //  numba) against `VeloxSpectrumImageSignals`: where RosettaSciIO raises, FormatoKit refuses; where it reads, the signals in
 //  order are equal in type, shape, data sha256, every axis field exactly, title, signal type and metadata with source.
 //  The deliberate deviations are refused by name: the pins' `deviations`, and the runs whose
@@ -164,7 +164,7 @@ import FormatoEMD
         }
     }
 
-    /// Step 4's review files (Tests/FormatoEMDTests/Fixtures/step4/refuter, tools/step-4/refuter_pins.py): the
+    /// Step 4's review files (Tests/FormatoEMDTests/Fixtures/step4/refuter, tools/velox-spectrum-image/refuter_pins.py): the
     /// fixes (Unicode digits, endFramePosition past Int64, a zero-frame first image, JSON decimals, the frame count's
     /// overflow) and the deliberate deviations (fermi, a null image unit, a list DetectorName, LZF; a big-endian stream read).
     @Test func testStep4RefuterFilesAgreeOrAreRefused() throws {
@@ -179,10 +179,10 @@ import FormatoEMD
         #expect(t.signals == 9)
     }
 
-    /// The owner's spectrum image: run by tools/step-4/owner-check.sh, which writes RosettaSciIO's
+    /// The owner's spectrum image: run by tools/velox-spectrum-image/owner-check.sh, which writes RosettaSciIO's
     /// reading with `pins.py --owner` and passes FORMATO_OWNER_SI_PINS and FORMATO_OWNER_SI_FILE. Never part of the gate.
     @Test(.enabled(if: ProcessInfo.processInfo.environment["FORMATO_OWNER_SI_PINS"] != nil,
-                   "the owner's spectrum image is checked by tools/step-4/owner-check.sh only"))
+                   "the owner's spectrum image is checked by tools/velox-spectrum-image/owner-check.sh only"))
     func testOwnerSpectrumImages() throws {
         let env = ProcessInfo.processInfo.environment
         let pins = try JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: try #require(env["FORMATO_OWNER_SI_PINS"])))) as! [String: Any]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Planted TIFFs for FormatoKit step 2.
+"""Planted TIFFs for FormatoTIFF.
 
-    References/rsciio-venv/bin/python -I -B tools/step-2/make_planted.py [--out DIR]
+    References/rsciio-venv/bin/python -I -B tools/tiff-pins/make_planted.py [--out DIR]
 
 Writes small TIFFs with known content into Tests/FormatoTIFFTests/Fixtures/planted/ with Python's `struct` only, byte by byte
 (not tifffile's writer, not RosettaSciIO's), and `planted-truth.json` next to them: for each file the literal values the Swift
@@ -512,7 +512,7 @@ def make_files():
 # ------------------------------------------------------------------------------------------------------------ the reading
 
 def load_pins():
-    """tools/step-2/pins.py as a module (a script directory is not on sys.path under -I)."""
+    """tools/tiff-pins/pins.py as a module (a script directory is not on sys.path under -I)."""
     spec = importlib.util.spec_from_file_location("step2_pins", Path(__file__).with_name("pins.py"))
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -617,7 +617,7 @@ def build(pins, R, np, directory):
         entry["disagreements"] = diffs
         records[name] = entry
     out = {
-        "generator": "tools/step-2/make_planted.py",
+        "generator": "tools/tiff-pins/make_planted.py",
         "reference": f"RosettaSciIO {pins.PIN}, tifffile {pins.TIFFFILE_VERSION} (the readings; the truth is written by hand)",
         "versions": pins.versions(np),
         "files": [records[f["name"]] for f in files],

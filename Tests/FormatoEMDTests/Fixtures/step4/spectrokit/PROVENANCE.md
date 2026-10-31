@@ -17,5 +17,5 @@ repositories.
 | `velox-streams-truth.json` | `aa55353affd9061e6ee1708322058aaef74535d1c3c660042c928fb15a1f0a5d` |
 
 RosettaSciIO 049e7d70 raises `KeyError: 'Displays'` on each `.emd` here (a version-11 spectrum-image file without a
-`Displays` group); FormatoKit refuses them too. `tools/step-4/make_velox_si.py` copies their stream and image datasets
+`Displays` group); FormatoKit refuses them too. `tools/velox-spectrum-image/make_velox_si.py` copies their stream and image datasets
 verbatim into `../sk-<case>.emd` with the metadata completed, so both readers read them.

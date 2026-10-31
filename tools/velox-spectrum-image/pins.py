@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Pins RosettaSciIO's reading of Velox spectrum images for FormatoKit step 4.
+"""Pins RosettaSciIO's reading of Velox spectrum images.
 
-    References/rsciio-venv/bin/python -I -B tools/step-4/pins.py [--work DIR]
+    References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/pins.py [--work DIR]
         writes Tests/FormatoCoreTests/Fixtures/step-4-pins.json
-    References/rsciio-venv/bin/python -I -B tools/step-4/pins.py --owner FILE --out PATH [--options O1,O4,...]
+    References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/pins.py --owner FILE --out PATH [--options O1,O4,...]
         writes the same records for the owner's file to PATH (scratch, never committed; the file recorded by basename)
 
 Every record is `rsciio.emd.file_reader(path, select_type="spectrum_image", lazy=False, **options)` for one file and one option
@@ -13,7 +13,7 @@ title, signal type and step 1's metadata entries. Needs `sparse` and `numba` in 
 without them, so the stream path is RosettaSciIO's real, jitted one.
 
 Files: the public Velox files with a spectrum stream or an EELS spectrum image (step 1's zips, unzipped into a fresh
-directory), the planted files (tools/step-4/make_velox_si.py, regenerated here first and checked byte-equal to the committed
+directory), the planted files (tools/velox-spectrum-image/make_velox_si.py, regenerated here first and checked byte-equal to the committed
 ones), and the copies of SpectroKit's planted streams. For every planted file and option set RosettaSciIO's arrays must
 equal the planted truth (`make_velox_si.expected`), or the script stops.
 
@@ -42,8 +42,8 @@ def module(name, path):
     return m
 
 
-step1 = module("step1_pins", ROOT / "tools" / "step-1" / "pins.py")
-truth = module("make_velox_si", ROOT / "tools" / "step-4" / "make_velox_si.py")
+step1 = module("step1_pins", ROOT / "tools" / "dm-velox-pins" / "pins.py")
+truth = module("make_velox_si", ROOT / "tools" / "velox-spectrum-image" / "make_velox_si.py")
 die = step1.die
 
 
@@ -256,7 +256,7 @@ def build(R, np, h5py, pint, work, made):
         path = PLANTED / name
         files.append(file_record(R, np, path, name, "spectrokit-copy", {"O1": {}}))
     out = step1.header(np, h5py, pint, "step-4")
-    out["generator"] = "tools/step-4/pins.py"
+    out["generator"] = "tools/velox-spectrum-image/pins.py"
     out["reference"] = f"RosettaSciIO {step1.PIN} (rsciio.emd.file_reader, select_type='spectrum_image', lazy=False)"
     out["versions"].update(require_stream_libraries())
     out["option_sets"] = {k: v for k, v in truth.OPTIONS.items() if v is not None}
@@ -268,7 +268,7 @@ def build(R, np, h5py, pint, work, made):
 
 def regenerate_planted():
     """make_velox_si.py into a scratch directory; the committed files must be byte-equal (the truth is the generator's)."""
-    scratch = Path(tempfile.mkdtemp(prefix="step4-planted-"))
+    scratch = Path(tempfile.mkdtemp(prefix="spectrum-image-planted-"))
     shutil.copytree(PLANTED / "spectrokit", scratch / "spectrokit")
     made = truth.build(str(scratch))
     for name in made:
@@ -304,7 +304,7 @@ def main():
         print(f"owner pins: {len(chosen)} option sets -> {a.out}")
         return
     made = regenerate_planted()
-    work = Path(a.work or tempfile.mkdtemp(prefix="step4-pins-"))
+    work = Path(a.work or tempfile.mkdtemp(prefix="spectrum-image-pins-"))
     first = build(R, np, h5py, pint, Path(tempfile.mkdtemp(prefix="a-", dir=work)), made)
     second = build(R, np, h5py, pint, Path(tempfile.mkdtemp(prefix="b-", dir=work)), made)
     if first != second:
@@ -312,7 +312,7 @@ def main():
     OUT.write_text(first)
     doc = json.loads(first)
     runs = [r for f in doc["files"] for r in f["runs"].values()]
-    print(f"step-4 pins: {len(doc['files'])} files, {len(runs)} runs ({sum(1 for r in runs if r['raises'])} raise), "
+    print(f"spectrum-image pins: {len(doc['files'])} files, {len(runs)} runs ({sum(1 for r in runs if r['raises'])} raise), "
           f"{sum(len(r['signals']) for r in runs)} signals, {len(doc['kernel'])} kernel cases; planted truth equal -> {OUT.relative_to(ROOT)}")
 
 

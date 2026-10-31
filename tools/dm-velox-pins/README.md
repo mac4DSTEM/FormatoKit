@@ -1,4 +1,4 @@
-# tools/step-1: the oracle pins
+# tools/dm-velox-pins: the oracle pins
 
 `pins.py` reads the pinned RosettaSciIO (commit `049e7d70`) and writes what it
 returns, so the Swift tests (`PinsTests`, `UnitsTests`) compare against numbers that exist before the Swift code. Python only.
@@ -6,8 +6,8 @@ Agreement with RosettaSciIO is agreement with an independent reading of the same
 
 ## Run
 
-    References/rsciio-venv/bin/python -I -B tools/step-1/pins.py [--work DIR]
-    References/rsciio-venv/bin/python -I -B tools/step-1/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
+    References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py [--work DIR]
+    References/rsciio-venv/bin/python -I -B tools/dm-velox-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
 
 - Default mode writes `Tests/FormatoCoreTests/Fixtures/step-1-pins.json` (public files) and `units-pins.json`.
 - `--owner` writes the same per-file records for the files named on the command line (`.dm3`/`.dm4`, and `.emd` that are
