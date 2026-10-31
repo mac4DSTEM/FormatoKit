@@ -2,7 +2,7 @@
 //  TIFFVendorAxesTests.swift
 //  `TIFFVendorBranches.readWithVendorAxes`: the pixel size RosettaSciIO 049e7d70 reads for Zeiss SEM, TVIPS and JEOL
 //  SightX TIFFs. RosettaSciIO's public test files (unpacked by tools/test.sh, skipped when absent) are compared with the
-//  axes pinned in step-2-pins.json, bit for bit; planted files built byte by byte here cover each branch where the public
+//  axes pinned in tiff-pins.json, bit for bit; planted files built byte by byte here cover each branch where the public
 //  files are absent.
 //
 
@@ -208,7 +208,7 @@ import FormatoKitTestSupport
     // MARK: RosettaSciIO's public files
 
     @Test func testThePublicVendorFilesGiveRosettaSciIOsAxes() throws {
-        let pins = FixtureDirs.fixtures(of: "FormatoTIFFTests").appendingPathComponent("step-2-pins.json")
+        let pins = FixtureDirs.fixtures(of: "FormatoTIFFTests").appendingPathComponent("tiff-pins.json")
         let object = try JSONSerialization.jsonObject(with: Data(contentsOf: pins)) as! [String: Any]
         let names = ["tiff/TVIPS_bin4.zip/TVIPS_bin4.tif", "tiff/tiff_Zeiss_SEM.zip/ZEISS_SEM_multipage.tif",
                      "tiff/tiff_Zeiss_SEM.zip/test_tiff_Zeiss_SEM_1k.tif", "tiff/tiff_Zeiss_SEM.zip/test_tiff_Zeiss_SEM_512pix.tif",

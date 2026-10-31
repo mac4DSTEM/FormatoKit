@@ -113,7 +113,7 @@ extension VeloxEMDSerialized {
             let path = Self.dir.appendingPathComponent(pins.file).path
             let si = try #require(try VeloxEMDReader(path: path).spectrumImageMetadata())
             #expect(si.collectionAngleEndRadians == nil && AcquisitionMetadata.velox(eelsSpectrumImage: si).collectionAngleMrad == nil)
-            let plain = Self.dir.deletingLastPathComponent().appendingPathComponent("step4/si-planted-v11.emd").path
+            let plain = Self.dir.deletingLastPathComponent().appendingPathComponent("velox-spectrum-image/si-planted-v11.emd").path
             #expect(try VeloxEMDReader(path: plain).eelsSpectrumImageMetadata().isEmpty)
         }
     }

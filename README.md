@@ -59,7 +59,7 @@ for object in dm.objects {
 }
 ```
 
-A Velox file, images and then spectrum images: `velox-titles-v6-image.emd` holds 14 images, `step4/si-planted-v11.emd` one
+A Velox file, images and then spectrum images: `velox-titles-v6-image.emd` holds 14 images, `velox-spectrum-image/si-planted-v11.emd` one
 EDS spectrum image. `VeloxSpectrumImageOptions` takes RosettaSciIO's six arguments; the defaults are RosettaSciIO's:
 
 ```swift
@@ -73,7 +73,7 @@ for image in velox.images {
 }
 
 let options = VeloxSpectrumImageOptions(rebinEnergy: 1)
-let spectrumImages = try VeloxSpectrumImageSignals(path: "Tests/FormatoEMDTests/Fixtures/step4/si-planted-v11.emd",
+let spectrumImages = try VeloxSpectrumImageSignals(path: "Tests/FormatoEMDTests/Fixtures/velox-spectrum-image/si-planted-v11.emd",
                                                    options: options)
 for signal in spectrumImages.signals {
     print(signal.title, signal.signalType, signal.data.dataType, signal.data.shape)

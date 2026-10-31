@@ -7,9 +7,9 @@
 
 tifffile's default `imwrite(array)` stores `{"shape": [...]}` in the ImageDescription ("shaped"); `TiffFile.series` then uses
 `series_shaped`, which `TIFFShapedSeries.swift` ports. Each file is read with `rsciio.tiff.file_reader` and recorded in the
-format of tools/step-2/pins.py (that script's `file_record`, imported here): tifffile's series (kind, axes, shape), then for
+format of tools/tiff-pins/pins.py (that script's `file_record`, imported here): tifffile's series (kind, axes, shape), then for
 each signal the data's sha256, shape, element type, every axis field with its bits, and the metadata. A file RosettaSciIO
-raises on is recorded with "raises" (FormatoKit refuses it). The same checks as step-2 run first (versions, pin, install).
+raises on is recorded with "raises" (FormatoKit refuses it). The same checks as tools/tiff-pins/pins.py run first (versions, pin, install).
 Everything is built twice in the process, in two fresh directories, and the script stops if the files or the JSON differ.
 """
 import importlib.util
@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / "Tests" / "FormatoTIFFTests" / "Fixtures"
 OUT = FIXTURES / "shaped"
 
-spec = importlib.util.spec_from_file_location("step2_pins", ROOT / "tools" / "step-2" / "pins.py")
+spec = importlib.util.spec_from_file_location("step2_pins", ROOT / "tools" / "tiff-pins" / "pins.py")
 S2 = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(S2)
 

@@ -242,6 +242,7 @@ public nonisolated struct TIFFSignals: Sendable {
     static func buildSeries(_ file: TIFFFile) throws -> [TIFFSeries] {
         let size = file.data.count
         let first = file.directories[0]
+        let name = formatoDisplayFileName(file.path)
         let layout0 = try TIFFPageLayout.of(first, bigEndian: file.bigEndian, fileSize: size)
         let pageAxes = layout0.samples > 1 ? "YXS" : "YX"
         let pageShape = layout0.samples > 1 ? [layout0.height, layout0.width, layout0.samples] : [layout0.height, layout0.width]
@@ -251,7 +252,7 @@ public nonisolated struct TIFFSignals: Sendable {
         let shaped = shapedDescription(first) != nil
         if shaped, let s = try shapedSeries(file) { return s }
         if !shaped {
-            if let d = first[270]?.text, d.contains("<OME") { throw FormatoReadError.unsupported("The file is an OME-TIFF; its series rule is not ported.") }
+            if let d = first[270]?.text, d.contains("<OME") { throw TIFFError.unsupportedSeries(file: name, series: "an OME-TIFF series") }
             if let meta = imageJDescription(first), let s = try imageJSeries(file, meta, layout0, pageAxes, pageShape) {
                 return [s]
             }
@@ -265,15 +266,21 @@ public nonisolated struct TIFFSignals: Sendable {
         }
         // tifffile splits pages by more than shape and type, and merges reduced-size pages into pyramids: a file whose pages
         // fall in more than one group is refused rather than guessed.
-        guard groups.count == 1 else {
-            throw FormatoReadError.unsupported("The file's pages form \(groups.count) groups; several series are not ported.")
-        }
-        return groups.map { g in
+        let all = groups.map { g in
             let n = g.pages.count, l = g.pages[0]
             let axes = (n > 1 ? "I" : "") + (l.samples > 1 ? "YXS" : "YX")
             let shape: [Int] = (n > 1 ? [n] : [Int]()) + (l.samples > 1 ? [l.height, l.width, l.samples] : [l.height, l.width])
             return TIFFSeries(axes: axes, shape: shape, dataType: l.dataType, pages: g.pages)
         }
+        guard all.count == 1 else {
+            // tifffile's generic rule ends with `pyramidize_series(series)`: a later series one sampling step (2, 3 or 4) below
+            // the first, or a page marked reduced (NewSubfileType bit 0), names a pyramid; otherwise several series.
+            let pyramid = file.directories.dropFirst().contains(where: isReduced)
+                || all.dropFirst().contains { b in [2, 3, 4].contains { subresolution(all[0], b, p: $0) == 1 } }
+            if pyramid { throw TIFFError.unsupportedSeries(file: name, series: "a pyramid of reduced-resolution pages") }
+            throw TIFFError.unsupportedSeries(file: name, series: "\(all.count) series of pages that differ in shape, type or layout")
+        }
+        return all
     }
 
     /// tifffile's `series_imagej` for the files in scope; nil where it returns None (then the generic rule applies). A
@@ -281,6 +288,7 @@ public nonisolated struct TIFFSignals: Sendable {
     /// neither the pages nor a contiguous block after the first page hold, are refused.
     static func imageJSeries(_ file: TIFFFile, _ meta: [String: FormatoPythonValue], _ page: TIFFPageLayout,
                              _ pageAxes: String, _ pageShape: [Int]) throws -> TIFFSeries? {
+        let name = formatoDisplayFileName(file.path)
         func int(_ k: String) throws -> Int {
             switch meta[k] {
             case nil: return 1
@@ -329,14 +337,14 @@ public nonisolated struct TIFFSignals: Sendable {
         var virtual: Int?
         if pages == 1 || page.stripOffsets[0] + nbytes <= file.directories[1].offset {
             let contiguous = zip(page.stripOffsets, page.stripOffsets.dropFirst()).allSatisfy { $1 - $0 == page.rowsPerStrip * page.rowBytes }
-            guard contiguous else { throw FormatoReadError.unsupported("An ImageJ virtual stack whose first page's strips are not contiguous.") }
+            guard contiguous else { throw TIFFError.unsupportedSeries(file: name, series: "an ImageJ virtual stack whose first page's strips are not contiguous") }
             layouts = [page]; virtual = images
         } else {
-            guard pages >= images else { throw FormatoReadError.unsupported("The ImageJ description counts \(images) images over \(pages) pages.") }
+            guard pages >= images else { throw TIFFError.unsupportedSeries(file: name, series: "an ImageJ stack that counts \(images) images over \(pages) pages") }
             layouts = try file.directories.prefix(images).map {
                 let l = try TIFFPageLayout.of($0, bigEndian: file.bigEndian, fileSize: file.data.count)
                 guard l.width == page.width, l.height == page.height, l.dataType == page.dataType else {
-                    throw FormatoReadError.unsupported("A page of the ImageJ stack differs from the first.")
+                    throw TIFFError.unsupportedSeries(file: name, series: "an ImageJ stack whose pages differ from the first")
                 }
                 return l
             }

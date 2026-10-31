@@ -7,9 +7,9 @@ import FormatoHDF5
 extension VeloxEMDSerialized {
     /// The Velox EMD spectrum-image reader. None of these needs References data: the
     /// decode is tested on synthetic streams, the metadata parser on a JSON literal, and the file
-    /// path on a 3 KB synthetic Velox EMD embedded below (`tools/velox-parity/make-tiny-fixture.py`
-    /// writes it). The count-for-count comparison with rosettasciio on the public files is
-    /// `tools/velox-parity`.
+    /// path on a 3 KB synthetic Velox EMD embedded below (`tools/velox-tiny/make-tiny-fixture.py`
+    /// writes it). The count-for-count comparison with rosettasciio on the public files was
+    /// mac4DSTEM's `tools/velox-parity`, before the reader moved here.
     @Suite(.serialized) final class VeloxEMDReaderTests {
         /// XCTest's `addTeardownBlock`, kept: blocks run in reverse order when the test's suite instance goes away.
         private var teardownBlocks: [() -> Void] = []
@@ -156,7 +156,7 @@ extension VeloxEMDSerialized {
             #expect(m.scanTransformation?.a23 == 0.25)
         }
 
-        // MARK: Synthetic files (tools/velox-parity/make-tiny-fixture.py)
+        // MARK: Synthetic files (tools/velox-tiny/make-tiny-fixture.py)
 
         /// The main file: a NON-SQUARE 3-row x 2-column spectrum image, 8 channels, 2 frames, two streams with a
         /// FrameLocationTable, a (3, 2, 2) HAADF, Super-X segments with different elevations and dispersions.
