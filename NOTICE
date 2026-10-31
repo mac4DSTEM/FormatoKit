@@ -50,6 +50,17 @@ public test file rsciio/tests/data/digitalmicrograph/3D/EELS_SI.dm4 (sha256
 f9b8203f384cc355437594b649d4ea3a12cddeb231ebb65508a841a379fa171a), copied byte
 for byte; the JSON pins under Tests/FormatoCoreTests/Fixtures are RosettaSciIO's
 readings of its public test files.
+Tests/FormatoDMTests/Fixtures/rsciio-MonoCL_spectrum-ccd.dm4 and
+Tests/FormatoDMTests/Fixtures/rsciio-MonarcCL_spectrum-ccd.dm4 are RosettaSciIO's
+public test files rsciio/tests/data/digitalmicrograph/1D/test-MonoCL_spectrum-ccd.dm4
+(sha256 bcf857ca89b99852fe083988433b92726004c9807f519d72cb3ee978f1e6c35a) and
+test-MonarcCL_spectrum-ccd.dm4 (sha256
+716e4aa36615de43ec7f13098157f647dbeabebff872645fd1f49724189eb174), copied byte
+for byte; the bytes are the same at the pinned commit above and at commit
+8363d244a6405dfb68a545c47260648056c4b465, where they were fetched. The camera
+pixel pitch (Sources/FormatoDM/AcquisitionMetadataDM.swift) follows the mapping
+of Acquisition.Device.CCD.Pixel Size (um) to Detector.pixel_size, the same line
+at both commits.
 
     RosettaSciIO - https://github.com/hyperspy/rosettasciio
     Copyright (C) 2007-2026 The HyperSpy developers

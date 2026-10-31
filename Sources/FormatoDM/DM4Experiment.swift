@@ -134,6 +134,11 @@ public nonisolated struct DM4ImageObject: Sendable, Equatable {
     /// and the short UTF-16 arrays (units, dates). Each is cut at the walk's kept length (4 KiB by default, `DMReadOptions.maximumStringBytes`),
     /// so a longer UTF-16 string is absent and a longer type-18 string is cut. Added 2026-10-12.
     public let imageTagStrings: [String: String]
+    /// The numeric structs and short numeric arrays under this object's `ImageTags`, prefix removed, each in stored order
+    /// (`Acquisition.Device.CCD.Pixel Size (um)` = [20, 20]): the walk's array rule (a struct's numeric fields; a numeric array
+    /// under 4096 bytes; a ushort array of 64 or fewer elements, which is also a string). Read by `AcquisitionMetadata.dm(_:)`.
+    /// Part of the synthesized `==`, so two objects can differ here alone.
+    package let imageTagArrays: [String: [Double]]
     /// Where the pixel blob starts in the file and how many bytes the tag declares.
     public let dataOffset: Int
     public let dataByteCount: Int
@@ -710,13 +715,16 @@ public nonisolated enum DM4Experiment {
                 // (the convention DM4Reader and ncempy use).
                 let label = labelLen > 0 ? cursor.string(labelLen) : String(sibling + 1)
                 let path = prefix.isEmpty ? label : prefix + "." + label
-                if version == 4 { _ = cursor.special(version) }
-                if tag == 21 { try dataTag(path: path, label: label) }
+                // DM4 gives every entry its size (from here to the end of the entry); DM3 has none.
+                let entrySize: Int? = version == 4 ? Int(exactly: cursor.special(version)) : nil
+                let entryStart = cursor.offset
+                if tag == 21 { try dataTag(path: path, label: label, entryEnd: entrySize.flatMap { $0 > 0 ? entryStart + $0 : nil }) }
                 else if tag == 20 { try group(prefix: path, depth: depth + 1) }
             }
         }
 
-        mutating func dataTag(path: String, label: String) throws {
+        /// `entryEnd`: where the entry ends by its DM4 size, nil for DM3 or a size of 0.
+        mutating func dataTag(path: String, label: String, entryEnd: Int?) throws {
             guard cursor.bytes(4) == [37, 37, 37, 37] else { throw cursor.overran ? cursor.failure : DM4Error.truncated }
             let ninfo = try int(cursor.special(version))
             guard ninfo >= 0, ninfo <= 4096 else { throw DM4Error.truncated }
@@ -764,7 +772,19 @@ public nonisolated enum DM4Experiment {
                     elemSize = DM4Experiment.tagTypeSize(elementType)
                 }
                 guard lengthIndex < info.count else { throw DM4Error.truncated }
-                let length = try int(info[lengthIndex])
+                var length = try int(info[lengthIndex])
+                if label == "Data", length == 0, elemSize > 0 {
+                    // A pixel array that declares length 0 (some writers omit it). DM4: the entry's own size gives the bytes.
+                    // DM3 records no other length, so the tags after it cannot be found: refused, not walked through the pixels.
+                    // A DM4 entry of size 0 keeps the old reading: an empty blob, the dimensions give the length.
+                    if let entryEnd {
+                        let payload = entryEnd - cursor.offset
+                        guard payload >= 0, payload % elemSize == 0 else { throw DM4Error.truncated }
+                        length = payload / elemSize
+                    } else if version == 3 {
+                        throw DM4Error.cannotOpen("\(path) declares length 0, and a DM3 file records no other length for its pixel array, so the tags after it cannot be read.")
+                    }
+                }
                 let (nbytes, o1) = length.multipliedReportingOverflow(by: elemSize)
                 let start = cursor.offset
                 let (end, o2) = start.addingReportingOverflow(nbytes)
@@ -831,6 +851,8 @@ public nonisolated enum DM4Experiment {
                 var tagNumbers = [String: Double](), tagStrings = [String: String]()
                 for (k, v) in numbers where k.hasPrefix(tags) { tagNumbers[String(k.dropFirst(tags.count))] = v }
                 for (k, v) in strings where k.hasPrefix(tags) { tagStrings[String(k.dropFirst(tags.count))] = v }
+                var tagArrays = [String: [Double]]()
+                for (k, v) in arrays where k.hasPrefix(tags) { tagArrays[String(k.dropFirst(tags.count))] = v }
                 let name = strings[root + "Name"] ?? ""
                 // Do not rely on the keyword POSITIONS (.1 = ID, .2 = Label, as seen in the
                 // owner's files): scan every `Experiment keywords.N` for a known Label and an ID.
@@ -877,7 +899,7 @@ public nonisolated enum DM4Experiment {
                     dataOrderSwapped: numbers[tags + "Meta Data.Data Order Swapped"].map { $0 != 0 },
                     metaDataFormat: strings[tags + "Meta Data.Format"],
                     metaDataSignal: signal,
-                    imageTagNumbers: tagNumbers, imageTagStrings: tagStrings,
+                    imageTagNumbers: tagNumbers, imageTagStrings: tagStrings, imageTagArrays: tagArrays,
                     dataOffset: blob.offset, dataByteCount: blob.bytes))
             }
             return out

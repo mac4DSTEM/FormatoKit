@@ -36,3 +36,10 @@ the moved test names and git blob ids checked at the move, by a one-off script r
 | `FormatoEMDTests/Fixtures/spectra-pins.json` | `efcbe9a55d207352…` | `tools/velox-spectrum/pins.py` (RosettaSciIO 049e7d70, 4 process time zones) |
 | `FormatoMSATests/Fixtures/public/*` (11 files) | per file | RosettaSciIO 049e7d70's public `msa` test data (GPL-3.0-or-later), copied unchanged |
 | `FormatoMSATests/Fixtures/msa-pins.json` | `685f80c2a4a64c71…` | `tools/msa/pins.py` (RosettaSciIO 049e7d70) |
+
+## Added after 0.11.0
+
+| File | sha256 | Origin |
+|---|---|---|
+| `FormatoDMTests/Fixtures/rsciio-MonoCL_spectrum-ccd.dm4` | `bcf857ca89b99852…` | RosettaSciIO 8363d24 public `digitalmicrograph/1D/test-MonoCL_spectrum-ccd.dm4` (GPL-3.0-or-later), copied unchanged; sha256 equal to its `registry.txt` |
+| `FormatoDMTests/Fixtures/rsciio-MonarcCL_spectrum-ccd.dm4` | `716e4aa36615de43…` | RosettaSciIO 8363d24 public `digitalmicrograph/1D/test-MonarcCL_spectrum-ccd.dm4` (GPL-3.0-or-later), copied unchanged; sha256 equal to its `registry.txt` |

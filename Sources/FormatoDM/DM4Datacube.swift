@@ -24,7 +24,8 @@ public nonisolated enum DM4DatacubeStorage: Sendable {
 
 /// The storage layout `DM4Datacube` chose: what the unit-domain rule decided, so a consumer need not repeat it.
 public nonisolated struct DM4DatacubeLayout: Sendable, Equatable {
-    /// The stored shape in C order (the file's dimensions reversed).
+    /// The stored shape in C order (the file's dimensions reversed; for a scan-shaped rank-three object, its stack axis
+    /// split into `[scanY, scanX]`).
     public let storedShape: [Int]
     /// Output axis `i` is stored axis `permutation[i]`. `[0,1,2,3]` unless the app convention found scan-fastest storage.
     public let permutation: [Int]
@@ -41,7 +42,8 @@ public nonisolated struct DM4DatacubeLayout: Sendable, Equatable {
 /// The default signal preserves RosettaSciIO's stored array. The app option gathers scan-fastest storage.
 /// Only requested slabs are copied. Keep the file unchanged while this reader or its signal exists.
 public nonisolated struct DM4Datacube: Sendable {
-    /// The selected image object. The first rank-four non-thumbnail image is used when no index is supplied.
+    /// The selected image object: with no index, the first in `ImageList` order that is rank four, or rank three with
+    /// scan-shape tags (see `init`).
     public let object: DM4ImageObject
     /// Array, axes and existing DMFile mapped metadata. `load()` materializes the entire cube.
     public let signal: FormatoLazySignal
@@ -51,27 +53,55 @@ public nonisolated struct DM4Datacube: Sendable {
     public let layout: DM4DatacubeLayout
 
     /// Opens a rank-four real-valued DM4 image with a read-only mapping.
+    ///
+    /// A rank-three object `(N, Qy, Qx)` is read as the four-dimensional `[scanY, scanX, Qy, Qx]` when the file's
+    /// "Scan shape X" and "Scan shape Y" tags multiply to `N` (py4DSTEM's NCEM TitanX reshape, without its two-pixel roll):
+    /// the bytes as stored, both scan axes calibrated as the stack axis. Tags under the object's own `ImageTags` win over
+    /// tags elsewhere in the file.
     /// - Parameters:
     ///   - path: DM3 or DM4 filename.
-    ///   - objectIndex: The `DM4ImageObject.index` to use, or nil to select the first rank-four image.
+    ///   - objectIndex: The `DM4ImageObject.index` to use, or nil to select the first datacube.
     ///   - convention: Stored reference order by default, or the separately pinned app layout.
     ///   - options: Existing tag-walk string limits.
     ///   - storage: `.mapped` (default) or `.readIntoMemory`.
-    /// - Throws: `DM4Error` for malformed data, unsupported types or absence of a rank-four object.
+    /// - Throws: `DM4Error` for malformed data, unsupported types or absence of a datacube; `.cannotOpen` with a sentence
+    ///   for an object of more than four dimensions.
     public init(path: String, objectIndex: Int? = nil, convention: DM4GatherConvention = .rosettaSciIO,
                 options: DMReadOptions = DMReadOptions(), storage: DM4DatacubeStorage = .mapped) throws {
         let file = try DMFile(path: path, options: options)
         let tree = try DM4Experiment.tagTree(path: path, options: options)
-        guard let object = file.objects.first(where: { candidate in
-            if let objectIndex { return candidate.index == objectIndex }
-            return candidate.dimensions.count == 4
-        }) else {
-            throw DM4Error.noDatacube
+        func scanShape(_ candidate: DM4ImageObject) -> (y: Int, x: Int)? {
+            guard candidate.dimensions.count == 3 else { return nil }
+            let own = "ImageList.\(candidate.index).ImageTags."
+            func tag(_ needle: String) -> Int? {
+                let keys = tree.numbers.keys.filter { $0.contains(needle) }.sorted()
+                return (keys.first { $0.hasPrefix(own) } ?? keys.first).flatMap { tree.numbers[$0] }.flatMap { Int(exactly: $0) }
+            }
+            guard let x = tag("Scan shape X"), let y = tag("Scan shape Y"), x > 0, y > 0 else { return nil }
+            let (n, overflow) = x.multipliedReportingOverflow(by: y)
+            return !overflow && n == candidate.dimensions[2] ? (y, x) : nil
         }
+        func tooManyDimensions(_ candidate: DM4ImageObject) -> DM4Error {
+            .cannotOpen("image object \(candidate.index) (\(candidate.name)) has \(candidate.dimensions.count) dimensions; a datacube has four, or three with scan-shape tags.")
+        }
+        let chosen: DM4ImageObject
+        if let objectIndex {
+            guard let candidate = file.objects.first(where: { $0.index == objectIndex }) else { throw DM4Error.noDatacube }
+            chosen = candidate
+        } else {
+            guard let candidate = file.objects.first(where: { $0.dimensions.count == 4 || scanShape($0) != nil }) else {
+                if let big = file.objects.first(where: { $0.dimensions.count > 4 }) { throw tooManyDimensions(big) }
+                throw DM4Error.noDatacube
+            }
+            chosen = candidate
+        }
+        let object = chosen
         self.object = object
-        guard object.dimensions.count == 4, object.dimensions.allSatisfy({ $0 > 0 }) else { throw DM4Error.noDatacube }
+        if object.dimensions.count > 4 { throw tooManyDimensions(object) }
+        let scan = scanShape(object)
+        guard object.dimensions.count == 4 || scan != nil, object.dimensions.allSatisfy({ $0 > 0 }) else { throw DM4Error.noDatacube }
         guard let type = DMFile.dataType(code: object.dataType) else { throw DM4Error.unsupportedDataType(object.dataType) }
-        let shape = Array(object.dimensions.reversed())
+        let shape = scan.map { [$0.y, $0.x, object.dimensions[1], object.dimensions[0]] } ?? Array(object.dimensions.reversed())
         let n: Int
         do { n = try FormatoArray.elementCount(shape + [type.byteSize]) } catch { throw DM4Error.truncated }
         // A declared data length of 0 is tolerated (the tag says nothing): the dimensions give the length.
@@ -80,8 +110,17 @@ public nonisolated struct DM4Datacube: Sendable {
         var permutation = [0,1,2,3]
         var note: String?
         var axes = DMFile.axes(of: object)
+        if let scan {
+            // [N, Qy, Qx] -> [scanY, scanX, Qy, Qx]: both scan axes take the stack axis's calibration, named and navigated as
+            // the first two axes of a four-dimensional object are.
+            let stack = axes[0]
+            axes = [FormatoAxis(name: nil, size: scan.y, scale: stack.scale, offset: stack.offset, units: stack.units, navigate: true),
+                    FormatoAxis(name: "z", size: scan.x, scale: stack.scale, offset: stack.offset, units: stack.units, navigate: true),
+                    axes[1], axes[2]]
+        }
         let app = convention == .appCalibratedAxes
-        if app {
+        // The unit-domain rule is for a stored rank-four object; a reshaped stack is detector-fastest by construction.
+        if app && scan == nil {
             // Use the public tag maps, not a second parser or size heuristics. Indices may be zero- or one-based.
             let prefix = "ImageList.\(object.index).ImageData."
             let indices = tree.numbers.keys.filter { $0.hasPrefix(prefix + "Dimensions.") }
