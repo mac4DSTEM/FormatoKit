@@ -108,6 +108,25 @@ public nonisolated struct HDF5Reader: Sendable {
         } }
     }
 
+    /// The byte width of the integer attribute `name` on the object at `path` as stored (4 for int32), nil when it is not an
+    /// integer; `notFound` when absent. For the writers' tests: `attribute(_:of:)` widens every integer to Int64.
+    package func storedIntegerAttributeBytes(_ name: String, of path: String) throws -> Int? {
+        let parts = try HDF5Ops.components(path)
+        guard !name.isEmpty, !name.utf8.contains(0) else { throw HDF5FileError.invalidPath(name) }
+        return try withFile { h5, file in try HDF5Ops.withObject(h5, file, path, parts) { obj in
+            let exists = name.withCString { h5.h5aexists(obj, $0) }
+            guard exists >= 0 else { throw HDF5RootAttributes.hdf5Failure("looking for the \(name) attribute", h5) }
+            guard exists > 0 else { throw HDF5FileError.notFound(path + "@" + name) }
+            let attribute = name.withCString { h5.h5aopen(obj, $0, 0) }
+            guard attribute >= 0 else { throw HDF5RootAttributes.hdf5Failure("opening the \(name) attribute", h5) }
+            defer { _ = h5.h5aclose(attribute) }
+            let type = h5.h5agetType(attribute)
+            guard type >= 0 else { throw HDF5RootAttributes.hdf5Failure("opening the type of \(name)", h5) }
+            defer { _ = h5.h5tclose(type) }
+            return h5.h5tgetClass(type) == 0 ? h5.h5tgetSize(type) : nil
+        } }
+    }
+
     /// The shape and stored type of the dataset at `path`.
     public func datasetInfo(_ path: String) throws -> HDF5DatasetInfo {
         let parts = try HDF5Ops.components(path)
