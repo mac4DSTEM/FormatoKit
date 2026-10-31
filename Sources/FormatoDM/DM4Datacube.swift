@@ -227,9 +227,18 @@ private struct DM4GatherArray: FormatoLazyArray {
         let inner = shape[3], innerStride = outStrides[3]
         let storedSize = storedType.byteSize, outSize = dataType.byteSize
         let base = mapping.pointer + offset
+        // Permuted, with more than one step along the leading axis of smallest file stride: tile (see blockedGather).
+        let fast = (0..<3).min { outStrides[$0] < outStrides[$1] }!
+        if innerStride != 1 && count[fast] > 1 {
+            out.withUnsafeMutableBytes { raw in
+                blockedGather(base: base, fast: fast, outStrides: outStrides, start: start, count: count, into: raw.baseAddress!)
+            }
+            return try FormatoArray(dataType: dataType, shape: count, bytes: out)
+        }
         out.withUnsafeMutableBytes { (raw: UnsafeMutableRawBufferPointer) in
             var dst = raw.baseAddress!
-            // Rows of the last output axis, left to right in the slab: one source start per row, then a constant stride.
+            // Rows of the last output axis, left to right in the slab: one source start per row, then a constant stride
+            // (one element in stored order; a single pattern of a permuted file has no neighbours to tile with).
             FormatoArray.forEachContiguousRun(start: start, count: count, shape: shape) { first, length in
                 var element = first, remaining = length
                 while remaining > 0 {
@@ -254,6 +263,65 @@ private struct DM4GatherArray: FormatoLazyArray {
         }
         return try FormatoArray(dataType: dataType, shape: count, bytes: out)
     }
+    /// Tile of the permuted gather, in elements: along the fast-source axis and along the last output axis. Measured on a
+    /// 48x64x128x128 float32 scan-fastest file (M-series): 64x16 read the whole scan in 68 ms, 16x16 in 87 ms, 32x32 in 180
+    /// ms (each step along the last axis is a different page of the file).
+    static let fastTile = 64, rowTile = 16
+    /// The permuted gather (scan-fastest storage): the last output axis strides far through the file (Qx: Ry*Rx*Qy
+    /// elements), so walking it alone touches a new cache line and page per element. Tile it against the leading output
+    /// axis with the smallest file stride (Rx, one element): within a tile each source line is read once for
+    /// `tile` neighbouring outputs, and each output row is written contiguously. The same bytes as the element-by-element
+    /// order; only the visiting order changes.
+    private func blockedGather(base: UnsafeRawPointer, fast: Int, outStrides: [Int], start: [Int], count: [Int],
+                               into dst: UnsafeMutableRawPointer) {
+        let outer = (0..<3).filter { $0 != fast }
+        var slabStrides = [1, 1, 1, 1]
+        for i in stride(from: 2, through: 0, by: -1) { slabStrides[i] = slabStrides[i+1] * count[i+1] }
+        let storedSize = storedType.byteSize, outSize = dataType.byteSize
+        let tile = Self.fastTile, rowTile = Self.rowTile
+        let (p, q) = (outer[0], outer[1])
+        let rowStrideBytes = outStrides[3] * storedSize
+        let fastSourceBytes = outStrides[fast] * storedSize, fastSlabBytes = slabStrides[fast] * outSize
+        var origin = 0
+        for axis in 0..<4 { origin += start[axis] * outStrides[axis] }
+        let row = rowCopier()
+        for a in 0..<count[p] { for b in 0..<count[q] {
+            let source = base + (origin + a * outStrides[p] + b * outStrides[q]) * storedSize
+            let target = dst + (a * slabStrides[p] + b * slabStrides[q]) * outSize
+            for f0 in stride(from: 0, to: count[fast], by: tile) {
+                let f1 = min(f0 + tile, count[fast])
+                for j0 in stride(from: 0, to: count[3], by: rowTile) {
+                    let n = min(rowTile, count[3] - j0)
+                    var from = source + f0 * fastSourceBytes + j0 * rowStrideBytes
+                    var to = target + f0 * fastSlabBytes + j0 * outSize
+                    for _ in f0..<f1 {
+                        row(from, rowStrideBytes, n, to)
+                        from += fastSourceBytes; to += fastSlabBytes
+                    }
+                }
+            }
+        } }
+    }
+    /// One output row of `count` elements from source elements `strideBytes` apart: a typed copy of the stored bytes, or
+    /// the Float32 conversion.
+    private func rowCopier() -> (UnsafeRawPointer, Int, Int, UnsafeMutableRawPointer) -> Void {
+        guard dataType == storedType else {
+            let type = storedType
+            return { convertToFloat32(type, from: $0, strideBytes: $1, count: $2, into: $3) }
+        }
+        switch storedType.byteSize {
+        case 1: return { stridedCopy(UInt8.self, from: $0, strideBytes: $1, count: $2, into: $3) }
+        case 2: return { stridedCopy(UInt16.self, from: $0, strideBytes: $1, count: $2, into: $3) }
+        case 4: return { stridedCopy(UInt32.self, from: $0, strideBytes: $1, count: $2, into: $3) }
+        default: return { stridedCopy(UInt64.self, from: $0, strideBytes: $1, count: $2, into: $3) }
+        }
+    }
+}
+/// Stored bytes as they are (integer loads, so a float NaN payload is never touched); the source may be unaligned.
+@inline(__always)
+private func stridedCopy<T: FixedWidthInteger>(_: T.Type, from: UnsafeRawPointer, strideBytes: Int, count: Int, into dst: UnsafeMutableRawPointer) {
+    var p = from
+    for k in 0..<count { dst.storeBytes(of: p.loadUnaligned(as: T.self), toByteOffset: k * MemoryLayout<T>.stride, as: T.self); p += strideBytes }
 }
 /// Little-endian stored values to Float32 (same conversions as before: Float(Int/UInt) rounds to nearest, Double narrows).
 private func convertToFloat32(_ type: FormatoDataType, from: UnsafeRawPointer, strideBytes: Int, count: Int, into dst: UnsafeMutableRawPointer) {
