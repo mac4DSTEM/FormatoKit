@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.12.0](https://github.com/mac4DSTEM/FormatoKit/compare/0.11.0...0.12.0) (2026-10-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* Sample.elements, metadata groups and segment times of Velox single spectra ([#44](https://github.com/mac4DSTEM/FormatoKit/issues/44))
+
+### Features
+
+* beam energy and angles of a Velox EELS spectrum image ([#43](https://github.com/mac4DSTEM/FormatoKit/issues/43)) ([326bb5c](https://github.com/mac4DSTEM/FormatoKit/commit/326bb5c9813af6897f5055ff72d65ab339697bae))
+* camera pixel pitch of a DM image object (AcquisitionMetadata.cameraPixelPitch) ([#48](https://github.com/mac4DSTEM/FormatoKit/issues/48)) ([9db1d9e](https://github.com/mac4DSTEM/FormatoKit/commit/9db1d9efe20ce4c1b1c870bc23ac11853d19ed4b))
+* deprecate internal-only public helpers, drop dead code, split VeloxEMDReader.swift ([#34](https://github.com/mac4DSTEM/FormatoKit/issues/34)) ([6930401](https://github.com/mac4DSTEM/FormatoKit/commit/693040169bca785a41d83a88edba79ac7da342d1))
+* Sample.elements, metadata groups and segment times of Velox single spectra ([#44](https://github.com/mac4DSTEM/FormatoKit/issues/44)) ([d941fad](https://github.com/mac4DSTEM/FormatoKit/commit/d941fad0d8ee2e4530541d1b25f63a06408e842c))
+* Velox spectrum images map Sample.elements as RosettaSciIO and HyperSpy do ([#57](https://github.com/mac4DSTEM/FormatoKit/issues/57)) ([9d8c1d7](https://github.com/mac4DSTEM/FormatoKit/commit/9d8c1d77901b195e6f82cef8265aae3f307e5a9d))
+
+
+### Bug Fixes
+
+* bound the total Velox metadata bytes the per-frame reads walk ([#40](https://github.com/mac4DSTEM/FormatoKit/issues/40)) ([59f99d3](https://github.com/mac4DSTEM/FormatoKit/commit/59f99d345f64c4b0f584cec0a2830a5540a71adb))
+* cap the Velox frame counts read from the file ([#38](https://github.com/mac4DSTEM/FormatoKit/issues/38)) ([90a1bc0](https://github.com/mac4DSTEM/FormatoKit/commit/90a1bc04403e0118b55d2fed47f2c2b6b277aedc))
+* DM4Datacube reads a scan-shaped rank-3 object as 4D; more than four dimensions and DM3 length 0 refused by name ([#46](https://github.com/mac4DSTEM/FormatoKit/issues/46)) ([455872f](https://github.com/mac4DSTEM/FormatoKit/commit/455872fff4f5f715b0535cbb1021cedb992f8663))
+* EMPAD scan extents come from the mode acquire scan_parameters block wherever it sits ([#51](https://github.com/mac4DSTEM/FormatoKit/issues/51)) ([25810ce](https://github.com/mac4DSTEM/FormatoKit/commit/25810ce171ab60f664ddf33b339b7856e15ebc5b))
+* HDF5 scratch files are written without a file lock, so a read right after a write no longer fails with errno 35 ([#58](https://github.com/mac4DSTEM/FormatoKit/issues/58)) ([5c1a7cd](https://github.com/mac4DSTEM/FormatoKit/commit/5c1a7cdf5c911a502581295f7a662ace554b8742))
+* libhdf5 xcframework zips without AppleDouble entries, checked with codesign --strict ([ad07f24](https://github.com/mac4DSTEM/FormatoKit/commit/ad07f24b5bc9f1fe82f947ceb21a12930be44115))
+* MIB app convention reads a header without, or against, its detector shape by the assembly ([#50](https://github.com/mac4DSTEM/FormatoKit/issues/50)) ([b3107cc](https://github.com/mac4DSTEM/FormatoKit/commit/b3107cc2b787822819cf58bf96b6198f2e16d061))
+
 ## 0.11.0 (2026-10-22)
 
 A TIFF written by tifffile with its default metadata opens, and the scan, time and optics facts the apps asked for are exposed read-only. Additive; no byte a reader returned before changes, except the files below that were refused before.
