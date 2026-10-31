@@ -15,7 +15,7 @@ Order: `make_planted.py` first (`pins.py` reads `Fixtures/planted/planted-truth.
 from it), then `pins.py`.
 
 - `make_planted.py` writes `Tests/FormatoTIFFTests/Fixtures/planted/*.tif` and `planted-truth.json`.
-- `pins.py` (default) writes `Tests/FormatoTIFFTests/Fixtures/step-2-pins.json`: every TIFF of `rsciio/tests/data/tiff/` (loose
+- `pins.py` (default) writes `Tests/FormatoTIFFTests/Fixtures/tiff-pins.json`: every TIFF of `rsciio/tests/data/tiff/` (loose
   files, `.gz`, zip members; set `public`) and the planted files (set `planted`).
 - `pins.py --owner` writes the same per-file records for the named files (set `owner`, path = basename) to PATH. PATH is scratch:
   never commit it (it holds the files' metadata, the Ceta XML included).
@@ -32,7 +32,7 @@ the two outputs differ; the outputs are also identical across separate runs. Out
 absolute paths, non-finite numbers as null (the `*_bits` fields carry them). `tifffile`'s and RosettaSciIO's log notes are
 silenced (the planted refusal files provoke them on purpose).
 
-## `step-2-pins.json`
+## `tiff-pins.json`
 
 Top level: `generator`, `reference`, `versions`, `files`, `skipped_non_tiff` (`tiff/test_dm_image_um_unit.dm3` is a DM3 that
 lives in the `tiff/` folder). Files: loose files by path, then `.gz`, then zip members, then the planted files in the order of

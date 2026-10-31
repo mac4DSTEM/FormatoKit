@@ -2,7 +2,7 @@
 """Pins RosettaSciIO's and tifffile's readings of TIFF files.
 
     References/rsciio-venv/bin/python -I -B tools/tiff-pins/pins.py [--work DIR]
-        writes Tests/FormatoTIFFTests/Fixtures/step-2-pins.json   (every TIFF of the pinned clone's tests/data/tiff, and the
+        writes Tests/FormatoTIFFTests/Fixtures/tiff-pins.json   (every TIFF of the pinned clone's tests/data/tiff, and the
                                                                    planted files of Fixtures/planted/, run make_planted.py first)
     References/rsciio-venv/bin/python -I -B tools/tiff-pins/pins.py --owner FILE [FILE ...] --out PATH [--work DIR]
         writes the same per-file records for the files named on the command line to PATH (scratch, never committed; the path of
@@ -558,8 +558,8 @@ def main():
     if first[0] != second[0]:
         die("two builds differ: not byte-reproducible")
     FIXTURES.mkdir(parents=True, exist_ok=True)
-    (FIXTURES / "step-2-pins.json").write_text(first[0], encoding="utf-8")
-    print(f"step-2-pins.json: {len(first[0].encode('utf-8'))} bytes, sha256 {sha256_bytes(first[0].encode('utf-8'))}")
+    (FIXTURES / "tiff-pins.json").write_text(first[0], encoding="utf-8")
+    print(f"tiff-pins.json: {len(first[0].encode('utf-8'))} bytes, sha256 {sha256_bytes(first[0].encode('utf-8'))}")
     print(json.dumps(summarize(first[1]), sort_keys=True, indent=1))
 
 

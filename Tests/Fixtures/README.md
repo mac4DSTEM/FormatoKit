@@ -609,4 +609,4 @@ None: every fixture names its script or its source.
 | `FormatoTIFFTests/Fixtures/refuter/pyr_half.tif` | 5.3 KB | `tools/velox-titles/refuter_pins.py` |  |
 | `FormatoTIFFTests/Fixtures/refuter/tf_stack2.tif` | 482 B | `tools/velox-titles/refuter_pins.py` |  |
 | `FormatoTIFFTests/Fixtures/refuter/w_ome_tzcyx.ome.tif` | 4.4 KB | `tools/velox-titles/refuter_pins.py` |  |
-| `FormatoTIFFTests/Fixtures/step-2-pins.json` | 860.1 KB | `tools/tiff-pins/pins.py` |  |
+| `FormatoTIFFTests/Fixtures/tiff-pins.json` | 860.1 KB | `tools/tiff-pins/pins.py` |  |
