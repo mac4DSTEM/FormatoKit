@@ -2,7 +2,7 @@
 """Pins RosettaSciIO's reading of the planted Velox title files.
 
     References/rsciio-venv/bin/python -I -B tools/velox-titles/pins.py
-        writes Tests/FormatoCoreTests/Fixtures/step-3-pins.json from the four Tests/FormatoEMDTests/Fixtures/velox-titles-*.emd
+        writes Tests/FormatoCoreTests/Fixtures/velox-titles-pins.json from the four Tests/FormatoEMDTests/Fixtures/velox-titles-*.emd
 
 Each file gets step 1's Velox record (tools/dm-velox-pins/pins.py `velox_file`: rsciio.emd.file_reader(select_type="images") per
 image: dtype, shape, data_sha256 over the stored little-endian bytes, title, axes, metadata with source), so PinsTests
@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PLANTED = ROOT / "Tests" / "FormatoEMDTests" / "Fixtures"
-OUT = ROOT / "Tests" / "FormatoCoreTests" / "Fixtures" / "step-3-pins.json"
+OUT = ROOT / "Tests" / "FormatoCoreTests" / "Fixtures" / "velox-titles-pins.json"
 
 
 def module(name, path):
