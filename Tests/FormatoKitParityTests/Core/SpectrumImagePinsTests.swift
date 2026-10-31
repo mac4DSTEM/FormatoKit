@@ -168,7 +168,7 @@ import FormatoEMD
     /// fixes (Unicode digits, endFramePosition past Int64, a zero-frame first image, JSON decimals, the frame count's
     /// overflow) and the deliberate deviations (fermi, a null image unit, a list DetectorName, LZF; a big-endian stream read).
     @Test func testStep4RefuterFilesAgreeOrAreRefused() throws {
-        let doc = try loadJSON("step-4-refuter-pins.json")
+        let doc = try loadJSON("velox-spectrum-image-refuter-pins.json")
         let t = try compare(doc, referencesPresent: true)
         print("SpectrumImageRefuterPins: \(t.files) files, \(t.runs) runs: \(t.signals) equal, \(t.raised) raise, \(t.deviated) deviations, \(t.read) read on purpose")
         #expect(t.files == 15)

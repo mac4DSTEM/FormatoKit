@@ -43,7 +43,7 @@ None: every fixture names its script or its source.
 | `FormatoCoreTests/Fixtures/velox-titles-pins.json` | 30.7 KB | `tools/velox-titles/pins.py` |  |
 | `FormatoCoreTests/Fixtures/velox-titles-refuter-pins.json` | 6.9 KB | `tools/velox-titles/refuter_pins.py` |  |
 | `FormatoCoreTests/Fixtures/velox-spectrum-image-pins.json` | 450.2 KB | `tools/velox-spectrum-image/pins.py` |  |
-| `FormatoCoreTests/Fixtures/step-4-refuter-pins.json` | 28.0 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/velox-spectrum-image-refuter-pins.json` | 28.0 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
 | `FormatoCoreTests/Fixtures/units-pins.json` | 685.4 KB | `tools/dm-velox-pins/pins.py` |  |
 | `FormatoDMTests/Fixtures/acq-metadata/ambiguous-date.dm4` | 1.3 KB | `tools/acq-metadata/generate.py` |  |
 | `FormatoDMTests/Fixtures/acq-metadata/angles-without-eels-signal.dm4` | 1.2 KB | `tools/acq-metadata/generate.py` |  |
