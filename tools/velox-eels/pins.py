@@ -5,7 +5,7 @@
     References/rsciio-venv/bin/python -I -B tools/velox-eels/pins.py
         writes Tests/FormatoEMDTests/Fixtures/eels/si-eels-optics.emd and velox-eels-pins.json
 
-The file is built with the helpers of tools/step-4/make_velox_si.py (h5py, no data of the owner's): a Velox 11 file with one
+The file is built with the helpers of tools/velox-spectrum-image/make_velox_si.py (h5py, no data of the owner's): a Velox 11 file with one
 image, a `Data/SpectrumImage` group, one spectrum stream and two EELS spectrum images (`Data/EelsSpectrumImage/e1`, `e2`),
 as a Zebra detector writes one per energy range. Each EELS group's Metadata states `Optics.AccelerationVoltage`,
 `Optics.BeamConvergence` and the flat `CustomProperties["EnergyFilter.CollectionAngleRange.Begin"/".End"]` entries of
@@ -45,8 +45,8 @@ def module(name, path):
     return m
 
 
-step1 = module("step1_pins", ROOT / "tools" / "step-1" / "pins.py")
-M = module("make_velox_si", ROOT / "tools" / "step-4" / "make_velox_si.py")
+step1 = module("step1_pins", ROOT / "tools" / "dm-velox-pins" / "pins.py")
+M = module("make_velox_si", ROOT / "tools" / "velox-spectrum-image" / "make_velox_si.py")
 
 VOLTS = "300000"
 CONVERGENCE = "0.02143377827928146"

@@ -5,7 +5,7 @@ import FormatoEMD
 
 extension VeloxEMDSerialized {
     /// Step 3: the four planted files of
-    /// `tools/step-3/make_velox_titles.py`, each image's title and stored type typed here by hand from the rules, without the
+    /// `tools/velox-titles/make_velox_titles.py`, each image's title and stored type typed here by hand from the rules, without the
     /// pins; and stored values Float32 cannot hold read exactly.
     @Suite final class VeloxTitlesTests {
         private static let fixtures = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures")

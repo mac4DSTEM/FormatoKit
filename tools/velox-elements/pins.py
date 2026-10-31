@@ -18,7 +18,7 @@ Per file: RosettaSciIO's exception, or per spectrum the elements (a list, absent
 the mapping raises: HyperSpy's `load` raises it too), `BinaryResult.Detector` and every `Detectors` entry of the spectrum's
 `original_metadata` in written order (name, type, `Enabled`, `float()` of `LiveTime` and `RealTime` with their bits). RosettaSciIO
 maps no live or real time for these files: their spectra hold no `DetectorMetadata` (asserted).
-Spectrum images (`si-el-*.emd`, built with tools/step-4/make_velox_si.py's helpers, and RosettaSciIO's public SI files): read with
+Spectrum images (`si-el-*.emd`, built with tools/velox-spectrum-image/make_velox_si.py's helpers, and RosettaSciIO's public SI files): read with
 `select_type="spectrum_image"` (with the defaults, and with `sum_EDS_detectors=False`), per signal its title, signal type and elements
 by the same mapping loop.
 Built twice in the process, the outputs compared.
@@ -48,9 +48,9 @@ def module(name, path):
     return m
 
 
-step1 = module("step1_pins", ROOT / "tools" / "step-1" / "pins.py")
+step1 = module("step1_pins", ROOT / "tools" / "dm-velox-pins" / "pins.py")
 SP = module("velox_spectrum_pins", ROOT / "tools" / "velox-spectrum" / "pins.py")
-SI = module("velox_si_builder", ROOT / "tools" / "step-4" / "make_velox_si.py")
+SI = module("velox_si_builder", ROOT / "tools" / "velox-spectrum-image" / "make_velox_si.py")
 
 
 def tree_class():
@@ -159,7 +159,7 @@ def build(out):
 
 def build_si(out):
     """Spectrum-image files (`si-el-*.emd`): one 3 x 4 image, one frame, two EDS streams (16 channels, one event per pixel), the
-    settings group as the single-spectrum files plant it. Built with tools/step-4/make_velox_si.py's helpers."""
+    settings group as the single-spectrum files plant it. Built with tools/velox-spectrum-image/make_velox_si.py's helpers."""
     ny, nx, area = 3, 4, (0.25, 0, 0.75, 0.5)   # ScanSize 8 x 6 over that area is the image's 3 x 4 grid
     det = SI.detectors_doc([("Detector-0", "HAADF", None, None), ("Detector-1", "SuperXG21", "10", "-50"),
                             ("Detector-2", "SuperXG22", "10", "-50")])

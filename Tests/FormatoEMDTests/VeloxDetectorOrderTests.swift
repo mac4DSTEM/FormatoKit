@@ -11,7 +11,7 @@ extension VeloxEMDSerialized {
     ///
     /// The planted file is inherited (`tools/edx-stages/make_velox_streams.py` case "axis-order", c5a9a5e), copied with
     /// its sha256; RosettaSciIO's reading of it is pinned in `velox-stream-axis-order.pin.json` by
-    /// `tools/asks-0.0.3/pin_axis_order.py` before the fix. The inline cases are planted: their truth is the written order.
+    /// `tools/velox-axis-order/pin_axis_order.py` before the fix. The inline cases are planted: their truth is the written order.
     @Suite final class VeloxDetectorOrderTests {
         private static let fixtures = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures")
 

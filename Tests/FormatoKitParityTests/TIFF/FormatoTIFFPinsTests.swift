@@ -1,7 +1,7 @@
 //
 //  FormatoTIFFPinsTests.swift
 //  Every TIFF of RosettaSciIO 049e7d70's public test data, the planted
-//  files and (owner-check.sh only) the owner's Ceta TIFFs against Fixtures/step-2-pins.json (tools/step-2/pins.py,
+//  files and (owner-check.sh only) the owner's Ceta TIFFs against Fixtures/tiff-pins.json (tools/tiff-pins/pins.py,
 //  RosettaSciIO's file_reader over tifffile 2026.9.20): page 0's tags as tifffile decodes them (code, type, count, the raw
 //  bytes' sha256, the decoded value), and for each series in scope the data's sha256, shape, element type, every axis
 //  field exactly and the metadata with its source; a file out of scope or one RosettaSciIO raises on is refused by
@@ -150,7 +150,7 @@ import FormatoKitTestSupport
     }
 
     @Test func testEveryPinnedTIFFAgreesWithRosettaSciIO() throws {
-        let object = try JSONSerialization.jsonObject(with: Data(contentsOf: Self.fixtures.appendingPathComponent("step-2-pins.json"))) as! [String: Any]
+        let object = try JSONSerialization.jsonObject(with: Data(contentsOf: Self.fixtures.appendingPathComponent("tiff-pins.json"))) as! [String: Any]
         let files = object["files"] as! [[String: Any]]
         let referencesPresent = FileManager.default.fileExists(atPath: Self.rsciioData.path)
         let r = try compare(files, locate: locate, mustFind: referencesPresent)
@@ -190,7 +190,7 @@ import FormatoKitTestSupport
         #expect(r.signals >= 50)
     }
 
-    @Test(.enabled(if: ProcessInfo.processInfo.environment["FORMATO_OWNER_TIFF_PINS"] != nil, "owner files: tools/step-2/owner-check.sh"))
+    @Test(.enabled(if: ProcessInfo.processInfo.environment["FORMATO_OWNER_TIFF_PINS"] != nil, "owner files: tools/tiff-pins/owner-check.sh"))
     func testOwnerTIFFsAgreeWithRosettaSciIO() throws {
         let env = ProcessInfo.processInfo.environment
         let pins = try #require(env["FORMATO_OWNER_TIFF_PINS"]), list = try #require(env["FORMATO_OWNER_TIFF_FILES"])
