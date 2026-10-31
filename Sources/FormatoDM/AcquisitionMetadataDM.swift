@@ -246,14 +246,20 @@ extension AcquisitionMetadata {
     /// two-number struct the scalar maps do not carry. The key follows each convention's rule: `.rosettaSciIO` reads the
     /// stack-builder copy instead of the direct tags when the image has one; `.app` reads the direct key, else the copy.
     public static func dm(_ object: DM4ImageObject, convention: AcquisitionMetadataConvention = .rosettaSciIO) -> AcquisitionMetadata {
+        dm(numbers: object.imageTagNumbers, strings: object.imageTagStrings, arrays: object.imageTagArrays, convention: convention)
+    }
+
+    /// As `dm(_:convention:)` over the three maps of one ImageTags tree (keys relative to its root): an image object's, or
+    /// a GMS TIFF's tag 65027 stream (`DM4Experiment.tagTreeWithArrays(data:)`, read by `AcquisitionMetadata.tiff`).
+    package static func dm(numbers: [String: Double], strings: [String: String], arrays: [String: [Double]],
+                           convention: AcquisitionMetadataConvention) -> AcquisitionMetadata {
         switch convention {
         case .app:
-            var meta = dmApp(numbers: object.imageTagNumbers, strings: object.imageTagStrings)
-            let arrays = object.imageTagArrays
+            var meta = dmApp(numbers: numbers, strings: strings)
             meta.cameraPixelPitch = dmCameraPitch(arrays[dmDevicePitchKey] ?? arrays[dmCreationPrefix + dmDevicePitchKey])
             return meta
         case .rosettaSciIO:
-            return dmReference(numbers: object.imageTagNumbers, strings: object.imageTagStrings, arrays: object.imageTagArrays)
+            return dmReference(numbers: numbers, strings: strings, arrays: arrays)
         }
     }
 
