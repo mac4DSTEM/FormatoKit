@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pins RosettaSciIO's MSA plugin for FormatoMSA (FormatoKit 0.9.0).
 
-    References/rsciio-venv/bin/python -I -B tools/msa/pins.py
+    References/venv/bin/python -I -B tools/msa/pins.py
 
 writes Tests/FormatoMSATests/Fixtures/msa-pins.json and copies RosettaSciIO's 11 public MSA test files (GPL-3.0-or-later) into
 Tests/FormatoMSATests/Fixtures/public/. READ: for every file and every planted text, `rsciio.msa.file_reader` (a fresh module each time:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Planted Velox files for FormatoKit's read policies (VeloxReadPolicy, 0.2.0).
 
-    References/rsciio-venv/bin/python -I -B tools/velox-policy/make_policy_fixtures.py [--out DIR]
+    References/venv/bin/python -I -B tools/velox-policy/make_policy_fixtures.py [--out DIR]
 
 writes into DIR (default Tests/FormatoEMDTests/Fixtures/policy):
 

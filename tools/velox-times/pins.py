@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Planted Velox spectrum images with live and real times, and RosettaSciIO's reading of them (FormatoKit 0.11.0).
 
-    References/rsciio-venv/bin/python -I -B tools/velox-times/pins.py
+    References/venv/bin/python -I -B tools/velox-times/pins.py
         writes Tests/FormatoEMDTests/Fixtures/times/si-times-planted.emd, si-times-differ.emd and velox-times-pins.json
 
 The files are built with the helpers of tools/velox-spectrum-image/make_velox_si.py (h5py, no data of the owner's): a Velox 11 file with one

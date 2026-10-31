@@ -2,7 +2,7 @@
 """Planted Velox single-spectrum files for `Sample.elements`, the four file-level metadata groups and the segment times.
 
     HYPERSPY_SITE_PACKAGES=<site-packages of a HyperSpy 2.4.0 install> \
-    References/rsciio-venv/bin/python -I -B tools/velox-elements/pins.py
+    References/venv/bin/python -I -B tools/velox-elements/pins.py
 
 writes Tests/FormatoEMDTests/Fixtures/elements/*.emd and Tests/FormatoEMDTests/Fixtures/elements/velox-elements-pins.json.
 

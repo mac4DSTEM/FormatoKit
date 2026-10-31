@@ -4,18 +4,28 @@ Scripts that generate and pin the test fixtures, check the public API from outsi
 the kit against the Python packages. Run every command from the repository root. The tests never run Python: they read
 the committed fixtures (`Tests/*/Fixtures`), so `swift test` needs none of this.
 
-## Python environments
+## Python environment
 
-The generators run with an isolated interpreter (`-I -B`) and stop if the reference they import is not the pinned one.
-Two environments, each recorded with exact versions:
+One environment, `tools/requirements.txt`: RosettaSciIO `049e7d70`, py4DSTEM `f050d207`, tifffile 2026.9.20, NumPy 2.5.4,
+h5py 3.16.0, Pint 0.26.1 and every dependency, at exact versions (the file says how to build it). The generators run
+with its interpreter, isolated (`References/venv/bin/python -I -B tools/...`), and stop if the reference they import is
+not the pinned one.
 
-| Environment | What is in it | Used by |
-|---|---|---|
-| `References/rsciio-venv` | RosettaSciIO at commit `049e7d70` installed from its clone `References/rosettasciio-049e7d70`, NumPy 2.5.4, h5py 3.16.0, tifffile 2026.9.20, Pint 0.26.1, sparse 0.19.2, numba 0.68.0 and their dependencies | every generator below except the three py4DSTEM ones |
-| the py4DSTEM venv | py4DSTEM `f050d207` (0.14.19), emdfile 0.0.16, NumPy 2.5.4, h5py 3.16.0 | `bragg-writer`, `hdf5-4d`, `emd-bundle/check.py` |
+One path convention: everything a generator reads outside the repository is under `References/` at the repository root
+(not tracked; in a worktree, a link to the main checkout's):
 
-`References/` is not part of the repository (the pinned clones and venvs are large); a script names the path it expects
-in its first lines. Some also read a pinned clone of a consumer app or of pyEELSMODEL by commit; they say which.
+| Path | What |
+|---|---|
+| `References/venv` | the environment of `tools/requirements.txt` |
+| `References/rosettasciio-049e7d70` | the pinned RosettaSciIO clone (its public test data and `registry.txt`) |
+| `References/py4DSTEM-f050d207` | the pinned py4DSTEM clone |
+
+Some scripts also read a pinned clone of a consumer app (located by `MACEM_SUITE`, the folder holding the app
+checkouts) or of pyEELSMODEL by commit; they say which.
+
+The committed fixtures were written before the one environment, in two (RosettaSciIO's, Python 3.14; py4DSTEM's,
+Python 3.12, with pillow 13.0.0 and tifffile 2026.10.15). The scripts only changed where they look; a fixture is
+regenerated in `References/venv` when its generator next runs, and one that changes is its own commit.
 
 ## Fixture generators
 
@@ -32,6 +42,7 @@ names it. A regenerated fixture that changes is its own commit, with the reason 
 | `eels-reader` | `make_planted.py`, `truth.py` | the planted and refused EELS DM4 files and RosettaSciIO's truth for them (from SpectroKit 0.3.0) |
 | `emd-bundle` | `check.py`, `oracle/` | the check of the Swift-written EMD bundles against the first consumer's writers, h5py and py4DSTEM |
 | `empad` | `generate.py` | EMPAD fixtures |
+| `fixture-index` | `index.py` | `Tests/Fixtures/README.md`, the index of every fixture (standard library; `--check` in CI) |
 | `hdf5-4d` | `generate.py` | py4DSTEM EMD 1.0 4D datacubes |
 | `hdf5-append` | `generate.py` | fixtures and h5py pins for `HDF5Reader` and `HDF5AppendWriter` |
 | `hdf5-write` | `generate.py` | HDF5 root-attribute fixtures and h5py pins |
@@ -72,4 +83,4 @@ tools/xcframework/build.sh      # the libhdf5 xcframeworks
 
 ## Benchmarks
 
-`tools/benchmarks/bench.py` (with the RosettaSciIO venv) and `docs/benchmarks.md`.
+`tools/benchmarks/bench.py` (with `References/venv`) and `docs/benchmarks.md`.

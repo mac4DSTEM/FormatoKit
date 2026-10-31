@@ -156,7 +156,7 @@ tools/consumer-check/run.sh        # two separate packages, public API only, Deb
 
 Numbers are held to the Python reference within its own tolerance; `docs/parity.md` lists each function, its state and its
 tolerance. The oracle is not in the repository (`References/rosettasciio-049e7d70`, the pinned clone, and
-`References/rsciio-venv`); without them the pins test runs on the committed public file and the planted files only. CI
+`References/venv`, the one Python environment of `tools/requirements.txt`); without them the pins test runs on the committed public file and the planted files only. CI
 (`.github/workflows/ci.yml`) runs the gate and the consumer check on macOS; a tag also checks that the CHANGELOG top version
 matches it. Tags are made by the maintainer; what each tag changes for a consumer is in the `CHANGELOG.md` Migration paragraph.
 
