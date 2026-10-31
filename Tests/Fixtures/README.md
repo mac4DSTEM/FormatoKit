@@ -180,41 +180,41 @@ None: every fixture names its script or its source.
 | `FormatoEMDTests/Fixtures/spectra/sp-stack.emd` | 19.4 KB | `tools/velox-spectrum/pins.py` |  |
 | `FormatoEMDTests/Fixtures/spectra/sp-stream.emd` | 32.3 KB | `tools/velox-spectrum/pins.py` |  |
 | `FormatoEMDTests/Fixtures/spectra/sp-two.emd` | 23.4 KB | `tools/velox-spectrum/pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/detectorname-list.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/dispersion-arabic-digits.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/endframe-1e30.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/endframe-arabic-digit.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/image-pixelunitx-null.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/image-zero-frames.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/overflow-grid-no-endframe.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/stream-bigendian-u2.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/stream-lzf.emd` | 28.3 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/unit-am-ulp.emd` | 34.2 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/unit-fm-fermi.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/unit-m-ulp-width2.7e-4-nx5.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/unit-m-ulp-width3.85e-4-nx5.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/unit-ym-ulp.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/refuter/version-underscore.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-bins.emd` | 31.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-eels.emd` | 50.9 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-endframe.emd` | 25.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-grid.emd` | 25.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-v11.emd` | 37.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/si-planted-v9.emd` | 26.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-1stream-1frame.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-1stream-3frames.emd` | 188.3 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-4streams-2frames.emd` | 96.8 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-axis-decoy.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-axis-order.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/sk-unterminated.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/PROVENANCE.md` | 1.5 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-1stream-1frame.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-1stream-3frames.emd` | 201.8 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-4streams-2frames.emd` | 103.1 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-axis-decoy.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-axis-order.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-stream-unterminated.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
-| `FormatoEMDTests/Fixtures/step4/spectrokit/velox-streams-truth.json` | 78.7 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/detectorname-list.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/dispersion-arabic-digits.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/endframe-1e30.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/endframe-arabic-digit.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/image-pixelunitx-null.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/image-zero-frames.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/overflow-grid-no-endframe.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/stream-bigendian-u2.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/stream-lzf.emd` | 28.3 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/unit-am-ulp.emd` | 34.2 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/unit-fm-fermi.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/unit-m-ulp-width2.7e-4-nx5.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/unit-m-ulp-width3.85e-4-nx5.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/unit-ym-ulp.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/refuter/version-underscore.emd` | 25.8 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/si-planted-bins.emd` | 31.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/si-planted-eels.emd` | 50.9 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/si-planted-endframe.emd` | 25.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/si-planted-grid.emd` | 25.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/si-planted-v11.emd` | 37.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/si-planted-v9.emd` | 26.8 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/sk-1stream-1frame.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/sk-1stream-3frames.emd` | 188.3 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/sk-4streams-2frames.emd` | 96.8 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/sk-axis-decoy.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/sk-axis-order.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/sk-unterminated.emd` | 42.2 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/spectrokit/PROVENANCE.md` | 1.5 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/spectrokit/velox-stream-1stream-1frame.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/spectrokit/velox-stream-1stream-3frames.emd` | 201.8 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/spectrokit/velox-stream-4streams-2frames.emd` | 103.1 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/spectrokit/velox-stream-axis-decoy.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/spectrokit/velox-stream-axis-order.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/spectrokit/velox-stream-unterminated.emd` | 48.4 KB | `tools/velox-spectrum-image/make_velox_si.py`, `tools/velox-spectrum-image/refuter_pins.py` |  |
+| `FormatoEMDTests/Fixtures/velox-spectrum-image/spectrokit/velox-streams-truth.json` | 78.7 KB | `tools/velox-spectrum-image/make_velox_si.py` |  |
 | `FormatoEMDTests/Fixtures/velox-flags-planted.emd` | 66.6 KB | `tools/velox-flags/make_velox_flags.py` |  |
 | `FormatoEMDTests/Fixtures/velox-metadata-planted.emd` | 52.7 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |
 | `FormatoEMDTests/Fixtures/velox-metadata-planted.truth.json` | 3.6 KB | `tools/velox-spectrum/pins.py` (tool folder name) |  |

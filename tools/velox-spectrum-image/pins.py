@@ -32,7 +32,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "Tests" / "FormatoCoreTests" / "Fixtures" / "velox-spectrum-image-pins.json"
-PLANTED = ROOT / "Tests" / "FormatoEMDTests" / "Fixtures" / "step4"
+PLANTED = ROOT / "Tests" / "FormatoEMDTests" / "Fixtures" / "velox-spectrum-image"
 
 
 def module(name, path):

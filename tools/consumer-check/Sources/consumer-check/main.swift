@@ -105,7 +105,7 @@ do {
         check(s.data.dataType == .uint64 && s.title == "DPC" && titled.title(of: a08) == "DPC", "stored type and title")
     } else { check(false, "the planted title file lists a08") }
     // A Velox spectrum image through the public API, defaults and two options (planted file).
-    let si = tests.appendingPathComponent("FormatoEMDTests/Fixtures/step4/sk-1stream-3frames.emd").path
+    let si = tests.appendingPathComponent("FormatoEMDTests/Fixtures/velox-spectrum-image/sk-1stream-3frames.emd").path
     let eds = try VeloxSpectrumImageSignals(path: si).signals
     check(eds.count == 1 && eds[0].data.shape == [3, 4, 4096] && eds[0].data.dataType == .uint16 && eds[0].signalType == "EDS_TEM",
           "VeloxSpectrumImageSignals: the summed spectrum image")

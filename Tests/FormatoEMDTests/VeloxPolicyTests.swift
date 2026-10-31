@@ -11,12 +11,12 @@ extension VeloxEMDSerialized {
     /// the blocks it makes.
     @Suite final class VeloxPolicyTests {
         private static let tests = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
-        private static let step4 = tests.appendingPathComponent("FormatoEMDTests/Fixtures/step4")
+        private static let spectrumImage = tests.appendingPathComponent("FormatoEMDTests/Fixtures/velox-spectrum-image")
         private static let policyFixtures = tests.appendingPathComponent("FormatoEMDTests/Fixtures/policy")
         private static let pins = tests.appendingPathComponent("FormatoCoreTests/Fixtures/velox-spectrum-image-pins.json")
         private static let prefix = "FormatoKit.policy."
 
-        private func planted(_ name: String) -> String { Self.step4.appendingPathComponent(name).path }
+        private func planted(_ name: String) -> String { Self.spectrumImage.appendingPathComponent(name).path }
         private func policyFile(_ name: String) -> String { Self.policyFixtures.appendingPathComponent(name).path }
 
         private func read(_ path: String, _ options: VeloxSpectrumImageOptions = .init()) throws -> [FormatoSignal] {

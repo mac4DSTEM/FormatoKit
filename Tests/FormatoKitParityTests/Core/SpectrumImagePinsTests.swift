@@ -16,7 +16,7 @@ import FormatoCore
 import FormatoEMD
 
 @Suite(.serialized) struct SpectrumImagePinsTests {
-    private static let planted = TestPaths.root.appendingPathComponent("Tests/FormatoEMDTests/Fixtures/step4")
+    private static let planted = TestPaths.root.appendingPathComponent("Tests/FormatoEMDTests/Fixtures/velox-spectrum-image")
 
     private func sha(_ d: Data) -> String { SHA256.hash(data: d).map { String(format: "%02x", $0) }.joined() }
 
@@ -164,7 +164,7 @@ import FormatoEMD
         }
     }
 
-    /// Step 4's review files (Tests/FormatoEMDTests/Fixtures/step4/refuter, tools/velox-spectrum-image/refuter_pins.py): the
+    /// Step 4's review files (Tests/FormatoEMDTests/Fixtures/velox-spectrum-image/refuter, tools/velox-spectrum-image/refuter_pins.py): the
     /// fixes (Unicode digits, endFramePosition past Int64, a zero-frame first image, JSON decimals, the frame count's
     /// overflow) and the deliberate deviations (fermi, a null image unit, a list DetectorName, LZF; a big-endian stream read).
     @Test func testStep4RefuterFilesAgreeOrAreRefused() throws {

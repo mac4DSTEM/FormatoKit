@@ -3,7 +3,7 @@
 
     References/rsciio-venv/bin/python -I -B tools/velox-spectrum-image/make_velox_si.py [--out DIR]
 
-writes the files into DIR (default Tests/FormatoEMDTests/Fixtures/step4). THE TRUTH IS THE PLANTED COUNTS: each file's
+writes the files into DIR (default Tests/FormatoEMDTests/Fixtures/velox-spectrum-image). THE TRUTH IS THE PLANTED COUNTS: each file's
 counts per stream, frame, pixel and channel are drawn from a seed (or typed) HERE, the stream is encoded from them, and
 `expected(name, options)` computes every option set's arrays from those counts by these definitions (frames
 first_frame <= f < last_frame, last_frame 0 never stopping, rebinning, `+= 1` in the target type), without RosettaSciIO's code.
@@ -22,7 +22,7 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
-OUT = os.path.join(REPO, "Tests", "FormatoEMDTests", "Fixtures", "step4")
+OUT = os.path.join(REPO, "Tests", "FormatoEMDTests", "Fixtures", "velox-spectrum-image")
 S = h5py.string_dtype()
 MARK = 65535
 SEED = 20261015
