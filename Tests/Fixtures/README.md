@@ -41,7 +41,7 @@ None: every fixture names its script or its source.
 | `FormatoCoreTests/Fixtures/refuter/u_stack_unit_px.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` |  |
 | `FormatoCoreTests/Fixtures/dm-velox-pins.json` | 225.5 KB | `tools/dm-velox-pins/pins.py` |  |
 | `FormatoCoreTests/Fixtures/velox-titles-pins.json` | 30.7 KB | `tools/velox-titles/pins.py` |  |
-| `FormatoCoreTests/Fixtures/step-3-refuter-pins.json` | 6.9 KB | `tools/velox-titles/refuter_pins.py` |  |
+| `FormatoCoreTests/Fixtures/velox-titles-refuter-pins.json` | 6.9 KB | `tools/velox-titles/refuter_pins.py` |  |
 | `FormatoCoreTests/Fixtures/step-4-pins.json` | 450.2 KB | `tools/velox-spectrum-image/pins.py` |  |
 | `FormatoCoreTests/Fixtures/step-4-refuter-pins.json` | 28.0 KB | `tools/velox-spectrum-image/refuter_pins.py` |  |
 | `FormatoCoreTests/Fixtures/units-pins.json` | 685.4 KB | `tools/dm-velox-pins/pins.py` |  |

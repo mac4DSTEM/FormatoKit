@@ -144,7 +144,7 @@ import FormatoEMD
     /// Step 3's review files (Tests/FormatoEMDTests/Fixtures/velox-titles-refuter, tools/velox-titles/refuter_pins.py): 11 RosettaSciIO raises on (the detector-metadata lookup, root datasets, Acquisition, Version), refused here too;
     /// 2 it reads, read equal.
     @Test func testStep3RefuterFilesAgreeOrAreRefused() throws {
-        let files = try #require(try loadJSON("step-3-refuter-pins.json")["files"] as? [[String: Any]])
+        let files = try #require(try loadJSON("velox-titles-refuter-pins.json")["files"] as? [[String: Any]])
         let dir = TestPaths.root.appendingPathComponent("Tests/FormatoEMDTests/Fixtures/velox-titles-refuter")
         let (read, signals, refused) = try compare(files, locate: { name in
             let u = dir.appendingPathComponent(name); return FileManager.default.fileExists(atPath: u.path) ? u : nil
