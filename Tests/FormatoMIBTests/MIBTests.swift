@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 import FormatoCore
+import FormatoKitTestSupport
 import FormatoMIB
 private let fixtures = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures")
 private struct Pins: Decodable { let cases: [Pin]; let raw: [Raw] }
@@ -13,11 +14,8 @@ private enum Value: Decodable { case text(String), number(Double)
     init(from decoder: Decoder) throws { let c = try decoder.singleValueContainer(); if let s = try? c.decode(String.self) { self = .text(s) } else { self = .number(try c.decode(Double.self)) } }
 }
 private struct Axis: Decodable { let name: String; let size: Int; let scale: Double; let offset: Double; let units: String; let navigate: Bool }
-private func inflate(_ name: String) throws -> Data {
-    let p = Process(); p.executableURL = URL(fileURLWithPath: "/usr/bin/gzip"); p.arguments = ["-dc", fixtures.appendingPathComponent(name).path]
-    let pipe = Pipe(); p.standardOutput = pipe; try p.run(); let data = pipe.fileHandleForReading.readDataToEndOfFile(); p.waitUntilExit()
-    #expect(p.terminationStatus == 0); return data
-}
+/// In this process, not a gzip child: a child would hold copies of other tests' HDF5 descriptors (FormatoKit#49).
+private func inflate(_ name: String) throws -> Data { try Gunzip.contents(of: fixtures.appendingPathComponent(name)) }
 private func directory() throws -> URL {
     let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true); return dir

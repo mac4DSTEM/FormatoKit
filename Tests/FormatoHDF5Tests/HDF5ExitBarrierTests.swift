@@ -168,7 +168,8 @@ import Foundation
         }
         let exited = DispatchSemaphore(value: 0)
         process.terminationHandler = { _ in capture.markEnded(); exited.signal() }
-        try process.run()
+        // Inside HDF5Serial, so the child copies no descriptor another test has open for writing (FormatoKit#49).
+        try startUnderHDF5Lock(process)
 
         var timedOut = false
         if exited.wait(timeout: .now() + deadline) == .timedOut {
