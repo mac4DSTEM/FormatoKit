@@ -10,7 +10,7 @@ authors:
   - family-names: Lobpreis
     given-names: Paul
 version: "0.11.0" # x-release-please-version
-date-released: "2026-10-22"
+date-released: "2026-10-22" # x-release-please-date
 license: GPL-3.0-only
 repository-code: "https://github.com/mac4DSTEM/FormatoKit"
 keywords:
