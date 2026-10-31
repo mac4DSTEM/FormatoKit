@@ -25,9 +25,13 @@
 //  ImageTags (RosettaSciIO's test_loading_image_saved_with_DM.tif: 10585 bytes, 200 kV, 51×, a 0.5 s exposure). It is
 //  read ONLY when none of 34680, 34682 and 34683 exists (FEI SEM, then Velox, then DM: a file that carries an FEI or
 //  Velox convention is read as that, whatever else it carries), the tag is type 1, its bytes lie inside the file and
-//  number at most `maxDMTagStream`, and the kit's tag walker (`DM4Experiment.tagTree(data:)`, the one DM parser here)
-//  accepts them; the two maps it returns go through the same rules as a .dm3/.dm4 image object
-//  (`AcquisitionMetadata.dm(numbers:strings:)`: its keys are relative to the stream's root, as that function wants).
+//  number at most `maxDMTagStream`, and the kit's tag walker (`DM4Experiment.tagTreeWithArrays(data:)`, the one DM parser
+//  here) accepts them; the maps it returns go through the same rules as a .dm3/.dm4 image object (`dm(_:)`, via
+//  `dm(numbers:strings:arrays:convention:)`: its keys are relative to the stream's root, as that function wants), the numeric
+//  structs included, so `cameraPixelPitch` is read from `Acquisition.Device.CCD.Pixel Size (um)` as for a DM file (14 x 14
+//  um on test_loading_image_saved_with_DM.tif). RosettaSciIO 049e7d70 `tiff/_api.py` parses no tag 65027 (it reads only
+//  the DM scale, unit and intensity tags 65003-65025), so every value read here from the stream is the DM reader's rule,
+//  not a TIFF reference: the pitch is the pitch when the file records it.
 //  A block the walker refuses, a tag of another type or one over the cap reads EMPTY, never throws. A 34683 that exists
 //  but is not text also reads empty: the DM tree is not tried behind a Velox tag.
 //
@@ -151,8 +155,8 @@ nonisolated extension AcquisitionMetadata {
         }
         if let xml = xmlText(page[34683]) { return velox(xml, convention: convention) }
         if page[34683] == nil, let stream = dmTagStream(page[65027]),
-           let tree = try? DM4Experiment.tagTree(data: stream) {
-            return dm(numbers: tree.numbers, strings: tree.strings, convention: convention)
+           let tree = try? DM4Experiment.tagTreeWithArrays(data: stream) {
+            return dm(numbers: tree.numbers, strings: tree.strings, arrays: tree.arrays, convention: convention)
         }
         return AcquisitionMetadata()
     }
