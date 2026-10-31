@@ -42,7 +42,7 @@ public nonisolated struct MIBReader: Sendable {
     public init(path: String, navigationShape: [Int]? = nil, firstFrame: Int? = nil, lastFrame: Int? = nil,
                 convention: MIBConvention = .rosettaSciIO) throws {
         let mapping = try MIBMapping(path: path, anyHeaderSize: convention == .appScanXY)
-        let header = try mapping.header(at: 0)
+        var header = try mapping.header(at: 0)
         pixelCode = header.code
         if header.code == "R64" { throw MIBError.unsupported("RAW MIB data not supported.") }
         let type: FormatoDataType
@@ -51,6 +51,18 @@ public nonisolated struct MIBReader: Sendable {
         case "U16": type = .uint16
         case "U32": type = .uint32
         default: throw MIBError.unsupported("MIB pixel encoding \(header.code)")
+        }
+        if convention == .appScanXY {
+            // The app's reader: the frame is the assembly's square, whatever the header's width and height say (or if it has none).
+            let dimensions: Int
+            switch header.layout {
+            case "1x1": dimensions = 256
+            case "2x2": dimensions = 512
+            case "2x2G": dimensions = 514
+            default: throw MIBError.unsupported("App detector assembly \(header.layout)")
+            }
+            header = MIBHeader(size: header.size, width: dimensions, height: dimensions, code: header.code, layout: header.layout,
+                               timestamp: header.timestamp, exposure: header.exposure)
         }
         let pixelBytes = try product([header.width, header.height, type.byteSize])
         let (stride, overflow) = pixelBytes.addingReportingOverflow(header.size)
@@ -75,14 +87,7 @@ public nonisolated struct MIBReader: Sendable {
         let flip: Bool, outputType: FormatoDataType
         if convention == .appScanXY {
             guard navigationShape == nil, firstFrame == nil, lastFrame == nil else { throw MIBError.unsupported("App convention does not slice frames") }
-            let dimensions: Int
-            switch header.layout {
-            case "1x1": dimensions = 256
-            case "2x2": dimensions = 512
-            case "2x2G": dimensions = 514
-            default: throw MIBError.unsupported("App detector assembly \(header.layout)")
-            }
-            guard header.width == dimensions, header.height == dimensions else { throw MIBError.malformed("Detector dimensions disagree with assembly") }
+            let dimensions = header.width   // the assembly's, set above
             let x = try positive("ScanX"), y = try positive("ScanY")
             guard try product([x,y]) == frames else { throw MIBError.malformed("ScanX/ScanY do not match file") }
             shape = [y,x,dimensions,dimensions]; first = 0; flip = false; outputType = .float32
@@ -139,11 +144,14 @@ public nonisolated struct MIBReader: Sendable {
                 provenance: FormatoProvenance(file: file, source: source, rule: "rsciio quantumdetector file_reader")))
         }
         let date = header.timestamp.components(separatedBy: "T")
-        guard date.count == 2 else { throw MIBError.malformed("Invalid timestamp") }
+        // The app's reader never read the timestamp: under its rules a header without one carries no date.
+        guard date.count == 2 || convention == .appScanXY else { throw MIBError.malformed("Invalid timestamp") }
         entry("General.original_filename", .text(file), "filename")
-        entry("General.date", .text(date[0]), "MIB timestamp")
-        entry("General.time", .text(date[1].trimmingCharacters(in: CharacterSet(charactersIn: "Z"))), "MIB timestamp")
-        if date[1].contains("Z") { entry("General.time_zone", .text("UTC"), "MIB timestamp") }
+        if date.count == 2 {
+            entry("General.date", .text(date[0]), "MIB timestamp")
+            entry("General.time", .text(date[1].trimmingCharacters(in: CharacterSet(charactersIn: "Z"))), "MIB timestamp")
+            if date[1].contains("Z") { entry("General.time_zone", .text("UTC"), "MIB timestamp") }
+        }
         entry("Signal.signal_type", .text("electron_diffraction"), "MIB format")
         entry("Acquisition_instrument.dwell_time", .number(header.exposure * 1e-3), "MIB exposure ns / 1e6 * 1e-3")
         signal = FormatoLazySignal(title: "", signalType: "electron_diffraction", axes: axes, metadata: metadata,
@@ -202,7 +210,8 @@ private struct MIBHeader {
 // Immutable mapping; lifetime is retained by the signal and reads use no shared mutable cursor.
 private final class MIBMapping: @unchecked Sendable {
     let fd: Int32; let pointer: UnsafeMutableRawPointer; let length: Int
-    /// RosettaSciIO's two header sizes only (false), or any size from 384 to 64 KiB (the original app's reader; true).
+    /// RosettaSciIO's two header sizes only (false), or the original app's reader (true): any size from 384 to 64 KiB, and a header
+    /// whose width and height (or exposure) are not numbers is still read (the frame shape comes from the assembly).
     let anyHeaderSize: Bool
     init(path: String, anyHeaderSize: Bool) throws {
         self.anyHeaderSize = anyHeaderSize
@@ -227,9 +236,19 @@ private final class MIBMapping: @unchecked Sendable {
         let bytes = UnsafeRawBufferPointer(start: pointer + offset, count: size)
         guard bytes.allSatisfy({ $0 < 128 }) else { throw MIBError.malformed("Non-ASCII header") }
         let fields = String(decoding: bytes, as: UTF8.self).split(separator: ",", omittingEmptySubsequences: false).map(String.init)
-        guard fields.count >= 11, let w = Int(fields[4]), let h = Int(fields[5]), w > 0, h > 0 else { throw MIBError.malformed("Invalid detector shape") }
+        guard fields.count >= 11 else { throw MIBError.malformed("Invalid MIB header") }
+        // The app's rules (`anyHeaderSize`) read the frame by the assembly, so a header without a width and height (0 here) or
+        // without a readable exposure (0) is still a frame header; RosettaSciIO's need both.
+        let w = Int(fields[4]) ?? 0, h = Int(fields[5]) ?? 0
+        guard anyHeaderSize || (w > 0 && h > 0) else { throw MIBError.malformed("Invalid detector shape") }
         let exposure = fields[fields.count - 3]
-        guard exposure.hasSuffix("ns"), let value = Double(exposure.dropLast(2)), value.isFinite, value >= 0 else { throw MIBError.malformed("Invalid exposure") }
+        let value = exposure.hasSuffix("ns") ? Double(exposure.dropLast(2)) : nil
+        guard let value, value.isFinite, value >= 0 else {
+            if anyHeaderSize {
+                return MIBHeader(size: size, width: w, height: h, code: fields[6], layout: fields[7].trimmingCharacters(in: .whitespaces), timestamp: fields[fields.count - 4], exposure: 0)
+            }
+            throw MIBError.malformed("Invalid exposure")
+        }
         return MIBHeader(size: size, width: w, height: h, code: fields[6], layout: fields[7].trimmingCharacters(in: .whitespaces), timestamp: fields[fields.count - 4], exposure: value / 1e6)
     }
 }
@@ -265,7 +284,10 @@ private struct MIBArray: FormatoLazyArray {
                     if frame != checkedFrame {
                         do {
                             let actual = try mapping.header(at: frame * stride)
-                            guard actual.size == header.size, actual.width == header.width, actual.height == header.height, actual.code == header.code else { throw MIBError.malformed("Frame header changed layout") }
+                            // Under the app's rules the frame shape is the assembly's, so a frame header's width and height are not compared.
+                            let sameShape = mapping.anyHeaderSize ? actual.layout == header.layout
+                                : actual.width == header.width && actual.height == header.height
+                            guard actual.size == header.size, sameShape, actual.code == header.code else { throw MIBError.malformed("Frame header changed layout") }
                             checkedFrame = frame
                         } catch let error as MIBError { failure = error; return } catch { failure = .malformed("Invalid frame"); return }
                     }

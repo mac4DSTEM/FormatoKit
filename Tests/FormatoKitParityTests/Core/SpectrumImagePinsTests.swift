@@ -81,7 +81,9 @@ import FormatoEMD
             #expect(a.navigate == q["navigate"] as? Bool, "\(what) axis \(k) navigate")
         }
         let md = p["metadata"] as! [[String: Any]]
-        #expect(Set(s.metadata.keys) == Set(md.map { $0["key"] as! String }), "\(what): metadata keys")
+        // `Sample.elements` is not one of step 1's targets these pins carry: tools/velox-elements/pins.py pins it
+        // (FormatoEMDTests VeloxSpectrumImageElementsTests).
+        #expect(Set(s.metadata.keys).subtracting(["Sample.elements"]) == Set(md.map { $0["key"] as! String }), "\(what): metadata keys")
         for e in md {
             let key = e["key"] as! String
             guard let ours = s.metadata[key] else { continue }

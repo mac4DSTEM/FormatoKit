@@ -4,7 +4,8 @@
 //        them with `select_type="spectrum_image"` and `lazy=False`: the EELS spectrum images
 //        (`Data/EelsSpectrumImage`, read as stored) then the EDS one(s), decoded from the spectrum streams by RosettaSciIO's
 //        `_fill_array_with_stream[_sum_frames]` line for line, every count a `+= 1` in the target type; its six options as
-//        parameters with its defaults. Eager, as RosettaSciIO's non-lazy path.
+//        parameters with its defaults. Eager, as RosettaSciIO's non-lazy path. The EDS signals carry `Sample.elements` as
+//        HyperSpy applies RosettaSciIO's mapping (`VeloxSampleElements`, the same rule as single spectra); EELS carries none.
 //        The streams are read here through `VeloxFile`, not through the moved `VeloxEMDReader.readSpectrumImage`, whose rules
 //        (the ScanSize x ScanArea grid, the CSR store, every stream summed) are the inherited reader's and stay as they are.
 //        Every refusal names RosettaSciIO's raise, or the deliberate deviation it is.
@@ -269,7 +270,13 @@ private nonisolated struct VeloxSpectrumImageRead {
                 out.append(FormatoSignal(title: "EDS", signalType: "EDS_TEM", axes: axes, metadata: metadata, data: try array.finish()))
             }
         }
-        return out
+        // HyperSpy maps once the reader has returned: a reader refusal comes first.
+        guard let elements = try sampleElements() else { return out }
+        return out.map { s in
+            var md = s.metadata
+            md.set(elements)
+            return FormatoSignal(title: s.title, signalType: s.signalType, axes: s.axes, metadata: md, data: s.data)
+        }
     }
 
     func acquisitionSettings(_ group: String) throws -> [String: Any] {
@@ -428,6 +435,24 @@ private nonisolated struct VeloxSpectrumImageRead {
                                                                       rule: "rsciio emd velox mapping: float(x) / 1e3")))
         }
         return md
+    }
+
+    /// `Sample.elements` of the EDS signal(s), as HyperSpy applies `_get_mapping(map_selected_element=True)`: `int(self.version)`
+    /// picks the settings group among the four file-level groups `read_file` parsed (`original_metadata.update(self.original_metadata)`
+    /// put them beside the stream's own keys), then `_convert_element_list`. nil where the settings entry is absent (the mapping does
+    /// not apply). Every stream's signal gets the same list. The EELS spectrum images carry no mapping.
+    func sampleElements() throws -> FormatoMetadataEntry? {
+        // VeloxTitles has already required `version` and `int()` of it for a SpectrumStream file; both are re-read here.
+        guard let text = file.readString("/Version"),
+              let version = (try? JSONSerialization.jsonObject(with: Data(text.utf8))) as? [String: Any],
+              let versionNumber = pythonIntValue(version["version"]) else { throw raises("int() refuses its Version's version") }
+        let groups = try HDF5Serial.run { try VeloxFileGroups.read(file: file) { raises($0) } }
+        let (groupName, entryName) = VeloxSampleElements.settingsPath(version: versionNumber)
+        guard let settings = groups[groupName]?[entryName] else { return nil }
+        let (elements, source) = try VeloxSampleElements.convert(settings.value, path: String(settings.path.dropFirst())) { raises($0) }
+        return FormatoMetadataEntry(key: "Sample.elements", value: .texts(elements), units: nil, provenance: FormatoProvenance(
+            file: fileName, source: source,
+            rule: "rsciio emd velox mapping _convert_element_list, as HyperSpy applies it: the first of keys() (sorted), atomic_number2name[int(z)]"))
     }
 
     // MARK: EELS (§3.8)

@@ -131,6 +131,11 @@ public nonisolated enum HDF5RootAttributes {
 
     /// Builds the whole file at `temporary` (created new, truncating): one string attribute per entry on the root group.
     /// Throws `embeddedNUL` before touching the disk for a text with a NUL byte.
+    ///
+    /// `temporary` is opened with libhdf5's file locking off: it is a scratch path to publish with `publish(_:onto:replacing:)`,
+    /// which no other program has open, and a write lock there could outlive the close in a child process the caller starts
+    /// meanwhile, so that a read right after failed with errno 35. A caller that writes a final path directly gets a file
+    /// written without the lock.
     public static func write(_ attributes: [(name: String, value: String)], to temporary: URL) throws {
         for (name, value) in attributes where value.utf8.contains(0) { throw HDF5FileError.embeddedNUL(name) }
         guard temporary.isFileURL else { throw HDF5FileError.cannotWrite(operation: "locating the file", detail: "not a file URL") }
@@ -141,6 +146,8 @@ public nonisolated enum HDF5RootAttributes {
             // H5F_LIBVER_V18 = 1 and H5F_LIBVER_LATEST = 5 (V200) in the shipped libhdf5 2.1.1; the library refuses a value it
             // does not know, so a different library fails the write by name rather than writing another format.
             guard h5.h5psetLibverBounds(access, 1, 5) >= 0 else { throw failure("setting the library-version bounds", h5) }
+            // A scratch file: no write lock to outlive the close in a child process (FormatoKit#53).
+            try h5.disableFileLocking(access)
             let file = temporary.path.withCString { h5.h5fcreate($0, 0x0002, 0, access) }   // H5F_ACC_TRUNC
             guard file >= 0 else { throw failure("creating the file", h5) }
             var closed = false
