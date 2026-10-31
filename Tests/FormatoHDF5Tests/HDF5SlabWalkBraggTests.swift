@@ -1,6 +1,6 @@
 //
-//  Release08Tests.swift
-//  FormatoKit 0.8.0 additions, all exact: the handle-holding slab reader returns the bytes `readDataset` returns, the link
+//  HDF5SlabWalkBraggTests.swift
+//  The slab reader, the link walk and BraggVectors in a session (added in 0.8.0), all exact: the handle-holding slab reader returns the bytes `readDataset` returns, the link
 //  walk agrees with `descendants` and adds link kind and object identity, and the BraggVectors object written into a
 //  session reads back as written.
 //
@@ -10,7 +10,7 @@ import Testing
 import FormatoCore
 import FormatoHDF5
 
-@Suite struct Release08Tests {
+@Suite struct HDF5SlabWalkBraggTests {
     static let assorted = HDF5ReaderTests.fixture("assorted.h5")
 
     @Test func slabReaderMatchesReadDataset() throws {

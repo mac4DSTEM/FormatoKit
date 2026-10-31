@@ -3,9 +3,9 @@ import Foundation
 import FormatoCore
 import FormatoEMD
 
-/// The 0.2.0 refuter's findings: a ScanSize x ScanArea that overflows Int must give no grid (it trapped,
+/// Two review findings of 0.2.0: a ScanSize x ScanArea that overflows Int must give no grid (it trapped,
 /// default path too); unit strings are trimmed as Pint trims them (ASCII whitespace), not Foundation's wider set.
-@Suite struct Refuter020Tests {
+@Suite struct VeloxScanGridAndUnitTrimTests {
     private func metadata(width: String, height: String, right: String) throws -> VeloxMetadata {
         let json = #"{"Scan": {"ScanSize": {"width": "\#(width)", "height": "\#(height)"}, "ScanArea": {"left": "0", "top": "0", "right": "\#(right)", "bottom": "1"}}}"#
         return try VeloxMetadata.parse(jsonData: Data(json.utf8))
