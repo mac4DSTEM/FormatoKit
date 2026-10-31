@@ -273,6 +273,14 @@ public nonisolated enum DM4Experiment {
         return (walk.numbers, walk.strings)
     }
 
+    /// As `tagTree(data:)`, plus the walk's numeric structs and short numeric arrays under the same keys
+    /// (`DM4ImageObject.imageTagArrays`' rule). Read by the TIFF reader for tag 65027 (`AcquisitionMetadata.tiff`).
+    package static func tagTreeWithArrays(data: Data) throws
+        -> (numbers: [String: Double], strings: [String: String], arrays: [String: [Double]]) {
+        let walk = try Walk(source: Source.data(data))
+        return (walk.numbers, walk.strings, walk.arrays)
+    }
+
     public static func readImage(data: Data, index: Int) throws -> DM4Image {
         try readImage(source: Source.data(data), index: index)
     }
