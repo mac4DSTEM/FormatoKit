@@ -1,28 +1,28 @@
 # Test fixtures
 
 Every fixture, its sha256, and where it comes from. The moved ones are byte-identical copies of SpectroKit 0.3.0's (tag `14c6acf8`;
-`tools/step-1/names.sh` and git blob ids checked at the move); their generators stay in SpectroKit at that tag, named here.
+the moved test names and git blob ids checked at the move, by a one-off script retired since). The generators of the EELS files are in `tools/eels-reader` (from SpectroKit at that tag, byte-reproducible); the others stay in SpectroKit or mac4DSTEM, named here.
 
 | File | sha256 | Origin |
 |---|---|---|
-| `FormatoCoreTests/Fixtures/step-1-pins.json` | `ab0f445b18b8a5ae…` | `tools/step-1/pins.py` (RosettaSciIO 049e7d70, Pint 0.26.1) |
-| `FormatoCoreTests/Fixtures/units-pins.json` | `b4caad6c457ed567…` | `tools/step-1/pins.py` (RosettaSciIO 049e7d70, Pint 0.26.1) |
+| `FormatoCoreTests/Fixtures/dm-velox-pins.json` | `ab0f445b18b8a5ae…` | `tools/dm-velox-pins/pins.py` (RosettaSciIO 049e7d70, Pint 0.26.1) |
+| `FormatoCoreTests/Fixtures/units-pins.json` | `b4caad6c457ed567…` | `tools/dm-velox-pins/pins.py` (RosettaSciIO 049e7d70, Pint 0.26.1) |
 | `FormatoDMTests/Fixtures/demo-edx-tiny.dm4` | `a50a8fa52b0ec715…` | mac4DSTEM's EDX demo simulator, via SpectroKit 0.3.0 |
 | `FormatoDMTests/Fixtures/demo-edx-tiny.truth.json` | `6530e81a858473aa…` | mac4DSTEM's EDX demo simulator, via SpectroKit 0.3.0 |
 | `FormatoDMTests/Fixtures/dm-tag65027-saved-with-DM.dm4` | `9eb167ef95396b6a…` | a DM-saved TIFF tag stream, via SpectroKit 0.3.0 |
 | `FormatoDMTests/Fixtures/dm-tag65027-saved-with-DM.truth.json` | `21be390a723fca05…` | a DM-saved TIFF tag stream, via SpectroKit 0.3.0 |
-| `FormatoDMTests/Fixtures/eels-planted.dm4` | `a790c478c3192fe8…` | SpectroKit 0.3.0 `tools/eels-reader/make_planted.py` (planted), truth by its `truth.py` (RosettaSciIO 049e7d70) |
-| `FormatoDMTests/Fixtures/eels-planted.truth.json` | `a1e596e7963fddc5…` | SpectroKit 0.3.0 `tools/eels-reader/make_planted.py` (planted), truth by its `truth.py` (RosettaSciIO 049e7d70) |
-| `FormatoDMTests/Fixtures/eels-refused-long.dm4` | `290dfd657bc14945…` | SpectroKit 0.3.0 `tools/eels-reader/make_planted.py` (planted), truth by its `truth.py` (RosettaSciIO 049e7d70) |
-| `FormatoDMTests/Fixtures/eels-refused-long.truth.json` | `e27feea639d0a352…` | SpectroKit 0.3.0 `tools/eels-reader/make_planted.py` (planted), truth by its `truth.py` (RosettaSciIO 049e7d70) |
-| `FormatoDMTests/Fixtures/eels-refused-short.dm4` | `e09fe81dbf2250b2…` | SpectroKit 0.3.0 `tools/eels-reader/make_planted.py` (planted), truth by its `truth.py` (RosettaSciIO 049e7d70) |
-| `FormatoDMTests/Fixtures/eels-refused-short.truth.json` | `17c4d66161e51ec5…` | SpectroKit 0.3.0 `tools/eels-reader/make_planted.py` (planted), truth by its `truth.py` (RosettaSciIO 049e7d70) |
-| `FormatoDMTests/Fixtures/eels-refused-zero.dm4` | `e8f11466ddfd87aa…` | SpectroKit 0.3.0 `tools/eels-reader/make_planted.py` (planted), truth by its `truth.py` (RosettaSciIO 049e7d70) |
-| `FormatoDMTests/Fixtures/eels-refused-zero.truth.json` | `a33f25c01bd8a95f…` | SpectroKit 0.3.0 `tools/eels-reader/make_planted.py` (planted), truth by its `truth.py` (RosettaSciIO 049e7d70) |
-| `FormatoDMTests/Fixtures/eels-refused-zerodim.dm4` | `21ebc2c920479658…` | SpectroKit 0.3.0 `tools/eels-reader/make_planted.py` (planted), truth by its `truth.py` (RosettaSciIO 049e7d70) |
-| `FormatoDMTests/Fixtures/eels-refused-zerodim.truth.json` | `a8ed29be8ffd6bb9…` | SpectroKit 0.3.0 `tools/eels-reader/make_planted.py` (planted), truth by its `truth.py` (RosettaSciIO 049e7d70) |
-| `FormatoDMTests/Fixtures/rsciio-EELS_SI.dm4` | `f9b8203f384cc355…` | RosettaSciIO 049e7d70's public `digitalmicrograph/3D/EELS_SI.dm4` (GPL-3.0-or-later), truth by SpectroKit's `tools/eels-reader/truth.py` |
-| `FormatoDMTests/Fixtures/rsciio-EELS_SI.truth.json` | `a4d820e93c55aaaa…` | RosettaSciIO 049e7d70's public `digitalmicrograph/3D/EELS_SI.dm4` (GPL-3.0-or-later), truth by SpectroKit's `tools/eels-reader/truth.py` |
+| `FormatoDMTests/Fixtures/eels-planted.dm4` | `a790c478c3192fe8…` | `tools/eels-reader/make_planted.py` (planted), truth by `tools/eels-reader/truth.py` (RosettaSciIO 049e7d70); from SpectroKit 0.3.0 |
+| `FormatoDMTests/Fixtures/eels-planted.truth.json` | `a1e596e7963fddc5…` | `tools/eels-reader/make_planted.py` (planted), truth by `tools/eels-reader/truth.py` (RosettaSciIO 049e7d70); from SpectroKit 0.3.0 |
+| `FormatoDMTests/Fixtures/eels-refused-long.dm4` | `290dfd657bc14945…` | `tools/eels-reader/make_planted.py` (planted), truth by `tools/eels-reader/truth.py` (RosettaSciIO 049e7d70); from SpectroKit 0.3.0 |
+| `FormatoDMTests/Fixtures/eels-refused-long.truth.json` | `e27feea639d0a352…` | `tools/eels-reader/make_planted.py` (planted), truth by `tools/eels-reader/truth.py` (RosettaSciIO 049e7d70); from SpectroKit 0.3.0 |
+| `FormatoDMTests/Fixtures/eels-refused-short.dm4` | `e09fe81dbf2250b2…` | `tools/eels-reader/make_planted.py` (planted), truth by `tools/eels-reader/truth.py` (RosettaSciIO 049e7d70); from SpectroKit 0.3.0 |
+| `FormatoDMTests/Fixtures/eels-refused-short.truth.json` | `17c4d66161e51ec5…` | `tools/eels-reader/make_planted.py` (planted), truth by `tools/eels-reader/truth.py` (RosettaSciIO 049e7d70); from SpectroKit 0.3.0 |
+| `FormatoDMTests/Fixtures/eels-refused-zero.dm4` | `e8f11466ddfd87aa…` | `tools/eels-reader/make_planted.py` (planted), truth by `tools/eels-reader/truth.py` (RosettaSciIO 049e7d70); from SpectroKit 0.3.0 |
+| `FormatoDMTests/Fixtures/eels-refused-zero.truth.json` | `a33f25c01bd8a95f…` | `tools/eels-reader/make_planted.py` (planted), truth by `tools/eels-reader/truth.py` (RosettaSciIO 049e7d70); from SpectroKit 0.3.0 |
+| `FormatoDMTests/Fixtures/eels-refused-zerodim.dm4` | `21ebc2c920479658…` | `tools/eels-reader/make_planted.py` (planted), truth by `tools/eels-reader/truth.py` (RosettaSciIO 049e7d70); from SpectroKit 0.3.0 |
+| `FormatoDMTests/Fixtures/eels-refused-zerodim.truth.json` | `a8ed29be8ffd6bb9…` | `tools/eels-reader/make_planted.py` (planted), truth by `tools/eels-reader/truth.py` (RosettaSciIO 049e7d70); from SpectroKit 0.3.0 |
+| `FormatoDMTests/Fixtures/rsciio-EELS_SI.dm4` | `f9b8203f384cc355…` | RosettaSciIO 049e7d70's public `digitalmicrograph/3D/EELS_SI.dm4` (GPL-3.0-or-later), truth by `tools/eels-reader/truth.py` |
+| `FormatoDMTests/Fixtures/rsciio-EELS_SI.truth.json` | `a4d820e93c55aaaa…` | RosettaSciIO 049e7d70's public `digitalmicrograph/3D/EELS_SI.dm4` (GPL-3.0-or-later), truth by `tools/eels-reader/truth.py` |
 | `FormatoEMDTests/Fixtures/velox-metadata-planted.emd` | `d977884f9147365c…` | SpectroKit 0.3.0 `tools/velox-metadata-parity/make_fixture.py` |
 | `FormatoEMDTests/Fixtures/velox-metadata-planted.truth.json` | `26e958d918cbc288…` | SpectroKit 0.3.0 `tools/velox-metadata-parity/make_fixture.py` |
 | `FormatoEMDTests/Fixtures/velox-tiny.emd` | `ab79b917db55e0a3…` | mac4DSTEM's Velox stream fixture, via SpectroKit 0.3.0 |

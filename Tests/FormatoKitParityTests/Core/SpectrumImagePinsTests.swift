@@ -1,7 +1,7 @@
 //
 //  SpectrumImagePinsTests.swift
-//  The kernel pins and every (file, option set) of Fixtures/step-4-pins.json
-//  (tools/step-4/pins.py: RosettaSciIO 049e7d70's `file_reader(select_type="spectrum_image", lazy=False)` with sparse and
+//  The kernel pins and every (file, option set) of Fixtures/velox-spectrum-image-pins.json
+//  (tools/velox-spectrum-image/pins.py: RosettaSciIO 049e7d70's `file_reader(select_type="spectrum_image", lazy=False)` with sparse and
 //  numba) against `VeloxSpectrumImageSignals`: where RosettaSciIO raises, FormatoKit refuses; where it reads, the signals in
 //  order are equal in type, shape, data sha256, every axis field exactly, title, signal type and metadata with source.
 //  The deliberate deviations are refused by name: the pins' `deviations`, and the runs whose
@@ -16,7 +16,7 @@ import FormatoCore
 import FormatoEMD
 
 @Suite(.serialized) struct SpectrumImagePinsTests {
-    private static let planted = TestPaths.root.appendingPathComponent("Tests/FormatoEMDTests/Fixtures/step4")
+    private static let planted = TestPaths.root.appendingPathComponent("Tests/FormatoEMDTests/Fixtures/velox-spectrum-image")
 
     private func sha(_ d: Data) -> String { SHA256.hash(data: d).map { String(format: "%02x", $0) }.joined() }
 
@@ -153,7 +153,7 @@ import FormatoEMD
     }
 
     @Test func testEveryPinnedSpectrumImageAgreesOrIsRefused() throws {
-        let doc = try loadJSON("step-4-pins.json")
+        let doc = try loadJSON("velox-spectrum-image-pins.json")
         let referencesPresent = FileManager.default.fileExists(atPath: TestPaths.rsciioData.path)
         let t = try compare(doc, referencesPresent: referencesPresent)
         print("SpectrumImagePins: \(t.files) files, \(t.runs) runs: \(t.signals) signals equal, \(t.raised) refused where RosettaSciIO raises, \(t.deviated) deliberate deviations")
@@ -166,11 +166,11 @@ import FormatoEMD
         }
     }
 
-    /// Step 4's review files (Tests/FormatoEMDTests/Fixtures/step4/refuter, tools/step-4/refuter_pins.py): the
+    /// Step 4's review files (Tests/FormatoEMDTests/Fixtures/velox-spectrum-image/refuter, tools/velox-spectrum-image/refuter_pins.py): the
     /// fixes (Unicode digits, endFramePosition past Int64, a zero-frame first image, JSON decimals, the frame count's
     /// overflow) and the deliberate deviations (fermi, a null image unit, a list DetectorName, LZF; a big-endian stream read).
     @Test func testStep4RefuterFilesAgreeOrAreRefused() throws {
-        let doc = try loadJSON("step-4-refuter-pins.json")
+        let doc = try loadJSON("velox-spectrum-image-refuter-pins.json")
         let t = try compare(doc, referencesPresent: true)
         print("SpectrumImageRefuterPins: \(t.files) files, \(t.runs) runs: \(t.signals) equal, \(t.raised) raise, \(t.deviated) deviations, \(t.read) read on purpose")
         #expect(t.files == 15)
@@ -181,10 +181,10 @@ import FormatoEMD
         #expect(t.signals == 9)
     }
 
-    /// The owner's spectrum image: run by tools/step-4/owner-check.sh, which writes RosettaSciIO's
+    /// The owner's spectrum image: run by tools/velox-spectrum-image/owner-check.sh, which writes RosettaSciIO's
     /// reading with `pins.py --owner` and passes FORMATO_OWNER_SI_PINS and FORMATO_OWNER_SI_FILE. Never part of the gate.
     @Test(.enabled(if: ProcessInfo.processInfo.environment["FORMATO_OWNER_SI_PINS"] != nil,
-                   "the owner's spectrum image is checked by tools/step-4/owner-check.sh only"))
+                   "the owner's spectrum image is checked by tools/velox-spectrum-image/owner-check.sh only"))
     func testOwnerSpectrumImages() throws {
         let env = ProcessInfo.processInfo.environment
         let pins = try JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: try #require(env["FORMATO_OWNER_SI_PINS"])))) as! [String: Any]
@@ -204,7 +204,7 @@ import FormatoEMD
 
     /// RosettaSciIO's `stream_to_array` (jitted) on the kernel pins' synthetic streams.
     @Test func testKernelEqualsRosettaSciIOStreamToArray() throws {
-        let cases = try #require(try loadJSON("step-4-pins.json")["kernel"] as? [[String: Any]])
+        let cases = try #require(try loadJSON("velox-spectrum-image-pins.json")["kernel"] as? [[String: Any]])
         #expect(cases.count == 20)
         for c in cases {
             let name = c["name"] as! String

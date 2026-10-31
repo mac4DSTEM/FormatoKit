@@ -6,17 +6,17 @@ import FormatoCore
 
 extension VeloxEMDSerialized {
     /// FormatoKit's Velox policies. P2 (the grid) against RosettaSciIO's own
-    /// reading in step-4-pins.json, P1 (an unhandled pixel unit) against literals typed here for the planted `si-units-px.emd`
-    /// (tools/policy/make_policy_fixtures.py), P3 (the array cap) at its boundary, P8 (the block size) by equal results and by
+    /// reading in velox-spectrum-image-pins.json, P1 (an unhandled pixel unit) against literals typed here for the planted `si-units-px.emd`
+    /// (tools/velox-policy/make_policy_fixtures.py), P3 (the array cap) at its boundary, P8 (the block size) by equal results and by
     /// the blocks it makes.
     @Suite final class VeloxPolicyTests {
         private static let tests = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
-        private static let step4 = tests.appendingPathComponent("FormatoEMDTests/Fixtures/step4")
+        private static let spectrumImage = tests.appendingPathComponent("FormatoEMDTests/Fixtures/velox-spectrum-image")
         private static let policyFixtures = tests.appendingPathComponent("FormatoEMDTests/Fixtures/policy")
-        private static let pins = tests.appendingPathComponent("FormatoCoreTests/Fixtures/step-4-pins.json")
+        private static let pins = tests.appendingPathComponent("FormatoCoreTests/Fixtures/velox-spectrum-image-pins.json")
         private static let prefix = "FormatoKit.policy."
 
-        private func planted(_ name: String) -> String { Self.step4.appendingPathComponent(name).path }
+        private func planted(_ name: String) -> String { Self.spectrumImage.appendingPathComponent(name).path }
         private func policyFile(_ name: String) -> String { Self.policyFixtures.appendingPathComponent(name).path }
 
         private func read(_ path: String, _ options: VeloxSpectrumImageOptions = .init()) throws -> [FormatoSignal] {
@@ -55,7 +55,7 @@ extension VeloxEMDSerialized {
         // MARK: P2, the grid
 
         /// `.firstImage` is RosettaSciIO's own reading: on the planted grid file (first image 3 x 4, ScanSize x ScanArea 4 x 3)
-        /// option sets O1 to O8 of step-4-pins.json equal its records exactly; O9 and O10 raise there and here. The default
+        /// option sets O1 to O8 of velox-spectrum-image-pins.json equal its records exactly; O9 and O10 raise there and here. The default
         /// refuses on that file (§3.3).
         @Test func testFirstImageEqualsRosettaSciIOOnThePlantedGrid() throws {
             let doc = try #require(try JSONSerialization.jsonObject(with: Data(contentsOf: Self.pins)) as? [String: Any])

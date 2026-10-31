@@ -5,7 +5,7 @@ import FormatoEMD
 extension VeloxEMDSerialized {
     /// 0.0.3 (a consumer's request, 2026-10-15): `streamCount`, `energyCalibrationAgrees`, `VeloxStreamInfo.id`,
     /// `streamsAgreeOnCoverage` and `pixelCount` are public. Each flag is seen at both values, over EVERY stream:
-    /// `velox-flags-planted.emd` (`tools/asks-0.0.3/make_velox_flags.py`; the truth is its layout) has two streams with one
+    /// `velox-flags-planted.emd` (`tools/velox-flags/make_velox_flags.py`; the truth is its layout) has two streams with one
     /// calibration whose second stops after pixel 1 of frame 1; `velox-tiny.emd` has two streams that end together with
     /// two calibrations. A flag computed from the head stream only reads true on both files.
     @Suite final class VeloxPublicFlagsTests {

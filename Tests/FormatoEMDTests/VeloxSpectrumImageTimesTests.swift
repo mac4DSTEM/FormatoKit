@@ -61,7 +61,7 @@ extension VeloxEMDSerialized {
             // The times are not in the signal metadata (that stays RosettaSciIO's); a file whose SI group has no Metadata gives nil.
             let md = try VeloxSpectrumImageSignals(path: path("si-times-planted.emd")).signals[0].metadata
             #expect(!md.keys.contains { $0.hasSuffix("live_time") || $0.hasSuffix("real_time") })
-            let plain = Self.dir.deletingLastPathComponent().appendingPathComponent("step4/si-planted-v11.emd").path
+            let plain = Self.dir.deletingLastPathComponent().appendingPathComponent("velox-spectrum-image/si-planted-v11.emd").path
             #expect(try VeloxEMDReader(path: plain).spectrumImageMetadata() == nil)
         }
 

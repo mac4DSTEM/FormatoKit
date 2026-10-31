@@ -5,7 +5,6 @@
 # job resolves the release zips by URL and checksum, as a consumer does.
 # No libhdf5 step: FormatoHDF5 ships it. No References/: without the RosettaSciIO clone the pins tests run on the committed
 # copies of the pins and fixtures (tools/test.sh); the oracles are rerun locally, never in CI.
-# tools/step-1/names.sh (the 121 moved names) stays a local check: it reads the original package's tests from a sibling checkout (see the script).
 # Never `swift build --build-tests -c release` (fails on this toolchain's Swift Build backend); tools/test.sh is the gate.
 name: CI
 
