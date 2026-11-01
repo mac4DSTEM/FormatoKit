@@ -57,7 +57,7 @@
      "value": "2022-12-05 13:13:07"
     },
     "cameraLengthMM": {
-     "note": "unvalidated: the mode is not checked",
+     "note": "shown as stored; the instrument mode is not checked, as no published reader decodes it",
      "otherCopy": null,
      "value": 844
     },
@@ -72,7 +72,7 @@
      "value": 10
     },
     "exposureS": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the FEI extended header, at the offset mrcfile declares",
      "otherCopy": null,
      "value": 0.5
     },
@@ -92,7 +92,7 @@
      "value": 28500
     },
     "mode": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the FEI extended header, at the offset mrcfile declares",
      "otherCopy": null,
      "value": "3"
     },
@@ -124,7 +124,7 @@
     },
     "magnification": null,
     "mode": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the FEI extended header, at the offset mrcfile declares",
      "otherCopy": null,
      "value": "3"
     },

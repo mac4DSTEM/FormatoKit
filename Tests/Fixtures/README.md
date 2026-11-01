@@ -66,7 +66,7 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoDMTests/Fixtures/acq-metadata/eels-scanning.dm4` | 1.3 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoDMTests/Fixtures/acq-metadata/negative-voltage.dm4` | 1.2 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoDMTests/Fixtures/acq-metadata/no-microscope-group.dm4` | 1.3 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
-| `FormatoDMTests/Fixtures/acq-metadata/pins.json` | 29.7 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
+| `FormatoDMTests/Fixtures/acq-metadata/pins.json` | 29.8 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoDMTests/Fixtures/acq-metadata/sem-stage.dm4` | 1.3 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoDMTests/Fixtures/acq-metadata/sem.dm4` | 1.3 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoDMTests/Fixtures/acq-metadata/si-group.dm4` | 1.5 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
@@ -152,7 +152,7 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoDMTests/Fixtures/rsciio-EELS_SI.truth.json` | 2.5 KB | `tools/eels-reader/truth.py` | RosettaSciIO 049e7d70's reading of its public file; from SpectroKit 0.3.0 |
 | `FormatoDMTests/Fixtures/rsciio-MonarcCL_spectrum-ccd.dm4` | 316.6 KB | *copied* | third party: RosettaSciIO public test data (GPL-3.0-or-later), copied unchanged (RosettaSciIO 8363d24 `digitalmicrograph/1D/`); sha256 equal to its `registry.txt` |
 | `FormatoDMTests/Fixtures/rsciio-MonoCL_spectrum-ccd.dm4` | 320.1 KB | *copied* | third party: RosettaSciIO public test data (GPL-3.0-or-later), copied unchanged (RosettaSciIO 8363d24 `digitalmicrograph/1D/`); sha256 equal to its `registry.txt` |
-| `FormatoEMDTests/Fixtures/acq-metadata/acq-pins.json` | 6.5 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
+| `FormatoEMDTests/Fixtures/acq-metadata/acq-pins.json` | 6.8 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoEMDTests/Fixtures/acq-metadata/velox-acquisition.emd` | 48.7 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoEMDTests/Fixtures/acq-metadata/velox-no-unit.emd` | 48.7 KB | `tools/acq-metadata/no_unit.py` | planted (from velox-acquisition.emd); pins RosettaSciIO 049e7d70 |
 | `FormatoEMDTests/Fixtures/acq-metadata/velox-no-unit.pin.json` | 883 B | `tools/acq-metadata/no_unit.py` | planted (from velox-acquisition.emd); pins RosettaSciIO 049e7d70 |
@@ -398,7 +398,7 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoMRCTests/Fixtures/acq-metadata/fei2-all-set.mrc` | 2.8 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoMRCTests/Fixtures/acq-metadata/fei2-zero-and-clear-bits.mrc` | 1.9 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoMRCTests/Fixtures/acq-metadata/no-extended-header.mrc` | 1.1 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
-| `FormatoMRCTests/Fixtures/acq-metadata/pins.json` | 3.2 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
+| `FormatoMRCTests/Fixtures/acq-metadata/pins.json` | 3.5 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoMRCTests/Fixtures/image-readers/axis-order.mrc` | 1.0 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoMRCTests/Fixtures/image-readers/big-endian.mrc` | 1.0 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoMRCTests/Fixtures/image-readers/complex64.mrc` | 1.0 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
@@ -434,7 +434,7 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoTIFFTests/Fixtures/acq-metadata/fei-helios.tif` | 340 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoTIFFTests/Fixtures/acq-metadata/fei-sfeg-zero.tif` | 333 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoTIFFTests/Fixtures/acq-metadata/fei-stage-beam.tif` | 473 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
-| `FormatoTIFFTests/Fixtures/acq-metadata/pins.json` | 9.9 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
+| `FormatoTIFFTests/Fixtures/acq-metadata/pins.json` | 11.2 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoTIFFTests/Fixtures/acq-metadata/plain.tif` | 126 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoTIFFTests/Fixtures/acq-metadata/velox-ceta-imaging.tif` | 972 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoTIFFTests/Fixtures/acq-metadata/velox-diffraction-zero-voltage.tif` | 966 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
@@ -527,7 +527,7 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoTIFFTests/Fixtures/app-image/no-width.tif` | 122 B | `tools/acq-metadata/generate.py` | planted; pins the consumer's readers |
 | `FormatoTIFFTests/Fixtures/app-image/not-tiff-letters.tif` | 16 B | `tools/acq-metadata/generate.py` | planted; pins the consumer's readers |
 | `FormatoTIFFTests/Fixtures/app-image/palette.tif` | 1.6 KB | `tools/acq-metadata/generate.py` | planted; pins the consumer's readers |
-| `FormatoTIFFTests/Fixtures/app-image/pins.json` | 54.2 KB | `tools/acq-metadata/generate.py` | planted; pins the consumer's readers |
+| `FormatoTIFFTests/Fixtures/app-image/pins.json` | 55.3 KB | `tools/acq-metadata/generate.py` | planted; pins the consumer's readers |
 | `FormatoTIFFTests/Fixtures/app-image/plain.tif` | 126 B | `tools/acq-metadata/generate.py` | planted; pins the consumer's readers |
 | `FormatoTIFFTests/Fixtures/app-image/rgb-16bit.tif` | 158 B | `tools/acq-metadata/generate.py` | planted; pins the consumer's readers |
 | `FormatoTIFFTests/Fixtures/app-image/rgb-4-samples.tif` | 160 B | `tools/acq-metadata/generate.py` | planted; pins the consumer's readers |
@@ -591,7 +591,7 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoTIFFTests/Fixtures/app-image/white-is-zero.tif` | 134 B | `tools/acq-metadata/generate.py` | planted; pins the consumer's readers |
 | `FormatoTIFFTests/Fixtures/app-image/wrong-magic.tif` | 134 B | `tools/acq-metadata/generate.py` | planted; pins the consumer's readers |
 | `FormatoTIFFTests/Fixtures/app-image/zero-height.tif` | 134 B | `tools/acq-metadata/generate.py` | planted; pins the consumer's readers |
-| `FormatoTIFFTests/Fixtures/image-readers/pins.json` | 8.3 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
+| `FormatoTIFFTests/Fixtures/image-readers/pins.json` | 9.0 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoTIFFTests/Fixtures/image-readers/plain.tif` | 126 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoTIFFTests/Fixtures/image-readers/velox-agree.tif` | 362 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoTIFFTests/Fixtures/image-readers/velox-and-fei.tif` | 523 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |

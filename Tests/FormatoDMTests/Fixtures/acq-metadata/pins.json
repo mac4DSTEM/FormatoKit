@@ -14,7 +14,7 @@
      "value": 130
     },
     "detector": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the DM image tags",
      "otherCopy": null,
      "value": "Orius"
     },
@@ -24,7 +24,7 @@
      "value": 15
     },
     "exposureS": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the DM image tags",
      "otherCopy": null,
      "value": 0.5
     },
@@ -89,7 +89,7 @@
     },
     "cameraLengthMM": null,
     "detector": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the DM image tags",
      "otherCopy": null,
      "value": "K2"
     },
