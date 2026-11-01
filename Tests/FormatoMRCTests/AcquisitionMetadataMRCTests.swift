@@ -53,7 +53,7 @@ import FormatoMRC
         #expect(try AcquisitionMetadata.mrc(data: data).isEmpty)
         let m = try AcquisitionMetadata.mrc(data: data, convention: .app)
         #expect(m.highTensionKV == MetadataReading(300.0))
-        #expect(m.cameraLengthMM?.value == 844 && m.cameraLengthMM?.note == "unvalidated: the mode is not checked")
+        #expect(m.cameraLengthMM?.value == 844 && m.cameraLengthMM?.note == "shown as stored; the instrument mode is not checked, as no published reader decodes it")
         #expect(m.detector?.value == "Ceta" && m.instrument?.value == "Talos F200X" && m.dwellUS?.value == 10)
         #expect(m.acquired?.value == "2022-12-05 13:13:07")
     }

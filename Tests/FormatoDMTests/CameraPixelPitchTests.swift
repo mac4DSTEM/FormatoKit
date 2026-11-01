@@ -54,7 +54,8 @@ import FormatoDM
         let object = try Self.object("rsciio-EELS_SI.dm4")
         let meta = AcquisitionMetadata.dm(object)
         #expect(meta.cameraPixelPitch?.value == PixelSize(rows: 14, columns: 14, units: "um"))
-        #expect(meta.cameraPixelPitch?.note == AcquisitionMetadata.unvalidatedNote, "not mapped by RosettaSciIO outside CL")
+        #expect(meta.cameraPixelPitch?.note == "no published reader reads this field; read as stored in the DM image tags",
+                "not mapped by RosettaSciIO outside CL")
         #expect(meta.signalNumbers["Detector.pixel_size"] == nil, "RosettaSciIO maps the tag for CL only")
         let app = AcquisitionMetadata.dm(object, convention: .app)
         #expect(app.cameraPixelPitch?.value == PixelSize(rows: 14, columns: 14, units: "um"))
@@ -179,7 +180,7 @@ import FormatoDM
     @Test func aPlantedSquarePitchOutsideCLHasNoCLKey() throws {
         let meta = AcquisitionMetadata.dm(try Self.file(tags: Self.device([15, 15])))
         #expect(meta.cameraPixelPitch?.value == PixelSize(rows: 15, columns: 15, units: "um"))
-        #expect(meta.cameraPixelPitch?.note == AcquisitionMetadata.unvalidatedNote)
+        #expect(meta.cameraPixelPitch?.note == "no published reader reads this field; read as stored in the DM image tags")
         #expect(meta.signalNumbers["Detector.pixel_size"] == nil)
         let cl = AcquisitionMetadata.dm(try Self.file(tags: Self.device([15, 15], signal: "CL")))
         #expect(cl.signalNumbers["Detector.pixel_size"]?.value == 15)

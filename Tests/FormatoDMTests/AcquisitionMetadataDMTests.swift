@@ -162,7 +162,7 @@ import FormatoDM
         let names = try both("whitespace-names")
         #expect(names.reference.instrument?.value == "  " && names.app.instrument?.value == "Titan")
         // The detector is mapped by neither RosettaSciIO nor the app's reference: labelled in both conventions' defaults.
-        #expect(tem.reference.detector == MetadataReading("K2", note: AcquisitionMetadata.unvalidatedNote))
+        #expect(tem.reference.detector == MetadataReading("K2", note: "no published reader reads this field; read as stored in the DM image tags"))
         // The ambiguous day/month order is named in the note.
         let ambiguous = try both("ambiguous-date")
         #expect(ambiguous.reference.acquired?.value == "2021-03-04 00:00:00")

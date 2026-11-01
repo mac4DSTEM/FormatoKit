@@ -99,7 +99,7 @@ import FormatoTIFF
         let reference = try AcquisitionMetadata.tiff(data: data)
         #expect(reference.cameraPixelPitch?.value == Self.um14)
         // Not a CL signal: RosettaSciIO maps the tag for CL only (and reads no tag 65027), so `.rosettaSciIO` labels it.
-        #expect(reference.cameraPixelPitch?.note == AcquisitionMetadata.unvalidatedNote)
+        #expect(reference.cameraPixelPitch?.note == "no published reader reads this field; read as stored in the DM image tags")
         #expect(reference.signalNumbers["Detector.pixel_size"] == nil)
         let app = try AcquisitionMetadata.tiff(data: data, convention: .app)
         #expect(app.cameraPixelPitch?.value == Self.um14)
@@ -141,7 +141,7 @@ import FormatoTIFF
         for convention in [AcquisitionMetadataConvention.rosettaSciIO, .app] {
             var expected = AcquisitionMetadata.dm(numbers: tree.numbers, strings: tree.strings, convention: convention)
             expected.cameraPixelPitch = convention == .app ? MetadataReading(Self.um14)
-                                                           : MetadataReading(Self.um14, note: AcquisitionMetadata.unvalidatedNote)
+                                                           : MetadataReading(Self.um14, note: "no published reader reads this field; read as stored in the DM image tags")
             #expect(try AcquisitionMetadata.tiff(data: Self.tiff(stream: stream), convention: convention) == expected)
         }
     }

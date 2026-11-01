@@ -25,7 +25,7 @@
 //   the dwell with DigiScan tags, else the exposure; X-ray: neither; CL: the DigiScan sample time). The EELS frame number,
 //   aperture and spectrometer, the X-ray (EDS) and CL groups and the SI group are read into `signalNumbers`/`signalTexts` under
 //   RosettaSciIO's own path names, and the date and time take the last source that parses (DataBar, SI, then the signal group; for CL DataBar again, as the mapping ends).
-//   Fields RosettaSciIO does not map (the detector) are read by the consumer's rule with `unvalidatedNote`. The
+//   Fields RosettaSciIO does not map (the detector) are read by the consumer's rule with `DMNote.unvalidated`. The
 //   signal-type mappings (EELS, X-ray, CL, SI) are applied from the tag maps (`Meta Data.Signal`), not from a signal object.
 //
 //  `.app` is the consumer's rule set (AcquisitionMetadata.swift, rules a to g), pinned to its source:
@@ -139,7 +139,8 @@ extension AcquisitionMetadata {
 nonisolated enum DMNote {
     static let cameraLengthUnit = "mm (assumed)"
     static let monthFirst = "month-first order assumed"
-    static let unvalidated = "unvalidated: no published reader reads it"
+    /// This format's wording of `noPublishedReaderNote`: the value is read as the DM image tags store it.
+    static let unvalidated = "no published reader reads this field; read as stored in the DM image tags"
 }
 
 /// The two ImageTags maps with the stack-builder fallback: the direct key, else the same key under
@@ -267,10 +268,10 @@ extension AcquisitionMetadata {
     private static let dmCreationPrefix = "source.Tags at creation."
 
     /// `Acquisition.Device.CCD.Pixel Size (um)` as a pitch: exactly two finite positive numbers (x, y), else nil. `unvalidated`
-    /// adds `unvalidatedNote` (`.rosettaSciIO` on a signal RosettaSciIO does not map the tag for).
+    /// adds `DMNote.unvalidated` (`.rosettaSciIO` on a signal RosettaSciIO does not map the tag for).
     private static func dmCameraPitch(_ stored: [Double]?, unvalidated: Bool = false) -> MetadataReading<PixelSize>? {
         guard let stored, stored.count == 2, stored.allSatisfy({ $0.isFinite && $0 > 0 }) else { return nil }
-        let notes = [stored[0] == stored[1] ? nil : unequalPitchNote, unvalidated ? unvalidatedNote : nil].compactMap { $0 }
+        let notes = [stored[0] == stored[1] ? nil : unequalPitchNote, unvalidated ? DMNote.unvalidated : nil].compactMap { $0 }
         return MetadataReading(PixelSize(rows: stored[1], columns: stored[0], units: "um"),
                                note: notes.isEmpty ? nil : notes.joined(separator: "; "))
     }
@@ -463,7 +464,7 @@ extension AcquisitionMetadata {
         }
 
         // RosettaSciIO maps no detector: the camera name as stored, labelled.
-        if let name = text(string("Acquisition.Device.Name")) { meta.detector = MetadataReading(name, note: unvalidatedNote) }
+        if let name = text(string("Acquisition.Device.Name")) { meta.detector = MetadataReading(name, note: DMNote.unvalidated) }
         // The camera pitch, every signal type: the tag as stored. RosettaSciIO maps it for CL only (`Detector.pixel_size` above),
         // so on any other signal it is the consumer's rule, labelled.
         meta.cameraPixelPitch = dmCameraPitch(arrays[prefix + dmDevicePitchKey], unvalidated: signalType != "CL")

@@ -11,7 +11,7 @@
 //    ports) joined into one stamp; no positivity rule (a stored 0 is 0), values as tifffile's `astype` makes them;
 //  - Velox XML: the same schema's EMD mapping (`emd/_emd_velox.py` `_get_mapping`, :934-948): `Optics.AccelerationVoltage`
 //    / 1e3 and `Optics.CameraLength` * 1e3 with NO mode gate and no positivity rule; every other value is read by the
-//    consumer's rule and keeps its `unvalidatedNote`;
+//    consumer's rule and keeps its `TIFFNote.veloxUnvalidated`;
 //  - the DM tag stream (tag 65027) goes through `AcquisitionMetadata.dm` with the same convention.
 //
 //  WHAT IS READ, first directory only, in the order FEI SEM, Velox, DM (the first two are the order
@@ -61,7 +61,7 @@
 //                    projector mode is read only to decide rule (c); it is not part of the mode shown.
 //  Which Velox paths a published reader maps: RosettaSciIO 049e7d70 rsciio/emd/_emd_velox.py maps
 //  Optics.AccelerationVoltage (lines 938–941, / 1e3) and Optics.CameraLength (942–945, × 1e3, in no mode gate): those
-//  two carry no `TIFFNote.unvalidated`, every other value does — the same schema, no reader. In particular the date:
+//  two carry no `TIFFNote.veloxUnvalidated`, every other value does — the same schema, no reader. In particular the date:
 //  the reference reads Acquisition.AcquisitionStartDatetime.DateTime (902–903, 916–918, 934–937), the EMD's unix-time
 //  sub-key shown in the VIEWER's zone and mapped to General.time_zone; the TIFF's XML text of that element is ISO
 //  local text with no DateTime child (measured on the six Ceta files), a path no published reader reads. (It also
@@ -94,7 +94,7 @@
 //  [PrivateFei] TimeOfCreation (a second stamp, dd.mm.yyyy hh:mm:ss, not a registered path).
 //  RosettaSciIO 049e7d70 rsciio/tiff/_api.py `mapping_fei` (lines 1130–1159) maps Beam.HV (× 1e-3 via
 //  `_parse_beam_energy_FEI`, lines 1081–1085: float() or None), Scan.Dwelltime (as is), User.Date and User.Time
-//  (dateutil) and System.SystemType; it does not map [Detectors] Name, so the detector carries `TIFFNote.unvalidated`.
+//  (dateutil) and System.SystemType; it does not map [Detectors] Name, so the detector carries `TIFFNote.feiUnvalidated`.
 //  DEVIATION: HV is divided by 1e3 here, multiplied by 1e-3 there — the same number to within one ulp.
 //  DEVIATION: a stored 0 (HV or Dwelltime) is 0.0 there and "not recorded" here (rule b).
 //  DEVIATION: the dwell is stated in µs here, seconds there (the registered unit).
@@ -125,7 +125,9 @@ nonisolated extension AcquisitionMetadata {
     /// The notes this reader attaches, worded once. Private: the other readers word their own, and the tests pin
     /// the texts as literals.
     private enum TIFFNote {
-        static let unvalidated = "unvalidated: no published reader reads it"
+        /// This format's wordings of `noPublishedReaderNote`, naming the block of the TIFF the value is stored in.
+        static let veloxUnvalidated = "no published reader reads this field; read as stored in the Velox XML of the TIFF"
+        static let feiUnvalidated = "no published reader reads this field; read as stored in the FEI header of the TIFF"
     }
 
     /// The acquisition values a TIFF records; an empty `AcquisitionMetadata` when it records none. Throws only
@@ -189,7 +191,7 @@ nonisolated extension AcquisitionMetadata {
         if let current = sections["EBeam"]?["BeamCurrent"]?.asFloat { out.beamCurrentNA = MetadataReading(current * 1e9) }
         if case .string(let user)? = sections["User"]?["User"] { out.operatorName = MetadataReading(user) }
         if case .string(let name)? = sections["Detectors"]?["Name"], let name = text(name) {
-            out.detector = MetadataReading(name, note: unvalidatedNote)
+            out.detector = MetadataReading(name, note: TIFFNote.feiUnvalidated)
         }
         return out
     }
@@ -241,12 +243,12 @@ nonisolated extension AcquisitionMetadata {
         func child(_ element: XMLElement, _ name: String) -> String? {
             GuardedXML.bounded(text(element.elements(forName: name).first?.stringValue))
         }
-        // A reading with the notes that apply: its own, then "unvalidated" unless a published reader maps its path.
+        // A reading with the notes that apply: its own, then the no-published-reader note unless a published reader maps its path.
         let readByReference: Set<String> = ["Optics/AccelerationVoltage", "Optics/CameraLength", "Instrument/InstrumentClass", "Stage/AlphaTilt",
                                             "Stage/BetaTilt", "Stage/Position/x", "Stage/Position/y", "Stage/Position/z"]
         func reading<V: Sendable & Equatable>(_ value: V, _ path: String, note: String? = nil,
                                               otherCopy: V? = nil) -> MetadataReading<V> {
-            MetadataReading(value, note: joined(note, readByReference.contains(path) ? nil : TIFFNote.unvalidated),
+            MetadataReading(value, note: joined(note, readByReference.contains(path) ? nil : TIFFNote.veloxUnvalidated),
                             otherCopy: otherCopy)
         }
 
@@ -326,9 +328,9 @@ nonisolated extension AcquisitionMetadata {
     private static func fei(_ sections: [String: [String: String]]) -> AcquisitionMetadata {
         var out = AcquisitionMetadata()
         func stored(_ section: String, _ key: String) -> String? { text(sections[section]?[key]) }
-        // "unvalidated" unless mapping_fei maps the path (Beam.HV, Scan.Dwelltime, User.Date/Time, System.SystemType).
+        // The no-published-reader note unless mapping_fei maps the path (Beam.HV, Scan.Dwelltime, User.Date/Time, System.SystemType).
         func reading<V: Sendable & Equatable>(_ value: V, mapped: Bool, note: String? = nil) -> MetadataReading<V> {
-            MetadataReading(value, note: joined(note, mapped ? nil : TIFFNote.unvalidated))
+            MetadataReading(value, note: joined(note, mapped ? nil : TIFFNote.feiUnvalidated))
         }
 
         // Rule (b) after the unit conversion, as for the Velox values: a stored 5e-324 V is 0.0 kV, a stored 1e306 s is

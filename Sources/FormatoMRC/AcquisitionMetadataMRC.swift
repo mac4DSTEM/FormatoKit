@@ -103,7 +103,7 @@
 //  STEM Detector name, else Camera name, else Detector commercial name (FEI2). DEVIATION from the first sketch
 //  (detector: STEM Detector name, else Camera name): the third source is needed because 4DSTEMscan.mrc names its
 //  detector only there ("Ceta-S speed"). Exposure = "Integration time" (the layout has no field called exposure;
-//  this is the camera field in seconds) — unvalidated and labelled so (`unvalidatedNote`): mrcfile declares the
+//  this is the camera field in seconds) — labelled `unvalidatedNote` (no published reader; read as stored): mrcfile declares the
 //  field (f8 at offset 419, mask 2 bit 16) and the harness plants and compares it, but no pinned reader treats it
 //  as an exposure and no real file records a positive value.
 //
@@ -195,10 +195,10 @@ nonisolated struct FEIRecord {
     static let fei1Size = 768
     static let fei2Size = 888
     /// The label of a value whose path no pinned reference reads (exposure, mode).
-    static let unvalidatedNote = "unvalidated: no published reader reads it"
+    static let unvalidatedNote = "no published reader reads this field; read as stored in the FEI extended header, at the offset mrcfile declares"
     /// RULE (c), open deviation: the label of a camera length shown without a mode test (Instrument mode and
     /// Projection mode are enumerations no published reader decodes).
-    static let modeUncheckedNote = "unvalidated: the mode is not checked"
+    static let modeUncheckedNote = "shown as stored; the instrument mode is not checked, as no published reader decodes it"
 
     /// A field: its byte offset in the record and the (mask, bit) that says it was written. Masks are 0...3 for
     /// Bitmask 1...4; their offsets are `maskOffsets`.

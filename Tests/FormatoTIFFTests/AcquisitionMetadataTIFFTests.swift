@@ -34,7 +34,7 @@ import FormatoTIFF
             let m = try AcquisitionMetadata.tiff(data: Self.data(name))
             #expect(referenceDifferences(m, c.reference, strict: ["beam_energy", "dwell_time", "microscope", "stamp"]) == [], "\(name)")
             // [Detectors] Name is mapped by neither: labelled.
-            #expect(m.detector == MetadataReading("ETD", note: AcquisitionMetadata.unvalidatedNote))
+            #expect(m.detector == MetadataReading("ETD", note: "no published reader reads this field; read as stored in the FEI header of the TIFF"))
         }
         // A stored zero is 0 (RosettaSciIO), not recorded (rule b).
         let zero = try AcquisitionMetadata.tiff(data: Self.data("fei-sfeg-zero"))
@@ -54,8 +54,8 @@ import FormatoTIFF
         #expect(try AcquisitionMetadata.tiff(data: imaging, convention: .app).cameraLengthMM == nil)
         // The values RosettaSciIO does not map are read by the app's rules, labelled.
         let m = try AcquisitionMetadata.tiff(data: imaging)
-        #expect(m.detector == MetadataReading("BM-Ceta", note: AcquisitionMetadata.unvalidatedNote))
-        #expect(m.exposureS == MetadataReading(0.5, note: AcquisitionMetadata.unvalidatedNote))
+        #expect(m.detector == MetadataReading("BM-Ceta", note: "no published reader reads this field; read as stored in the Velox XML of the TIFF"))
+        #expect(m.exposureS == MetadataReading(0.5, note: "no published reader reads this field; read as stored in the Velox XML of the TIFF"))
         #expect(m.acquired?.value == "2026-06-05 13:05:07")
         // A zone designator is another quantity: not recorded.
         #expect(try AcquisitionMetadata.tiff(data: Self.data("velox-zone-designator")).acquired == nil)

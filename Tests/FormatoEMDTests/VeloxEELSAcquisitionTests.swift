@@ -78,7 +78,8 @@ extension VeloxEMDSerialized {
                 #expect(a.highTensionKV?.value == Double(cube.beamVoltageV) / 1e3)
                 #expect(a.collectionAngleMrad.map { bits($0.value) } == bits(cube.collectionAngleEndRad.value * 1e3))
                 #expect(a.convergenceAngleMrad.map { bits($0.value) } == bits(pins.planted.beamConvergenceRad * 1e3))
-                #expect(a.convergenceAngleMrad?.note?.contains("unvalidated") == true)
+                #expect(a.convergenceAngleMrad?.note
+                        == "Optics.BeamConvergence in radians × 1e3; no published reader reads this field; read as stored in the Velox metadata")
             }
         }
 
