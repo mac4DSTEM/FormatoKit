@@ -1,5 +1,77 @@
 # Changelog
 
+## [0.12.0](https://github.com/mac4DSTEM/FormatoKit/compare/0.11.0...0.12.0) (2026-10-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* Sample.elements, metadata groups and segment times of Velox single spectra ([#44](https://github.com/mac4DSTEM/FormatoKit/issues/44))
+
+### Features
+
+* beam energy and angles of a Velox EELS spectrum image ([#43](https://github.com/mac4DSTEM/FormatoKit/issues/43)) ([326bb5c](https://github.com/mac4DSTEM/FormatoKit/commit/326bb5c9813af6897f5055ff72d65ab339697bae))
+* camera pixel pitch from a GMS TIFF tag 65027 stream ([#56](https://github.com/mac4DSTEM/FormatoKit/issues/56)) ([ef7ad05](https://github.com/mac4DSTEM/FormatoKit/commit/ef7ad053d7e330d638dc1f7076b1681563e11cc0))
+* camera pixel pitch of a DM image object (AcquisitionMetadata.cameraPixelPitch) ([#48](https://github.com/mac4DSTEM/FormatoKit/issues/48)) ([9db1d9e](https://github.com/mac4DSTEM/FormatoKit/commit/9db1d9efe20ce4c1b1c870bc23ac11853d19ed4b))
+* deprecate internal-only public helpers, drop dead code, split VeloxEMDReader.swift ([#34](https://github.com/mac4DSTEM/FormatoKit/issues/34)) ([6930401](https://github.com/mac4DSTEM/FormatoKit/commit/693040169bca785a41d83a88edba79ac7da342d1))
+* Sample.elements, metadata groups and segment times of Velox single spectra ([#44](https://github.com/mac4DSTEM/FormatoKit/issues/44)) ([d941fad](https://github.com/mac4DSTEM/FormatoKit/commit/d941fad0d8ee2e4530541d1b25f63a06408e842c))
+* TIFF series the reader cannot place are refused by name (TIFFError.unsupportedSeries) ([#62](https://github.com/mac4DSTEM/FormatoKit/issues/62)) ([1978c85](https://github.com/mac4DSTEM/FormatoKit/commit/1978c85d9fc77ed41d713eac8df911a072256381))
+* TIFF vendor pixel sizes for Zeiss SEM, TVIPS and JEOL SightX (TIFFVendorBranches.readWithVendorAxes) ([#63](https://github.com/mac4DSTEM/FormatoKit/issues/63)) ([9ea6acc](https://github.com/mac4DSTEM/FormatoKit/commit/9ea6acce64709722baf85c6375b5aee6b1b03b0f))
+* Velox spectrum images map Sample.elements as RosettaSciIO and HyperSpy do ([#57](https://github.com/mac4DSTEM/FormatoKit/issues/57)) ([9d8c1d7](https://github.com/mac4DSTEM/FormatoKit/commit/9d8c1d77901b195e6f82cef8265aae3f307e5a9d))
+
+
+### Bug Fixes
+
+* bound the total Velox metadata bytes the per-frame reads walk ([#40](https://github.com/mac4DSTEM/FormatoKit/issues/40)) ([59f99d3](https://github.com/mac4DSTEM/FormatoKit/commit/59f99d345f64c4b0f584cec0a2830a5540a71adb))
+* cap the Velox frame counts read from the file ([#38](https://github.com/mac4DSTEM/FormatoKit/issues/38)) ([90a1bc0](https://github.com/mac4DSTEM/FormatoKit/commit/90a1bc04403e0118b55d2fed47f2c2b6b277aedc))
+* DM4Datacube reads a scan-shaped rank-3 object as 4D; more than four dimensions and DM3 length 0 refused by name ([#46](https://github.com/mac4DSTEM/FormatoKit/issues/46)) ([455872f](https://github.com/mac4DSTEM/FormatoKit/commit/455872fff4f5f715b0535cbb1021cedb992f8663))
+* EMPAD scan extents come from the mode acquire scan_parameters block wherever it sits ([#51](https://github.com/mac4DSTEM/FormatoKit/issues/51)) ([25810ce](https://github.com/mac4DSTEM/FormatoKit/commit/25810ce171ab60f664ddf33b339b7856e15ebc5b))
+* HDF5 scratch files are written without a file lock, so a read right after a write no longer fails with errno 35 ([#58](https://github.com/mac4DSTEM/FormatoKit/issues/58)) ([5c1a7cd](https://github.com/mac4DSTEM/FormatoKit/commit/5c1a7cdf5c911a502581295f7a662ace554b8742))
+* libhdf5 xcframework zips without AppleDouble entries, checked with codesign --strict ([ad07f24](https://github.com/mac4DSTEM/FormatoKit/commit/ad07f24b5bc9f1fe82f947ceb21a12930be44115))
+* MIB app convention reads a header without, or against, its detector shape by the assembly ([#50](https://github.com/mac4DSTEM/FormatoKit/issues/50)) ([b3107cc](https://github.com/mac4DSTEM/FormatoKit/commit/b3107cc2b787822819cf58bf96b6198f2e16d061))
+* **tools:** byte-reproducible fixture generators (fixed emdfile UUID, fixed day for Velox zone names) and correct refuter-pins generator credits ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+
+
+### Performance Improvements
+
+* tile the DM4 scan-fastest gather (whole scan 420 ms to 68 ms) ([#70](https://github.com/mac4DSTEM/FormatoKit/issues/70)) ([185bda2](https://github.com/mac4DSTEM/FormatoKit/commit/185bda2d2a8ec108a96de43a5922b55312c5b61f))
+
+
+### Fixtures and tests
+
+* acquire block first and last, default and preferScanResolution, read 2 x 3 equal to the raw bytes (red before: the search block 9 x 9 failed the length check); series_count from the last block. Gate green; also compiled and run with Xcode 26.6. ([25810ce](https://github.com/mac4DSTEM/FormatoKit/commit/25810ce171ab60f664ddf33b339b7856e15ebc5b))
+* data-dependent tests show as skipped; the real-data Peek check moves to the parity target ([#42](https://github.com/mac4DSTEM/FormatoKit/issues/42)) ([85142dc](https://github.com/mac4DSTEM/FormatoKit/commit/85142dcd2450faadd7cb092e74bde419d1079d4a))
+* EMD version attributes are int64 as py4DSTEM writes them, and int32 files are read ([#52](https://github.com/mac4DSTEM/FormatoKit/issues/52)) ([16eb9dc](https://github.com/mac4DSTEM/FormatoKit/commit/16eb9dc561973ff53a4900c34ded41f2e46208c1))
+* **fixtures:** regenerate 4d/float32.h5 (fixed UUID) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate 4d/pins.json (h5py 3.16.0, NumPy 2.5.4, emdfile 0.0.16) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate 4d/singleton.h5 (fixed UUID) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate 4d/uint16.h5 (fixed UUID) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate bragg/basic.h5 (fixed UUID) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate bragg/check-result.json (h5py 3.16.0) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate bragg/empty.h5 (fixed UUID) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate bragg/pins.json (h5py 3.16.0, NumPy 2.5.4, emdfile 0.0.16) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate dm-velox-pins.json (sparse installed: spectrum_stream_not_read false; generator name) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate emd-bundle/check-result.json (h5py 3.16.0) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate planted-truth.json (generator name) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate the Core refuter-pins.json (generator name) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate the TIFF refuter-pins.json (generator name) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate tiff-pins.json (generator name) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate units-pins.json (generator name) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate velox-spectrum-image-pins.json (generator name) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate velox-spectrum-image-refuter-pins.json (generator name) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate velox-titles-pins.json (sparse installed; generator name) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* **fixtures:** regenerate velox-titles-refuter-pins.json (sparse installed; generator name) ([fd3fc47](https://github.com/mac4DSTEM/FormatoKit/commit/fd3fc473997f5a41563a0d452c10edad5ebb9b2e))
+* no child process copies an HDF5 write lock, so write-then-read tests stop flaking ([#54](https://github.com/mac4DSTEM/FormatoKit/issues/54)) ([47e44f7](https://github.com/mac4DSTEM/FormatoKit/commit/47e44f7554a65ce60e5ae883c52f1d7db32bf92a)), closes [#49](https://github.com/mac4DSTEM/FormatoKit/issues/49)
+* one generated fixture index, one Python environment and one References path for the generators ([#64](https://github.com/mac4DSTEM/FormatoKit/issues/64)) ([bb79a72](https://github.com/mac4DSTEM/FormatoKit/commit/bb79a726c3da43ab24b7a05515462cefec848a7f))
+* planted copies of the five app fixtures with blank and disagreeing width and height read equal to the pinned bytes (red before: Invalid detector shape). Gate green; also compiled and run with Xcode 26.6. ([b3107cc](https://github.com/mac4DSTEM/FormatoKit/commit/b3107cc2b787822819cf58bf96b6198f2e16d061))
+* step-1-pins.json is now dm-velox-pins.json (the DM and Velox reader pins; a name, no number changes) ([3e581d7](https://github.com/mac4DSTEM/FormatoKit/commit/3e581d75ae522e7a0508afe594afdb9db6aad3e6))
+* step-2-pins.json is now tiff-pins.json (the TIFF reader pins; a name, no number changes) ([3e581d7](https://github.com/mac4DSTEM/FormatoKit/commit/3e581d75ae522e7a0508afe594afdb9db6aad3e6))
+* step-3-pins.json is now velox-titles-pins.json (the Velox title pins; a name, no number changes) ([3e581d7](https://github.com/mac4DSTEM/FormatoKit/commit/3e581d75ae522e7a0508afe594afdb9db6aad3e6))
+* step-3-refuter-pins.json is now velox-titles-refuter-pins.json (a name, no number changes) ([3e581d7](https://github.com/mac4DSTEM/FormatoKit/commit/3e581d75ae522e7a0508afe594afdb9db6aad3e6))
+* step-4-pins.json is now velox-spectrum-image-pins.json (the Velox spectrum-image pins; a name, no number changes) ([3e581d7](https://github.com/mac4DSTEM/FormatoKit/commit/3e581d75ae522e7a0508afe594afdb9db6aad3e6))
+* step-4-refuter-pins.json is now velox-spectrum-image-refuter-pins.json (a name, no number changes) ([3e581d7](https://github.com/mac4DSTEM/FormatoKit/commit/3e581d75ae522e7a0508afe594afdb9db6aad3e6))
+* the refuter-step3 fixture folder is now velox-titles-refuter (the Velox title review files; a name, no number changes) ([3e581d7](https://github.com/mac4DSTEM/FormatoKit/commit/3e581d75ae522e7a0508afe594afdb9db6aad3e6))
+* the step4 fixture folder is now velox-spectrum-image (the Velox spectrum-image fixtures; a name, no number changes) ([3e581d7](https://github.com/mac4DSTEM/FormatoKit/commit/3e581d75ae522e7a0508afe594afdb9db6aad3e6))
+
 ## 0.11.0 (2026-10-22)
 
 A TIFF written by tifffile with its default metadata opens, and the scan, time and optics facts the apps asked for are exposed read-only. Additive; no byte a reader returned before changes, except the files below that were refused before.
