@@ -329,3 +329,18 @@ run the suite again without the variable. The regenerated files are committed on
 ## Peek (0.10.0)
 
 `Peek` has no RosettaSciIO counterpart. Its dimensions, axes, data types and acquisition fields are the readers' own (compared with them, exact); its pixels are the file's, point sampled at `stride = ceil(longer side / maxPixels)` (pixel (i, j) = source (i * stride, j * stride)), so there is no tolerance: a planted gradient (1000 * row + column) pins the closed form at stride 1 and 4, and every format is compared with the same file read whole by its own reader and cut at the same stride (`Tests/FormatoPeekTests`). A stack or cube is entered at the centre of its leading axes; a spectrum is binned to the largest value per bin. Budget: the 1.66 GB Velox spectrum image peeks in 0.36 s with 22 MB resident.
+
+## Known limits and decisions
+
+Open work is in the [issues](https://github.com/mac4DSTEM/FormatoKit/issues), including the ones closed as *not planned* and
+parked for later (read speed #4, GMS EDS geometry #5, more formats #11). Speed against RosettaSciIO is in `docs/benchmarks.md`.
+
+- **Read speed.** DM4 2048² f32, TIFF 4096² u16 and DM4 4D 32² x 128² read about 2x slower than RosettaSciIO. The shared lazy
+  file array zero-fills a `Data` and then `pread`s into it (one extra pass); uninitialised storage was slower and was
+  reverted. Velox 2048² x5, MRC 1024² x10 and the small DM rows are within the run-to-run spread. Large rows are nightly
+  (`bench.py run --large`).
+- **GMS EDS geometry** (stage tilt, multi-segment list) is not read, so GMS absorption is refused; it needs a GMS EDS `.dm4`
+  with a spectrum image. Velox live and real times of `/Data/SpectrumImage` are read since 0.11.0; an SI group with several
+  streams or a disabled segment is covered only by planted files.
+- **FEI2 extended MRC header** is not read. `_parse_image_display` is not run on the single-spectrum path of a SpectrumStream
+  file.

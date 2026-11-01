@@ -167,6 +167,6 @@ matches it. Tags are made by the maintainer; what each tag changes for a consume
 - Big-endian DM files: none exists to test; not detected.
 - Velox: `lazy=True` is not ported; hostile grids and bin counts were run on FormatoKit only, not
   refuted against RosettaSciIO. Deliberate deviations are listed in `docs/parity.md`.
-- Performance: `docs/benchmarks.md`. DM, TIFF and the 2048² Velox image read 1.2 to 2x slower than RosettaSciIO at typical sizes (`docs/open-items.md`); MIB, MSA, MRC, EMPAD, HDF5 4D and the Velox spectrum-image decode are at parity or faster.
+- Performance: `docs/benchmarks.md`. DM, TIFF and the 2048² Velox image read 1.2 to 2x slower than RosettaSciIO at typical sizes (`docs/parity.md`, known limits); MIB, MSA, MRC, EMPAD, HDF5 4D and the Velox spectrum-image decode are at parity or faster.
 - TIFF: OME and SubIFD series, generic pyramids, compression and the other vendor branches are refused, not read (tifffile's shaped series are read since 0.11.0).
 - Validation: none. Agreement with RosettaSciIO and recovery of planted files are what is claimed.
