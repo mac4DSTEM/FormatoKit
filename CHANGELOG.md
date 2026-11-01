@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/mac4DSTEM/FormatoKit/compare/0.12.0...0.12.1) (2026-11-01)
+
+
+### Bug Fixes
+
+* reader notes state what is known instead of unvalidated ([#74](https://github.com/mac4DSTEM/FormatoKit/issues/74)) ([c9b6387](https://github.com/mac4DSTEM/FormatoKit/commit/c9b6387e83b4f9e36c9b18304f8c72bf4dfd4de9))
+
 ## [0.12.0](https://github.com/mac4DSTEM/FormatoKit/compare/0.11.0...0.12.0) (2026-10-31)
 
 
