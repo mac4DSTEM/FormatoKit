@@ -2749,7 +2749,7 @@
    "app": {
     "height": 2,
     "notes": [
-     "scale unvalidated (one acquisition)"
+     "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard"
     ],
     "pixels": [
      1065353216,
@@ -2757,7 +2757,7 @@
      1077936128,
      1082130432
     ],
-    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard",
     "voltage": null,
     "width": 2,
     "x": {
@@ -2797,7 +2797,7 @@
    "app": {
     "height": 2,
     "notes": [
-     "scale unvalidated (one acquisition)"
+     "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard"
     ],
     "pixels": [
      1065353216,
@@ -2805,7 +2805,7 @@
      1077936128,
      1082130432
     ],
-    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard",
     "voltage": null,
     "width": 2,
     "x": {
@@ -2825,7 +2825,7 @@
    "app": {
     "height": 2,
     "notes": [
-     "scale unvalidated (one acquisition)"
+     "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard"
     ],
     "pixels": [
      1065353216,
@@ -2833,7 +2833,7 @@
      1077936128,
      1082130432
     ],
-    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard",
     "voltage": null,
     "width": 2,
     "x": {
@@ -2853,7 +2853,7 @@
    "app": {
     "height": 2,
     "notes": [
-     "scale unvalidated (one acquisition)"
+     "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard"
     ],
     "pixels": [
      1065353216,
@@ -2861,7 +2861,7 @@
      1077936128,
      1082130432
     ],
-    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard",
     "voltage": null,
     "width": 2,
     "x": {
@@ -2881,7 +2881,7 @@
    "app": {
     "height": 2,
     "notes": [
-     "scale unvalidated (one acquisition)"
+     "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard"
     ],
     "pixels": [
      1065353216,
@@ -2889,7 +2889,7 @@
      1077936128,
      1082130432
     ],
-    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard",
     "voltage": null,
     "width": 2,
     "x": {
@@ -2909,7 +2909,7 @@
    "app": {
     "height": 2,
     "notes": [
-     "scale unvalidated (one acquisition)"
+     "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard"
     ],
     "pixels": [
      1065353216,
@@ -2917,7 +2917,7 @@
      1077936128,
      1082130432
     ],
-    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard",
     "voltage": null,
     "width": 2,
     "x": null,
@@ -3013,7 +3013,7 @@
    "app": {
     "height": 2,
     "notes": [
-     "scale unvalidated (one acquisition)"
+     "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard"
     ],
     "pixels": [
      1065353216,
@@ -3021,7 +3021,7 @@
      1077936128,
      1082130432
     ],
-    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard",
     "voltage": null,
     "width": 2,
     "x": {
@@ -3111,7 +3111,7 @@
    "app": {
     "height": 2,
     "notes": [
-     "scale unvalidated (one acquisition)"
+     "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard"
     ],
     "pixels": [
      1065353216,
@@ -3119,7 +3119,7 @@
      1077936128,
      1082130432
     ],
-    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "source": "TIFF \u00b7 uint8 \u00b7 Velox metadata \u00b7 scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard",
     "voltage": null,
     "width": 2,
     "x": {
@@ -3139,7 +3139,7 @@
    "app": {
     "height": 3,
     "notes": [
-     "scale unvalidated (one acquisition)"
+     "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard"
     ],
     "pixels": [
      0,
@@ -3155,7 +3155,7 @@
      1167867904,
      1168891904
     ],
-    "source": "TIFF \u00b7 uint16 \u00b7 Velox metadata \u00b7 scale unvalidated (one acquisition)",
+    "source": "TIFF \u00b7 uint16 \u00b7 Velox metadata \u00b7 scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard",
     "voltage": null,
     "width": 4,
     "x": {

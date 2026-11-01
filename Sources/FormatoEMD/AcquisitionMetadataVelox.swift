@@ -7,7 +7,7 @@
 //  field: `Optics.AccelerationVoltage` / 1e3 (kV), `Optics.CameraLength` * 1e3 (mm, in every mode),
 //  `CustomProperties.StemMagnification.value` as the magnification (Velox stores an unset bool as 0; it is returned as
 //  stored); no positivity rule. RosettaSciIO maps no detector, dwell, exposure, mode or date for an image; those are read
-//  by the consumer's rule with `unvalidatedNote`: the detector `BinaryResult.Detector`, the instrument
+//  by the consumer's rule with `veloxUnvalidated` (no published reader; read as stored): the detector `BinaryResult.Detector`, the instrument
 //  `Instrument.InstrumentModel` (`.app`; under `.rosettaSciIO` it is `instrumentModel`, and `instrument` is RosettaSciIO's `InstrumentClass`), the dwell `Scan.DwellTime` only for a
 //  ScanningDetector, the exposure of the detector the image names (`VeloxMetadata.exposureTimeSeconds`), the magnification
 //  `Optics.NominalMagnification` when no `StemMagnification` is stored, the mode `Optics.OperatingMode` as the stored
@@ -18,7 +18,7 @@
 //  the note says it is not a metadata mapping) under `.rosettaSciIO`, and `velox(spectrumImage:)`, the same fields for the metadata
 //  of a spectrum image (`VeloxEMDReader.spectrumImageMetadata()`). `velox(eelsSpectrumImage:)` reads the same fields from one EELS
 //  spectrum image's metadata (`VeloxEMDReader.eelsSpectrumImageMetadata()`) plus the collection and convergence semi-angles, where
-//  RosettaSciIO maps nothing (the collection angle as pyEELSMODEL reads it; the convergence angle labelled unvalidated).
+//  RosettaSciIO maps nothing (the collection angle as pyEELSMODEL reads it; the convergence angle noted as read by no published reader).
 //
 //  `.app` is the consumer's reading of the same entry, pinned to its source: high tension, detector, instrument, start
 //  date and dwell only; magnification, camera length, exposure and mode are `unread` (the consumer's reader predated the
@@ -44,7 +44,7 @@ nonisolated extension AcquisitionMetadata {
         if let stem = m.stemMagnification {
             out.magnification = MetadataReading(stem)
         } else if let nominal = positive(m.nominalMagnification) {
-            out.magnification = MetadataReading(nominal, note: unvalidatedNote)
+            out.magnification = MetadataReading(nominal, note: veloxUnvalidated)
         }
         // The microscope is `Instrument.InstrumentClass` (`_get_mapping`, :947-950), as stored; the stored model is kept beside it.
         out.instrument = m.instrumentClass.map { MetadataReading($0) }   // as stored, as RosettaSciIO passes it
@@ -66,9 +66,9 @@ nonisolated extension AcquisitionMetadata {
             if let unitY = text(m.pixelUnitY), unitY != unit { note += "; PixelUnitY is '\(unitY)', RosettaSciIO uses PixelUnitX for both" }
             out.pixelSize = MetadataReading(PixelSize(rows: size.height, columns: size.width, units: unit), note: note)
         }
-        if let seconds = positive(m.exposureTimeSeconds) { out.exposureS = MetadataReading(seconds, note: unvalidatedNote) }
+        if let seconds = positive(m.exposureTimeSeconds) { out.exposureS = MetadataReading(seconds, note: veloxUnvalidated) }
         if let mode = text(m.operatingMode) {
-            out.mode = MetadataReading(mode, note: "the stored code, not decoded; " + unvalidatedNote)
+            out.mode = MetadataReading(mode, note: "the stored code, not decoded; " + veloxUnvalidated)
         }
         return out
     }
@@ -87,7 +87,7 @@ nonisolated extension AcquisitionMetadata {
     /// `velox(spectrumImage:)`, among them the beam energy `Optics.AccelerationVoltage` / 1e3 (kV, RosettaSciIO's mapping for
     /// the EDS signal of the same file; pyEELSMODEL's `emd_reader` reads the same volts as E0), and the two angles in mrad:
     /// the collection semi-angle `EnergyFilter.CollectionAngleRange.End` × 1e3 (pyEELSMODEL's beta, radians as stored) and
-    /// the convergence semi-angle `Optics.BeamConvergence` × 1e3 (no published reader reads it: unvalidated). An angle that is
+    /// the convergence semi-angle `Optics.BeamConvergence` × 1e3 (no published reader reads it; noted so). An angle that is
     /// not a finite positive number is nil (pyEELSMODEL passes a stored 0 through as beta; here 0 is no collection angle). The
     /// angles are read under `.rosettaSciIO` only; `.app` gives what `velox(spectrumImage:)` gives.
     public static func velox(eelsSpectrumImage metadata: VeloxMetadata, timeZone: TimeZone = .current,
@@ -126,10 +126,11 @@ nonisolated extension AcquisitionMetadata {
         return out
     }
 
-    static let veloxUnvalidated = "unvalidated: no published reader reads it"
-    /// The registered clause failed (2026-10-13, velox-image-parity): RosettaSciIO's title comes from the file's
-    /// Operations, not `BinaryResult.Detector`, and differs on 7 of 33 public and owner files ("Ceta" for "BM-Ceta").
-    static let veloxDetectorNote = "unvalidated: RosettaSciIO names some detectors from another field"
+    /// This format's wording of `noPublishedReaderNote`: the value is read as the Velox metadata stores it.
+    static let veloxUnvalidated = "no published reader reads this field; read as stored in the Velox metadata"
+    /// RosettaSciIO's title comes from the file's Operations, not `BinaryResult.Detector`, and differs on 7 of 33 public
+    /// and owner files ("Ceta" for "BM-Ceta").
+    static let veloxDetectorNote = "read from BinaryResult.Detector; RosettaSciIO names some detectors from another field"
 
     /// Unix seconds as `YYYY-MM-DD HH:MM:SS` on `timeZone`'s clock (whole seconds, truncated as RosettaSciIO's
     /// `isoformat` is); nil when not finite or out of the four-digit years.

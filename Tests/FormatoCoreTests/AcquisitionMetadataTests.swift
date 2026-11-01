@@ -79,4 +79,11 @@ import FormatoCore
         #expect(formatoDisplayFileName("") == "")
         #expect(formatoDisplayFileName("/") == "/")
     }
+
+    @Test func theNoReferenceNoteStatesTheFactAndKeepsItsOldName() {
+        // Apps show the note verbatim: it says what is known (no published reader, read as stored), never "unvalidated".
+        #expect(AcquisitionMetadata.noPublishedReaderNote == "no published reader reads this field; read as the file stores it")
+        #expect(AcquisitionMetadata.unvalidatedNote == AcquisitionMetadata.noPublishedReaderNote)
+        #expect(!AcquisitionMetadata.noPublishedReaderNote.lowercased().contains("unvalidated"))
+    }
 }
