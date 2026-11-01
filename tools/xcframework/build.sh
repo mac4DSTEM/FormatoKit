@@ -6,9 +6,11 @@
 #
 # The zips are not byte-reproducible, so a rebuild changes their checksums. A release build (no --local) writes the new checksums into
 # Package.swift; --local (the gates' build when dist/ is missing) leaves Package.swift alone. Release: run without --local, commit
-# Package.swift, then upload exactly those zips and tag (the owner's commands):
-#   gh release create 0.4.0 --draft --title 0.4.0 dist/xcframeworks/FormatoLib{HDF5,SZ,AEC}.xcframework.zip
-#   (publish the draft and push the tag 0.4.0 only after Package.swift with these checksums is on main)
+# Package.swift, then upload exactly those zips under the names Package.swift resolves (the owner's commands). A rebuild never
+# replaces an asset a tag already pins: it gets a new `xcframeworkRebuild` suffix in Package.swift and is uploaded beside the old ones:
+#   cp dist/xcframeworks/FormatoLibHDF5.xcframework.zip <dir>/FormatoLibHDF5-r2.xcframework.zip   (and SZ, AEC)
+#   gh release upload 0.4.0 <dir>/FormatoLib{HDF5,SZ,AEC}-r2.xcframework.zip
+#   (merge the Package.swift change only after the upload: the xcframework-url job on main resolves them)
 #
 # Why frameworks: Xcode embeds a dynamic framework from a binary target into an app and signs it with the app's own identity at
 # archive time (Developer ID, Hardened Runtime). A resource-bundled bare dylib is copied and stays ad-hoc signed. The binaries are
