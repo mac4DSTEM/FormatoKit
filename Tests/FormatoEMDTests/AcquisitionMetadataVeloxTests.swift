@@ -86,6 +86,32 @@ extension VeloxEMDSerialized {
             #expect(entries["ceta"]?.resolvedDetector?.name == "BM-Ceta")
         }
 
+        /// RosettaSciIO 049e7d70 `_get_metadata_dict`: without `Acquisition.AcquisitionStartDatetime` the start is
+        /// `CustomProperties["Detectors[BM-Ceta].TimeStamp"].value` / 1e6 (the public '1532 Camera Ceta.emd' has only this
+        /// stamp). Pinned with TZ=UTC: date '2017-11-30', time '15:32:22.914275'; the kit's stamp keeps whole seconds.
+        /// With both stamps the start wins (2017-03-06 09:56:41); a string CustomProperties, no stamp, or no Acquisition
+        /// object give no date (RosettaSciIO sets none, or raises). `.app` keeps the consumer's reading: start only.
+        @Test func testTheCetaTimeStampDatesAnImageWithoutAStartAsRosettaSciIO() throws {
+            func meta(_ json: String) throws -> VeloxMetadata { try VeloxMetadata.parse(jsonData: Data(json.utf8)) }
+            let stamp = #""CustomProperties": {"Detectors[BM-Ceta].TimeStamp": {"type": "int64", "value": "1512055942914275"}}"#
+            let cetaOnly = try meta(#"{"Acquisition": {}, "# + stamp + "}")
+            let m = AcquisitionMetadata.velox(spectrumImage: cetaOnly, timeZone: Self.utc)
+            #expect(m.acquired?.value == "2017-11-30 15:32:22")
+            #expect(m.acquired?.note?.contains("Detectors[BM-Ceta].TimeStamp") == true)
+            #expect(AcquisitionMetadata.velox(spectrumImage: cetaOnly, timeZone: Self.utc, convention: .app).acquired == nil)
+
+            let both = try meta(#"{"Acquisition": {"AcquisitionStartDatetime": {"DateTime": "1488794201"}}, "# + stamp + "}")
+            #expect(AcquisitionMetadata.velox(spectrumImage: both, timeZone: Self.utc).acquired?.value == "2017-03-06 09:56:41")
+            // A start key whose DateTime does not parse is no fallback: RosettaSciIO takes the start branch and never the stamp.
+            let badStart = try meta(#"{"Acquisition": {"AcquisitionStartDatetime": {"DateTime": "n/a"}}, "# + stamp + "}")
+            #expect(AcquisitionMetadata.velox(spectrumImage: badStart, timeZone: Self.utc).acquired == nil)
+
+            for json in [#"{"Acquisition": {}, "CustomProperties": ""}"#, #"{"Acquisition": {}, "CustomProperties": {}}"#,
+                         "{" + stamp + "}"] {
+                #expect(AcquisitionMetadata.velox(spectrumImage: try meta(json), timeZone: Self.utc).acquired == nil, "\(json)")
+            }
+        }
+
         @Test func testPixelSizeWithoutPixelUnitXKeepsAnEmptyUnitLikeRosettaSciIO() throws {
             // RosettaSciIO reads `.get("PixelUnitX", "")`: the scale is kept and the unit is "" (tools/acq-metadata/no_unit.py).
             let path = Self.fixtures.appendingPathComponent("velox-no-unit.emd").path
