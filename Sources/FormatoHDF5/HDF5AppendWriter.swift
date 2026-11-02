@@ -10,6 +10,10 @@
 //    body included, leaves the destination byte for byte as it was and removes the scratch.
 //  - `.inPlace`: the destination is opened read/write and changed directly. NOT atomic: a failure or a crash partway can
 //    leave the file partly changed, or damaged. A file that did not exist and was created by the call is removed on failure.
+//    The destination keeps libhdf5's write lock here (other programs may have it open); a child process started during the
+//    call can then hold that lock past the close (FormatoKit#53), and one started during an earlier read of the file can hold
+//    its shared lock and refuse this open. A consumer that starts children while it appends in place starts them inside
+//    `HDF5Serial.run`. The scratch of `.atomicCopy` is opened without the lock.
 //
 //  The whole call, body included, runs under `HDF5Serial`. The body runs synchronously on the calling thread; it must not
 //  wait for another thread that uses HDF5 (that thread would wait for the lock the body's caller holds).
@@ -81,18 +85,23 @@ public nonisolated enum HDF5AppendWriter {
             try? FileManager.default.removeItem(at: scratch)
             if let scratchDirectory { try? FileManager.default.removeItem(at: scratchDirectory) }
         }
-        let file: hid_t
-        if checked != nil {
-            // Data, permissions and attributes; a clone on APFS, so a large file costs no copy.
-            let status = copyfile(url.path, scratch.path, nil, copyfile_flags_t(COPYFILE_ALL | COPYFILE_CLONE))
-            guard status == 0 else {
-                throw HDF5FileError.cannotWrite(operation: "copying the file", detail: String(cString: strerror(errno)))
+        // The scratch is opened with file locking off: no program but this one has it open, and a write lock could outlive the
+        // close in a child process started meanwhile, refusing the read that follows the publish (FormatoKit#53).
+        let file: hid_t = try h5.withScratchFileAccess { access in
+            if checked != nil {
+                // Data, permissions and attributes; a clone on APFS, so a large file costs no copy.
+                let status = copyfile(url.path, scratch.path, nil, copyfile_flags_t(COPYFILE_ALL | COPYFILE_CLONE))
+                guard status == 0 else {
+                    throw HDF5FileError.cannotWrite(operation: "copying the file", detail: String(cString: strerror(errno)))
+                }
+                let file = scratch.path.withCString { h5.h5fopen($0, 0x0001, access) }
+                guard file >= 0 else { throw HDF5FileError.cannotOpen(HDF5RootAttributes.errorStack(h5) ?? "HDF5 gave no reason") }
+                return file
+            } else {
+                let file = scratch.path.withCString { h5.h5fcreate($0, 0x0002, 0, access) }      // H5F_ACC_TRUNC
+                guard file >= 0 else { throw HDF5RootAttributes.failure("creating the file", h5) }
+                return file
             }
-            file = scratch.path.withCString { h5.h5fopen($0, 0x0001, 0) }
-            guard file >= 0 else { throw HDF5FileError.cannotOpen(HDF5RootAttributes.errorStack(h5) ?? "HDF5 gave no reason") }
-        } else {
-            file = scratch.path.withCString { h5.h5fcreate($0, 0x0002, 0, 0) }      // H5F_ACC_TRUNC
-            guard file >= 0 else { throw HDF5RootAttributes.failure("creating the file", h5) }
         }
         try run(file, h5, body)
         let descriptor = scratch.path.withCString { Darwin.open($0, O_RDONLY) }

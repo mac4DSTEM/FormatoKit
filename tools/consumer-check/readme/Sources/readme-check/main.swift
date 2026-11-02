@@ -41,7 +41,7 @@ for image in velox.images {
 }
 
 let options = VeloxSpectrumImageOptions(rebinEnergy: 1)
-let spectrumImages = try VeloxSpectrumImageSignals(path: "Tests/FormatoEMDTests/Fixtures/step4/si-planted-v11.emd",
+let spectrumImages = try VeloxSpectrumImageSignals(path: "Tests/FormatoEMDTests/Fixtures/velox-spectrum-image/si-planted-v11.emd",
                                                    options: options)
 for signal in spectrumImages.signals {
     print(signal.title, signal.signalType, signal.data.dataType, signal.data.shape)

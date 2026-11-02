@@ -64,7 +64,7 @@ Reading it: "Python / kit" above 1 is the kit faster. The Velox SI row is the st
 Readers stay on the CPU: they are bound by file reads and memory copies, there is no arithmetic for a GPU to take over, and
 host-to-device copies of a freshly read array cost more than the read. Measured break-even: none exists, no Metal path is a work item
 for any reader. Threading and mmap: only the 4D loads above 100 MB could split a read over cores; at the typical size the 4D rows
-are already within 1.1x of h5py and of RosettaSciIO, so the question belongs to the large rows, not measured yet (`docs/open-items.md`).
+are already within 1.1x of h5py and of RosettaSciIO, so the question belongs to the large rows, not measured yet (`docs/parity.md`, known limits).
 
 | Function | Backend | Why |
 |---|---|---|
@@ -73,6 +73,6 @@ are already within 1.1x of h5py and of RosettaSciIO, so the question belongs to 
 
 ## Slower than RosettaSciIO at the typical size
 
-Listed first in `docs/open-items.md` with the cause. Found and fixed before this table (diagnosed with `sample`, then measured):
+Listed first in `docs/parity.md` (known limits) with the cause. Found and fixed before this table (diagnosed with `sample`, then measured):
 MIB 934 ms to 35 ms (an `ISO8601DateFormatter` built per frame header, 1024 times, plus a per-pixel `Data.append`); MSA 111 ms to 17 ms
 (per-line allocation in the first reader).

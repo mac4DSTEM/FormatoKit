@@ -1,6 +1,6 @@
 """Acquisition-metadata fixtures and pins (FormatoCore AcquisitionMetadata; FormatoDM/MRC/TIFF/EMD readers).
 
-    MACEM_SUITE=<suite> <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/acq-metadata/generate.py
+    MACEM_SUITE=<suite> References/venv/bin/python -I -B tools/acq-metadata/generate.py
 
 Writes small synthetic DM4, MRC, TIFF and Velox EMD files (struct/h5py only, byte by byte) under Tests/*/Fixtures/acq-metadata/ and,
 for each, two pins:
@@ -27,7 +27,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SUITE = pathlib.Path(os.environ['MACEM_SUITE'])
 PIN = '049e7d7070e84779b499adaf3295beee9facb004'
 APP = 'cb6e164f9227bf716185ed515bb6a2afb3a8841f'
-assert subprocess.check_output(['git', '-C', str(SUITE / 'References/FormatoKit/rosettasciio-049e7d70'), 'rev-parse', 'HEAD'], text=True).strip() == PIN
+assert subprocess.check_output(['git', '-C', str(ROOT / 'References/rosettasciio-049e7d70'), 'rev-parse', 'HEAD'], text=True).strip() == PIN
 assert rsciio.__version__ == '0.14.1.dev96+g049e7d707'
 HERE = pathlib.Path(__file__).resolve().parent
 OUT = {k: ROOT / f'Tests/{k}Tests/Fixtures/acq-metadata' for k in ('FormatoDM', 'FormatoMRC', 'FormatoTIFF', 'FormatoEMD')}
@@ -377,7 +377,39 @@ def build_harness(td):
 def run_harness(exe, kind, cases, td):
     cp = td / f'{kind}.json'
     cp.write_text(json.dumps(cases))
-    return json.loads(subprocess.check_output([str(exe), kind, str(cp)]))
+    return kit_notes(kind, json.loads(subprocess.check_output([str(exe), kind, str(cp)])))
+
+
+# The kit words the notes as plain facts where the pinned app (APP) wrote "unvalidated": the same notes, attached to the
+# same values, in the kit's wording. Applied to the app output only; no value changes.
+OLD_NOTE = 'unvalidated: no published reader reads it'
+KIT_NOTE = {
+    'dm': 'no published reader reads this field; read as stored in the DM image tags',
+    'velox': 'no published reader reads this field; read as stored in the Velox metadata',
+    'mrc': 'no published reader reads this field; read as stored in the FEI extended header, at the offset mrcfile declares',
+    'tiff-velox': 'no published reader reads this field; read as stored in the Velox XML of the TIFF',
+    'tiff-fei': 'no published reader reads this field; read as stored in the FEI header of the TIFF',
+}
+KIT_PAIRS = [
+    ('unvalidated: RosettaSciIO names some detectors from another field', 'read from BinaryResult.Detector; RosettaSciIO names some detectors from another field'),
+    ('unvalidated: the mode is not checked', 'shown as stored; the instrument mode is not checked, as no published reader decodes it'),
+    ('scale unvalidated (one acquisition)', 'scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard'),
+]
+
+
+def kit_notes(kind, out):
+    def sub(obj, pairs):
+        if isinstance(obj, str):
+            for a, b in pairs: obj = obj.replace(a, b)
+            return obj
+        if isinstance(obj, list): return [sub(x, pairs) for x in obj]
+        if isinstance(obj, dict): return {k: sub(v, pairs) for k, v in obj.items()}
+        return obj
+    if kind == 'tiff':   # keyed by case name: the Velox XML cases, the FEI INI cases, the DM tag stream
+        prefix = {'velox': 'tiff-velox', 'fei': 'tiff-fei', 'dm': 'dm'}
+        return {n: sub(v, KIT_PAIRS + [(OLD_NOTE, KIT_NOTE[prefix[p]])] if (p := next((k for k in prefix if n.startswith(k)), None)) else KIT_PAIRS)
+                for n, v in out.items()}
+    return sub(out, KIT_PAIRS + ([(OLD_NOTE, KIT_NOTE[kind])] if kind in KIT_NOTE else []))
 
 
 # ---------------------------------------------------------------------------------------------------------------- image readers

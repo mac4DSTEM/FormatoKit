@@ -88,7 +88,10 @@ import FormatoTIFF
         }
         #expect(TIFFAppImage.Refusal.compressed(scheme: 5).reason == "its pixels are compressed (scheme 5); only uncompressed TIFF is read.")
         #expect(TIFFAppImage.Note.render == "8-bit render, not counts")
-        #expect(TIFFAppImage.Note.veloxUnvalidated == "scale unvalidated (one acquisition)")
+        #expect(TIFFAppImage.Note.veloxUnvalidated == "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard")
+        #expect(TIFFAppImage.Note.veloxStoredScale == TIFFAppImage.Note.veloxUnvalidated)
+        #expect(TIFFVeloxCalibration.storedScaleNote == TIFFVeloxCalibration.unvalidatedNote)
+        #expect(!TIFFVeloxCalibration.storedScaleNote.lowercased().contains("unvalidated"))
         #expect(throws: FormatoReadError.self) { try TIFFAppImage.read(path: Self.path("no-such-file")) }
     }
 

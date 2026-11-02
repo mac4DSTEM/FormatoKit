@@ -38,6 +38,6 @@
    "structure_equal": true
   }
  },
- "h5py_version": "3.11.0",
+ "h5py_version": "3.16.0",
  "py4dstem_version": "0.14.19"
 }

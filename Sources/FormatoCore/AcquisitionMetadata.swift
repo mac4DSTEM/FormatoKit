@@ -75,7 +75,7 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     /// The instrument, as the file names it.
     public var instrument: MetadataReading<String>?
     /// The operating mode as the file states it: a name ("STEM", "TEM · DIFFRACTION") for Velox and DM; the stored
-    /// integer for MRC, labelled unvalidated (no pinned reference decodes it).
+    /// integer for MRC, with a note that no published reader decodes it.
     public var mode: MetadataReading<String>?
 
     // MARK: Added in 0.3.1 (additive). Read by the `.rosettaSciIO` convention only, where RosettaSciIO 049e7d70 maps the key
@@ -120,8 +120,21 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     /// RosettaSciIO uses it as the axis scale, not as metadata, so the `note` says what the file does not settle.
     public var pixelSize: MetadataReading<PixelSize>?
     /// Convergence semi-angle in mrad. A Velox EELS spectrum image (`velox(eelsSpectrumImage:)`, `.rosettaSciIO` only) also fills
-    /// it, labelled unvalidated: no published reader reads the stored value.
+    /// it, with a note that no published reader reads the stored value.
     public var convergenceAngleMrad: MetadataReading<Double>?
+
+    // MARK: Added after 0.11.0 (additive). Read by the DM reader from an image object (`AcquisitionMetadata.dm(_:convention:)`), and
+    // by the TIFF reader from a GMS TIFF's tag 65027 stream by the same rules, under both conventions; every other reader, and
+    // `dm(numbers:strings:)`, leave it nil.
+
+    /// The camera's own pixel pitch, where the file records it: the sensor's physical pixel, before any binning; not the pixel
+    /// at the specimen (`pixelSize`). DM: `Acquisition.Device.CCD.Pixel Size (um)`, two numbers stored as (x, y), so `columns`
+    /// is the first and `rows` the second, units "um" as the tag names them; the note says so when the two differ. Not the
+    /// binned frame pixel (`Acquisition.Frame.CCD.Pixel Size (um)`). Nil when the tag is absent, does not hold exactly two
+    /// numbers, or holds one that is not finite and positive. RosettaSciIO maps the tag for a CL signal only (its
+    /// `Detector.pixel_size`, also in `signalNumbers`); on any other signal `.rosettaSciIO` notes that no published reader reads it. The
+    /// `.app` convention reads it too (an extension of the consumer's rule set, which has no pitch), unlabelled.
+    public var cameraPixelPitch: MetadataReading<PixelSize>?
 
     /// The fields this file's FORMAT reader cannot read yet, though the file may record them: shown "Not read from this
     /// format yet", never "Not recorded" (a reader that does not expose them yet). Empty for every other format.
@@ -141,6 +154,8 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
     public static let localTimeNote = "local time, zone not stored"
     /// The note an MRC date carries (rule e): the pinned files disagree on the clock (local vs UTC).
     public static let writerClockNote = "clock of the writer, zone not stored"
+    /// The note `cameraPixelPitch` carries when its two stored numbers differ.
+    public static let unequalPitchNote = "the two differ: columns from the first stored number, rows from the second (the stored order)"
 
     /// Rule (b): a strictly positive quantity, or nil.
     public static func positive(_ v: Double?) -> Double? {
@@ -191,7 +206,8 @@ public nonisolated struct AcquisitionMetadata: Sendable, Equatable {
 ///
 /// `.rosettaSciIO` (the default) follows RosettaSciIO at the pinned commit for every field RosettaSciIO maps: its tag
 /// choice, its mode tests and its unit arithmetic, with no positivity rule (a stored zero is 0, not nil). A field
-/// RosettaSciIO does not map is read by the consumer's rule and carries the note ``AcquisitionMetadata/unvalidatedNote``.
+/// RosettaSciIO does not map is read by the consumer's rule and carries the format's wording of
+/// ``AcquisitionMetadata/noPublishedReaderNote``.
 /// `.app` is the consumer's own rule set (a to g above), pinned to its source; `docs/parity.md` lists the differences.
 public nonisolated enum AcquisitionMetadataConvention: Sendable, Equatable {
     case rosettaSciIO
@@ -199,6 +215,9 @@ public nonisolated enum AcquisitionMetadataConvention: Sendable, Equatable {
 }
 
 extension AcquisitionMetadata {
-    /// The note of a value no RosettaSciIO mapping reads.
-    public static let unvalidatedNote = "unvalidated: no published reader reads it"
+    /// The note of a value no RosettaSciIO mapping reads: it is read as the file stores it. Each format's reader attaches
+    /// its own wording of this note, naming where in the file the value is stored.
+    public static let noPublishedReaderNote = "no published reader reads this field; read as the file stores it"
+    /// The same note under its older name.
+    public static let unvalidatedNote = noPublishedReaderNote
 }

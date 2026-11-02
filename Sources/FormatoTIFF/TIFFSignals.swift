@@ -4,7 +4,8 @@
 //        defaults, over the parts of tifffile 2026.9.20 it relies on: the series (ImageJ,
 //        else uniform or generic grouping), the FEI INI tags, the ImageJ description, the Gatan DM tags. Data as stored;
 //        RGB as one element per pixel. Out of step 2, refused by name: Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX,
-//        Hamamatsu streak (unless `TIFFReadOptions.vendorBranches` is `.readAsGeneric`), compressed or tiled pages.
+//        Hamamatsu streak (unless `TIFFReadOptions.vendorBranches` is `.readAsGeneric`, or `.readWithVendorAxes`, which
+//        reads the Zeiss SEM, TVIPS and JEOL SightX axes as RosettaSciIO does: TIFFVendorAxes.swift), compressed or tiled pages.
 //
 
 import Foundation
@@ -178,6 +179,8 @@ public nonisolated struct TIFFSignals: Sendable {
     public let vendorBranch: String?
 
     let veloxCalibration: Bool
+    /// `TIFFVendorBranches.readWithVendorAxes`: the vendor branch's axes are read as RosettaSciIO reads them.
+    let vendorAxes: Bool
 
     /// Reads the file with the default options: a vendor branch that is not ported is refused by name.
     public init(path: String) throws {
@@ -195,12 +198,13 @@ public nonisolated struct TIFFSignals: Sendable {
             switch options.vendorBranches {
             case .refuse:
                 throw FormatoReadError.unsupported("\(formatoDisplayFileName(path)) is a \(refusal) TIFF, whose reading is not ported yet.")
-            case .readAsGeneric:
+            case .readAsGeneric, .readWithVendorAxes:
                 branch = refusal
             }
         }
         vendorBranch = branch
         veloxCalibration = options.veloxCalibration
+        vendorAxes = options.vendorBranches == .readWithVendorAxes
         series = try Self.buildSeries(file)
     }
 
@@ -238,6 +242,7 @@ public nonisolated struct TIFFSignals: Sendable {
     static func buildSeries(_ file: TIFFFile) throws -> [TIFFSeries] {
         let size = file.data.count
         let first = file.directories[0]
+        let name = formatoDisplayFileName(file.path)
         let layout0 = try TIFFPageLayout.of(first, bigEndian: file.bigEndian, fileSize: size)
         let pageAxes = layout0.samples > 1 ? "YXS" : "YX"
         let pageShape = layout0.samples > 1 ? [layout0.height, layout0.width, layout0.samples] : [layout0.height, layout0.width]
@@ -247,7 +252,7 @@ public nonisolated struct TIFFSignals: Sendable {
         let shaped = shapedDescription(first) != nil
         if shaped, let s = try shapedSeries(file) { return s }
         if !shaped {
-            if let d = first[270]?.text, d.contains("<OME") { throw FormatoReadError.unsupported("The file is an OME-TIFF; its series rule is not ported.") }
+            if let d = first[270]?.text, d.contains("<OME") { throw TIFFError.unsupportedSeries(file: name, series: "an OME-TIFF series") }
             if let meta = imageJDescription(first), let s = try imageJSeries(file, meta, layout0, pageAxes, pageShape) {
                 return [s]
             }
@@ -261,15 +266,21 @@ public nonisolated struct TIFFSignals: Sendable {
         }
         // tifffile splits pages by more than shape and type, and merges reduced-size pages into pyramids: a file whose pages
         // fall in more than one group is refused rather than guessed.
-        guard groups.count == 1 else {
-            throw FormatoReadError.unsupported("The file's pages form \(groups.count) groups; several series are not ported.")
-        }
-        return groups.map { g in
+        let all = groups.map { g in
             let n = g.pages.count, l = g.pages[0]
             let axes = (n > 1 ? "I" : "") + (l.samples > 1 ? "YXS" : "YX")
             let shape: [Int] = (n > 1 ? [n] : [Int]()) + (l.samples > 1 ? [l.height, l.width, l.samples] : [l.height, l.width])
             return TIFFSeries(axes: axes, shape: shape, dataType: l.dataType, pages: g.pages)
         }
+        guard all.count == 1 else {
+            // tifffile's generic rule ends with `pyramidize_series(series)`: a later series one sampling step (2, 3 or 4) below
+            // the first, or a page marked reduced (NewSubfileType bit 0), names a pyramid; otherwise several series.
+            let pyramid = file.directories.dropFirst().contains(where: isReduced)
+                || all.dropFirst().contains { b in [2, 3, 4].contains { subresolution(all[0], b, p: $0) == 1 } }
+            if pyramid { throw TIFFError.unsupportedSeries(file: name, series: "a pyramid of reduced-resolution pages") }
+            throw TIFFError.unsupportedSeries(file: name, series: "\(all.count) series of pages that differ in shape, type or layout")
+        }
+        return all
     }
 
     /// tifffile's `series_imagej` for the files in scope; nil where it returns None (then the generic rule applies). A
@@ -277,6 +288,7 @@ public nonisolated struct TIFFSignals: Sendable {
     /// neither the pages nor a contiguous block after the first page hold, are refused.
     static func imageJSeries(_ file: TIFFFile, _ meta: [String: FormatoPythonValue], _ page: TIFFPageLayout,
                              _ pageAxes: String, _ pageShape: [Int]) throws -> TIFFSeries? {
+        let name = formatoDisplayFileName(file.path)
         func int(_ k: String) throws -> Int {
             switch meta[k] {
             case nil: return 1
@@ -325,14 +337,14 @@ public nonisolated struct TIFFSignals: Sendable {
         var virtual: Int?
         if pages == 1 || page.stripOffsets[0] + nbytes <= file.directories[1].offset {
             let contiguous = zip(page.stripOffsets, page.stripOffsets.dropFirst()).allSatisfy { $1 - $0 == page.rowsPerStrip * page.rowBytes }
-            guard contiguous else { throw FormatoReadError.unsupported("An ImageJ virtual stack whose first page's strips are not contiguous.") }
+            guard contiguous else { throw TIFFError.unsupportedSeries(file: name, series: "an ImageJ virtual stack whose first page's strips are not contiguous") }
             layouts = [page]; virtual = images
         } else {
-            guard pages >= images else { throw FormatoReadError.unsupported("The ImageJ description counts \(images) images over \(pages) pages.") }
+            guard pages >= images else { throw TIFFError.unsupportedSeries(file: name, series: "an ImageJ stack that counts \(images) images over \(pages) pages") }
             layouts = try file.directories.prefix(images).map {
                 let l = try TIFFPageLayout.of($0, bigEndian: file.bigEndian, fileSize: file.data.count)
                 guard l.width == page.width, l.height == page.height, l.dataType == page.dataType else {
-                    throw FormatoReadError.unsupported("A page of the ImageJ stack differs from the first.")
+                    throw TIFFError.unsupportedSeries(file: name, series: "an ImageJ stack whose pages differ from the first")
                 }
                 return l
             }
@@ -361,7 +373,11 @@ public nonisolated struct TIFFSignals: Sendable {
         }
         let names = codes.map(Self.axisName)
         var axes: [FormatoAxis]
-        do { axes = try Self.axes(page: page, shape: shape, names: names) } catch {
+        do {
+            if vendorAxes, let vendorBranch,
+               let v = try Self.vendorAxes(vendorBranch, page: page, file: file, shape: shape, names: names) { axes = v }
+            else { axes = try Self.axes(page: page, shape: shape, names: names) }
+        } catch {
             // `_read_tiff`: any exception while parsing the scale gives the default dictionaries.
             axes = Self.dictionaries(shape: shape, names: names, scales: nil, offsets: nil, units: nil)
         }
@@ -395,11 +411,16 @@ public nonisolated struct TIFFSignals: Sendable {
             metadata.set(FormatoMetadataEntry(
                 key: "FormatoKit.policy.vendor_branch", value: .text(vendorBranch), units: nil,
                 provenance: FormatoProvenance(file: name, source: "(the page's vendor tags)",
-                                              rule: "FormatoKit policy, not RosettaSciIO's: read as a plain TIFF, the \(vendorBranch) branch is not ported")))
+                                              rule: vendorAxes && Self.vendorAxesPorted.contains(vendorBranch)
+                                                ? "FormatoKit policy, not RosettaSciIO's: the \(vendorBranch) branch's axes are read, its metadata mapping is not ported"
+                                                : "FormatoKit policy, not RosettaSciIO's: read as a plain TIFF, the \(vendorBranch) branch is not ported")))
         }
         return FormatoLazySignal(title: "", signalType: "", axes: axes, metadata: metadata,
                                  array: TIFFSeriesArray(path: file.path, series: s, shape: shape))
     }
+
+    /// The vendor branches whose axes `readWithVendorAxes` reads (TIFFVendorAxes.swift).
+    static let vendorAxesPorted: Set<String> = ["Zeiss SEM", "TVIPS", "JEOL SightX"]
 
     /// The keys of RosettaSciIO's `axes_label_codes`.
     static let axisCodes: Set<Character> = ["X", "Y", "S", "P", "I", "Z", "C", "E", "T", "R", "A", "F", "H", "L", "V", "Q", "_"]

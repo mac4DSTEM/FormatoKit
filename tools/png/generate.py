@@ -1,7 +1,7 @@
 """Writes Tests/FormatoCoreTests/Fixtures/png/input.png: a small RGB PNG made by Pillow (an encoder that is not ours), the input of
 the oracle (tools/png/oracle.sh) and of the insertion tests.
 
-  <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/png/generate.py
+  References/venv/bin/python -I -B tools/png/generate.py
 """
 import pathlib
 import numpy as np

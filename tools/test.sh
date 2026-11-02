@@ -34,7 +34,7 @@ if [[ -d $refs/data ]]; then
     mkdir .build/rsciio-unzipped/emd/$zip && unzip -q $refs/data/emd/$zip -d .build/rsciio-unzipped/emd/$zip
   done
 fi
-# The public TIFF test data the step-2 pins read: each .zip and .gz checked against registry.txt,
+# The public TIFF test data the TIFF pins read: each .zip and .gz checked against registry.txt,
 # unpacked into .build/rsciio-tiff/tiff/<zip>/ (a .gz into a file of its own name, the name the pins use).
 if [[ -d $refs/data/tiff ]]; then
   rm -rf .build/rsciio-tiff; mkdir -p .build/rsciio-tiff/tiff

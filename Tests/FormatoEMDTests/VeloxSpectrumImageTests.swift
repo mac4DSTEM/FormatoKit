@@ -8,7 +8,7 @@ extension VeloxEMDSerialized {
     /// rules, without the pins: the type wraps, the frame rules, rebinning, the energy axis choice, the EELS layout and the
     /// refusals of the deliberate deviations.
     @Suite final class VeloxSpectrumImageTests {
-        private static let fixtures = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/step4")
+        private static let fixtures = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/velox-spectrum-image")
 
         private func read(_ name: String, _ options: VeloxSpectrumImageOptions = .init()) throws -> [FormatoSignal] {
             try VeloxSpectrumImageSignals(path: Self.fixtures.appendingPathComponent(name).path, options: options).signals
@@ -20,7 +20,7 @@ extension VeloxEMDSerialized {
             return a.doubleAt(flat)
         }
 
-        /// The planted 1stream-3frames file (step4/spectrokit, see PROVENANCE.md): pixel 7 (y 1, x 3) holds 70 000 counts in channel 2000 and nothing else.
+        /// The planted 1stream-3frames file (velox-spectrum-image/spectrokit, see PROVENANCE.md): pixel 7 (y 1, x 3) holds 70 000 counts in channel 2000 and nothing else.
         @Test func testCountsWrapInTheTargetType() throws {
             #expect(value(try read("sk-1stream-3frames.emd")[0].data, [1, 3, 2000]) == 4464, "uint16: 70000 - 65536")
             #expect(value(try read("sk-1stream-3frames.emd", .init(dataType: .uint8))[0].data, [1, 3, 2000]) == 112, "uint8: 70000 mod 256")

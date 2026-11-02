@@ -2,7 +2,7 @@
 //  UnitsTests.swift
 //  FormatoUnits against RosettaSciIO's own `convert_units` and Velox
 //  `_convert_scale_units` (Pint 0.26.1), on every call the public Velox files make, a seeded sweep and the
-//  planted cases (Fixtures/units-pins.json, tools/step-1/pins.py); and the planted closed forms of §4 as literals.
+//  planted cases (Fixtures/units-pins.json, tools/dm-velox-pins/pins.py); and the planted closed forms of §4 as literals.
 //  D12: numerics are allowed a written tolerance; the asserts compare exactly today.
 //
 

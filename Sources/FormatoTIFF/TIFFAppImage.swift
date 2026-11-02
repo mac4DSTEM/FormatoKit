@@ -84,7 +84,9 @@ public nonisolated enum TIFFAppImage {
     /// The notes a reading can attach, worded once.
     public enum Note {
         public static let render = "8-bit render, not counts"
-        public static let veloxUnvalidated = TIFFVeloxCalibration.unvalidatedNote
+        public static let veloxStoredScale = TIFFVeloxCalibration.storedScaleNote
+        /// The same note under its older name.
+        public static let veloxUnvalidated = veloxStoredScale
         public static let veloxDisagree = TIFFVeloxCalibration.disagreeNote
     }
 

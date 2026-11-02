@@ -7,8 +7,8 @@
 //        stage, dose, scan).
 //
 //  The reference is rosettasciio at 049e7d70 (`rsciio/emd/_emd_velox.py`,
-//  `rsciio/utils/_fei_stream_readers.py`); `tools/lib/fetch-rsciio.sh` pins it
-//  and `tools/velox-parity` compares this reader to it count for count.
+//  `rsciio/utils/_fei_stream_readers.py`); mac4DSTEM's `tools/velox-parity` (until
+//  7a0f727f) compared this reader to it count for count before the reader moved here.
 //  The stream format (docs/archive/v5/edx-research-2026-10-05/reports/formats.md
 //  §2.2): uint16 values; 65535 ends a pixel; any other value is the channel of
 //  one detected X-ray; pixels run row-major, and a frame is ny*nx markers.
@@ -494,7 +494,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
             // The grid. DEVIATION: rsciio takes it from the LAST image group read (name order),
             // whatever that image is. In `example_velox_EELS_EDS.emd` that is a 128 x 128 image of a
             // 16 x 20 spectrum image, and every count lands in the first rows (formats.md §2.2,
-            // reproduced by tools/velox-parity). Here the grid is ScanSize x ScanArea. Evidence it is the
+            // reproduced by mac4DSTEM's former tools/velox-parity). Here the grid is ScanSize x ScanArea. Evidence it is the
             // right one: in that file the seven (16, 20, 1) images share the stream's ScanArea
             // (128 x 0.15625 = 20 columns, 128 x 0.125 = 16 rows); the non-square public 10 x 50 files' HAADF
             // is (50, 10); the owner's HAADF is (926, 215, 1607) with ScanArea 0.2100 x 0.9043 of 1024.

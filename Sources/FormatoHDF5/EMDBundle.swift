@@ -170,6 +170,8 @@ extension HDF5WriteSession {
     public func writeEMDFileHeader(_ header: EMDFileHeader) throws {
         try Self.refuse(header.attributes.keys, owned: ownedFileAttributes)
         try setVariableLengthTextAttribute("emd_group_type", on: "/", "file")
+        // int64, as the pinned py4DSTEM / emdfile writes them (h5py stores the Python int as int64), the same as the Bragg-vector
+        // writer. The app wrote int32; every reader here widens an integer attribute, so both read the same.
         try setAttribute("version_major", on: "/", .integer(1))
         try setAttribute("version_minor", on: "/", .integer(0))
         if let uuid = header.uuid { try setVariableLengthTextAttribute("UUID", on: "/", uuid) }

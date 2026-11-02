@@ -24,7 +24,8 @@ public nonisolated enum DM4DatacubeStorage: Sendable {
 
 /// The storage layout `DM4Datacube` chose: what the unit-domain rule decided, so a consumer need not repeat it.
 public nonisolated struct DM4DatacubeLayout: Sendable, Equatable {
-    /// The stored shape in C order (the file's dimensions reversed).
+    /// The stored shape in C order (the file's dimensions reversed; for a scan-shaped rank-three object, its stack axis
+    /// split into `[scanY, scanX]`).
     public let storedShape: [Int]
     /// Output axis `i` is stored axis `permutation[i]`. `[0,1,2,3]` unless the app convention found scan-fastest storage.
     public let permutation: [Int]
@@ -41,7 +42,8 @@ public nonisolated struct DM4DatacubeLayout: Sendable, Equatable {
 /// The default signal preserves RosettaSciIO's stored array. The app option gathers scan-fastest storage.
 /// Only requested slabs are copied. Keep the file unchanged while this reader or its signal exists.
 public nonisolated struct DM4Datacube: Sendable {
-    /// The selected image object. The first rank-four non-thumbnail image is used when no index is supplied.
+    /// The selected image object: with no index, the first in `ImageList` order that is rank four, or rank three with
+    /// scan-shape tags (see `init`).
     public let object: DM4ImageObject
     /// Array, axes and existing DMFile mapped metadata. `load()` materializes the entire cube.
     public let signal: FormatoLazySignal
@@ -51,27 +53,55 @@ public nonisolated struct DM4Datacube: Sendable {
     public let layout: DM4DatacubeLayout
 
     /// Opens a rank-four real-valued DM4 image with a read-only mapping.
+    ///
+    /// A rank-three object `(N, Qy, Qx)` is read as the four-dimensional `[scanY, scanX, Qy, Qx]` when the file's
+    /// "Scan shape X" and "Scan shape Y" tags multiply to `N` (py4DSTEM's NCEM TitanX reshape, without its two-pixel roll):
+    /// the bytes as stored, both scan axes calibrated as the stack axis. Tags under the object's own `ImageTags` win over
+    /// tags elsewhere in the file.
     /// - Parameters:
     ///   - path: DM3 or DM4 filename.
-    ///   - objectIndex: The `DM4ImageObject.index` to use, or nil to select the first rank-four image.
+    ///   - objectIndex: The `DM4ImageObject.index` to use, or nil to select the first datacube.
     ///   - convention: Stored reference order by default, or the separately pinned app layout.
     ///   - options: Existing tag-walk string limits.
     ///   - storage: `.mapped` (default) or `.readIntoMemory`.
-    /// - Throws: `DM4Error` for malformed data, unsupported types or absence of a rank-four object.
+    /// - Throws: `DM4Error` for malformed data, unsupported types or absence of a datacube; `.cannotOpen` with a sentence
+    ///   for an object of more than four dimensions.
     public init(path: String, objectIndex: Int? = nil, convention: DM4GatherConvention = .rosettaSciIO,
                 options: DMReadOptions = DMReadOptions(), storage: DM4DatacubeStorage = .mapped) throws {
         let file = try DMFile(path: path, options: options)
         let tree = try DM4Experiment.tagTree(path: path, options: options)
-        guard let object = file.objects.first(where: { candidate in
-            if let objectIndex { return candidate.index == objectIndex }
-            return candidate.dimensions.count == 4
-        }) else {
-            throw DM4Error.noDatacube
+        func scanShape(_ candidate: DM4ImageObject) -> (y: Int, x: Int)? {
+            guard candidate.dimensions.count == 3 else { return nil }
+            let own = "ImageList.\(candidate.index).ImageTags."
+            func tag(_ needle: String) -> Int? {
+                let keys = tree.numbers.keys.filter { $0.contains(needle) }.sorted()
+                return (keys.first { $0.hasPrefix(own) } ?? keys.first).flatMap { tree.numbers[$0] }.flatMap { Int(exactly: $0) }
+            }
+            guard let x = tag("Scan shape X"), let y = tag("Scan shape Y"), x > 0, y > 0 else { return nil }
+            let (n, overflow) = x.multipliedReportingOverflow(by: y)
+            return !overflow && n == candidate.dimensions[2] ? (y, x) : nil
         }
+        func tooManyDimensions(_ candidate: DM4ImageObject) -> DM4Error {
+            .cannotOpen("image object \(candidate.index) (\(candidate.name)) has \(candidate.dimensions.count) dimensions; a datacube has four, or three with scan-shape tags.")
+        }
+        let chosen: DM4ImageObject
+        if let objectIndex {
+            guard let candidate = file.objects.first(where: { $0.index == objectIndex }) else { throw DM4Error.noDatacube }
+            chosen = candidate
+        } else {
+            guard let candidate = file.objects.first(where: { $0.dimensions.count == 4 || scanShape($0) != nil }) else {
+                if let big = file.objects.first(where: { $0.dimensions.count > 4 }) { throw tooManyDimensions(big) }
+                throw DM4Error.noDatacube
+            }
+            chosen = candidate
+        }
+        let object = chosen
         self.object = object
-        guard object.dimensions.count == 4, object.dimensions.allSatisfy({ $0 > 0 }) else { throw DM4Error.noDatacube }
+        if object.dimensions.count > 4 { throw tooManyDimensions(object) }
+        let scan = scanShape(object)
+        guard object.dimensions.count == 4 || scan != nil, object.dimensions.allSatisfy({ $0 > 0 }) else { throw DM4Error.noDatacube }
         guard let type = DMFile.dataType(code: object.dataType) else { throw DM4Error.unsupportedDataType(object.dataType) }
-        let shape = Array(object.dimensions.reversed())
+        let shape = scan.map { [$0.y, $0.x, object.dimensions[1], object.dimensions[0]] } ?? Array(object.dimensions.reversed())
         let n: Int
         do { n = try FormatoArray.elementCount(shape + [type.byteSize]) } catch { throw DM4Error.truncated }
         // A declared data length of 0 is tolerated (the tag says nothing): the dimensions give the length.
@@ -80,8 +110,17 @@ public nonisolated struct DM4Datacube: Sendable {
         var permutation = [0,1,2,3]
         var note: String?
         var axes = DMFile.axes(of: object)
+        if let scan {
+            // [N, Qy, Qx] -> [scanY, scanX, Qy, Qx]: both scan axes take the stack axis's calibration, named and navigated as
+            // the first two axes of a four-dimensional object are.
+            let stack = axes[0]
+            axes = [FormatoAxis(name: nil, size: scan.y, scale: stack.scale, offset: stack.offset, units: stack.units, navigate: true),
+                    FormatoAxis(name: "z", size: scan.x, scale: stack.scale, offset: stack.offset, units: stack.units, navigate: true),
+                    axes[1], axes[2]]
+        }
         let app = convention == .appCalibratedAxes
-        if app {
+        // The unit-domain rule is for a stored rank-four object; a reshaped stack is detector-fastest by construction.
+        if app && scan == nil {
             // Use the public tag maps, not a second parser or size heuristics. Indices may be zero- or one-based.
             let prefix = "ImageList.\(object.index).ImageData."
             let indices = tree.numbers.keys.filter { $0.hasPrefix(prefix + "Dimensions.") }
@@ -188,9 +227,18 @@ private struct DM4GatherArray: FormatoLazyArray {
         let inner = shape[3], innerStride = outStrides[3]
         let storedSize = storedType.byteSize, outSize = dataType.byteSize
         let base = mapping.pointer + offset
+        // Permuted, with more than one step along the leading axis of smallest file stride: tile (see blockedGather).
+        let fast = (0..<3).min { outStrides[$0] < outStrides[$1] }!
+        if innerStride != 1 && count[fast] > 1 {
+            out.withUnsafeMutableBytes { raw in
+                blockedGather(base: base, fast: fast, outStrides: outStrides, start: start, count: count, into: raw.baseAddress!)
+            }
+            return try FormatoArray(dataType: dataType, shape: count, bytes: out)
+        }
         out.withUnsafeMutableBytes { (raw: UnsafeMutableRawBufferPointer) in
             var dst = raw.baseAddress!
-            // Rows of the last output axis, left to right in the slab: one source start per row, then a constant stride.
+            // Rows of the last output axis, left to right in the slab: one source start per row, then a constant stride
+            // (one element in stored order; a single pattern of a permuted file has no neighbours to tile with).
             FormatoArray.forEachContiguousRun(start: start, count: count, shape: shape) { first, length in
                 var element = first, remaining = length
                 while remaining > 0 {
@@ -215,6 +263,65 @@ private struct DM4GatherArray: FormatoLazyArray {
         }
         return try FormatoArray(dataType: dataType, shape: count, bytes: out)
     }
+    /// Tile of the permuted gather, in elements: along the fast-source axis and along the last output axis. Measured on a
+    /// 48x64x128x128 float32 scan-fastest file (M-series): 64x16 read the whole scan in 68 ms, 16x16 in 87 ms, 32x32 in 180
+    /// ms (each step along the last axis is a different page of the file).
+    static let fastTile = 64, rowTile = 16
+    /// The permuted gather (scan-fastest storage): the last output axis strides far through the file (Qx: Ry*Rx*Qy
+    /// elements), so walking it alone touches a new cache line and page per element. Tile it against the leading output
+    /// axis with the smallest file stride (Rx, one element): within a tile each source line is read once for
+    /// `tile` neighbouring outputs, and each output row is written contiguously. The same bytes as the element-by-element
+    /// order; only the visiting order changes.
+    private func blockedGather(base: UnsafeRawPointer, fast: Int, outStrides: [Int], start: [Int], count: [Int],
+                               into dst: UnsafeMutableRawPointer) {
+        let outer = (0..<3).filter { $0 != fast }
+        var slabStrides = [1, 1, 1, 1]
+        for i in stride(from: 2, through: 0, by: -1) { slabStrides[i] = slabStrides[i+1] * count[i+1] }
+        let storedSize = storedType.byteSize, outSize = dataType.byteSize
+        let tile = Self.fastTile, rowTile = Self.rowTile
+        let (p, q) = (outer[0], outer[1])
+        let rowStrideBytes = outStrides[3] * storedSize
+        let fastSourceBytes = outStrides[fast] * storedSize, fastSlabBytes = slabStrides[fast] * outSize
+        var origin = 0
+        for axis in 0..<4 { origin += start[axis] * outStrides[axis] }
+        let row = rowCopier()
+        for a in 0..<count[p] { for b in 0..<count[q] {
+            let source = base + (origin + a * outStrides[p] + b * outStrides[q]) * storedSize
+            let target = dst + (a * slabStrides[p] + b * slabStrides[q]) * outSize
+            for f0 in stride(from: 0, to: count[fast], by: tile) {
+                let f1 = min(f0 + tile, count[fast])
+                for j0 in stride(from: 0, to: count[3], by: rowTile) {
+                    let n = min(rowTile, count[3] - j0)
+                    var from = source + f0 * fastSourceBytes + j0 * rowStrideBytes
+                    var to = target + f0 * fastSlabBytes + j0 * outSize
+                    for _ in f0..<f1 {
+                        row(from, rowStrideBytes, n, to)
+                        from += fastSourceBytes; to += fastSlabBytes
+                    }
+                }
+            }
+        } }
+    }
+    /// One output row of `count` elements from source elements `strideBytes` apart: a typed copy of the stored bytes, or
+    /// the Float32 conversion.
+    private func rowCopier() -> (UnsafeRawPointer, Int, Int, UnsafeMutableRawPointer) -> Void {
+        guard dataType == storedType else {
+            let type = storedType
+            return { convertToFloat32(type, from: $0, strideBytes: $1, count: $2, into: $3) }
+        }
+        switch storedType.byteSize {
+        case 1: return { stridedCopy(UInt8.self, from: $0, strideBytes: $1, count: $2, into: $3) }
+        case 2: return { stridedCopy(UInt16.self, from: $0, strideBytes: $1, count: $2, into: $3) }
+        case 4: return { stridedCopy(UInt32.self, from: $0, strideBytes: $1, count: $2, into: $3) }
+        default: return { stridedCopy(UInt64.self, from: $0, strideBytes: $1, count: $2, into: $3) }
+        }
+    }
+}
+/// Stored bytes as they are (integer loads, so a float NaN payload is never touched); the source may be unaligned.
+@inline(__always)
+private func stridedCopy<T: FixedWidthInteger>(_: T.Type, from: UnsafeRawPointer, strideBytes: Int, count: Int, into dst: UnsafeMutableRawPointer) {
+    var p = from
+    for k in 0..<count { dst.storeBytes(of: p.loadUnaligned(as: T.self), toByteOffset: k * MemoryLayout<T>.stride, as: T.self); p += strideBytes }
 }
 /// Little-endian stored values to Float32 (same conversions as before: Float(Int/UInt) rounds to nearest, Double narrows).
 private func convertToFloat32(_ type: FormatoDataType, from: UnsafeRawPointer, strideBytes: Int, count: Int, into dst: UnsafeMutableRawPointer) {

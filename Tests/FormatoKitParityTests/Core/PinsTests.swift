@@ -1,7 +1,7 @@
 //
 //  PinsTests.swift
 //  Every DM and Velox signal RosettaSciIO 049e7d70 returns from its public
-//  test files (Fixtures/step-1-pins.json, tools/step-1/pins.py) against FormatoDM's and FormatoEMD's adapters: shape, the
+//  test files (Fixtures/dm-velox-pins.json, tools/dm-velox-pins/pins.py) against FormatoDM's and FormatoEMD's adapters: shape, the
 //  data's sha256 over the stored bytes (Velox in its stored type since step 3; Float32 before), every axis field bit for
 //  bit, the signal type, the title (DM; Velox since step 3) and the mapped metadata with its source; a type RosettaSciIO reads and FormatoKit does not is refused by
 //  name (A1.1). And L1: for every signal read, seeded slabs of the lazy array equal the same slabs cut from the eager one.
@@ -86,7 +86,7 @@ import FormatoEMD
     }
 
     @Test func testEveryPinnedSignalAgreesWithRosettaSciIO() throws {
-        let files = try #require(try loadJSON("step-1-pins.json")["files"] as? [[String: Any]])
+        let files = try #require(try loadJSON("dm-velox-pins.json")["files"] as? [[String: Any]])
         let referencesPresent = FileManager.default.fileExists(atPath: TestPaths.rsciioData.path)
         let (read, signals, refused) = try compare(files, locate: locate, mustFind: referencesPresent)
         if referencesPresent {
@@ -99,11 +99,11 @@ import FormatoEMD
         }
     }
 
-    /// The owner's files: run by tools/step-1/owner-check.sh, which writes RosettaSciIO's reading of them
+    /// The owner's files: run by tools/dm-velox-pins/owner-check.sh, which writes RosettaSciIO's reading of them
     /// with `pins.py --owner` and passes FORMATO_OWNER_PINS (that JSON) and FORMATO_OWNER_FILES (their absolute paths, one
     /// per line). Never part of the gate: skipped without the variables.
     @Test(.enabled(if: ProcessInfo.processInfo.environment["FORMATO_OWNER_PINS"] != nil,
-                   "the owner's files are checked by tools/step-1/owner-check.sh only"))
+                   "the owner's files are checked by tools/dm-velox-pins/owner-check.sh only"))
     func testOwnerFilesAgreeWithRosettaSciIO() throws {
         let env = ProcessInfo.processInfo.environment
         let pins = try #require(env["FORMATO_OWNER_PINS"]), list = try #require(env["FORMATO_OWNER_FILES"])
@@ -128,10 +128,10 @@ import FormatoEMD
     }
 
     /// Step 3's planted Velox files (Tests/FormatoEMDTests/Fixtures/velox-titles-*.emd, pinned by
-    /// tools/step-3/pins.py): every Operations kind and branch, DetectorInformation and the carried name, both label maps, the
+    /// tools/velox-titles/pins.py): every Operations kind and branch, DetectorInformation and the carried name, both label maps, the
     /// ten stored types. Compared as the public files are.
     @Test func testStep3PlantedVeloxFilesAgree() throws {
-        let files = try #require(try loadJSON("step-3-pins.json")["files"] as? [[String: Any]])
+        let files = try #require(try loadJSON("velox-titles-pins.json")["files"] as? [[String: Any]])
         let dir = TestPaths.root.appendingPathComponent("Tests/FormatoEMDTests/Fixtures")
         let (read, signals, refused) = try compare(files, locate: { name in
             let u = dir.appendingPathComponent(name); return FileManager.default.fileExists(atPath: u.path) ? u : nil
@@ -141,11 +141,11 @@ import FormatoEMD
         #expect(refused == 0)
     }
 
-    /// Step 3's review files (Tests/FormatoEMDTests/Fixtures/refuter-step3, tools/step-3/refuter_pins.py): 11 RosettaSciIO raises on (the detector-metadata lookup, root datasets, Acquisition, Version), refused here too;
+    /// Step 3's review files (Tests/FormatoEMDTests/Fixtures/velox-titles-refuter, tools/velox-titles/refuter_pins.py): 11 RosettaSciIO raises on (the detector-metadata lookup, root datasets, Acquisition, Version), refused here too;
     /// 2 it reads, read equal.
     @Test func testStep3RefuterFilesAgreeOrAreRefused() throws {
-        let files = try #require(try loadJSON("step-3-refuter-pins.json")["files"] as? [[String: Any]])
-        let dir = TestPaths.root.appendingPathComponent("Tests/FormatoEMDTests/Fixtures/refuter-step3")
+        let files = try #require(try loadJSON("velox-titles-refuter-pins.json")["files"] as? [[String: Any]])
+        let dir = TestPaths.root.appendingPathComponent("Tests/FormatoEMDTests/Fixtures/velox-titles-refuter")
         let (read, signals, refused) = try compare(files, locate: { name in
             let u = dir.appendingPathComponent(name); return FileManager.default.fileExists(atPath: u.path) ? u : nil
         }, mustFind: true)
@@ -154,7 +154,7 @@ import FormatoEMD
         #expect(signals == 2)
     }
 
-    /// The review files (Fixtures/refuter, tools/step-1/pins.py --set refuter): built by the refuter from RosettaSciIO's public
+    /// The review files (Fixtures/refuter, tools/dm-velox-pins/pins.py --set refuter): built by the refuter from RosettaSciIO's public
     /// fei_example_tem_stack.emd with one metadata value changed each. Where RosettaSciIO raises, FormatoKit must refuse
     /// (F1-F3); where it reads, the signals must be equal; `u_stack_unit_px.emd` (Pint's "px") is refused on purpose
     /// (units outside FormatoUnits are refused, not guessed).

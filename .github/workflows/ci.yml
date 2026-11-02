@@ -5,7 +5,6 @@
 # job resolves the release zips by URL and checksum, as a consumer does.
 # No libhdf5 step: FormatoHDF5 ships it. No References/: without the RosettaSciIO clone the pins tests run on the committed
 # copies of the pins and fixtures (tools/test.sh); the oracles are rerun locally, never in CI.
-# tools/step-1/names.sh (the 121 moved names) stays a local check: it reads the original package's tests from a sibling checkout (see the script).
 # Never `swift build --build-tests -c release` (fails on this toolchain's Swift Build backend); tools/test.sh is the gate.
 name: CI
 
@@ -77,6 +76,14 @@ jobs:
           if git grep -n -I -E '_archive|CLAUDE\.md|memcap|macEM-suite|setup-python-refs' -- ':!.gitignore' ':!.github/workflows/ci.yml'; then
             echo "Private references above; this repo is public."; exit 1
           fi
+
+  fixture-index:
+    name: Fixture index is current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Tests/Fixtures/README.md is what tools/fixture-index/index.py writes
+        run: python3 -I -B tools/fixture-index/index.py --check
 
   lint:
     name: Lint (shared SwiftLint and SwiftFormat config)

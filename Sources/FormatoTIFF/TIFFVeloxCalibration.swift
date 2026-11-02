@@ -21,8 +21,11 @@ public nonisolated enum TIFFVeloxCalibration: Sendable, Equatable {
     /// The XML and the resolution tags name different sizes.
     case disagree
 
-    /// The note of a calibrated reading: the scale comes from one convention seen on one acquisition.
-    public static let unvalidatedNote = "scale unvalidated (one acquisition)"
+    /// The note of a calibrated reading: the scale is the pixel size Velox wrote (`BinaryResult/PixelSize`), at most
+    /// cross-checked against the file's own resolution tags (metres, tag 65452 = 3); no calibration standard checks it.
+    public static let storedScaleNote = "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard"
+    /// The same note under its older name.
+    public static let unvalidatedNote = storedScaleNote
     /// The note of `disagree`.
     public static let disagreeNote = "uncalibrated: the Velox XML and the resolution tags disagree"
 

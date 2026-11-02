@@ -1,7 +1,7 @@
 import Foundation
 
 /// Where the committed fixtures live. They stay beside the test targets that first used them (tools/ generators and
-/// Tests/README.md name those folders), so FormatoKitParityTests finds them here instead of through its own #filePath.
+/// Tests/Fixtures/README.md name those folders), so FormatoKitParityTests finds them here instead of through its own #filePath.
 package enum FixtureDirs {
     /// The `Tests` folder, found from this file.
     package static let tests = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()

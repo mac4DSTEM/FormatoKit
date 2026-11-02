@@ -90,6 +90,48 @@ import FormatoHDF5
         #expect(floats(read).map(\.bitPattern) == pixels.map(\.bitPattern))
     }
 
+    /// The pinned py4DSTEM / emdfile writes `version_major` / `version_minor` as int64 (h5py stores the Python int as int64; checked on a
+    /// datacube, a bundle and Bragg vectors written with py4DSTEM f050d207, emdfile 0.0.16, h5py 3.16.0). The kit writes the same from
+    /// every writer. `HDF5Reader.attribute` widens every integer, so the stored width is read directly.
+    @Test func versionAttributesAreInt64AsPy4DSTEMWritesThem() throws {
+        let dir = try scratch(); defer { cleanup(dir) }
+        let cube = dir.appendingPathComponent("cube.h5"), bundle = dir.appendingPathComponent("bundle.h5")
+        let bragg = dir.appendingPathComponent("bragg.h5")
+        let (layout, pixels) = try cubeLayout()
+        try EMDDatacubeWriter.write(pixels, layout: layout, to: cube)
+        try HDF5NewFile.write(to: bundle, sourcePath: cube.path) { session in
+            try session.writeEMDFileHeader(EMDFileHeader(authoringProgram: "mac4DSTEM", authoringUser: nil, uuid: nil))
+            try session.createEMDRoot("scientific_bundle_root", attributes: [:])
+        }
+        try BraggVectorsEMD.write(peaks: appPeaks(), scan: BraggGridShape(rows: 3, columns: 4),
+                                  detector: BraggGridShape(rows: 16, columns: 20), to: bragg, convention: .appImageXY)
+        for file in [cube, bundle, bragg] {
+            let reader = try HDF5Reader(url: file)
+            for name in ["version_major", "version_minor"] {
+                #expect(try reader.storedIntegerAttributeBytes(name, of: "/") == 8, "\(name), \(file.lastPathComponent)")
+            }
+            #expect(try reader.attribute("version_major", of: "/") == .integer(1))
+            #expect(try reader.attribute("version_minor", of: "/") == .integer(0))
+        }
+    }
+
+    /// The app wrote the version attributes as int32 (its files here). The attribute reader widens them to the same values as int64;
+    /// the datacube and Bragg-vector readers do not read them and open the app files as they are.
+    @Test func int32VersionAttributesOfTheAppFilesAreRead() throws {
+        for name in ["app-datacube.h5", "app-bundle.h5", "app-sidecar.h5"] {
+            let reader = try HDF5Reader(url: app(name))
+            for attribute in ["version_major", "version_minor"] {
+                #expect(try reader.storedIntegerAttributeBytes(attribute, of: "/") == 4, "\(attribute), \(name)")
+            }
+            #expect(try reader.attribute("version_major", of: "/") == .integer(1), "\(name)")
+            #expect(try reader.attribute("version_minor", of: "/") == .integer(0), "\(name)")
+        }
+        let cube = try HDF5Datacube(path: app("app-datacube.h5").path, datasetPath: "/datacube_root/datacube/data")
+        #expect(cube.shape == [4, 5, 8, 9])
+        let vectors = try BraggVectorsEMD.read(path: app("app-sidecar.h5").path, convention: .appImageXY)
+        #expect(vectors.peakCount > 0)
+    }
+
     @Test func wholeCubeWriteEqualsTheAppsFileAndLeavesNoScratch() throws {
         let dir = try scratch(); defer { cleanup(dir) }
         let out = dir.appendingPathComponent("whole.h5")

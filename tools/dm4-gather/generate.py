@@ -1,5 +1,5 @@
 """Synthetic 4D DM4 and byte/axis pins. Run under a memory cap:
-MACEM_SUITE=<suite> <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/dm4-gather/generate.py.
+MACEM_SUITE=<suite> References/venv/bin/python -I -B tools/dm4-gather/generate.py.
 App output comes from its exact pinned gather and decode methods, compiled with identity-view scaffolding.
 """
 import os, pathlib, subprocess, tempfile, struct, json, hashlib
@@ -8,7 +8,7 @@ import rsciio
 from rsciio.digitalmicrograph import file_reader
 ROOT=pathlib.Path(__file__).resolve().parents[2]; SUITE=pathlib.Path(os.environ['MACEM_SUITE'])
 PIN='049e7d7070e84779b499adaf3295beee9facb004'; APP='c809679c8ee23a355da6af4f63665aaf64f90d0d'
-assert subprocess.check_output(['git','-C',str(SUITE/'References/FormatoKit/rosettasciio-049e7d70'),'rev-parse','HEAD'],text=True).strip()==PIN
+assert subprocess.check_output(['git','-C',str(ROOT/'References/rosettasciio-049e7d70'),'rev-parse','HEAD'],text=True).strip()==PIN
 assert rsciio.__version__=='0.14.1.dev96+g049e7d707'
 OUT=ROOT/'Tests/FormatoDMTests/Fixtures/gather'; OUT.mkdir(parents=True,exist_ok=True)
 def u64(n): return struct.pack('>Q',n)

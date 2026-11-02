@@ -27,12 +27,12 @@ every one of these, as D17 prescribes for readers.
 
 | Plugin | Extensions | Writes | Kit symbol | State | RosettaSciIO test and tolerance | Priority | Note |
 |---|---|---|---|---|---|---|---|
-| DigitalMicrograph | dm3, dm4 | no | `FormatoDM` `DMFile`, `DM4Datacube` | **partial** | test_digitalmicrograph.py: allclose, approx, array_equal, explicit rtol/atol/decimal in places | study | complex, RGB, bool, big-endian refused; metadata mapping partial; scan pixel size of EELS/EDS spectrum images (`xAxis`, `yAxis`, 0.11.0) and of 4D scans pinned to the bit |
-| EMD | emd, de5 | yes | `FormatoEMD` `VeloxImageSignals`, `VeloxSpectrumImageSignals`, `VeloxSpectrumSignals` (0.9.0) | **partial** | test_emd_ncem.py, test_emd_prismatic.py, test_emd_velox.py: allclose, almost_equal, array_equal, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | Velox: images, spectrum images (live and real time per detector from the SI group, 0.11.0), single spectra (with `Sample.elements`), "DevelopersKit" accepted; compound FFT/DPC, `lazy=True` SI, `load_SI_image_stack`, `Sample.elements` of a spectrum image not. NCEM/Berkeley EMD, prismatic and DE5: missing (useful) |
-| TIFF | tif, tiff | yes (some dims) | `FormatoTIFF` `TIFFSignals`, `TIFFAppImage` | **partial** | test_tiff.py: allclose, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | uncompressed strips; FEI, Gatan, ImageJ, plain, tifffile shaped series (0.11.0); OME, SubIFD series, generic pyramids, Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu, compression, tiles refused by name |
+| DigitalMicrograph | dm3, dm4 | no | `FormatoDM` `DMFile`, `DM4Datacube` | **partial** | test_digitalmicrograph.py: allclose, approx, array_equal, explicit rtol/atol/decimal in places | study | complex, RGB, bool, big-endian refused; metadata mapping partial; scan pixel size of EELS/EDS spectrum images (`xAxis`, `yAxis`, 0.11.0) and of 4D scans pinned to the bit; a rank-3 stack with "Scan shape X/Y" tags reads as 4D (py4DSTEM's reshape, planted, exact); more than four dimensions and a DM3 pixel array declaring length 0 refused by name |
+| EMD | emd, de5 | yes | `FormatoEMD` `VeloxImageSignals`, `VeloxSpectrumImageSignals`, `VeloxSpectrumSignals` (0.9.0) | **partial** | test_emd_ncem.py, test_emd_prismatic.py, test_emd_velox.py: allclose, almost_equal, array_equal, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | Velox: images, spectrum images (live and real time per detector from the SI group, 0.11.0; `Sample.elements` on every EDS signal), single spectra (with `Sample.elements`), "DevelopersKit" accepted; compound FFT/DPC, `lazy=True` SI, `load_SI_image_stack` not. NCEM/Berkeley EMD, prismatic and DE5: missing (useful) |
+| TIFF | tif, tiff | yes (some dims) | `FormatoTIFF` `TIFFSignals`, `TIFFAppImage` | **partial** | test_tiff.py: allclose, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | uncompressed strips; FEI, Gatan, ImageJ, plain, tifffile shaped series (0.11.0); Zeiss SEM, TVIPS, JEOL SightX axes under `readWithVendorAxes` (metadata mappings not ported); OME, SubIFD series, generic pyramids, Zeiss SEM, TVIPS, Olympus SIS, JEOL SightX, Hamamatsu, compression, tiles refused by name |
 | MRC | mrc, ali | no | `FormatoMRC` `MRCReader`, `MRCAppImage` | **partial** | test_mrc.py, test_mrcz.py: almost_equal, array_almost_equal, array_equal, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | study | modes 0,1,2,6,12 and 4 refused (complex); DE movie options (`virtual_images`, `external_images`, `scan_file`), `navigation_shape`, `metadata_file` missing |
-| EMPAD | xml | no | `FormatoEMPAD` `EMPADReader` | **partial** | test_empad.py: allclose | study | `remove_nans` default false only |
-| QuantumDetector | mib | no | `FormatoMIB` `MIBReader` | **present** | test_quantumdetector.py: allclose | study | R64 raw refused as rsciio does; header-less MIB missing (app ask) |
+| EMPAD | xml | no | `FormatoEMPAD` `EMPADReader` | **partial** | test_empad.py: allclose | study | `remove_nans` default false only; with several `scan_parameters` blocks, `scan_resolution_x/y` come from the `mode="acquire"` block wherever it sits (the app's rule; 049e7d70 does not read them), `series_count` from the last block (049e7d70's XML dictionary keeps the last, measured) |
+| QuantumDetector | mib | no | `FormatoMIB` `MIBReader` | **present** | test_quantumdetector.py: allclose | study | R64 raw refused as rsciio does; under `MIBConvention.appScanXY` a header without, or against, its detector width and height reads by the assembly (the app convention; RosettaSciIO refuses it) |
 | MSA | msa, ems, mas, emsa | yes (some dims) | `FormatoMSA` `MSAReader`, `MSAWriter` (0.9.0) | **present** | test_msa.py: allclose, deep_almost_equal (allclose) | study | read and write byte-pinned; deviations in the MSA section |
 | Arina | h5 | no | — | **missing** | test_arina.py:  | useful | Dectris Arina 4D detector HDF5; a 4D-STEM source |
 | Blockfile | blo | yes (some dims) | — | **missing** | test_blockfile.py: allclose, deep_almost_equal (allclose), equal, explicit rtol/atol/decimal in places | useful | NanoMegas ASTAR 4D-STEM blockfile (read and write) |
@@ -126,7 +126,14 @@ never written (RosettaSciIO tests `"General.item"`, a typo, as RosettaSciIO does
   code RosettaSciIO has no name for, data past the end of the file) is refused. Left, refused by name: SubIFD series, OME, a description
   in a second ImageDescription tag (`description1`).
 - **TIFF vendor branches not ported:** Zeiss SEM (`sem`), TVIPS, Olympus SIS, JEOL SightX, Hamamatsu streak (11 of the
-  public files); `force_read_resolution`; `multipage_as_list`. Each is refused by name.
+  public files); `force_read_resolution`; `multipage_as_list`. Each is refused by name by default.
+- **TIFF vendor axes (equal, opt-in).** `TIFFVendorBranches.readWithVendorAxes` reads the axes of `_axes_zeiss` (tifffile's
+  `read_cz_sem` unnamed value 3 x 1024 / page width, m), `_axes_tvips` (the v2 record's PixelSizeX/Y in nm, else the
+  resolution tags x 1e-2 in m) and `_axes_jeol_sightx` (TEM MAG and DIFF over the resolution tags, the XML through
+  `XmlToDict`): bit-equal to the pinned axes on the 7 public files (3 Zeiss SEM incl. the multipage one, TVIPS, 3 JEOL
+  SightX; `TIFFVendorAxesTests`), planted files for each branch on CI. Not ported: the vendor metadata mappings
+  (`mapping_cz_sem`, `get_tvips_mapping`, `get_jeol_sightx_mapping`, the JEOL date and title), so the default still refuses
+  and the option flags the signal; Olympus SIS (the public file is JPEG-compressed) and Hamamatsu streak axes.
 - **TIFF layouts:** compression (LZW, Deflate, JPEG, PackBits: imagecodecs in Python), tiles, planar 2, palettes applied,
   YCbCr, bit depths other than 8/16/32/64. Refused by name.
 - **TIFF tags tifffile drops or reads elsewhere:** unknown types are kept by the walker (tifffile drops them); pointer tags
@@ -172,7 +179,11 @@ never written (RosettaSciIO tests `"General.item"`, a typo, as RosettaSciIO does
   from 11 on, `Operations/ImageQuantificationOperation` before; `atomic_number2name` 1 to 119). Where Python raises (no entry, an entry
   that is not an object, `int()` refusing, an atomic number outside the table, `int(version)` refusing) the read is refused, as HyperSpy's
   `load` raises. The four file-level groups are parsed as `read_file` parses them, so a malformed entry refuses the read. Exact against
-  planted files and, when unzipped by `tools/test.sh`, the public ones (`tools/velox-elements/pins.py`). Left, refused here where Python
+  planted files and, when unzipped by `tools/test.sh`, the public ones (`tools/velox-elements/pins.py`). **`Sample.elements` of a spectrum
+  image:** the same rule (`VeloxSampleElements`) on every EDS signal of `VeloxSpectrumImageSignals`, summed or one per stream, with
+  `select_type="spectrum_image"`; a reader refusal comes first, as HyperSpy maps after the reader returns; no settings entry gives no
+  entry; EELS spectrum images carry none. Exact against 8 planted `si-el-*.emd` files, with and without `sum_EDS_detectors`, and the
+  7 public RosettaSciIO spectrum-image files (`Test SI 16x16 215 kx.emd`: C, O, Ca, Cu). Left, refused here where Python
   reads (no file has one): two keys of the settings group or of one entry that slugify alike (HyperSpy merges them); an empty entry
   dataset in the four groups (RosettaSciIO logs a warning and keeps what it read); `NaN`/`Infinity` in their JSON (`json.loads` accepts
   them, `JSONSerialization` does not). `_parse_image_display` is not run for a SpectrumStream file's spectra. **Live and real time of a single
@@ -205,7 +216,7 @@ never written (RosettaSciIO tests `"General.item"`, a typo, as RosettaSciIO does
 
 `MIBReader` defaults to RosettaSciIO `file_reader` at 049e7d70: fastest-first `navigationShape`, Python frame slices, singleton squeezing then a flip of the penultimate axis, integer pixels and timestamp/exposure metadata. Malformed/trailing partial frames are refused rather than silently truncated. Timestamp inference accepts UTC timestamps with up to nine fractional digits. No writable mmap, dask chunks or raw unpacking.
 
-`MIBConvention.appScanXY` uses the original reader at c809679c: a required ScanX/ScanY companion, 1x1 / 2x2 / 2x2G assemblies, unsqueezed scan axes, no flip, and Float32 conversion (including UInt32 rounding). Slicing/explicit navigation are refused in this convention. Both references refuse raw R64. `tools/mib/generate.py` compiles the pinned app initializer and pixel reader with an identity crop/bin view, records its output bytes, and pins rsciio data, axes and mapped metadata. All fixtures are synthetic, compressed and under 1 MB together.
+`MIBConvention.appScanXY` uses the original reader at c809679c: a required ScanX/ScanY companion, 1x1 / 2x2 / 2x2G assemblies (the frame is the assembly's 256 / 512 / 514 square, as that reader read it: a header without a detector width and height, or with ones that disagree with the assembly, is read the same way; such a header is refused by RosettaSciIO's convention, which needs both; tested on planted copies of the app fixtures, equal to their pinned bytes), unsqueezed scan axes, no flip, and Float32 conversion (including UInt32 rounding). Slicing/explicit navigation are refused in this convention. Both references refuse raw R64. `tools/mib/generate.py` compiles the pinned app initializer and pixel reader with an identity crop/bin view, records its output bytes, and pins rsciio data, axes and mapped metadata. All fixtures are synthetic, compressed and under 1 MB together.
 
 ## Acquisition metadata and file writing (FormatoCore)
 
@@ -265,15 +276,28 @@ RosettaSciIO plugin to compare with: its calibrations are the file's (`R/Q_pixel
 | EDS (TEM) elevation, azimuth, solid angle, live and real time | R (X-ray signal) | - | - | - | per detector in the spectrum-image readers | - | - |
 | CL spectrometer, detector, grating, wavelengths, frames, integration time, format; SI mode and drift | R (CL signal) | - | - | - | - | - | - |
 | Velox EDS number of frames, detector gain/offset | - | - | - | - | read by the spectrum-image readers (`VeloxSpectrumImageSignals`) | - | - |
+| camera pixel pitch (`cameraPixelPitch`, after 0.11.0) | R (CL signal, as `Detector.pixel_size` too); every other signal: the tag as stored. A GMS TIFF's tag 65027: the same rules (RosettaSciIO reads no tag 65027) | - | - | - | not read yet | - | - |
 
 "Probe area" is mapped by none of the RosettaSciIO plugins compared here. Conversions follow RosettaSciIO per format and are named in each reading's
 `note` (DM stage position stored value x 1e-3; Velox degrees to 3 decimals and metres to 6; MRC and the FEI INI as stored): RosettaSciIO's own units
 are not uniform across formats. Edges: the DM signal-type groups are keyed by RosettaSciIO's spelling of the tag names (spaces, as DM writes them);
-array-valued tags (CCD read area, pixel size as a pair, binning pair) are not in the kit's scalar tag maps and are not read. DM EELS scan dwell is
+array-valued tags (CCD read area, binning pair) are not in the kit's scalar tag maps and are not read. The CCD pixel size pair
+(`Acquisition.Device.CCD.Pixel Size (um)`, a struct of two numbers) is read from the image object (after 0.11.0): `AcquisitionMetadata.dm(_:)`
+gives it as `cameraPixelPitch` (rows, columns, "um"; columns from the first stored number) under both conventions, and for a CL signal
+RosettaSciIO's `Detector.pixel_size` (the first number when the first two are equal, else absent: RosettaSciIO keeps the tuple). Pinned on
+RosettaSciIO's public `test-MonoCL_spectrum-ccd.dm4` and `test-MonarcCL_spectrum-ccd.dm4` (20.0, its own tests' value; fetched at 8363d24,
+the same bytes and the same mapping line as the pinned 049e7d70) and on `EELS_SI.dm4` (14.0, a US1000 behind a spectrometer; RosettaSciIO maps
+nothing there, so `.rosettaSciIO` labels it unvalidated; `.app` reads it as well, an extension of the consumer's rules); `dm(numbers:strings:)`
+cannot see it. A GMS-saved TIFF's tag 65027 stream gives the same reading by the same rules (`AcquisitionMetadata.tiff`, after 0.11.0): 14 x 14
+on RosettaSciIO's public `test_loading_image_saved_with_DM.tif` (a BM-UltraScan), labelled unvalidated under `.rosettaSciIO`. RosettaSciIO's TIFF
+plugin parses no tag 65027 (it reads only the DM scale, unit and intensity tags 65003-65025), so there the pitch is the pitch when the file records
+it, as every other value the kit reads from that stream. The binned frame pixel
+(`Acquisition.Frame.CCD.Pixel Size (um)`: 2000 x 20 and 364 x 14 on those files) is not read. DM EELS scan dwell is
 `seconds x 1e6` in `dwellUS` (the pin divides back; exact for dyadic times). RosettaSciIO's other TIFF vendor mappings (JEOL SightX, Zeiss SEM, TVIPS)
 are out of scope: the kit refuses those branches by name. The Velox `.emd` reader reads each stage coordinate alone since 0.3.1.
 
-**Still missing at 0.3.1.** (1) Array-valued DM tags (CCD read area, pixel size as a pair, binning pair): the kit's tag maps are scalar. (2) DM signal-group tag names are matched in DM's own spelling, not slug-equivalent; a differently spelled tag is missed (checking needs a real vendor file). (3) RosettaSciIO's other TIFF vendor mappings (JEOL SightX, Zeiss SEM, TVIPS): refused by name. (4) Probe area: mapped by none of the compared plugins. (5) EMPAD and MIB have no `AcquisitionMetadata` (their RosettaSciIO `metadata` is returned on the signal, pinned). (6) 4D HDF5 / EMD 1.0: no RosettaSciIO plugin to compare with.
+**Still missing at 0.3.1.** (1) Array-valued DM tags (CCD read area, binning pair): the kit's tag maps are scalar (the pixel size pair is read since, above, from a DM image object and a GMS TIFF's tag 65027 stream:
+`dm(numbers:strings:)` still loses it, and an unequal pair on a CL signal has no `Detector.pixel_size`, where RosettaSciIO keeps the tuple). (2) DM signal-group tag names are matched in DM's own spelling, not slug-equivalent; a differently spelled tag is missed (checking needs a real vendor file). (3) RosettaSciIO's other TIFF vendor mappings (JEOL SightX, Zeiss SEM, TVIPS): refused by name. (4) Probe area: mapped by none of the compared plugins. (5) EMPAD and MIB have no `AcquisitionMetadata` (their RosettaSciIO `metadata` is returned on the signal, pinned). (6) 4D HDF5 / EMD 1.0: no RosettaSciIO plugin to compare with.
 
 ## Image readers (round 4)
 
@@ -305,3 +329,18 @@ run the suite again without the variable. The regenerated files are committed on
 ## Peek (0.10.0)
 
 `Peek` has no RosettaSciIO counterpart. Its dimensions, axes, data types and acquisition fields are the readers' own (compared with them, exact); its pixels are the file's, point sampled at `stride = ceil(longer side / maxPixels)` (pixel (i, j) = source (i * stride, j * stride)), so there is no tolerance: a planted gradient (1000 * row + column) pins the closed form at stride 1 and 4, and every format is compared with the same file read whole by its own reader and cut at the same stride (`Tests/FormatoPeekTests`). A stack or cube is entered at the centre of its leading axes; a spectrum is binned to the largest value per bin. Budget: the 1.66 GB Velox spectrum image peeks in 0.36 s with 22 MB resident.
+
+## Known limits and decisions
+
+Open work is in the [issues](https://github.com/mac4DSTEM/FormatoKit/issues), including the ones closed as *not planned* and
+parked for later (read speed #4, GMS EDS geometry #5, more formats #11). Speed against RosettaSciIO is in `docs/benchmarks.md`.
+
+- **Read speed.** DM4 2048² f32, TIFF 4096² u16 and DM4 4D 32² x 128² read about 2x slower than RosettaSciIO. The shared lazy
+  file array zero-fills a `Data` and then `pread`s into it (one extra pass); uninitialised storage was slower and was
+  reverted. Velox 2048² x5, MRC 1024² x10 and the small DM rows are within the run-to-run spread. Large rows are nightly
+  (`bench.py run --large`).
+- **GMS EDS geometry** (stage tilt, multi-segment list) is not read, so GMS absorption is refused; it needs a GMS EDS `.dm4`
+  with a spectrum image. Velox live and real times of `/Data/SpectrumImage` are read since 0.11.0; an SI group with several
+  streams or a disabled segment is covered only by planted files.
+- **FEI2 extended MRC header** is not read. `_parse_image_display` is not run on the single-spectrum path of a SpectrumStream
+  file.

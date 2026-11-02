@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pins RosettaSciIO's axes of the committed DM fixtures, for the scan pixel size of DM spectrum images and 4D scans (FormatoKit 0.11.0).
 
-    References/rsciio-venv/bin/python -I -B tools/dm-scan/pins.py
+    References/venv/bin/python -I -B tools/dm-scan/pins.py
         writes Tests/FormatoDMTests/Fixtures/dm-scan-pins.json
 
 For each fixture, `rsciio.digitalmicrograph.file_reader` (lazy) returns one dictionary per image object (thumbnails left out);
@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-VENV = ROOT / "References" / "rsciio-venv"
+VENV = ROOT / "References" / "venv"
 CLONE = ROOT / "References" / "rosettasciio-049e7d70"
 PIN = "049e7d7070e84779b499adaf3295beee9facb004"
 FIXTURES = ROOT / "Tests" / "FormatoDMTests" / "Fixtures"

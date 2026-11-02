@@ -1,4 +1,4 @@
-"""Run with MACEM_SUITE=<suite> <suite>/References/FormatoKit/rsciio-venv/bin/python -I -B tools/mib/generate.py.
+"""Run with MACEM_SUITE=<suite> References/venv/bin/python -I -B tools/mib/generate.py.
 Processed 1/6/12/24-bit synthetic frames and raw refusal pins. App pins compile the exact pinned initializer/readPattern
 with identity-view scaffolding (no crop/bin); no app files are changed or app targets built.
 """
@@ -10,7 +10,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SUITE = pathlib.Path(os.environ['MACEM_SUITE'])
 PIN = '049e7d7070e84779b499adaf3295beee9facb004'
 APP = 'c809679c8ee23a355da6af4f63665aaf64f90d0d'
-assert subprocess.check_output(['git','-C',str(SUITE/'References/FormatoKit/rosettasciio-049e7d70'),'rev-parse','HEAD'],text=True).strip()==PIN
+assert subprocess.check_output(['git','-C',str(ROOT/'References/rosettasciio-049e7d70'),'rev-parse','HEAD'],text=True).strip()==PIN
 assert rsciio.__version__=='0.14.1.dev96+g049e7d707'
 OUT=ROOT/'Tests/FormatoMIBTests/Fixtures'
 OUT.mkdir(parents=True,exist_ok=True)

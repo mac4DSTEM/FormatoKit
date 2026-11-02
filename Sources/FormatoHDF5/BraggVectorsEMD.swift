@@ -309,7 +309,8 @@ private nonisolated struct EMDWriter {
         convention: BraggAxisConvention, rootName: String, nodeName: String, authoringProgram: String,
         extras: [BraggAttributeTarget: [String: String]], cancelled: @Sendable () -> Bool
     ) throws {
-        let file = path.withCString { h5.h5fcreate($0, h5Truncate, h5Default, h5Default) }
+        // The scratch file, with file locking off: no write lock to outlive the close in a child process (FormatoKit#53).
+        let file = try h5.withScratchFileAccess { access in path.withCString { h5.h5fcreate($0, h5Truncate, h5Default, access) } }
         guard file >= 0 else { throw BraggVectorsEMDError.publishFailed("cannot create the temporary file") }
         defer { _ = h5.h5fclose(file) }
         try stringAttribute("emd_group_type", "file", on: file)

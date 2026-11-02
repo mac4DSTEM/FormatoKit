@@ -1,8 +1,8 @@
 """Checks the Swift-written BraggVectors fixtures against py4DSTEM and h5py. Run (after generate.py, and after the Swift
-test wrote swift-*.h5 into the fixtures folder) with References/python/py4dstem/bin/python -I -B, under a memory cap:
+test wrote swift-*.h5 into the fixtures folder) with References/venv/bin/python -I -B, under a memory cap:
 
   FORMATO_BRAGG_FIXTURE_DIR=$PWD/Tests/FormatoHDF5Tests/Fixtures/bragg swift test -c release --jobs 4 --filter BraggVectorsTests
-  MACEM_SUITE=... MPLCONFIGDIR=$PWD/.build/matplotlib .../python -I -B tools/bragg-writer/check.py
+  MPLCONFIGDIR=$PWD/.build/matplotlib References/venv/bin/python -I -B tools/bragg-writer/check.py
 
 For each swift-*.h5: py4DSTEM.read returns a BraggVectors whose peaks equal the py4DSTEM-written pins exactly, its
 calibration equals the pins, and the h5py group/dataset/attribute structure equals the py4DSTEM-written file's (extra attributes

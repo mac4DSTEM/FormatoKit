@@ -553,9 +553,9 @@
    ]
   }
  ],
- "emdfile_version": "0.0.15",
- "h5py_version": "3.11.0",
- "numpy_version": "2.5.0",
+ "emdfile_version": "0.0.16",
+ "h5py_version": "3.16.0",
+ "numpy_version": "2.5.4",
  "py4dstem_commit": "f050d207851f8accd3aa550365baaf1f38230428",
  "py4dstem_version": "0.14.19"
 }

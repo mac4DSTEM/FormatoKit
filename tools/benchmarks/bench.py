@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """FormatoKit vs RosettaSciIO benchmark driver (docs/benchmarks.md).
 
-    References/rsciio-venv/bin/python -I -B tools/benchmarks/bench.py run --work DIR [--large] [--only PREFIX]
-    References/rsciio-venv/bin/python -I -B tools/benchmarks/bench.py report --work DIR --out docs/benchmarks.md
+    References/venv/bin/python -I -B tools/benchmarks/bench.py run --work DIR [--large] [--only PREFIX]
+    References/venv/bin/python -I -B tools/benchmarks/bench.py report --work DIR --out docs/benchmarks.md
 
 `gen` writes the inputs under DIR (a scratch folder, never the repo) and DIR/cases.json; `run` generates what is missing, then for
 every case starts one child process per side (a fresh interpreter for RosettaSciIO, `formato-bench` for the kit), each doing one
@@ -27,7 +27,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 RUNS = 5
 SIDE_KIT = os.path.join(REPO, ".build", "release", "formato-bench")
-sys.path.insert(0, os.path.join(REPO, "tools", "step-4"))
+sys.path.insert(0, os.path.join(REPO, "tools", "velox-spectrum-image"))
 
 # ------------------------------------------------------------------------------------------------- generators
 

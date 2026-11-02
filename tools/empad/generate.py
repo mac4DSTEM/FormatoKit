@@ -1,10 +1,10 @@
-"""Run from FormatoKit with ../References/FormatoKit/rsciio-venv/bin/python -I -B tools/empad/generate.py."""
+"""Run from FormatoKit with References/venv/bin/python -I -B tools/empad/generate.py."""
 import gzip, json, pathlib, subprocess, tempfile
 import numpy as np
 import rsciio
 from rsciio.empad import file_reader
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-REF = ROOT.parent / 'References/FormatoKit/rosettasciio-049e7d70'
+REF = ROOT / 'References/rosettasciio-049e7d70'
 PIN = '049e7d7070e84779b499adaf3295beee9facb004'
 assert subprocess.check_output(['git', '-C', str(REF), 'rev-parse', 'HEAD'], text=True).strip() == PIN
 assert rsciio.__version__ == '0.14.1.dev96+g049e7d707'

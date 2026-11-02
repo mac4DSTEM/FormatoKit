@@ -46,14 +46,14 @@ extension VeloxEMDSerialized {
             let ceta = AcquisitionMetadata.velox(try #require(entries["ceta"]), timeZone: Self.utc)
             // StemMagnification "0" is returned as stored (RosettaSciIO's float); the camera's exposure is the detector the image names.
             #expect(ceta.magnification == MetadataReading(0))
-            #expect(ceta.exposureS == MetadataReading(0.5, note: AcquisitionMetadata.unvalidatedNote))
+            #expect(ceta.exposureS == MetadataReading(0.5, note: "no published reader reads this field; read as stored in the Velox metadata"))
             #expect(ceta.mode?.value == "1")
             #expect(ceta.cameraLengthMM == MetadataReading(844.0))
             // RosettaSciIO's microscope is InstrumentClass ("Talos"); the stored model is kept beside it, labelled.
             #expect(ceta.instrument == MetadataReading("Talos"))
-            #expect(ceta.instrumentModel == MetadataReading("Talos F200X", note: "unvalidated: no published reader reads it"))
+            #expect(ceta.instrumentModel == MetadataReading("Talos F200X", note: "no published reader reads this field; read as stored in the Velox metadata"))
             #expect(AcquisitionMetadata.velox(try #require(entries["ceta"]), timeZone: Self.utc, convention: .app).instrument
-                    == MetadataReading("Talos F200X", note: "unvalidated: no published reader reads it"))
+                    == MetadataReading("Talos F200X", note: "no published reader reads this field; read as stored in the Velox metadata"))
             #expect(ceta.dwellUS == nil)   // an ImagingDetector's image carries the scan settings too, but no dwell
             let haadf = AcquisitionMetadata.velox(try #require(entries["haadf"]), timeZone: Self.utc)
             #expect(haadf.dwellUS?.value == 10 && haadf.magnification == MetadataReading(225000.0))

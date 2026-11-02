@@ -136,7 +136,7 @@ extension TIFFSignals {
     }
 
     /// tifffile's `subresolution(a, b, p)` for series: the pyramid level of `b` below `a`, or nil.
-    private static func subresolution(_ a: TIFFSeries, _ b: TIFFSeries, p: Int, n: Int = 16) -> Int? {
+    static func subresolution(_ a: TIFFSeries, _ b: TIFFSeries, p: Int, n: Int = 16) -> Int? {
         guard a.axes == b.axes, a.dataType == b.dataType, a.shape.count == b.shape.count else { return nil }
         var level: Int?
         for ((ax, i), j) in zip(zip(a.axes.lowercased(), a.shape), b.shape) {
@@ -171,11 +171,12 @@ extension TIFFSignals {
         let size = file.data.count
         var series: [TIFFSeries] = []
         var reducedKeyframes: [Bool] = []
+        let name = formatoDisplayFileName(file.path)
         var index = 0
         while index < dirs.count {
             let keyDir = dirs[index]
             guard let text = shapedDescription(keyDir), let parsed = try parseShapedDescription(text) else { return nil }
-            guard keyDir[330] == nil else { throw FormatoReadError.unsupported("A shaped series with SubIFDs is not ported.") }
+            guard keyDir[330] == nil else { throw TIFFError.unsupportedSeries(file: name, series: "a shaped series with SubIFDs") }
             let key = try TIFFPageLayout.of(keyDir, bigEndian: file.bigEndian, fileSize: size)
             let pageShape = key.samples > 1 ? [key.height, key.width, key.samples] : [key.height, key.width]
             let pageAxes: [Character] = key.samples > 1 ? ["Y", "X", "S"] : ["Y", "X"]
@@ -226,14 +227,14 @@ extension TIFFSignals {
             if let reshaped = try reshapeAxes(curAxes, curShape, outReshape, file: formatoDisplayFileName(file.path)) { curAxes = reshaped; curShape = outReshape }
             // The images the series reads: one per page, or (one page, data following it) a virtual run.
             let images = try product(curShape) / pageElements
-            guard try product(curShape) % pageElements == 0 else { throw FormatoReadError.unsupported("A shaped series whose shape is not a whole number of pages.") }
+            guard try product(curShape) % pageElements == 0 else { throw TIFFError.unsupportedSeries(file: name, series: "a shaped series whose shape is not a whole number of pages") }
             let layouts: [TIFFPageLayout]
             var virtual: Int?
             if members.count == images {
                 layouts = try members.map { m in
                     let l = try TIFFPageLayout.of(dirs[m], bigEndian: file.bigEndian, fileSize: size)
                     guard l.width == key.width, l.height == key.height, l.dataType == key.dataType, l.samples == key.samples else {
-                        throw FormatoReadError.unsupported("A page of a shaped series differs from its first page.")
+                        throw TIFFError.unsupportedSeries(file: name, series: "a shaped series whose pages differ from its first page")
                     }
                     return l
                 }
@@ -242,7 +243,7 @@ extension TIFFSignals {
                 guard !o, key.stripOffsets[0] <= size - bytes else { throw TIFFError.truncated("The shaped series claims more bytes than the file holds.") }
                 layouts = [key]; virtual = images
             } else {
-                throw FormatoReadError.unsupported("A shaped series of \(images) images over \(members.count) pages that are not stored contiguously.")
+                throw TIFFError.unsupportedSeries(file: name, series: "a shaped series of \(images) images over \(members.count) pages that are not stored contiguously")
             }
             series.append(TIFFSeries(axes: String(curAxes), shape: curShape, dataType: key.dataType, pages: layouts, virtualCount: virtual,
                                      firstDirectory: index))

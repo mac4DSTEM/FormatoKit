@@ -42,6 +42,11 @@ public nonisolated struct EMPADReader: Sendable {
         parser.shouldResolveExternalEntities = false
         guard parser.parse() else { throw EMPADError.invalidXML("Malformed XML") }
         var fields = header.fields
+        // The scan extents of the acquisition block, wherever it sits (the app read that block); without both, the last block's
+        // as before. `series_count` stays the last block's, as RosettaSciIO's XML dictionary keeps it.
+        if let x = header.acquire["root.scan_parameters.scan_resolution_x"], let y = header.acquire["root.scan_parameters.scan_resolution_y"] {
+            fields["root.scan_parameters.scan_resolution_x"] = x; fields["root.scan_parameters.scan_resolution_y"] = y
+        }
         if preferScanResolution, fields["root.scan_parameters.scan_resolution_x"] != nil,
            fields["root.scan_parameters.scan_resolution_y"] != nil {
             fields["root.pix_x"] = nil; fields["root.pix_y"] = nil
@@ -183,19 +188,31 @@ public nonisolated struct EMPADReader: Sendable {
 
 private final class Header: NSObject, XMLParserDelegate {
     var fields: [String: String] = [:]
+    /// `scan_resolution_x/y` of the `scan_parameters mode="acquire"` block (the first such block), wherever it sits.
+    var acquire: [String: String] = [:]
     var stack: [String] = []
     var texts: [String] = []
+    /// The depth of the open `root.scan_parameters` element when its mode is "acquire" (and no acquire block was seen before).
+    private var acquireDepth: Int?
+    private var seenAcquire = false
     func parser(_ parser: XMLParser, didStartElement name: String, namespaceURI: String?, qualifiedName: String?, attributes: [String: String]) {
         stack.append(name); texts.append("")
+        if stack == ["root", "scan_parameters"], attributes["mode"] == "acquire", !seenAcquire {
+            acquireDepth = stack.count; seenAcquire = true
+        }
         for (key, value) in attributes { store(stack.joined(separator: ".") + "." + key, value) }
     }
     func parser(_ parser: XMLParser, foundCharacters string: String) { if !texts.isEmpty { texts[texts.count - 1] += string } }
     func parser(_ parser: XMLParser, didEndElement name: String, namespaceURI: String?, qualifiedName: String?) {
         store(stack.joined(separator: "."), texts.removeLast().trimmingCharacters(in: .whitespacesAndNewlines))
+        if stack.count == acquireDepth { acquireDepth = nil }
         stack.removeLast()
     }
     func store(_ key: String, _ value: String) {
         fields[key] = value
+        if acquireDepth != nil, key == "root.scan_parameters.scan_resolution_x" || key == "root.scan_parameters.scan_resolution_y" {
+            acquire[key] = value
+        }
     }
 }
 

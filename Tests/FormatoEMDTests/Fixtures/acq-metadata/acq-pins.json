@@ -12,7 +12,7 @@
     },
     "cameraLengthMM": null,
     "detector": {
-     "note": "unvalidated: RosettaSciIO names some detectors from another field",
+     "note": "read from BinaryResult.Detector; RosettaSciIO names some detectors from another field",
      "otherCopy": null,
      "value": "BM-Ceta"
     },
@@ -24,7 +24,7 @@
      "value": 200
     },
     "instrument": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the Velox metadata",
      "otherCopy": null,
      "value": "Talos F200X"
     },
@@ -80,12 +80,12 @@
     },
     "cameraLengthMM": null,
     "detector": {
-     "note": "unvalidated: RosettaSciIO names some detectors from another field",
+     "note": "read from BinaryResult.Detector; RosettaSciIO names some detectors from another field",
      "otherCopy": null,
      "value": "HAADF"
     },
     "dwellUS": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the Velox metadata",
      "otherCopy": null,
      "value": 10
     },
@@ -96,7 +96,7 @@
      "value": 300
     },
     "instrument": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the Velox metadata",
      "otherCopy": null,
      "value": "Talos F200X"
     },
@@ -157,12 +157,12 @@
     },
     "cameraLengthMM": null,
     "detector": {
-     "note": "unvalidated: RosettaSciIO names some detectors from another field",
+     "note": "read from BinaryResult.Detector; RosettaSciIO names some detectors from another field",
      "otherCopy": null,
      "value": "HAADF"
     },
     "dwellUS": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the Velox metadata",
      "otherCopy": null,
      "value": 10
     },
@@ -173,7 +173,7 @@
      "value": 200
     },
     "instrument": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the Velox metadata",
      "otherCopy": null,
      "value": "Talos F200X"
     },
@@ -229,19 +229,19 @@
     },
     "cameraLengthMM": null,
     "detector": {
-     "note": "unvalidated: RosettaSciIO names some detectors from another field",
+     "note": "read from BinaryResult.Detector; RosettaSciIO names some detectors from another field",
      "otherCopy": null,
      "value": "HAADF"
     },
     "dwellUS": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the Velox metadata",
      "otherCopy": null,
      "value": 10
     },
     "exposureS": null,
     "highTensionKV": null,
     "instrument": {
-     "note": "unvalidated: no published reader reads it",
+     "note": "no published reader reads this field; read as stored in the Velox metadata",
      "otherCopy": null,
      "value": "Talos F200X"
     },
