@@ -6,7 +6,6 @@
 
 import Foundation
 import Testing
-import FormatoCore
 @testable import FormatoTIFF
 
 @Suite struct TIFFSeriesRefusalTests {

@@ -589,8 +589,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
             }
 
             let image = try Self.readScanImage(
-                file: file, shapes: imageShapes, grid: grid, range: range, preferredDetector: metadata.binaryResultDetector,
-                cancelled: cancelled)
+                file: file, shapes: imageShapes, grid: grid, range: range, cancelled: cancelled)
             tracker.finish()
             return VeloxSpectrumImage(
                 eventStore: store, scanImage: image, metadata: metadata, version: version.version,
@@ -707,8 +706,7 @@ public nonisolated struct VeloxEMDReader: Sendable {
     /// integer image; summed over the same frame range, clipped to the frames the image has.
     private static func readScanImage(
         file: VeloxFile, shapes: [(name: String, ny: Int, nx: Int, frames: Int, isInteger: Bool)],
-        grid: (ny: Int, nx: Int), range: Range<Int>, preferredDetector: String?,
-        cancelled: @Sendable () -> Bool
+        grid: (ny: Int, nx: Int), range: Range<Int>, cancelled: @Sendable () -> Bool
     ) throws -> VeloxScanImage? {
         let onGrid = shapes.filter { $0.ny == grid.ny && $0.nx == grid.nx && $0.isInteger }
         guard !onGrid.isEmpty else { return nil }

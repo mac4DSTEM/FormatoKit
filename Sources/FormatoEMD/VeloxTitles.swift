@@ -10,7 +10,6 @@
 
 import Foundation
 import FormatoCore
-import FormatoHDF5
 
 /// The title of each image of a Velox file, and where it came from.
 nonisolated struct VeloxTitles: Sendable {

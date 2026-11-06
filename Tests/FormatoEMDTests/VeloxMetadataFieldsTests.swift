@@ -44,7 +44,6 @@ import Foundation
 import Testing
 import FormatoCore
 import FormatoEMD
-import FormatoHDF5
 
 extension VeloxEMDSerialized {
     @Suite(.serialized) struct VeloxMetadataFieldsTests {

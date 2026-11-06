@@ -34,7 +34,6 @@ public nonisolated struct VeloxSpectrumSignals: Sendable {
 }
 
 private nonisolated struct VeloxSpectrumRead {
-    let path: String
     let zone: TimeZone?
     let policy: VeloxReadPolicy
     let cancelled: @Sendable () -> Bool
@@ -42,7 +41,6 @@ private nonisolated struct VeloxSpectrumRead {
     let fileName: String
 
     init(path: String, zone: TimeZone?, policy: VeloxReadPolicy, cancelled: @escaping @Sendable () -> Bool) throws {
-        self.path = path
         self.zone = zone
         self.policy = policy
         self.cancelled = cancelled

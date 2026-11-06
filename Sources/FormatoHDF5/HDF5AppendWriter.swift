@@ -151,7 +151,7 @@ public nonisolated final class HDF5WriteSession {
     /// object anywhere along the path throws `wrongKind`.
     public func createGroup(_ path: String) throws {
         let parts = try HDF5Ops.components(path)
-        try open { try makeGroups(parts, $0, path) }
+        try open { try makeGroups(parts, $0) }
     }
 
     /// Writes `array` as a new dataset at `path` (missing groups above it are created), stored in the array's own type and
@@ -196,7 +196,7 @@ public nonisolated final class HDF5WriteSession {
         }
         guard shape.count <= HDF5Ops.maximumRank else { throw HDF5FileError.limitExceeded("rank \(shape.count)") }
         try open { file in
-            try checkParents(Array(parts.dropLast()), file, path)
+            try checkParents(Array(parts.dropLast()), file)
             if HDF5Ops.linkExists(h5, file, parts) {
                 guard replace else { throw HDF5FileError.alreadyExists(path) }
                 guard HDF5Ops.kind(h5, file, parts) != .group else { throw HDF5FileError.alreadyExists("\(path) (a group; use deleteLink)") }
@@ -204,7 +204,7 @@ public nonisolated final class HDF5WriteSession {
                     throw HDF5RootAttributes.failure("unlinking \(path)", h5)
                 }
             }
-            try makeGroups(Array(parts.dropLast()), file, path)
+            try makeGroups(Array(parts.dropLast()), file)
             let dims = shape.map(UInt64.init)
             let space = dims.isEmpty ? h5.h5screate(0) : h5.h5screateSimple(Int32(dims.count), dims, nil)
             guard space >= 0 else { throw HDF5RootAttributes.failure("making the space of \(path)", h5) }
@@ -404,7 +404,7 @@ public nonisolated final class HDF5WriteSession {
             let other = try HDF5RootAttributes.openForReading(source, h5)
             defer { _ = h5.h5fclose(other) }
             guard HDF5Ops.linkExists(h5, other, sourceParts) else { throw HDF5FileError.notFound(sourcePath) }
-            try makeGroups(Array(parts.dropLast()), file, path)
+            try makeGroups(Array(parts.dropLast()), file)
             if HDF5Ops.linkExists(h5, file, parts) {
                 guard replace else { throw HDF5FileError.alreadyExists(path) }
                 guard HDF5Ops.absolute(parts).withCString({ h5.h5ldelete(file, $0, 0) }) >= 0 else {
@@ -421,7 +421,7 @@ public nonisolated final class HDF5WriteSession {
     // MARK: Internals (all under open)
 
     /// Throws `wrongKind` when a component of `parts` that exists is not a group.
-    private func checkParents(_ parts: [String], _ file: hid_t, _ path: String) throws {
+    private func checkParents(_ parts: [String], _ file: hid_t) throws {
         guard !parts.isEmpty else { return }
         for count in 1...parts.count {
             let prefix = Array(parts.prefix(count))
@@ -432,9 +432,9 @@ public nonisolated final class HDF5WriteSession {
         }
     }
 
-    private func makeGroups(_ parts: [String], _ file: hid_t, _ path: String) throws {
+    private func makeGroups(_ parts: [String], _ file: hid_t) throws {
         guard !parts.isEmpty else { return }
-        try checkParents(parts, file, path)
+        try checkParents(parts, file)
         for count in 1...parts.count {
             let prefix = Array(parts.prefix(count))
             if HDF5Ops.linkExists(h5, file, prefix) { continue }
@@ -457,7 +457,7 @@ public nonisolated final class HDF5WriteSession {
 
     /// The checks and unlinking shared by the scalar dataset writers (all under `open`).
     private func prepareScalar(_ parts: [String], _ file: hid_t, _ path: String, replace: Bool) throws {
-        try checkParents(Array(parts.dropLast()), file, path)
+        try checkParents(Array(parts.dropLast()), file)
         if HDF5Ops.linkExists(h5, file, parts) {
             guard replace else { throw HDF5FileError.alreadyExists(path) }
             guard HDF5Ops.kind(h5, file, parts) != .group else { throw HDF5FileError.alreadyExists("\(path) (a group; use deleteLink)") }
@@ -465,7 +465,7 @@ public nonisolated final class HDF5WriteSession {
                 throw HDF5RootAttributes.failure("unlinking \(path)", h5)
             }
         }
-        try makeGroups(Array(parts.dropLast()), file, path)
+        try makeGroups(Array(parts.dropLast()), file)
     }
 
     private func createScalar(_ parts: [String], _ file: hid_t, _ path: String, type: hid_t,
