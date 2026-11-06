@@ -2,7 +2,6 @@ import Testing
 import Foundation
 import FormatoCore
 import FormatoEMD
-import FormatoHDF5
 
 extension VeloxEMDSerialized {
     /// A Velox file's metadata row count comes out of the file; a corrupt or hostile one must be refused before it is allocated.

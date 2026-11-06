@@ -58,9 +58,6 @@ public nonisolated struct VeloxEventStore: Sendable {
     /// inside the frame range (prediction P4).
     public var totalCounts: Int { counts.reduce(0) { $0 + Int($1) } }
     package var distinctEntries: Int { channelIndex.count }
-    package var storageBytes: Int {
-        rowOffsets.count * MemoryLayout<Int>.stride + channelIndex.count * 2 + counts.count * 4
-    }
 
     /// Frames of dose that `pixel` received.
     public func framesCovering(pixel: Int) -> Int {

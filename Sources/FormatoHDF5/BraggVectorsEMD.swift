@@ -474,8 +474,8 @@ private nonisolated struct EMDWriter {
         guard withUnsafePointer(to: &v, { h5.h5awrite(attribute, h5.int64, $0) }) >= 0 else { throw fail("writing attribute \(name)") }
     }
 
-    /// Creates a scalar dataset, writes `bytes` from memory type `memory`, and tags it with py4DSTEM's `type` attribute.
-    private func scalarDataset(_ name: String, fileType: hid_t, memory: hid_t, tag: String?, in parent: hid_t,
+    /// Creates a scalar dataset, lets `write` fill it, and tags it with py4DSTEM's `type` attribute.
+    private func scalarDataset(_ name: String, fileType: hid_t, tag: String?, in parent: hid_t,
                                write: (hid_t) -> herr_t) throws {
         let space = h5.h5screate(h5Scalar); guard space >= 0 else { throw fail("dataset \(name)") }
         defer { _ = h5.h5sclose(space) }
@@ -488,7 +488,7 @@ private nonisolated struct EMDWriter {
 
     private func doubleDataset(_ name: String, _ value: Double, in parent: hid_t) throws {
         var v = value
-        try scalarDataset(name, fileType: h5.float64, memory: h5.float64, tag: "number", in: parent) { ds in
+        try scalarDataset(name, fileType: h5.float64, tag: "number", in: parent) { ds in
             withUnsafePointer(to: &v) { h5.h5dwrite(ds, h5.float64, h5EntireSpace, h5EntireSpace, h5Default, $0) }
         }
     }
@@ -501,7 +501,7 @@ private nonisolated struct EMDWriter {
         guard "FALSE".withCString({ h5.h5tenumInsert(type, $0, &f) }) >= 0,
               "TRUE".withCString({ h5.h5tenumInsert(type, $0, &t) }) >= 0 else { throw fail("defining the bool type") }
         var v: Int8 = value ? 1 : 0
-        try scalarDataset(name, fileType: type, memory: type, tag: "bool", in: parent) { ds in
+        try scalarDataset(name, fileType: type, tag: "bool", in: parent) { ds in
             withUnsafePointer(to: &v) { h5.h5dwrite(ds, type, h5EntireSpace, h5EntireSpace, h5Default, $0) }
         }
     }
@@ -509,7 +509,7 @@ private nonisolated struct EMDWriter {
     /// py4DSTEM stores its strings as variable-length ASCII; units and paths stay ASCII-typed for it.
     private func stringDataset(_ name: String, _ value: String, type tag: String?, in parent: hid_t) throws {
         let type = try stringType(utf8: false); defer { _ = h5.h5tclose(type) }
-        try scalarDataset(name, fileType: type, memory: type, tag: tag, in: parent) { ds in
+        try scalarDataset(name, fileType: type, tag: tag, in: parent) { ds in
             value.withCString { characters -> herr_t in
                 var pointer: UnsafePointer<CChar>? = characters
                 return withUnsafePointer(to: &pointer) { h5.h5dwrite(ds, type, h5EntireSpace, h5EntireSpace, h5Default, $0) }

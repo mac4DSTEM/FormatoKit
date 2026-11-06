@@ -144,13 +144,6 @@ public nonisolated struct DM4ImageObject: Sendable, Equatable {
     public let dataByteCount: Int
 
     package var dataTypeName: String { DM4Experiment.dataTypeName(dataType) }
-    /// Saturates at `Int.max` rather than trapping on absurd tag dimensions.
-    package var elementCount: Int {
-        dimensions.reduce(1) { acc, d in
-            let (p, o) = acc.multipliedReportingOverflow(by: d)
-            return o ? Int.max : p
-        }
-    }
 }
 
 /// A decoded 2D image object.

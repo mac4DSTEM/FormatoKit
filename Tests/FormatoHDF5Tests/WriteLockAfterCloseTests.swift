@@ -23,7 +23,6 @@ import Darwin
 import Foundation
 import Synchronization
 import Testing
-import FormatoCore
 import FormatoHDF5
 
 @Suite struct WriteLockAfterCloseTests {
