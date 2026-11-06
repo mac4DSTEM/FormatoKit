@@ -12,7 +12,7 @@ authors:
 version: "0.12.1" # x-release-please-version
 date-released: "2026-11-01" # x-release-please-date
 license: GPL-3.0-only
-repository-code: "https://github.com/mac4DSTEM/FormatoKit"
+repository-code: "https://github.com/macEMSuite/FormatoKit"
 keywords:
   - electron microscopy
   - file formats
