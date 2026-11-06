@@ -121,6 +121,11 @@ public nonisolated struct VeloxMetadata: Sendable {
     /// `Instrument.InstrumentClass` as stored ("Talos"): what RosettaSciIO 049e7d70 maps as the microscope (`_emd_velox.py:947-950`).
     public let instrumentClass: String?
     public let acquisitionStartUnixTime: Double?
+    /// RosettaSciIO 049e7d70's start when `Acquisition` has no `AcquisitionStartDatetime` key (`_get_metadata_dict`):
+    /// `CustomProperties["Detectors[BM-Ceta].TimeStamp"].value` (microseconds, Python's `float`) / 1e6. nil when the key is
+    /// there (RosettaSciIO then takes the start, whatever it holds), when `Acquisition` is not an object (RosettaSciIO raises),
+    /// or when CustomProperties has no such stamp or its value does not parse.
+    let cetaTimeStampUnixTime: Double?
     public let scanTransformation: VeloxScanTransformation?
     // The six below (added in the inherited reader's 0.2.0: five at a consumer's request of 2026-10-13, `stemMagnification` at another of
     // 2026-10-14) are as stored: no unit conversion, no decoding, nil when absent or not a number. A Velox-TIFF
@@ -390,6 +395,13 @@ public nonisolated struct VeloxMetadata: Sendable {
         // The EELS collection range: flat dotted keys, as Velox writes them and pyEELSMODEL reads them.
         func collection(_ k: String) -> Double? { jsonDouble(dict(custom, "EnergyFilter.CollectionAngleRange." + k)?["value"]) }
 
+        // RosettaSciIO's start-time fallback: only when `Acquisition` is an object without `AcquisitionStartDatetime`.
+        var cetaStamp: Double?
+        if let acquisition = dict(root, "Acquisition"), acquisition["AcquisitionStartDatetime"] == nil,
+           let micro = veloxPythonFloat(dict(custom, "Detectors[BM-Ceta].TimeStamp")?["value"]) {
+            cetaStamp = micro / 1e6
+        }
+
         let optics = dict(root, "Optics")
         // An empty BinaryResult.Detector names no detector (an entry without DetectorName is listed with name "").
         var exposure: Double?
@@ -415,6 +427,7 @@ public nonisolated struct VeloxMetadata: Sendable {
             instrumentModel: dict(root, "Instrument")?["InstrumentModel"] as? String,
             instrumentClass: dict(root, "Instrument")?["InstrumentClass"] as? String,
             acquisitionStartUnixTime: jsonDouble(dict(dict(root, "Acquisition"), "AcquisitionStartDatetime")?["DateTime"]),
+            cetaTimeStampUnixTime: cetaStamp,
             scanTransformation: transformation,
             nominalMagnification: jsonDouble(optics?["NominalMagnification"]),
             stemMagnification: jsonDouble(dict(custom, "StemMagnification")?["value"]),
