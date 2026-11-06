@@ -33,7 +33,7 @@ what is next. The API reference (DocC, one page per module) is at <https://mac4d
 ## The first ten minutes
 
 Add the package to your `Package.swift`
-(`.package(url: "https://github.com/mac4DSTEM/FormatoKit.git", from: "0.11.0")`, or `.package(path: "../FormatoKit")` for a
+(`.package(url: "https://github.com/mac4DSTEM/FormatoKit.git", from: "0.12.1")`, or `.package(path: "../FormatoKit")` for a
 clone), and the products you need (`FormatoDM`, `FormatoEMD`, `FormatoTIFF`; each brings `FormatoCore`).
 
 To try it on files you have in hand, use the ones in this repository: planted files made for the tests, under
