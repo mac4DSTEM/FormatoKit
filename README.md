@@ -2,9 +2,9 @@
 
 # FormatoKit
 
-[![CI](https://github.com/mac4DSTEM/FormatoKit/actions/workflows/ci.yml/badge.svg)](https://github.com/mac4DSTEM/FormatoKit/actions/workflows/ci.yml)
-[![Docs](https://github.com/mac4DSTEM/FormatoKit/actions/workflows/docs.yml/badge.svg)](https://mac4dstem.github.io/FormatoKit/documentation/)
-[![Release](https://img.shields.io/github/v/tag/mac4DSTEM/FormatoKit?label=release&sort=semver)](https://github.com/mac4DSTEM/FormatoKit/tags)
+[![CI](https://github.com/macEMSuite/FormatoKit/actions/workflows/ci.yml/badge.svg)](https://github.com/macEMSuite/FormatoKit/actions/workflows/ci.yml)
+[![Docs](https://github.com/macEMSuite/FormatoKit/actions/workflows/docs.yml/badge.svg)](https://macemsuite.github.io/FormatoKit/documentation/)
+[![Release](https://img.shields.io/github/v/tag/macEMSuite/FormatoKit?label=release&sort=semver)](https://github.com/macEMSuite/FormatoKit/tags)
 [![Licence: GPL-3.0-only](https://img.shields.io/badge/licence-GPL--3.0--only-blue)](LICENSE)
 
 A file-format library for macOS: the Mac counterpart of [RosettaSciIO](https://github.com/hyperspy/rosettasciio).
@@ -28,12 +28,12 @@ large, one SwiftPM product per module.
 | `FormatoPeek` | `Peek.thumbnailFrame(url:maxPixels:)` and `Peek.summary(url:)`: one decimated frame and the header facts of a DM, Velox, TIFF, MRC, MSA or py4DSTEM HDF5 file, never more than one frame read (for Quick Look and Finder previews) | 0.10.0 |
 
 `docs/parity.md` is the checklist against RosettaSciIO's formats table and its reader options: what reads, what is pinned,
-what is next. The API reference (DocC, one page per module) is at <https://mac4dstem.github.io/FormatoKit/documentation/>.
+what is next. The API reference (DocC, one page per module) is at <https://macemsuite.github.io/FormatoKit/documentation/>.
 
 ## The first ten minutes
 
 Add the package to your `Package.swift`
-(`.package(url: "https://github.com/mac4DSTEM/FormatoKit.git", from: "0.12.1")`, or `.package(path: "../FormatoKit")` for a
+(`.package(url: "https://github.com/macEMSuite/FormatoKit.git", from: "0.12.1")`, or `.package(path: "../FormatoKit")` for a
 clone), and the products you need (`FormatoDM`, `FormatoEMD`, `FormatoTIFF`; each brings `FormatoCore`).
 
 To try it on files you have in hand, use the ones in this repository: planted files made for the tests, under
