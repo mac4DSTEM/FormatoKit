@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/mac4DSTEM/FormatoKit/compare/0.12.1...0.13.0) (2026-11-11)
+
+
+### Features
+
+* read Merlin's multi-file save as one scan and take the scan shape from Frames per Trigger ([#84](https://github.com/mac4DSTEM/FormatoKit/issues/84)) ([e5de1d6](https://github.com/mac4DSTEM/FormatoKit/commit/e5de1d6fb86a94f456da52d5e681499a7b79683e))
+
 ## [0.12.1](https://github.com/mac4DSTEM/FormatoKit/compare/0.12.0...0.12.1) (2026-11-01)
 
 
