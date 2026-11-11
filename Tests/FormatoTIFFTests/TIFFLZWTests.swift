@@ -67,7 +67,8 @@ struct TIFFLZWTests {
         // The written values: page k, row y, column x holds 100 x + y + 5000 k.
         let lazy = TIFFSeriesArray(path: path, series: tiff.series[0], shape: tiff.series[0].shape)
         let slab = try lazy.read(start: [1, 5, 10], count: [2, 3, 4])
-        let want: [Double] = (1...2).flatMap { k in (5..<8).flatMap { y in (10..<14).map { x in Double(100 * x + y + 5000 * k) } } }
+        var want: [Double] = []
+        for k in 1...2 { for y in 5..<8 { for x in 10..<14 { want.append(Double(100 * x + y + 5000 * k)) } } }
         #expect(slab.doubles() == want)
     }
 
@@ -86,9 +87,17 @@ struct TIFFLZWTests {
     /// Codes packed MSB first at the given widths.
     private func pack(_ codes: [(Int, Int)]) -> Data {
         var bits: [Bool] = []
-        for (code, width) in codes { for k in stride(from: width - 1, through: 0, by: -1) { bits.append(code >> k & 1 == 1) } }
+        for (code, width) in codes {
+            for k in stride(from: width - 1, through: 0, by: -1) { bits.append((code >> k) & 1 == 1) }
+        }
         while bits.count % 8 != 0 { bits.append(false) }
-        return Data(stride(from: 0, to: bits.count, by: 8).map { i in bits[i..<(i + 8)].reduce(UInt8(0)) { $0 << 1 | ($1 ? 1 : 0) } })
+        var bytes: [UInt8] = []
+        for i in stride(from: 0, to: bits.count, by: 8) {
+            var byte: UInt8 = 0
+            for bit in bits[i..<(i + 8)] { byte = byte << 1 | (bit ? 1 : 0) }
+            bytes.append(byte)
+        }
+        return Data(bytes)
     }
 
     @Test func testTheDecoderBuildsItsTableAndReadsTheCodeNotYetInIt() throws {
