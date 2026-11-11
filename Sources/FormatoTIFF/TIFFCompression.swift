@@ -137,7 +137,7 @@ nonisolated enum TIFFCompression {
 
     /// Byte-swaps every `bytes`-byte element in place (big-endian samples to little-endian).
     static func swapElements(_ data: inout Data, bytes: Int) {
-        data.withUnsafeMutableBytes { p in
+        data.withUnsafeMutableBytes { (p: UnsafeMutableRawBufferPointer) in
             var i = 0
             while i + bytes <= p.count {
                 for k in 0..<(bytes / 2) { p.swapAt(i + k, i + bytes - 1 - k) }
@@ -150,7 +150,7 @@ nonisolated enum TIFFCompression {
     /// sample's own width (libtiff's `horAcc8/16/32/64`). The data are little-endian.
     static func horizontalUndo(_ data: inout Data, rows: Int, width: Int, samples: Int, bytes: Int) {
         let rowElements = width * samples
-        data.withUnsafeMutableBytes { p in
+        data.withUnsafeMutableBytes { (p: UnsafeMutableRawBufferPointer) in
             func run<T: FixedWidthInteger>(_: T.Type) {
                 let size = MemoryLayout<T>.size
                 guard rowElements > samples else { return }
@@ -179,7 +179,7 @@ nonisolated enum TIFFCompression {
     static func floatingPointUndo(_ data: inout Data, rows: Int, width: Int, samples: Int, bytes: Int) {
         let elements = width * samples
         let rowBytes = elements * bytes
-        data.withUnsafeMutableBytes { p in
+        data.withUnsafeMutableBytes { (p: UnsafeMutableRawBufferPointer) in
             var row = [UInt8](repeating: 0, count: rowBytes)
             for r in 0..<rows {
                 let base = r * rowBytes
