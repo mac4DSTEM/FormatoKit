@@ -41,7 +41,28 @@ public nonisolated struct MIBReader: Sendable {
     /// - Throws: `MIBError` for malformed files and unsupported layouts, including R64.
     public init(path: String, navigationShape: [Int]? = nil, firstFrame: Int? = nil, lastFrame: Int? = nil,
                 convention: MIBConvention = .rosettaSciIO) throws {
-        let mapping = try MIBMapping(path: path, anyHeaderSize: convention == .appScanXY)
+        let hdr = URL(fileURLWithPath: path).deletingPathExtension().appendingPathExtension("hdr")
+        try self.init(parts: [path], hdrPath: FileManager.default.fileExists(atPath: hdr.path) ? hdr : nil,
+                      navigationShape: navigationShape, firstFrame: firstFrame, lastFrame: lastFrame, convention: convention)
+    }
+
+    /// Opens a Merlin acquisition saved as several files (`MerlinSet`) as one scan, in the app convention: the parts' frames in
+    /// order, the scan shape from the shared `.hdr` (ScanX/ScanY, else Frames per Trigger as the row length). RosettaSciIO reads one
+    /// file at a time; this reads the set the way LiberTEM's MIB data set does (all `<stem>*.mib` beside the `.hdr`, ordered).
+    /// - Throws: `MIBError` when a part is missing or out of order (the frame numbers must run on), when the parts disagree on
+    ///   their frame layout, or when the frames do not make the header's scan.
+    public init(set: MerlinSet) throws {
+        try self.init(parts: set.parts, hdrPath: URL(fileURLWithPath: set.header), navigationShape: nil, firstFrame: nil, lastFrame: nil,
+                      convention: .appScanXY)
+    }
+
+    private init(parts: [String], hdrPath: URL?, navigationShape: [Int]?, firstFrame: Int?, lastFrame: Int?,
+                 convention: MIBConvention) throws {
+        guard let path = parts.first else { throw MIBError.cannotOpen("no MIB file") }
+        // A set's parts are mapped without keeping a descriptor each (a save can have more parts than a process may hold open);
+        // their sizes are checked by path, for the parts a read touches.
+        let mappings = try parts.map { try MIBMapping(path: $0, anyHeaderSize: convention == .appScanXY, keepDescriptor: parts.count == 1) }
+        let mapping = mappings[0]
         var header = try mapping.header(at: 0)
         pixelCode = header.code
         if header.code == "R64" { throw MIBError.unsupported("RAW MIB data not supported.") }
@@ -66,11 +87,30 @@ public nonisolated struct MIBReader: Sendable {
         }
         let pixelBytes = try product([header.width, header.height, type.byteSize])
         let (stride, overflow) = pixelBytes.addingReportingOverflow(header.size)
-        guard !overflow, mapping.length >= stride, mapping.length % stride == 0 else { throw MIBError.malformed("Incomplete frame") }
-        let frames = mapping.length / stride
-        let hdrPath = URL(fileURLWithPath: path).deletingPathExtension().appendingPathExtension("hdr")
+        guard !overflow else { throw MIBError.malformed("Incomplete frame") }
+        var starts: [Int] = []
+        var frames = 0
+        for (index, part) in mappings.enumerated() {
+            guard part.length >= stride, part.length % stride == 0 else {
+                throw MIBError.malformed(mappings.count > 1 ? "Incomplete frame in \(URL(fileURLWithPath: parts[index]).lastPathComponent)" : "Incomplete frame")
+            }
+            if index > 0 {
+                // A set's parts carry one frame layout, and their frame numbers run on: a missing or misordered part is refused.
+                let first = try part.header(at: 0)
+                let name = URL(fileURLWithPath: parts[index]).lastPathComponent
+                guard first.size == header.size, first.code == header.code, first.layout == header.layout else {
+                    throw MIBError.malformed("\(name) has another frame layout than \(URL(fileURLWithPath: path).lastPathComponent)")
+                }
+                guard let number = first.number, number == frames + 1 else {
+                    throw MIBError.malformed("\(name) does not start at frame \(frames + 1): a part of the set is missing or out of order")
+                }
+            }
+            starts.append(frames)
+            frames += part.length / stride
+        }
+        let store = MIBFrames(mappings: mappings, starts: starts, stride: stride)
         var fields: [String: String] = [:]
-        if FileManager.default.fileExists(atPath: hdrPath.path) {
+        if let hdrPath {
             let text: String
             do { text = try String(contentsOf: hdrPath, encoding: .utf8) } catch { throw MIBError.cannotOpen(hdrPath.lastPathComponent) }
             for line in text.split(whereSeparator: \.isNewline) where !line.hasPrefix("HDR") && !line.hasPrefix("End\t") {
@@ -88,8 +128,23 @@ public nonisolated struct MIBReader: Sendable {
         if convention == .appScanXY {
             guard navigationShape == nil, firstFrame == nil, lastFrame == nil else { throw MIBError.unsupported("App convention does not slice frames") }
             let dimensions = header.width   // the assembly's, set above
-            let x = try positive("ScanX"), y = try positive("ScanY")
-            guard try product([x,y]) == frames else { throw MIBError.malformed("ScanX/ScanY do not match file") }
+            let x: Int, y: Int
+            if fields["ScanX"] != nil || fields["ScanY"] != nil {
+                x = try positive("ScanX"); y = try positive("ScanY")
+                guard try product([x,y]) == frames else { throw MIBError.malformed("ScanX/ScanY do not match file") }
+            } else {
+                // Merlin's own header has no ScanX/ScanY: with one trigger per scan row, Frames per Trigger is the row length and
+                // Frames in Acquisition the whole scan (RosettaSciIO's rule, its `navigation_shape` inference). The frames on disk must
+                // be that scan exactly; one frame per trigger names no row length and is refused, never guessed from timestamps.
+                guard hdrPath != nil else { throw MIBError.malformed("Invalid ScanX") }
+                let trigger = try positive("Frames per Trigger (Number)"), total = try positive("Frames in Acquisition (Number)")
+                guard trigger > 1, trigger < total else {
+                    throw MIBError.malformed("The .hdr has no ScanX/ScanY, and its Frames per Trigger (\(trigger) of \(total)) names no scan row: the scan shape is unknown")
+                }
+                guard total % trigger == 0 else { throw MIBError.malformed("Frames in Acquisition is not a whole number of Frames per Trigger") }
+                guard total == frames else { throw MIBError.malformed("The .hdr describes \(total) frames, the files hold \(frames)") }
+                x = trigger; y = total / trigger
+            }
             shape = [y,x,dimensions,dimensions]; first = 0; flip = false; outputType = .float32
         } else {
             func index(_ value: Int?, fallback: Int) -> Int {
@@ -111,7 +166,7 @@ public nonisolated struct MIBReader: Sendable {
                 }
                 if trigger == 1 {
                     var times: [Int64] = []
-                    for i in 0..<min(frames, 10000) { times.append(try timestampNanoseconds(mapping.header(at: i * stride).timestamp)) }
+                    for i in 0..<min(frames, 10000) { times.append(try timestampNanoseconds(store.header(frame: i).timestamp)) }
                     let differences = try zip(times.dropFirst(), times).map { a, b -> Double in
                         let (difference, overflow) = a.subtractingReportingOverflow(b)
                         guard !overflow else { throw MIBError.malformed("Timestamp interval overflows") }
@@ -155,7 +210,54 @@ public nonisolated struct MIBReader: Sendable {
         entry("Signal.signal_type", .text("electron_diffraction"), "MIB format")
         entry("Acquisition_instrument.dwell_time", .number(header.exposure * 1e-3), "MIB exposure ns / 1e6 * 1e-3")
         signal = FormatoLazySignal(title: "", signalType: "electron_diffraction", axes: axes, metadata: metadata,
-            array: MIBArray(mapping: mapping, header: header, storedType: type, dataType: outputType, shape: shape, first: first, stride: stride, flip: flip))
+            array: MIBArray(store: store, header: header, storedType: type, dataType: outputType, shape: shape, first: first, flip: flip))
+    }
+}
+
+/// A Merlin acquisition saved as several files: Merlin's "save to multiple files" writes `<stem>1.mib`, `<stem>2.mib`, … beside one
+/// `<stem>.hdr` (`default1.mib` … `default64.mib` and `default.hdr`). Found by name only (no folder listing, so it works where
+/// only file metadata is visible, as under the App Sandbox); `MIBReader(set:)` checks the parts' frames.
+public nonisolated struct MerlinSet: Sendable, Equatable {
+    /// The shared `.hdr`.
+    public let header: String
+    /// The parts in frame order: `<stem>1.mib` up to the last consecutive number on disk.
+    public let parts: [String]
+
+    /// The set `path` belongs to: a part (`default7.mib`, with `default.hdr` and no `default7.hdr` beside it) or the shared `.hdr`
+    /// (`default.hdr`, with `default1.mib` and no `default.mib` beside it). Nil for a single file with its own `.hdr`, for a
+    /// `.mib` with no shared `.hdr`, and for a `.hdr` whose stem has no numbered parts; a part outside the consecutive run is nil.
+    public static func containing(_ path: String) -> MerlinSet? {
+        let url = URL(fileURLWithPath: path)
+        let folder = url.deletingLastPathComponent()
+        let ext = url.pathExtension
+        let upper = !ext.isEmpty && ext == ext.uppercased()
+        let mib = upper ? "MIB" : "mib", hdr = upper ? "HDR" : "hdr"
+        let name = url.deletingPathExtension().lastPathComponent
+        func exists(_ file: String) -> Bool { FileManager.default.fileExists(atPath: folder.appendingPathComponent(file).path) }
+        let stem: String
+        switch ext.lowercased() {
+        case "hdr":
+            guard !exists(name + "." + mib) else { return nil }
+            stem = name
+        case "mib":
+            guard !exists(name + "." + hdr) else { return nil }
+            // The part number Merlin appends: ASCII digits, not zero-padded, from 1.
+            let number = String(name.reversed().prefix { $0.isASCII && $0.isNumber }.reversed())
+            guard !number.isEmpty, number.count < name.count, !number.hasPrefix("0") else { return nil }
+            stem = String(name.dropLast(number.count))
+        default:
+            return nil
+        }
+        guard exists(stem + "." + hdr) else { return nil }
+        var parts: [String] = []
+        while exists(stem + String(parts.count + 1) + "." + mib) {
+            parts.append(folder.appendingPathComponent(stem + String(parts.count + 1) + "." + mib).path)
+        }
+        guard !parts.isEmpty else { return nil }
+        if ext.lowercased() == "mib" {
+            guard parts.contains(where: { URL(fileURLWithPath: $0).lastPathComponent.lowercased() == url.lastPathComponent.lowercased() }) else { return nil }
+        }
+        return MerlinSet(header: folder.appendingPathComponent(stem + "." + hdr).path, parts: parts)
     }
 }
 
@@ -206,27 +308,55 @@ package func mibPlainUTCSeconds(_ text: String) -> Double? {
 }
 private struct MIBHeader {
     let size: Int; let width: Int; let height: Int; let code: String; let layout: String; let timestamp: String; let exposure: Double
+    /// The frame's sequence number (field 1, from 1), when it is a number.
+    var number: Int? = nil
+}
+/// The frames of one file, or of a set's parts in order: frame `i` lives in the part whose start is the last one at or below `i`.
+private final class MIBFrames: @unchecked Sendable {
+    let mappings: [MIBMapping]; let starts: [Int]; let stride: Int
+    init(mappings: [MIBMapping], starts: [Int], stride: Int) { self.mappings = mappings; self.starts = starts; self.stride = stride }
+    var anyHeaderSize: Bool { mappings[0].anyHeaderSize }
+    func part(of frame: Int) -> Int {
+        var low = 0, high = starts.count - 1
+        while low < high { let mid = (low + high + 1) / 2; if starts[mid] <= frame { low = mid } else { high = mid - 1 } }
+        return low
+    }
+    func header(frame: Int) throws -> MIBHeader {
+        let p = part(of: frame)
+        return try mappings[p].header(at: (frame - starts[p]) * stride)
+    }
+    func frameStart(_ frame: Int) -> UnsafeMutableRawPointer {
+        let p = part(of: frame)
+        return mappings[p].pointer + (frame - starts[p]) * stride
+    }
+    /// One file: its size, once per read. A set: nothing here; `checkSize(frame:)` checks each part a read reaches.
+    func checkSize() throws { if mappings.count == 1 { try mappings[0].checkSize() } }
+    func checkSize(frame: Int) throws { if mappings.count > 1 { try mappings[part(of: frame)].checkSize() } }
 }
 // Immutable mapping; lifetime is retained by the signal and reads use no shared mutable cursor.
 private final class MIBMapping: @unchecked Sendable {
-    let fd: Int32; let pointer: UnsafeMutableRawPointer; let length: Int
+    /// The open descriptor, or -1 for a set's part (closed after mapping; `checkSize` then reads the size by path).
+    let fd: Int32; let pointer: UnsafeMutableRawPointer; let length: Int; let path: String
     /// RosettaSciIO's two header sizes only (false), or the original app's reader (true): any size from 384 to 64 KiB, and a header
     /// whose width and height (or exposure) are not numbers is still read (the frame shape comes from the assembly).
     let anyHeaderSize: Bool
-    init(path: String, anyHeaderSize: Bool) throws {
+    init(path: String, anyHeaderSize: Bool, keepDescriptor: Bool = true) throws {
         self.anyHeaderSize = anyHeaderSize
+        self.path = path
         let descriptor = open(path, O_RDONLY)
         guard descriptor >= 0 else { throw MIBError.cannotOpen(path) }
         var info = stat()
         guard fstat(descriptor, &info) == 0, info.st_size > 0, info.st_size <= Int.max else { close(descriptor); throw MIBError.malformed("Empty or unreadable file") }
         let size = Int(info.st_size)
         guard let address = mmap(nil, size, PROT_READ, MAP_PRIVATE, descriptor, 0), address != MAP_FAILED else { close(descriptor); throw MIBError.cannotOpen(path) }
-        fd = descriptor; pointer = address; length = size
+        pointer = address; length = size
+        if keepDescriptor { fd = descriptor } else { close(descriptor); fd = -1 }
     }
-    deinit { munmap(pointer, length); close(fd) }
+    deinit { munmap(pointer, length); if fd >= 0 { close(fd) } }
     func checkSize() throws {
         var info = stat()
-        guard fstat(fd, &info) == 0, info.st_size == length else { throw MIBError.malformed("File size changed") }
+        let status = fd >= 0 ? fstat(fd, &info) : stat(path, &info)
+        guard status == 0, info.st_size == length else { throw MIBError.malformed("File size changed") }
     }
     func header(at offset: Int) throws -> MIBHeader {
         guard offset >= 0, offset <= length, length - offset >= 384 else { throw MIBError.malformed("Truncated header") }
@@ -245,18 +375,18 @@ private final class MIBMapping: @unchecked Sendable {
         let value = exposure.hasSuffix("ns") ? Double(exposure.dropLast(2)) : nil
         guard let value, value.isFinite, value >= 0 else {
             if anyHeaderSize {
-                return MIBHeader(size: size, width: w, height: h, code: fields[6], layout: fields[7].trimmingCharacters(in: .whitespaces), timestamp: fields[fields.count - 4], exposure: 0)
+                return MIBHeader(size: size, width: w, height: h, code: fields[6], layout: fields[7].trimmingCharacters(in: .whitespaces), timestamp: fields[fields.count - 4], exposure: 0, number: Int(fields[1]))
             }
             throw MIBError.malformed("Invalid exposure")
         }
-        return MIBHeader(size: size, width: w, height: h, code: fields[6], layout: fields[7].trimmingCharacters(in: .whitespaces), timestamp: fields[fields.count - 4], exposure: value / 1e6)
+        return MIBHeader(size: size, width: w, height: h, code: fields[6], layout: fields[7].trimmingCharacters(in: .whitespaces), timestamp: fields[fields.count - 4], exposure: value / 1e6, number: Int(fields[1]))
     }
 }
 private struct MIBArray: FormatoLazyArray {
-    let mapping: MIBMapping; let header: MIBHeader; let storedType: FormatoDataType
-    let dataType: FormatoDataType; let shape: [Int]; let first: Int; let stride: Int; let flip: Bool
+    let store: MIBFrames; let header: MIBHeader; let storedType: FormatoDataType
+    let dataType: FormatoDataType; let shape: [Int]; let first: Int; let flip: Bool
     func read(start: [Int], count: [Int]) throws -> FormatoArray {
-        try FormatoArray.validateSlab(start: start, count: count, shape: shape); try mapping.checkSize()
+        try FormatoArray.validateSlab(start: start, count: count, shape: shape); try store.checkSize()
         let elements = try FormatoArray.elementCount(count)
         let outSize = dataType.byteSize, inSize = storedType.byteSize
         var bytes = Data(count: elements * outSize)
@@ -283,15 +413,16 @@ private struct MIBArray: FormatoLazyArray {
                     piece = min(piece, framePixels - pixel)
                     if frame != checkedFrame {
                         do {
-                            let actual = try mapping.header(at: frame * stride)
+                            try store.checkSize(frame: frame)
+                            let actual = try store.header(frame: frame)
                             // Under the app's rules the frame shape is the assembly's, so a frame header's width and height are not compared.
-                            let sameShape = mapping.anyHeaderSize ? actual.layout == header.layout
+                            let sameShape = store.anyHeaderSize ? actual.layout == header.layout
                                 : actual.width == header.width && actual.height == header.height
                             guard actual.size == header.size, sameShape, actual.code == header.code else { throw MIBError.malformed("Frame header changed layout") }
                             checkedFrame = frame
                         } catch let error as MIBError { failure = error; return } catch { failure = .malformed("Invalid frame"); return }
                     }
-                    let base = mapping.pointer + frame * stride + header.size + pixel * inSize
+                    let base = store.frameStart(frame) + header.size + pixel * inSize
                     let destination = out.baseAddress! + written * outSize
                     switch (storedType, dataType) {
                     case (.uint8, .uint8):
