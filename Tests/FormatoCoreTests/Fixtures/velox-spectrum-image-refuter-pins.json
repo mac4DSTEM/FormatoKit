@@ -16,10 +16,6 @@
    "reads",
    "a big-endian uint16 stream: numba's jitted fill refuses the non-native type; read here (A1)"
   ],
-  "stream-lzf.emd": [
-   "all",
-   "an LZF-filtered stream: the shipped libhdf5 has no LZF filter (step 3 A1)"
-  ],
   "unit-fm-fermi.emd": [
    "all",
    "'fm' is Pint's fermi: refused here (A1)"

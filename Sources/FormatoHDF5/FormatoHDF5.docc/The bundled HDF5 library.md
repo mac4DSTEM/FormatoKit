@@ -4,6 +4,8 @@ FormatoKit ships HDF5 2.1.1 with its compression libraries, libsz and libaec. Th
 
 The readers open the library at run time. They never link it, so the copy they use can be replaced without rebuilding them.
 
+The library reads gzip (deflate), szip, shuffle and Fletcher-32 itself. FormatoKit adds one filter when it loads the library: h5py's LZF (filter 32000), decode only, which AZtec uses for an `.h5oina`'s patterns. Datasets compressed with any other filter, such as Blosc or bitshuffle, fail to read.
+
 ## Where the library is found
 
 The Velox reader looks for libhdf5 in this order, and uses the first copy it can load:

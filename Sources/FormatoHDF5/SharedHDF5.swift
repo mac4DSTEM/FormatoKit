@@ -145,6 +145,8 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
         let open = try symbol("H5open", as: H5open.self)
         // After H5open, never before: it registers HDF5's atexit teardown (HDF5Types.swift).
         if open() >= 0 { HDF5Serial.installExitBarrier() }
+        // h5py's LZF filter (32000), which AZtec's .h5oina patterns use and this libhdf5 lacks: decode only (LZFFilter.swift).
+        if let register = dlsym(handle, "H5Zregister") { LZFFilter.register(with: unsafeBitCast(register, to: LZFFilter.Register.self)) }
         let auto = try symbol("H5Eset_auto2", as: H5EsetAuto2.self)
         _ = auto(0, nil, nil)     // a probe that finds nothing is an answer, not a stack dump
         return SharedHDF5(

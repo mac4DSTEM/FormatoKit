@@ -85,6 +85,7 @@ RULES = [
     ("FormatoHDF5Tests/Fixtures/bragg/*", "bragg-writer/generate.py", "py4DSTEM f050d207"),
     ("FormatoHDF5Tests/Fixtures/emd-bundle/app-*", "emd-bundle/oracle/run.sh", "the first consumer's writers"),
     ("FormatoHDF5Tests/Fixtures/emd-bundle/*", "emd-bundle/check.py", "written by the kit, checked with h5py and py4DSTEM f050d207"),
+    ("FormatoHDF5Tests/Fixtures/lzf/*", "hdf5-lzf/generate.py", "h5py 3.16.0"),
     ("FormatoHDF5Tests/Fixtures/root-attributes/*", "hdf5-write/generate.py", "h5py 3.16.0"),
     # FormatoMRCTests
     ("FormatoMRCTests/Fixtures/*", "acq-metadata/generate.py", ACQ),

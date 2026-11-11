@@ -144,3 +144,19 @@ HDF5 - https://www.hdfgroup.org/, copyright The HDF Group and the Board of
 Trustees of the University of Illinois, BSD-style license: Licenses/HDF5-LICENSE.txt.
 libaec (with libsz) - https://gitlab.dkrz.de/k202009/libaec, BSD 2-Clause:
 Licenses/libaec-LICENSE.txt.
+
+================================================================================
+liblzf and h5py's LZF filter (ported)
+================================================================================
+
+Sources/FormatoHDF5/LZFFilter.swift ports liblzf 3.6's decoder (lzf_decompress in lzf_d.c, as h5py 3.16.0 vendors it under
+lzf/lzf/) and follows h5py 3.16.0's LZF filter callback (lzf/lzf_filter.c): FormatoHDF5 registers it with libhdf5 as filter
+32000, decode only, so datasets h5py or AZtec compressed with LZF read. tools/hdf5-lzf/generate.py writes the test file with
+h5py's own LZF encoder.
+
+    liblzf - http://software.schmorp.de/pkg/liblzf.html, version 3.6
+    Copyright (c) 2000-2007 Marc Alexander Lehmann
+    BSD 2-Clause License (liblzf's alternative to the GPL-2.0-or-later): Licenses/liblzf-LICENSE.txt
+    h5py LZF filter - https://github.com/h5py/h5py, version 3.16.0
+    Copyright (c) 2008-2009 Andrew Collette
+    BSD 3-Clause License: Licenses/h5py-lzf-LICENSE.txt
