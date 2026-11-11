@@ -2,7 +2,7 @@
 //  TIFFPolicyTests.swift
 //  The policy `TIFFReadOptions.vendorBranches`: files built byte by byte here, their values typed as
 //  literals. A vendor tag is refused by name by default; `.readAsGeneric` reads the pixels as a plain TIFF and flags it;
-//  a layout refusal (Compression 5) holds under every option.
+//  a layout refusal (Compression 7, JPEG) holds under every option.
 //
 
 import Foundation
@@ -132,7 +132,7 @@ import FormatoKitTestSupport
     }
 
     @Test func testALayoutRefusalHoldsUnderReadAsGeneric() throws {
-        let url = try write(build(extra: [.long(code: 37706, value: 0)], compression: 5))
+        let url = try write(build(extra: [.long(code: 37706, value: 0)], compression: 7))
         defer { try? FileManager.default.removeItem(at: url) }
         // By default the vendor branch is named first.
         let named = #expect(throws: (any Error).self) { _ = try TIFFSignals(path: url.path) }

@@ -490,7 +490,7 @@ def make_files():
     add("lzw.tif", bo, False, [{"tags": tags, "strips": [b"\x80\x00\x80\x01"]}], {
         "kind": "refusal", "in_scope": False, "pages": 1,
         "refusal": {"reason": "compression", "tag": 259, "value": 5, "message_names": ["Compression", "5"]},
-        "note": "Compression 5 (LZW): the strips are not LZW data; the reader refuses before decoding."})
+        "note": "Compression 5 (LZW): the strip is not LZW data for the page (it decodes to 2 of 4 bytes); refused when it loads."})
 
     tags = common_tags(bo, 2, 2, 8, sample_format=1)
     tags = [t for t in tags if t[0] not in (278,)]

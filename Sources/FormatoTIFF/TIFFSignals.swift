@@ -11,7 +11,7 @@
 import Foundation
 import FormatoCore
 
-/// One page's pixel layout (step 2 §3.2): uncompressed strips, contiguous samples.
+/// One page's pixel layout (step 2 §3.2): strips, uncompressed or LZW-compressed (TIFFCompression.swift), contiguous samples.
 public nonisolated struct TIFFPageLayout: Sendable, Equatable {
     public let width: Int
     public let height: Int
@@ -25,9 +25,15 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
     let bigEndian: Bool
     let photometric: Int64
     let extraSamples: [Int64]
+    /// TIFF Compression (1 none, 5 LZW) and Predictor (1 none, 2 horizontal, 3 floating point; only with compression).
+    var compression: Int = 1
+    var predictor: Int = 1
+    var isCompressed: Bool { compression != 1 }
     /// tifffile's `TiffPage.is_contiguous` (and `is_final`, as fill order and predictor are refused): the page's strips follow
     /// each other in the file.
     var isContiguous: Bool {
+        // A compressed page's strips hold fewer bytes than its pixels: never read as one run (tifffile's is_contiguous).
+        guard !isCompressed else { return false }
         if stripOffsets.count == 1 { return true }
         // Overflow-reporting arithmetic: a planted count near 2^62 is not contiguous, and neither is a negative or oversized count.
         let page = pageBytes
@@ -55,8 +61,10 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
         guard let w = int(256), let h = int(257), w > 0, h > 0, w < 1 << 31, h < 1 << 31 else {
             throw TIFFError.unsupportedLayout("The page has no image width or height.")
         }
-        let compression = int(259, 1) ?? 1
-        guard compression == 1 else { throw TIFFError.unsupportedLayout("The page is compressed (Compression \(compression)); only uncompressed TIFF is read.") }
+        let compression = Int(int(259, 1) ?? 1)
+        guard TIFFCompression.isRead(compression) else {
+            throw TIFFError.unsupportedLayout("The page is compressed (Compression \(compression)); only uncompressed and LZW-compressed TIFF is read.")
+        }
         if dir[322] != nil || dir[324] != nil { throw TIFFError.unsupportedLayout("The page is tiled; only strips are read.") }
         let samples = Int(int(277, 1) ?? 1)
         let planar = int(284, 1) ?? 1
@@ -66,11 +74,17 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
         guard let b = bits.first, bits.allSatisfy({ $0 == b }), let f = formats.first, formats.allSatisfy({ $0 == f }) else {
             throw TIFFError.unsupportedLayout("The page mixes sample sizes or formats.")
         }
-        // RosettaSciIO logs `op["PhotometricInterpretation"]` and raises without it; tifffile reads FillOrder 2 bit-reversed and
-        // undoes a predictor; ImageDepth makes a volume page. Refused rather than ported.
+        // RosettaSciIO logs `op["PhotometricInterpretation"]` and raises without it; tifffile reads FillOrder 2 bit-reversed;
+        // ImageDepth makes a volume page. Refused rather than ported. A predictor is undone on a compressed page only.
         guard let photometric = int(262) else { throw TIFFError.unsupportedLayout("The page has no PhotometricInterpretation.") }
         if let fill = int(266), fill != 1 { throw TIFFError.unsupportedLayout("The page sets FillOrder \(fill).") }
-        if let predictor = int(317), predictor != 1 { throw TIFFError.unsupportedLayout("The page sets Predictor \(predictor).") }
+        let predictor = Int(int(317, 1) ?? 1)
+        if predictor != 1 {
+            guard compression != 1 else { throw TIFFError.unsupportedLayout("The page sets Predictor \(predictor).") }
+            if let why = TIFFCompression.predictorRefusal(predictor, format: Int(formats.first ?? 1), bytes: Int(bits.first ?? 8) / 8) {
+                throw TIFFError.unsupportedLayout("The page cannot be read: \(why).")
+            }
+        }
         if let depth = int(32997), depth != 1 { throw TIFFError.unsupportedLayout("The page sets ImageDepth \(depth) (an SGI volume).") }
         guard (samples == 1 && [0, 1, 3].contains(photometric)) || (samples > 1 && photometric == 2) else {
             throw TIFFError.unsupportedLayout("The page holds \(samples) sample(s) with PhotometricInterpretation \(photometric).")
@@ -100,16 +114,28 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
         // Sizes without overflow: a row and a page must be addressable.
         let (rowBytes, o1) = Int(w).multipliedReportingOverflow(by: samples * (Int(b) / 8))
         let (pageBytes, o2) = rowBytes.multipliedReportingOverflow(by: Int(h))
-        guard !o1, !o2, pageBytes <= fileSize else { throw TIFFError.truncated("The page claims more bytes than the file holds.") }
+        // LZW gives at most 4096 bytes per 12-bit code: a compressed page larger than that claims more than its file can hold.
+        let (bound, o3) = fileSize.multipliedReportingOverflow(by: compression == 1 ? 1 : 2731)
+        guard !o1, !o2, o3 || pageBytes <= bound else { throw TIFFError.truncated("The page claims more bytes than the file holds.") }
         // tifffile treats a strip offset of 0 as a missing strip: refused.
         guard !offsets.contains(0) else { throw TIFFError.unsupportedLayout("A strip offset of the page is 0 (a missing strip).") }
         let layout = TIFFPageLayout(width: Int(w), height: Int(h), dataType: type, samples: samples, bytesPerSample: Int(b) / 8,
                                     stripOffsets: offsets.map(Int.init), stripByteCounts: counts.map(Int.init),
                                     rowsPerStrip: max(rps, 1), bigEndian: bigEndian, photometric: photometric,
-                                    extraSamples: dir[338]?.integers ?? [])
+                                    extraSamples: dir[338]?.integers ?? [], compression: compression, predictor: predictor)
         // Every row must lie inside its strip and the strip inside the file.
         let strips = (layout.height + layout.rowsPerStrip - 1) / layout.rowsPerStrip
         guard strips <= offsets.count else { throw TIFFError.truncated("The page has fewer strips than rows need.") }
+        if layout.isCompressed {
+            // A compressed strip holds what it holds; it must lie inside the file. Its rows are checked when it decodes.
+            for s in 0..<strips {
+                let (offset, count) = (layout.stripOffsets[s], layout.stripByteCounts[s])
+                guard offset >= 0, count >= 0, count <= fileSize, offset <= fileSize - count else {
+                    throw TIFFError.truncated("A strip of the page lies outside the file.")
+                }
+            }
+            return layout
+        }
         for s in 0..<strips {
             let rows = min(layout.rowsPerStrip, layout.height - s * layout.rowsPerStrip)
             let need = rows * layout.rowBytes
@@ -118,6 +144,24 @@ public nonisolated struct TIFFPageLayout: Sendable, Equatable {
             }
         }
         return layout
+    }
+
+    /// A compressed page's pixels as little-endian bytes, row after row: its strips read from `fd`, decoded, the predictor
+    /// undone (TIFFCompression).
+    func decodedPage(fd: Int32, path: String) throws -> Data {
+        do {
+            return try TIFFCompression.decodePage(
+                compression: compression, predictor: predictor, rows: height, rowsPerStrip: rowsPerStrip, width: width,
+                samples: samples, bytesPerSample: bytesPerSample, bigEndian: bigEndian, strips: stripOffsets.count) { s in
+                    let count = stripByteCounts[s]
+                    var strip = Data(count: count)
+                    let got = count == 0 ? 0 : strip.withUnsafeMutableBytes { pread(fd, $0.baseAddress!, count, off_t(stripOffsets[s])) }
+                    guard got == count else { throw FormatoReadError.truncated(formatoDisplayFileName(path)) }
+                    return strip
+                }
+        } catch let failure as TIFFCompression.Failure {
+            throw TIFFError.unsupportedLayout("\(formatoDisplayFileName(path)) cannot be read: \(failure.reason).")
+        }
     }
 
     /// The file offset of row `y`.
@@ -314,7 +358,8 @@ public nonisolated struct TIFFSignals: Sendable {
         let pages = file.directories.count
         if images == 1 && pages > 1 { images = pages }
         let nbytes = try mul(images, page.pageBytes)
-        guard page.stripOffsets[0] <= file.data.count - nbytes else { return nil }   // "metadata invalid or corrupted": None
+        // A compressed page's data are smaller than its pixels; the check holds for uncompressed pages only.
+        guard page.isCompressed || page.stripOffsets[0] <= file.data.count - nbytes else { return nil }   // "metadata invalid or corrupted": None
         let order: String
         switch meta["order"] { case .string(let s)?: order = s.lowercased(); default: order = "czt" }
         var axes: [Character], shape: [Int]
@@ -335,9 +380,12 @@ public nonisolated struct TIFFSignals: Sendable {
         // tifffile: virtual when there is one page, or when page 0's data ends before page 1 starts.
         let layouts: [TIFFPageLayout]
         var virtual: Int?
-        if pages == 1 || page.stripOffsets[0] + nbytes <= file.directories[1].offset {
+        if page.isCompressed && images > 1 && pages == 1 {
+            throw TIFFError.unsupportedSeries(file: name, series: "an ImageJ stack of \(images) images in one compressed page")
+        }
+        if images == 1 || (!page.isCompressed && (pages == 1 || page.stripOffsets[0] + nbytes <= file.directories[1].offset)) {
             let contiguous = zip(page.stripOffsets, page.stripOffsets.dropFirst()).allSatisfy { $1 - $0 == page.rowsPerStrip * page.rowBytes }
-            guard contiguous else { throw TIFFError.unsupportedSeries(file: name, series: "an ImageJ virtual stack whose first page's strips are not contiguous") }
+            guard page.isCompressed || contiguous else { throw TIFFError.unsupportedSeries(file: name, series: "an ImageJ virtual stack whose first page's strips are not contiguous") }
             layouts = [page]; virtual = images
         } else {
             guard pages >= images else { throw TIFFError.unsupportedSeries(file: name, series: "an ImageJ stack that counts \(images) images over \(pages) pages") }
@@ -760,6 +808,16 @@ public nonisolated struct TIFFSeriesArray: FormatoLazyArray {
         }
         for image in images {
             let src = series.source(image)
+            if src.layout.isCompressed {
+                guard nx > 0, ny > 0 else { continue }
+                let page = try src.layout.decodedPage(fd: fd, path: path)
+                let rowBytes = src.layout.rowBytes
+                for y in y0..<(y0 + ny) {
+                    let at = y * rowBytes + x0 * el
+                    out.append(page.subdata(in: at ..< at + nx * el))
+                }
+                continue
+            }
             for y in y0..<(y0 + ny) where nx > 0 {
                 var row = Data(count: nx * el)
                 let at = src.layout.rowOffset(y) + src.shift + x0 * el
@@ -785,6 +843,8 @@ public nonisolated struct TIFFSeriesArray: FormatoLazyArray {
         out.reserveCapacity(count.reduce(1, *) * el)
         guard !count.contains(0) else { return try FormatoArray(dataType: dataType, shape: count, bytes: out) }
         let rank = shape.count
+        // The last compressed page decoded (image number, little-endian pixels): a run reads from it, not from the file.
+        var decoded: (image: Int, page: Data)?
         var strides = [Int](repeating: 1, count: rank)
         for k in stride(from: rank - 2, through: 0, by: -1) { strides[k] = strides[k + 1] * shape[k + 1] }
         var idx = [Int](repeating: 0, count: max(rank - 1, 0))
@@ -798,6 +858,13 @@ public nonisolated struct TIFFSeriesArray: FormatoLazyArray {
                 let (y, x) = (within / width, within % width)
                 let take = min(remaining, width - x)
                 let src = series.source(image)
+                if src.layout.isCompressed {
+                    if decoded?.image != image { decoded = (image, try src.layout.decodedPage(fd: fd, path: path)) }
+                    let at = y * src.layout.rowBytes + x * el
+                    out.append(decoded!.page.subdata(in: at ..< at + take * el))
+                    flat += take; remaining -= take
+                    continue
+                }
                 var run = Data(count: take * el)
                 let at = src.layout.rowOffset(y) + src.shift + x * el
                 let got = run.withUnsafeMutableBytes { pread(fd, $0.baseAddress!, take * el, off_t(at)) }

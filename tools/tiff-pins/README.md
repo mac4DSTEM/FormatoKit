@@ -115,7 +115,7 @@ versus that reading; empty for all 20 files, the script prints any and the run i
 | `tag-zoo.tif` (extra) | one private tag per classic datatype (65100-65112) for the tag walker |
 | `datetime-slash-description.tif` (extra) | slash DateTime plus an ImageDescription: RosettaSciIO sets no date or time (see below) |
 | `unknown-tag-type.tif` (extra) | tag 65200 of datatype 99: tifffile drops it from the page |
-| `lzw.tif`, `tiled.tif`, `strip-past-end.tif` | the refusals: Compression 5; TileWidth/TileLength and tile offsets; a StripOffsets at 100000 in a 150-byte file |
+| `lzw.tif`, `tiled.tif`, `strip-past-end.tif` | the refusals: Compression 5 with a strip that is not LZW data for its page (refused when it loads since FormatoKit#90); TileWidth/TileLength and tile offsets; a StripOffsets at 100000 in a 150-byte file |
 
 ## What RosettaSciIO and tifffile do that is easy to miss (found while writing these)
 

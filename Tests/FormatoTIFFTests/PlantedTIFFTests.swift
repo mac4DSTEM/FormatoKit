@@ -112,9 +112,12 @@ import FormatoCore
     }
 
     @Test func testRefusalsAreNamed() {
-        for (name, word) in [("lzw.tif", "compressed"), ("tiled.tif", "tiled"), ("strip-past-end.tif", "strip")] {
+        for (name, word) in [("tiled.tif", "tiled"), ("strip-past-end.tif", "strip")] {
             let error = #expect(throws: (any Error).self, "\(name)") { _ = try TIFFSignals(path: Self.dir.appendingPathComponent(name).path) }
             #expect(error.map { "\($0)".lowercased().contains(word) } == true, "\(name): \(String(describing: error))")
         }
+        // LZW is read since FormatoKit#90; this planted strip is 4 bytes that decode to 2 where the 2 x 2 page needs 4.
+        let lzw = #expect(throws: (any Error).self) { _ = try load("lzw.tif") }
+        #expect(lzw.map { "\($0)".contains("decodes to 2 bytes where its rows need 4") } == true, "\(String(describing: lzw))")
     }
 }

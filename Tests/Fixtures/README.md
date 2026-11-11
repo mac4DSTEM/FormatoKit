@@ -5,7 +5,7 @@ the index is rewritten in the same commit (CI runs `index.py --check`). A regene
 commit, with the reason and a CHANGELOG line.
 
 One row per tracked file under `Tests/*/Fixtures/`: its size, the script under `tools/` that writes it (or *copied*),
-and its source: the pinned reference that wrote or read it, or where a copied file comes from. 685 files.
+and its source: the pinned reference that wrote or read it, or where a copied file comes from. 698 files.
 
 The generators run in the one Python environment of `tools/requirements.txt` (`tools/README.md`). The tests never run
 Python: they read these committed files, so `swift test` needs none of it.
@@ -605,6 +605,19 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoTIFFTests/Fixtures/image-readers/velox-refused-xml.tif` | 339 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoTIFFTests/Fixtures/image-readers/velox-xml-only.tif` | 309 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
 | `FormatoTIFFTests/Fixtures/image-readers/velox-zero-x.tif` | 303 B | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
+| `FormatoTIFFTests/Fixtures/lzw/f32-gms.tif` | 6.0 KB | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/f32-pred3-be.tif` | 2.9 KB | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/f32-pred3.tif` | 2.9 KB | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/f64-pred3.tif` | 3.4 KB | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/i16-pred2.tif` | 544 B | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/pins.json` | 3.2 KB | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/rgb8-pred2.tif` | 587 B | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/u16-noise.tif` | 33.0 KB | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/u16-pred2-be.tif` | 814 B | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/u16-pred2.tif` | 814 B | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/u16-stack.tif` | 1.3 KB | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/u32-pred2.tif` | 861 B | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
+| `FormatoTIFFTests/Fixtures/lzw/u8-pred2.tif` | 457 B | `tools/tiff-lzw/generate.py` | tifffile 2026.9.20, imagecodecs 2026.10.10 |
 | `FormatoTIFFTests/Fixtures/planted/be-u16-3strips.tif` | 298 B | `tools/tiff-pins/make_planted.py` | planted; truth tifffile 2026.9.20 |
 | `FormatoTIFFTests/Fixtures/planted/bigtiff-f32.tif` | 352 B | `tools/tiff-pins/make_planted.py` | planted; truth tifffile 2026.9.20 |
 | `FormatoTIFFTests/Fixtures/planted/datetime-slash-description.tif` | 198 B | `tools/tiff-pins/make_planted.py` | planted; truth tifffile 2026.9.20 |
