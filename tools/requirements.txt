@@ -13,6 +13,7 @@ rosettasciio @ git+https://github.com/hyperspy/rosettasciio@049e7d7070e84779b499
 py4DSTEM @ git+https://github.com/py4dstem/py4DSTEM@f050d207851f8accd3aa550365baaf1f38230428
 emdfile==0.0.16
 tifffile==2026.9.20
+imagecodecs==2026.10.10
 Pint==0.26.1
 numpy==2.5.4
 h5py==3.16.0

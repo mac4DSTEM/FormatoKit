@@ -43,7 +43,8 @@ import FormatoKitTestSupport
 
     private func refuses(_ url: URL) -> Bool {
         guard let t = try? TIFFSignals(path: url.path) else { return true }
-        return t.series.indices.contains { (try? t.signal(series: $0)) == nil }
+        // A page whose compressed strips do not decode (planted/lzw.tif) refuses when it loads (FormatoKit#90).
+        return t.series.indices.contains { (try? t.signal(series: $0).load()) == nil }
     }
 
     private func assertTags(_ dir: TIFFDirectory, _ pinned: [[String: Any]], _ what: String) {

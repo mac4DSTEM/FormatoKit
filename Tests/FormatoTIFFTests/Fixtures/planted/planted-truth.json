@@ -9340,7 +9340,7 @@
    "file": "lzw.tif",
    "in_scope": false,
    "kind": "refusal",
-   "note": "Compression 5 (LZW): the strips are not LZW data; the reader refuses before decoding.",
+   "note": "Compression 5 (LZW): the strip is not LZW data for the page (it decodes to 2 of 4 bytes); refused when it loads.",
    "pages": 1,
    "reading": {
     "bigtiff": false,

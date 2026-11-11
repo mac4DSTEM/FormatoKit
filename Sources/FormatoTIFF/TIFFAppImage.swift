@@ -4,11 +4,12 @@
 //  (RosettaSciIO's and tifffile's reading). Pinned to the consumer's source (macTEM cb6e164 TIFFImageReader.swift),
 //  compiled unchanged by tools/acq-metadata/generate.py (the `app-image` pass), over the kit's `TIFFFile` tag walker.
 //
-//  WHAT IS READ: a baseline TIFF (II or MM), its first image file directory only, uncompressed, in strips, chunky. One
+//  WHAT IS READ: a baseline TIFF (II or MM), its first image file directory only, uncompressed or LZW-compressed (with
+//  Predictor 2 on integers or 3 on floats; TIFFCompression.swift, FormatoKit#90, beyond the consumer's source), in strips, chunky. One
 //  sample per pixel: unsigned or signed 8/16/32-bit integers, 32/64-bit floats, each as Float32. Three samples (RGB, 8 bit
 //  only): only when R = G = B holds exactly at every pixel (an exported grey render), read as one grey channel and noted
 //  "8-bit render, not counts". Refused by name (`Refusal`): not a TIFF, BigTIFF, a file that ends before its image does,
-//  a second page or an ImageJ stack (more than one plane), any compression, tiles, unequal colour channels, any other
+//  a second page or an ImageJ stack (more than one plane), any compression but LZW, tiles, unequal colour channels, any other
 //  sample layout (WhiteIsZero, palette, 16-bit colour, planar 2, mixed sample sizes). Nothing is guessed.
 //
 //  CALIBRATION, in this order: FEI SEM INI (tag 34680 or 34682): `[Scan] PixelWidth/PixelHeight` in metres, else
@@ -72,7 +73,7 @@ public nonisolated enum TIFFAppImage {
             case .notTIFF: "it is not a TIFF file."
             case .truncated: "the file ends before its image does."
             case .multiPage: "it holds more than one page; image stacks are not read yet."
-            case .compressed(let scheme): "its pixels are compressed (scheme \(scheme)); only uncompressed TIFF is read."
+            case .compressed(let scheme): "its pixels are compressed (scheme \(scheme)); only uncompressed and LZW-compressed TIFF is read."
             case .tiled: "its pixels are stored in tiles; only striped TIFF is read."
             case .unequalChannels(let row, let column):
                 "it is a colour image (row \(row), column \(column) differs between red, green and blue); only a grey render is read."
@@ -127,7 +128,7 @@ public nonisolated enum TIFFAppImage {
             throw Refusal.sampleFormat("no image width or height")
         }
         let compression = tags.integer(byCode[259]) ?? 1
-        guard compression == 1 else { throw Refusal.compressed(scheme: compression) }
+        guard TIFFCompression.isRead(compression) else { throw Refusal.compressed(scheme: compression) }
         if byCode[322] != nil || byCode[324] != nil { throw Refusal.tiled }
         let samples = tags.integer(byCode[277]) ?? 1
         let planar = tags.integer(byCode[284]) ?? 1
@@ -144,7 +145,12 @@ public nonisolated enum TIFFAppImage {
         guard isGrey || isRGB else {
             throw Refusal.sampleFormat("\(samples) sample(s) per pixel, photometric \(photometric), planar \(planar)")
         }
-        let decode = try decoder(bits: bitsPerSample, format: format, bigEndian: file.bigEndian)
+        let predictor = compression == 1 ? 1 : tags.integer(byCode[317]) ?? 1
+        if let why = TIFFCompression.predictorRefusal(predictor, format: format, bytes: bitsPerSample / 8) {
+            throw Refusal.sampleFormat(why.replacingOccurrences(of: "it sets ", with: ""))
+        }
+        // A compressed page decodes to little-endian samples (TIFFCompression.decodePage).
+        let decode = try decoder(bits: bitsPerSample, format: format, bigEndian: compression == 1 && file.bigEndian)
 
         // The strips, concatenated in order, must hold exactly the image.
         guard let offsets = tags.integers(byCode[273]), let counts = tags.integers(byCode[279]),
@@ -165,10 +171,26 @@ public nonisolated enum TIFFAppImage {
             guard offset >= 0, count >= 0, count <= data.count, offset <= data.count - count else { throw Refusal.truncated }
             stripped += count
         }
-        guard stripped >= needed else { throw Refusal.truncated }
-        var raw = Data(capacity: stripped)
-        for (offset, count) in zip(offsets, counts) {
-            raw.append(data[data.startIndex + offset ..< data.startIndex + offset + count])
+        var raw: Data
+        if compression == 1 {
+            guard stripped >= needed else { throw Refusal.truncated }
+            raw = Data(capacity: stripped)
+            for (offset, count) in zip(offsets, counts) {
+                raw.append(data[data.startIndex + offset ..< data.startIndex + offset + count])
+            }
+        } else {
+            // LZW gives at most 4096 bytes per 12-bit code: a larger claim is a corrupt header, refused before allocating.
+            guard needed / 2731 <= data.count else { throw Refusal.truncated }
+            let rowsPerStrip = max(1, min(tags.integer(byCode[278]) ?? height, height))
+            do {
+                raw = try TIFFCompression.decodePage(
+                    compression: compression, predictor: predictor, rows: height, rowsPerStrip: rowsPerStrip, width: width,
+                    samples: samples, bytesPerSample: bytesPerSample, bigEndian: file.bigEndian, strips: offsets.count) { s in
+                        data.subdata(in: data.startIndex + offsets[s] ..< data.startIndex + offsets[s] + counts[s])
+                    }
+            } catch let failure as TIFFCompression.Failure {
+                throw Refusal.sampleFormat(failure.reason.replacingOccurrences(of: "its ", with: ""))
+            }
         }
 
         var pixels = [Float](repeating: 0, count: width * height)

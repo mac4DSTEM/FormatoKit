@@ -21,8 +21,12 @@ import FormatoTIFF
     static func pin(_ name: String) -> [String: Any] { (pins.first { $0["name"] as? String == name }?["app"] as? [String: Any]) ?? [:] }
 
     /// Cases where the kit differs from the consumer's reader on purpose (header comment of TIFFAppImage): a tag whose value
-    /// lies outside the file is `truncated` here, absent in the consumer's lazy walker.
-    static let documentedDifferences: [String: TIFFAppImage.Refusal] = ["tag-value-outside-file": .truncated]
+    /// lies outside the file is `truncated` here, absent in the consumer's lazy walker; LZW is decoded here (FormatoKit#90),
+    /// so the planted LZW file, whose strip is plain bytes, is refused as corrupt LZW, not as compressed.
+    static let documentedDifferences: [String: TIFFAppImage.Refusal] = [
+        "tag-value-outside-file": .truncated,
+        "compressed-lzw": .sampleFormat("LZW-compressed pixels are corrupt (code 482 before it is defined)"),
+    ]
 
     static func bits(_ axis: TIFFAppImage.Axis?) -> [String: String]? {
         axis.map { ["origin": String($0.origin.bitPattern, radix: 16), "scale": String($0.scale.bitPattern, radix: 16), "units": $0.units] }
@@ -66,19 +70,21 @@ import FormatoTIFF
                 #expect(Self.bits(axis) == app[key] as? [String: String], "\(name) \(key)")
             }
         }
-        #expect(read == 102 && refused == 46)
+        #expect(read == 102 && refused == 45)
     }
 
     @Test func testDocumentedDifferenceFromTheConsumersWalker() throws {
         // The consumer reads an out-of-file tag value as absent (the image opens, DM tags without a scale); TIFFFile refuses it.
         #expect(Self.pin("tag-value-outside-file")["error"] == nil)
         #expect(throws: TIFFAppImage.Refusal.truncated) { try TIFFAppImage.read(path: Self.path("tag-value-outside-file")) }
+        #expect(Self.pin("compressed-lzw")["error"] as? String == "compressed(scheme: 5)")
+        #expect(throws: Self.documentedDifferences["compressed-lzw"]!) { try TIFFAppImage.read(path: Self.path("compressed-lzw")) }
     }
 
     @Test func testRefusalsAreTypedAndWorded() throws {
         let expected: [String: TIFFAppImage.Refusal] = [
             "not-tiff-letters": .notTIFF, "too-short": .notTIFF, "ifd-offset-outside": .truncated, "second-page": .multiPage,
-            "imagej-stack-images": .multiPage, "compressed-lzw": .compressed(scheme: 5), "tiled": .tiled,
+            "imagej-stack-images": .multiPage, "compressed-packbits": .compressed(scheme: 32773), "tiled": .tiled,
             "rgb-unequal-blue-row1-col2": .unequalChannels(row: 1, column: 2), "bigtiff-II": .sampleFormat("BigTIFF"),
             "white-is-zero": .sampleFormat("1 sample(s) per pixel, photometric 0, planar 1"), "huge-width-overflow": .truncated,
         ]
@@ -86,7 +92,7 @@ import FormatoTIFF
             #expect(throws: refusal) { try TIFFAppImage.read(path: Self.path(name)) }
             #expect(!refusal.reason.isEmpty && refusal.reason.hasSuffix("."), "\(name)")
         }
-        #expect(TIFFAppImage.Refusal.compressed(scheme: 5).reason == "its pixels are compressed (scheme 5); only uncompressed TIFF is read.")
+        #expect(TIFFAppImage.Refusal.compressed(scheme: 32773).reason == "its pixels are compressed (scheme 32773); only uncompressed and LZW-compressed TIFF is read.")
         #expect(TIFFAppImage.Note.render == "8-bit render, not counts")
         #expect(TIFFAppImage.Note.veloxUnvalidated == "scale as Velox stores it (BinaryResult/PixelSize), not checked against a calibration standard")
         #expect(TIFFAppImage.Note.veloxStoredScale == TIFFAppImage.Note.veloxUnvalidated)

@@ -1,0 +1,138 @@
+{
+ "files": {
+  "f32-gms": {
+   "appFloat32Sha256": "557748f2fc1665cc475c119ecbb68e9c7eae5e8e972e796c39b2c09da77411f7",
+   "dtype": "float32",
+   "predictor": 1,
+   "sha256": "557748f2fc1665cc475c119ecbb68e9c7eae5e8e972e796c39b2c09da77411f7",
+   "shape": [
+    37,
+    53
+   ],
+   "strips": 5
+  },
+  "f32-pred3": {
+   "appFloat32Sha256": "557748f2fc1665cc475c119ecbb68e9c7eae5e8e972e796c39b2c09da77411f7",
+   "dtype": "float32",
+   "predictor": 3,
+   "sha256": "557748f2fc1665cc475c119ecbb68e9c7eae5e8e972e796c39b2c09da77411f7",
+   "shape": [
+    37,
+    53
+   ],
+   "strips": 5
+  },
+  "f32-pred3-be": {
+   "appFloat32Sha256": "557748f2fc1665cc475c119ecbb68e9c7eae5e8e972e796c39b2c09da77411f7",
+   "dtype": "float32",
+   "predictor": 3,
+   "sha256": "557748f2fc1665cc475c119ecbb68e9c7eae5e8e972e796c39b2c09da77411f7",
+   "shape": [
+    37,
+    53
+   ],
+   "strips": 5
+  },
+  "f64-pred3": {
+   "dtype": "float64",
+   "predictor": 3,
+   "sha256": "81e5cf6f8a6a7bd093cfa0124cdafbbe5b0046ace3d0bf349a39601733749cb9",
+   "shape": [
+    37,
+    53
+   ],
+   "strips": 1
+  },
+  "i16-pred2": {
+   "appFloat32Sha256": "0c33cb8a381fd4f19fba7258d655eba6c4165af419ae1c0cd923d8dd9fba9a56",
+   "dtype": "int16",
+   "predictor": 2,
+   "sha256": "f45f2497662ef023ee4fce2f79ddbb81ac831f6b4d52c58df4349535bfcb81df",
+   "shape": [
+    37,
+    53
+   ],
+   "strips": 1
+  },
+  "rgb8-pred2": {
+   "dtype": "uint8",
+   "predictor": 2,
+   "sha256": "a8f6a4dd7113863bde855bc1038c44c1e71d2e72c98535851ee185e5ac98d637",
+   "shape": [
+    37,
+    53,
+    3
+   ],
+   "strips": 1
+  },
+  "u16-noise": {
+   "appFloat32Sha256": "b8b5c2b96b06c0bf5775b65b8f3f9f418dc51402296c8596280c98a3e135a454",
+   "dtype": "uint16",
+   "predictor": 1,
+   "sha256": "97d02c919293c07fc24d90bafdae631a5ac9c541b45510ddd4ed0657d04ec0fd",
+   "shape": [
+    96,
+    128
+   ],
+   "strips": 1
+  },
+  "u16-pred2": {
+   "appFloat32Sha256": "c622b6a0d92e1fa35e963466daebb7e940fc010c896a422da9054b77c941fb3b",
+   "dtype": "uint16",
+   "predictor": 2,
+   "sha256": "cb01ca3a8b6daeb342a7787ce9319a9641528d5868469a704d5183f73d8fdc5d",
+   "shape": [
+    37,
+    53
+   ],
+   "strips": 7
+  },
+  "u16-pred2-be": {
+   "appFloat32Sha256": "c622b6a0d92e1fa35e963466daebb7e940fc010c896a422da9054b77c941fb3b",
+   "dtype": "uint16",
+   "predictor": 2,
+   "sha256": "cb01ca3a8b6daeb342a7787ce9319a9641528d5868469a704d5183f73d8fdc5d",
+   "shape": [
+    37,
+    53
+   ],
+   "strips": 7
+  },
+  "u16-stack": {
+   "dtype": "uint16",
+   "predictor": 2,
+   "sha256": "50dba9ea1d23b42dbdc3705e2e58164878531f6832af6692a45d4b3b98f4725d",
+   "shape": [
+    3,
+    37,
+    53
+   ],
+   "strips": 1
+  },
+  "u32-pred2": {
+   "appFloat32Sha256": "9cc52e3f51fe3ce1a66429e9e05fd1b2854404c74f28c74f73b15552a58b4a92",
+   "dtype": "uint32",
+   "predictor": 2,
+   "sha256": "2330d53afdb7bc82ed0a6294ee6a0271970702547a48b30b4b99cd12709e29c2",
+   "shape": [
+    37,
+    53
+   ],
+   "strips": 3
+  },
+  "u8-pred2": {
+   "appFloat32Sha256": "c5c6a2eb1e8bf379fd4cb9a773348052dd039a6c40e7181199463cb1f0611fe3",
+   "dtype": "uint8",
+   "predictor": 2,
+   "sha256": "8b8ffae5d50ef5ecdcfa654b588fb73fc8c3218802e2bac7e930f38ca3a09160",
+   "shape": [
+    37,
+    53
+   ],
+   "strips": 4
+  }
+ },
+ "imagecodecs": "2026.10.10",
+ "numpy": "2.5.3",
+ "tifffile": "2026.9.20"
+}
