@@ -8,6 +8,7 @@
 
 import Foundation
 import Testing
+import FormatoCore
 import FormatoKitTestSupport
 import FormatoMIB
 
