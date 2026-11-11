@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/mac4DSTEM/FormatoKit/compare/0.14.0...0.15.0) (2026-11-11)
+
+
+### Features
+
+* read LZW-compressed TIFF (Compression 5) with its predictors, as GMS and many SEMs write it ([#91](https://github.com/mac4DSTEM/FormatoKit/issues/91)) ([6945872](https://github.com/mac4DSTEM/FormatoKit/commit/6945872a97eda5065e8bf3fa4dc7e4d1ba0f59b1))
+
 ## [0.14.0](https://github.com/mac4DSTEM/FormatoKit/compare/0.13.0...0.14.0) (2026-11-11)
 
 
