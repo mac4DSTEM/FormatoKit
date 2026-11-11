@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/mac4DSTEM/FormatoKit/compare/0.13.0...0.14.0) (2026-11-11)
+
+
+### Features
+
+* read HDF5 datasets compressed with h5py's LZF filter ([#87](https://github.com/mac4DSTEM/FormatoKit/issues/87)) ([ea73d01](https://github.com/mac4DSTEM/FormatoKit/commit/ea73d0169cd7bf9056d05dd573a15fbb75f290b5))
+
 ## [0.13.0](https://github.com/mac4DSTEM/FormatoKit/compare/0.12.1...0.13.0) (2026-11-11)
 
 
