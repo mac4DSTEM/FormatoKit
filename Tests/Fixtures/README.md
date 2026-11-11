@@ -5,7 +5,7 @@ the index is rewritten in the same commit (CI runs `index.py --check`). A regene
 commit, with the reason and a CHANGELOG line.
 
 One row per tracked file under `Tests/*/Fixtures/`: its size, the script under `tools/` that writes it (or *copied*),
-and its source: the pinned reference that wrote or read it, or where a copied file comes from. 683 files.
+and its source: the pinned reference that wrote or read it, or where a copied file comes from. 685 files.
 
 The generators run in the one Python environment of `tools/requirements.txt` (`tools/README.md`). The tests never run
 Python: they read these committed files, so `swift test` needs none of it.
@@ -45,7 +45,7 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoCoreTests/Fixtures/refuter/u_stack_unit_px.emd` | 192.3 KB | `tools/velox-titles/refuter_pins.py` | planted review file |
 | `FormatoCoreTests/Fixtures/units-pins.json` | 685.4 KB | `tools/dm-velox-pins/pins.py` | RosettaSciIO 049e7d70, Pint 0.26.1 |
 | `FormatoCoreTests/Fixtures/velox-spectrum-image-pins.json` | 450.2 KB | `tools/velox-spectrum-image/pins.py` | RosettaSciIO 049e7d70 |
-| `FormatoCoreTests/Fixtures/velox-spectrum-image-refuter-pins.json` | 28.0 KB | `tools/velox-spectrum-image/refuter_pins.py` | RosettaSciIO 049e7d70 |
+| `FormatoCoreTests/Fixtures/velox-spectrum-image-refuter-pins.json` | 27.9 KB | `tools/velox-spectrum-image/refuter_pins.py` | RosettaSciIO 049e7d70 |
 | `FormatoCoreTests/Fixtures/velox-titles-pins.json` | 30.7 KB | `tools/velox-titles/pins.py` | RosettaSciIO 049e7d70 |
 | `FormatoCoreTests/Fixtures/velox-titles-refuter-pins.json` | 6.9 KB | `tools/velox-titles/refuter_pins.py` | RosettaSciIO 049e7d70 |
 | `FormatoDMTests/Fixtures/acq-metadata/ambiguous-date.dm4` | 1.3 KB | `tools/acq-metadata/generate.py` | planted; pins RosettaSciIO 049e7d70 and the consumer's readers |
@@ -332,6 +332,8 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoHDF5Tests/Fixtures/low-level/assorted.h5` | 32.2 KB | `tools/hdf5-append/generate.py` | h5py 3.16.0 |
 | `FormatoHDF5Tests/Fixtures/low-level/latest.h5` | 11.6 KB | `tools/hdf5-append/generate.py` | h5py 3.16.0 |
 | `FormatoHDF5Tests/Fixtures/low-level/pins.json` | 22.7 KB | `tools/hdf5-append/generate.py` | h5py 3.16.0 |
+| `FormatoHDF5Tests/Fixtures/lzf/lzf.h5` | 26.4 KB | `tools/hdf5-lzf/generate.py` | h5py 3.16.0 |
+| `FormatoHDF5Tests/Fixtures/lzf/pins.json` | 2.7 KB | `tools/hdf5-lzf/generate.py` | h5py 3.16.0 |
 | `FormatoHDF5Tests/Fixtures/root-attributes/array-attribute.h5` | 888 B | `tools/hdf5-write/generate.py` | h5py 3.16.0 |
 | `FormatoHDF5Tests/Fixtures/root-attributes/dense.h5` | 4.2 KB | `tools/hdf5-write/generate.py` | h5py 3.16.0 |
 | `FormatoHDF5Tests/Fixtures/root-attributes/embedded-nul.h5` | 872 B | `tools/hdf5-write/generate.py` | h5py 3.16.0 |

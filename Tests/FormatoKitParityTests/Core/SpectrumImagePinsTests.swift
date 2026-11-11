@@ -168,7 +168,8 @@ import FormatoEMD
 
     /// Step 4's review files (Tests/FormatoEMDTests/Fixtures/velox-spectrum-image/refuter, tools/velox-spectrum-image/refuter_pins.py): the
     /// fixes (Unicode digits, endFramePosition past Int64, a zero-frame first image, JSON decimals, the frame count's
-    /// overflow) and the deliberate deviations (fermi, a null image unit, a list DetectorName, LZF; a big-endian stream read).
+    /// overflow) and the deliberate deviations (fermi, a null image unit, a list DetectorName; a big-endian stream read). The LZF
+    /// stream reads since FormatoKit#86 and is compared like any other file.
     @Test func testStep4RefuterFilesAgreeOrAreRefused() throws {
         let doc = try loadJSON("velox-spectrum-image-refuter-pins.json")
         let t = try compare(doc, referencesPresent: true)
@@ -176,9 +177,9 @@ import FormatoEMD
         #expect(t.files == 15)
         #expect(t.runs == 20)
         #expect(t.raised == 5, "endframe-1e30 O1 and O2, the Arabic endFramePosition with last_frame 4, the zero-frame image, the overflowing grid (not run)")
-        #expect(t.deviated == 4, "fermi, the null image unit, the list DetectorName, LZF")
+        #expect(t.deviated == 3, "fermi, the null image unit, the list DetectorName")
         #expect(t.read == 2, "the big-endian stream, frames summed and not")
-        #expect(t.signals == 9)
+        #expect(t.signals == 10, "with the LZF stream's spectrum image")
     }
 
     /// The owner's spectrum image: run by tools/velox-spectrum-image/owner-check.sh, which writes RosettaSciIO's

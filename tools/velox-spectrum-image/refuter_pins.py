@@ -43,7 +43,7 @@ FILES = {
     "unit-fm-fermi.emd": {"O1": {}},                                       # F6: Pint's fermi
     "image-pixelunitx-null.emd": {"O1": {}},                               # F8: the first image's PixelUnitX null
     "detectorname-list.emd": {"O1": {}},                                   # a list DetectorName (Python's `in`)
-    "stream-lzf.emd": {"O1": {}},                                          # LZF (step 3 A1)
+    "stream-lzf.emd": {"O1": {}},                                          # LZF: read since FormatoKit#86 (LZFFilter.swift)
 }
 NOT_RUN = {"overflow-grid-no-endframe.emd": "a (2^32, 2^32, 1) first image: RosettaSciIO reads its first frame whole"}
 DEVIATIONS = {
@@ -51,7 +51,6 @@ DEVIATIONS = {
     "unit-fm-fermi.emd": ["all", "'fm' is Pint's fermi: refused here (A1)"],
     "image-pixelunitx-null.emd": ["all", "the first image's PixelUnitX null: refused as the image path does (step 3; A1)"],
     "detectorname-list.emd": ["all", "a DetectorName that is not a string: refused (A1)"],
-    "stream-lzf.emd": ["all", "an LZF-filtered stream: the shipped libhdf5 has no LZF filter (step 3 A1)"],
     "overflow-grid-no-endframe.emd": ["not-run", NOT_RUN["overflow-grid-no-endframe.emd"]],
 }
 

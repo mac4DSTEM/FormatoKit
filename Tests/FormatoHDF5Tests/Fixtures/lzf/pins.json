@@ -1,0 +1,186 @@
+{
+ "datasets": {
+  "/checked": {
+   "chunks": 4,
+   "dtype": "float32",
+   "filters": [
+    32000,
+    3
+   ],
+   "lzfValues": [
+    4,
+    261,
+    256
+   ],
+   "rawChunks": 0,
+   "sha256": "ded025815be903d4deebcee8e69a44a83f3df0dac469a5b1132418c3cfec965c",
+   "shape": [
+    16,
+    16
+   ],
+   "slab": {
+    "count": [
+     8,
+     8
+    ],
+    "sha256": "e7ef023863a5c1a0f5dbae1aca2181f93bb2aef9f55a2377e0d84b28132cf71d",
+    "start": [
+     4,
+     4
+    ]
+   }
+  },
+  "/constant": {
+   "chunks": 1,
+   "dtype": "uint16",
+   "filters": [
+    32000
+   ],
+   "lzfValues": [
+    4,
+    261,
+    8192
+   ],
+   "rawChunks": 0,
+   "sha256": "1751137b437b19f7eacd12ce8a662716ddf832bf3c62e37d286f4371c4baffdc",
+   "shape": [
+    64,
+    64
+   ],
+   "slab": {
+    "count": [
+     32,
+     32
+    ],
+    "sha256": "2cbe5dc59e8d3f59b35b59682ebc87ce0383ddfa45611689cdfee91f83dc34ae",
+    "start": [
+     16,
+     16
+    ]
+   }
+  },
+  "/counts": {
+   "chunks": 9,
+   "dtype": "uint16",
+   "filters": [
+    32000
+   ],
+   "lzfValues": [
+    4,
+    261,
+    70
+   ],
+   "rawChunks": 0,
+   "sha256": "951f3d458a7fff22897324ba134e11f3318a7844ca813d7c672fb63e70743f1b",
+   "shape": [
+    12,
+    17
+   ],
+   "slab": {
+    "count": [
+     6,
+     8
+    ],
+    "sha256": "2271e35493466c44ae3383a792ddd93fda774fc7b50e16117c5a3b7b63e61ee2",
+    "start": [
+     3,
+     4
+    ]
+   }
+  },
+  "/noise": {
+   "chunks": 2,
+   "dtype": "uint8",
+   "filters": [
+    32000
+   ],
+   "lzfValues": [
+    4,
+    261,
+    2048
+   ],
+   "rawChunks": 1,
+   "sha256": "a876062f804e0f04e364fb3b44612632f0b4177dcd9c2417da2387122b3daa51",
+   "shape": [
+    2,
+    2048
+   ],
+   "slab": {
+    "count": [
+     1,
+     1024
+    ],
+    "sha256": "0298a8beead5993845e03f52e8b932e301f9ae043720832efde75ca6dbf62296",
+    "start": [
+     0,
+     512
+    ]
+   }
+  },
+  "/patterns": {
+   "chunks": 6,
+   "dtype": "uint8",
+   "filters": [
+    32000
+   ],
+   "lzfValues": [
+    4,
+    261,
+    1920
+   ],
+   "rawChunks": 0,
+   "sha256": "140099e38358c9a896906b17831cecf229a7f9e267bdcce36f9ea341a58bd22c",
+   "shape": [
+    6,
+    40,
+    48
+   ],
+   "slab": {
+    "count": [
+     3,
+     20,
+     24
+    ],
+    "sha256": "14aed8a7390f09a36f965ff18b6da1fe0053939ad381f78f6e7129f08227a945",
+    "start": [
+     1,
+     10,
+     12
+    ]
+   }
+  },
+  "/shuffled": {
+   "chunks": 3,
+   "dtype": "int16",
+   "filters": [
+    2,
+    32000
+   ],
+   "lzfValues": [
+    4,
+    261,
+    600
+   ],
+   "rawChunks": 0,
+   "sha256": "1c1f4424a184407f0b6604119663aa2000334f2b822feff98c89b7655dcf0c3e",
+   "shape": [
+    30,
+    30
+   ],
+   "slab": {
+    "count": [
+     15,
+     15
+    ],
+    "sha256": "39cda6a5c63e62568b462651c396786b0fa0506b14cd4e610a50d00f16e681ef",
+    "start": [
+     7,
+     7
+    ]
+   }
+  }
+ },
+ "h5py": "3.16.0",
+ "hdf5": "2.0.0",
+ "numpy": "2.5.4"
+}
