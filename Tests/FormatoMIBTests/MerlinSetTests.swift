@@ -50,7 +50,8 @@ private func writeSet(in dir: URL, parts: Int = 3, framesPerPart: Int = 4, heade
     let dir = try directory(); defer { try? FileManager.default.removeItem(at: dir) }
     try writeSet(in: dir)
     let expected = (1...3).map { dir.appendingPathComponent("default\($0).mib").path }
-    for picked in ["default1.mib", "default2.mib", "default3.mib", "default.hdr"] {
+    for picked in ["default1.mib", "default2.mib", "default3.mib", "default.hdr", "default2.Mib"] where
+        picked != "default2.Mib" || FileManager.default.fileExists(atPath: dir.appendingPathComponent(picked).path) {   // a case-insensitive volume
         let set = try #require(MerlinSet.containing(dir.appendingPathComponent(picked).path), "\(picked)")
         #expect(set.parts == expected)
         #expect(set.header == dir.appendingPathComponent("default.hdr").path)
@@ -116,8 +117,10 @@ private func writeSet(in dir: URL, parts: Int = 3, framesPerPart: Int = 4, heade
         let set = try #require(MerlinSet.containing(two.path))
         #expect(throws: MIBError.self) { try MIBReader(set: set) }
     }
-    // One frame per trigger names no row length; a total that is not whole rows; a header with no counts at all.
-    for header in [merlinHeader(frames: 12, perTrigger: 1), merlinHeader(frames: 12, perTrigger: 5), "HDR,\r\nChip ID:\tW529_F5\r\nEnd\t"] {
+    // One frame per trigger, or one trigger for the whole scan, names no row length; a total that is not whole rows; a header
+    // with no counts at all.
+    for header in [merlinHeader(frames: 12, perTrigger: 1), merlinHeader(frames: 12, perTrigger: 12), merlinHeader(frames: 12, perTrigger: 5),
+                   "HDR,\r\nChip ID:\tW529_F5\r\nEnd\t"] {
         let dir = try directory(); defer { try? FileManager.default.removeItem(at: dir) }
         try writeSet(in: dir, header: header)
         let set = try #require(MerlinSet.containing(dir.appendingPathComponent("default.hdr").path))

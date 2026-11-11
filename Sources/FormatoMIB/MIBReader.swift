@@ -59,7 +59,9 @@ public nonisolated struct MIBReader: Sendable {
     private init(parts: [String], hdrPath: URL?, navigationShape: [Int]?, firstFrame: Int?, lastFrame: Int?,
                  convention: MIBConvention) throws {
         guard let path = parts.first else { throw MIBError.cannotOpen("no MIB file") }
-        let mappings = try parts.map { try MIBMapping(path: $0, anyHeaderSize: convention == .appScanXY) }
+        // A set's parts are mapped without keeping a descriptor each (a save can have more parts than a process may hold open);
+        // their sizes are checked by path, for the parts a read touches.
+        let mappings = try parts.map { try MIBMapping(path: $0, anyHeaderSize: convention == .appScanXY, keepDescriptor: parts.count == 1) }
         let mapping = mappings[0]
         var header = try mapping.header(at: 0)
         pixelCode = header.code
@@ -136,7 +138,9 @@ public nonisolated struct MIBReader: Sendable {
                 // be that scan exactly; one frame per trigger names no row length and is refused, never guessed from timestamps.
                 guard hdrPath != nil else { throw MIBError.malformed("Invalid ScanX") }
                 let trigger = try positive("Frames per Trigger (Number)"), total = try positive("Frames in Acquisition (Number)")
-                guard trigger > 1 else { throw MIBError.malformed("The .hdr has no ScanX/ScanY and one frame per trigger: the scan shape is unknown") }
+                guard trigger > 1, trigger < total else {
+                    throw MIBError.malformed("The .hdr has no ScanX/ScanY, and its Frames per Trigger (\(trigger) of \(total)) names no scan row: the scan shape is unknown")
+                }
                 guard total % trigger == 0 else { throw MIBError.malformed("Frames in Acquisition is not a whole number of Frames per Trigger") }
                 guard total == frames else { throw MIBError.malformed("The .hdr describes \(total) frames, the files hold \(frames)") }
                 x = trigger; y = total / trigger
@@ -251,7 +255,7 @@ public nonisolated struct MerlinSet: Sendable, Equatable {
         }
         guard !parts.isEmpty else { return nil }
         if ext.lowercased() == "mib" {
-            guard parts.contains(where: { URL(fileURLWithPath: $0).lastPathComponent == url.lastPathComponent }) else { return nil }
+            guard parts.contains(where: { URL(fileURLWithPath: $0).lastPathComponent.lowercased() == url.lastPathComponent.lowercased() }) else { return nil }
         }
         return MerlinSet(header: folder.appendingPathComponent(stem + "." + hdr).path, parts: parts)
     }
@@ -325,28 +329,34 @@ private final class MIBFrames: @unchecked Sendable {
         let p = part(of: frame)
         return mappings[p].pointer + (frame - starts[p]) * stride
     }
-    func checkSize() throws { for mapping in mappings { try mapping.checkSize() } }
+    /// One file: its size, once per read. A set: nothing here; `checkSize(frame:)` checks each part a read reaches.
+    func checkSize() throws { if mappings.count == 1 { try mappings[0].checkSize() } }
+    func checkSize(frame: Int) throws { if mappings.count > 1 { try mappings[part(of: frame)].checkSize() } }
 }
 // Immutable mapping; lifetime is retained by the signal and reads use no shared mutable cursor.
 private final class MIBMapping: @unchecked Sendable {
-    let fd: Int32; let pointer: UnsafeMutableRawPointer; let length: Int
+    /// The open descriptor, or -1 for a set's part (closed after mapping; `checkSize` then reads the size by path).
+    let fd: Int32; let pointer: UnsafeMutableRawPointer; let length: Int; let path: String
     /// RosettaSciIO's two header sizes only (false), or the original app's reader (true): any size from 384 to 64 KiB, and a header
     /// whose width and height (or exposure) are not numbers is still read (the frame shape comes from the assembly).
     let anyHeaderSize: Bool
-    init(path: String, anyHeaderSize: Bool) throws {
+    init(path: String, anyHeaderSize: Bool, keepDescriptor: Bool = true) throws {
         self.anyHeaderSize = anyHeaderSize
+        self.path = path
         let descriptor = open(path, O_RDONLY)
         guard descriptor >= 0 else { throw MIBError.cannotOpen(path) }
         var info = stat()
         guard fstat(descriptor, &info) == 0, info.st_size > 0, info.st_size <= Int.max else { close(descriptor); throw MIBError.malformed("Empty or unreadable file") }
         let size = Int(info.st_size)
         guard let address = mmap(nil, size, PROT_READ, MAP_PRIVATE, descriptor, 0), address != MAP_FAILED else { close(descriptor); throw MIBError.cannotOpen(path) }
-        fd = descriptor; pointer = address; length = size
+        pointer = address; length = size
+        if keepDescriptor { fd = descriptor } else { close(descriptor); fd = -1 }
     }
-    deinit { munmap(pointer, length); close(fd) }
+    deinit { munmap(pointer, length); if fd >= 0 { close(fd) } }
     func checkSize() throws {
         var info = stat()
-        guard fstat(fd, &info) == 0, info.st_size == length else { throw MIBError.malformed("File size changed") }
+        let status = fd >= 0 ? fstat(fd, &info) : stat(path, &info)
+        guard status == 0, info.st_size == length else { throw MIBError.malformed("File size changed") }
     }
     func header(at offset: Int) throws -> MIBHeader {
         guard offset >= 0, offset <= length, length - offset >= 384 else { throw MIBError.malformed("Truncated header") }
@@ -403,6 +413,7 @@ private struct MIBArray: FormatoLazyArray {
                     piece = min(piece, framePixels - pixel)
                     if frame != checkedFrame {
                         do {
+                            try store.checkSize(frame: frame)
                             let actual = try store.header(frame: frame)
                             // Under the app's rules the frame shape is the assembly's, so a frame header's width and height are not compared.
                             let sameShape = store.anyHeaderSize ? actual.layout == header.layout
