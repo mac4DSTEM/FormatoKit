@@ -93,4 +93,18 @@ with h5py.File(OUT/'malformed.h5','w') as f:
     f['badlength/cube/dim2']=np.array([0.,1.,2.])
     f['badstring/cube/data']=np.zeros((2,2,3,4),dtype='u2')
     f.require_group('badstring/metadatabundle/calibration').attrs['R_pixel_units']=np.array([b'nm',b'um'],dtype='S2')
+# py4DSTEM writes a dim vector in full whenever it is not bit-equal to np.arange(start, stop, step) (emdfile
+# Array._dim_is_linear), which is the usual case for np.linspace or accumulated steps: uniform to rounding (FormatoKit#104).
+cube = py4DSTEM.DataCube(np.arange(2*3*8*8, dtype='<f4').reshape(2,3,8,8), name='cube')
+cube.set_dim(0, np.linspace(-1.5, 0.25, 2))
+cube.set_dim(1, -0.3 + np.cumsum([0.0, 0.1, 0.1]))
+cube.set_dim(2, np.linspace(0.15, 0.85, 8))
+cube.set_dim(3, np.arange(8) * 0.0125 + 0.3)
+for i in (1, 2, 3): assert not cube._dim_is_linear(cube.dims[i], cube.data.shape[i]), i   # each written in full
+py4DSTEM.save(str(OUT/'dims.h5'), cube, mode='o')
+fixed_uuid(OUT/'dims.h5')
+with h5py.File(OUT/'dims.h5') as f:
+    pins['dims'] = dict(dataset='/cube_root/cube/data', lengths=[int(f['cube_root/cube/dim'+str(i)].shape[0]) for i in range(4)],
+                        offsets=[float(f['cube_root/cube/dim'+str(i)][0]) for i in range(4)],
+                        scales=[float(f['cube_root/cube/dim'+str(i)][1] - f['cube_root/cube/dim'+str(i)][0]) for i in range(4)])
 (OUT/'pins.json').write_text(json.dumps(pins,indent=2)+'\n')

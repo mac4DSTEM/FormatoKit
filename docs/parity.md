@@ -72,7 +72,7 @@ every one of these, as D17 prescribes for readers.
 |---|---|---|
 | h5py low-level | `HDF5Reader`, `HDF5AppendWriter`, `HDF5SlabReader` | pinned exact to h5py 3.16.0; compound, other enum, array and vlen data, references, external links not supported |
 | h5py's LZF filter (`lzf_filter.c`, liblzf 3.6 `lzf_decompress`) | `LZFFilter`, registered by the shared loader (filter 32000) | decode only, pinned exact to h5py 3.16.0 (`Fixtures/lzf`: shuffle, Fletcher-32, edge chunks, an uncompressed chunk) and to RosettaSciIO on `stream-lzf.emd`; liblzf's input checks on |
-| py4DSTEM EMD 1.0 4D datacube (py4DSTEM f050d207) | `HDF5Datacube` | pinned for explicit rank-four numeric datasets; nonlinear coordinates refused |
+| py4DSTEM EMD 1.0 4D datacube (py4DSTEM f050d207) | `HDF5Datacube` | pinned for explicit rank-four numeric datasets; a full-length dim vector reads when uniform within rtol 1e-7 of the larger of value and step (`assert_allclose` float64 default; py4DSTEM writes `np.linspace` vectors in full), nonlinear coordinates refused |
 | py4DSTEM BraggVectors | `BraggVectorsEMD`, `HDF5WriteSession.writeBraggVectors` | read and write pinned; origin maps and `_v_cal` not written |
 | EMD 1.0 bundle writers | `EMDDatacubeWriter`, `writeEMDCalibration`, maps | write pinned |
 | PNG with text chunks | `FormatoPNG` | write pinned; no interlacing, palette |

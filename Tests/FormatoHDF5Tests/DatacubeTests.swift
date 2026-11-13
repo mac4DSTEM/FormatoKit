@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 import FormatoCore
-import FormatoHDF5
+@testable import FormatoHDF5
 
 struct DatacubeTests {
     private var fixtures: URL {
@@ -67,6 +67,20 @@ struct DatacubeTests {
         #expect(fallback.axes.map(\.scale) == [0.25,0.25,0.25,0.25])
         #expect(fallback.axes.map(\.offset) == [-1.5,-1.5,-1.5,-1.5])
         #expect(fallback.axes.map(\.units) == ["nm","nm","nm","nm"])
+    }
+    /// FormatoKit#104: py4DSTEM writes `np.linspace` and accumulated-step dim vectors in full, uniform only to rounding
+    /// (`dims.h5`, written by the pinned py4DSTEM, `tools/hdf5-4d/generate.py`). They read; their first value is the offset
+    /// and the first step the scale. Mutation: the exact `==` comparison back in `dim(_:size:)` -> "Nonuniform dimension vector".
+    @Test func dimVectorsUniformToRoundingRead() throws {
+        let json = try JSONSerialization.jsonObject(with: Data(contentsOf: fixtures.appendingPathComponent("pins.json"))) as! [String: Any]
+        let pin = json["dims"] as! [String: Any]
+        let cube = try HDF5Datacube(path: fixtures.appendingPathComponent("dims.h5").path, datasetPath: pin["dataset"] as! String)
+        #expect(cube.shape == [2, 3, 8, 8])
+        #expect(pin["lengths"] as! [Int] == [2, 3, 8, 8], "dim1 to dim3 are stored in full")
+        #expect(cube.axes.map(\.offset.bitPattern) == (pin["offsets"] as! [Double]).map(\.bitPattern))
+        #expect(HDF5Datacube.isUniform(0.45, expected: 0.15 + 3 * 0.09999999999999999, step: 0.09999999999999999))
+        #expect(!HDF5Datacube.isUniform(3, expected: 2, step: 1), "a nonlinear step is still refused")
+        #expect(!HDF5Datacube.isUniform(.nan, expected: 0, step: 1))
     }
     @Test func malformedCubesThrowTypedErrors() throws {
         let path = fixtures.appendingPathComponent("malformed.h5").path

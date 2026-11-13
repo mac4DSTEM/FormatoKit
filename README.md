@@ -113,7 +113,7 @@ let signal = cube.signal // lazy; signal.load() reads the complete cube
 The file must stay unchanged while the reader or its signal exists. Compressed HDF5 uses hyperslab reads through
 HDF5 rather than memory mapping. `originMap(_:)` returns fitted/measured scan maps lazily. Scalar calibration datasets
 and legacy attributes are kept in `calibration`, with provenance; absent values use EMD dimension vectors, then pixel
-axes. Generic EMD fallback supports uniform coordinates; nonlinear coordinates throw a typed unsupported error. Rank-three promotion, dataset discovery, and app sidecar recognition are outside this API.
+axes. Generic EMD fallback supports uniform coordinates (a full-length dim vector within rtol 1e-7, as py4DSTEM writes `np.linspace`); nonlinear coordinates throw a typed unsupported error. Rank-three promotion, dataset discovery, and app sidecar recognition are outside this API.
 
 py4DSTEM BraggVectors, written and read through the same loader (peaks are float64 `qx` = detector row, `qy` = column):
 

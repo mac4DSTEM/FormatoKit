@@ -5,7 +5,7 @@ the index is rewritten in the same commit (CI runs `index.py --check`). A regene
 commit, with the reason and a CHANGELOG line.
 
 One row per tracked file under `Tests/*/Fixtures/`: its size, the script under `tools/` that writes it (or *copied*),
-and its source: the pinned reference that wrote or read it, or where a copied file comes from. 698 files.
+and its source: the pinned reference that wrote or read it, or where a copied file comes from. 699 files.
 
 The generators run in the one Python environment of `tools/requirements.txt` (`tools/README.md`). The tests never run
 Python: they read these committed files, so `swift test` needs none of it.
@@ -282,6 +282,7 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoGoldenTests/Fixtures/velox-tiny-reader.txt` | 11.8 KB | *copied* | lines 1-175 of SpectroKit 0.3.0's golden `velox-tiny.txt` |
 | `FormatoHDF5Tests/Fixtures/4d/attributes.bin` | 192 B | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
 | `FormatoHDF5Tests/Fixtures/4d/attributes.h5` | 14.9 KB | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
+| `FormatoHDF5Tests/Fixtures/4d/dims.h5` | 16.7 KB | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
 | `FormatoHDF5Tests/Fixtures/4d/fallback.bin` | 384 B | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
 | `FormatoHDF5Tests/Fixtures/4d/float32.bin` | 16.0 KB | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
 | `FormatoHDF5Tests/Fixtures/4d/float32.h5` | 41.2 KB | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
@@ -290,7 +291,7 @@ others stay in SpectroKit or the first consumer, named in the rows.
 | `FormatoHDF5Tests/Fixtures/4d/float32.qy0.bin` | 128 B | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
 | `FormatoHDF5Tests/Fixtures/4d/float32.qy0_meas.bin` | 128 B | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
 | `FormatoHDF5Tests/Fixtures/4d/malformed.h5` | 16.3 KB | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
-| `FormatoHDF5Tests/Fixtures/4d/pins.json` | 2.1 KB | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
+| `FormatoHDF5Tests/Fixtures/4d/pins.json` | 2.4 KB | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
 | `FormatoHDF5Tests/Fixtures/4d/singleton.bin` | 4.0 KB | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
 | `FormatoHDF5Tests/Fixtures/4d/singleton.h5` | 25.6 KB | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
 | `FormatoHDF5Tests/Fixtures/4d/singleton.qx0.bin` | 32 B | `tools/hdf5-4d/generate.py` | py4DSTEM f050d207 |
