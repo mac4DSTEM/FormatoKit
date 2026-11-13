@@ -719,7 +719,14 @@ public nonisolated enum DM4Experiment {
                 // DM4 gives every entry its size (from here to the end of the entry); DM3 has none.
                 let entrySize: Int? = version == 4 ? Int(exactly: cursor.special(version)) : nil
                 let entryStart = cursor.offset
-                if tag == 21 { try dataTag(path: path, label: label, entryEnd: entrySize.flatMap { $0 > 0 ? entryStart + $0 : nil }) }
+                // A size near Int.max would overflow the entry's end: such an entry cannot be in the file.
+                var entryEnd: Int?
+                if let size = entrySize, size > 0 {
+                    let (end, overflow) = entryStart.addingReportingOverflow(size)
+                    guard !overflow else { throw DM4Error.truncated }
+                    entryEnd = end
+                }
+                if tag == 21 { try dataTag(path: path, label: label, entryEnd: entryEnd) }
                 else if tag == 20 { try group(prefix: path, depth: depth + 1) }
             }
         }
