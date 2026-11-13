@@ -22,8 +22,8 @@ under Tests/FormatoDMTests, FormatoEMDTests, FormatoHDF5Tests and
 FormatoHDF5ExitProbe, and the fixtures listed in Tests/README.md, come from the
 same tag.
 
-    SpectroKit - https://github.com/mac4DSTEM/SpectroKit
-    mac4DSTEM  - https://github.com/mac4DSTEM/mac4DSTEM
+    SpectroKit - https://github.com/macEMSuite/SpectroKit
+    mac4DSTEM  - https://github.com/macEMSuite/mac4DSTEM
     Copyright (C) 2026 Paul Lobpreis
     Both licensed under the GNU General Public License v3.0
 
@@ -89,7 +89,7 @@ and JEOL-SightX-*-dummy.tif.gz files.
     tifffile - https://github.com/cgohlke/tifffile, version 2026.9.20
     Copyright (c) 2008-2026, Christoph Gohlke
     BSD 3-Clause License: Licenses/tifffile-LICENSE.txt
-    macTEM   - https://github.com/mac4DSTEM/macTEM, GNU General Public License v3.0
+    macTEM   - https://github.com/macEMSuite/macTEM, GNU General Public License v3.0
 
 
 ================================================================================

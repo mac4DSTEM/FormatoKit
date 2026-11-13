@@ -340,7 +340,7 @@ run the suite again without the variable. The regenerated files are committed on
 
 ## Known limits and decisions
 
-Open work is in the [issues](https://github.com/mac4DSTEM/FormatoKit/issues), including the ones closed as *not planned* and
+Open work is in the [issues](https://github.com/macEMSuite/FormatoKit/issues), including the ones closed as *not planned* and
 parked for later (read speed #4, GMS EDS geometry #5, more formats #11). Speed against RosettaSciIO is in `docs/benchmarks.md`.
 
 - **Read speed.** DM4 2048² f32, TIFF 4096² u16 and DM4 4D 32² x 128² read about 2x slower than RosettaSciIO. The shared lazy
