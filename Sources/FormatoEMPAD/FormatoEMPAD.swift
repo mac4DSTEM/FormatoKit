@@ -36,7 +36,15 @@ public nonisolated struct EMPADReader: Sendable {
     public init(path: String, qCalibration: Double? = nil, preferScanResolution: Bool = false) throws {
         let input = URL(fileURLWithPath: path)
         let xml = input.pathExtension.lowercased() == "raw" ? input.deletingPathExtension().appendingPathExtension("xml") : input
-        guard let parser = XMLParser(contentsOf: xml) else { throw EMPADError.cannotOpen(xml.lastPathComponent) }
+        // The header goes through `GuardedXML`'s bounds first (size, depth, characters, no entity), as every other XML reader in
+        // the kit: a sidecar that nests thousands deep or declares an entity is refused, never parsed.
+        guard let handle = FileHandle(forReadingAtPath: xml.path) else { throw EMPADError.cannotOpen(xml.lastPathComponent) }
+        let data = (try? handle.read(upToCount: GuardedXML.maxBytes + 1)) ?? nil
+        try? handle.close()
+        guard let data else { throw EMPADError.cannotOpen(xml.lastPathComponent) }
+        let text = String(decoding: data, as: UTF8.self)
+        if let refusal = GuardedXML.refusal(text) { throw EMPADError.invalidXML(refusal == .malformed ? "Malformed XML" : "XML refused (\(refusal))") }
+        let parser = XMLParser(data: data)
         let header = Header()
         parser.delegate = header
         parser.shouldResolveExternalEntities = false
@@ -76,6 +84,11 @@ public nonisolated struct EMPADReader: Sendable {
             fields["root.scan_parameters.scan_resolution_y"] = String(side)
         }
         try self.init(xml: raw, fields: fields, qCalibration: qCalibration)
+    }
+
+    /// True for a relative path with no `..` component and no leading `~` (the XML's `raw_file.filename`).
+    package static func isConfined(_ filename: String) -> Bool {
+        !filename.hasPrefix("/") && !filename.hasPrefix("~") && !filename.split(separator: "/", omittingEmptySubsequences: false).contains("..")
     }
 
     private init(xml: URL, fields: [String: String], qCalibration: Double?) throws {
@@ -178,6 +191,9 @@ public nonisolated struct EMPADReader: Sendable {
             entry("General.date", parts[0], "root.timestamp.isoformat")
             entry("General.time", parts[1], "root.timestamp.isoformat")
         }
+        // DEVIATION from RosettaSciIO (`os.path.join(dirname, filename)`, which follows an absolute path or `..`): the raw file
+        // must sit in the header's folder or below it, so a sidecar cannot point the reader at another file on the disk.
+        guard Self.isConfined(filename) else { throw EMPADError.invalidXML("raw_file.filename '\(filename)' leaves the header's folder") }
         let raw = URL(fileURLWithPath: filename, relativeTo: xml.deletingLastPathComponent()).standardizedFileURL
         let mapping = try Mapping(path: raw.path, expected: expected)
         rawPath = raw.path
@@ -191,20 +207,23 @@ private final class Header: NSObject, XMLParserDelegate {
     /// `scan_resolution_x/y` of the `scan_parameters mode="acquire"` block (the first such block), wherever it sits.
     var acquire: [String: String] = [:]
     var stack: [String] = []
+    /// `stack.joined(".")`, kept as the element opens and closes (one join per element was quadratic in the depth).
+    var paths: [String] = []
     var texts: [String] = []
     /// The depth of the open `root.scan_parameters` element when its mode is "acquire" (and no acquire block was seen before).
     private var acquireDepth: Int?
     private var seenAcquire = false
     func parser(_ parser: XMLParser, didStartElement name: String, namespaceURI: String?, qualifiedName: String?, attributes: [String: String]) {
         stack.append(name); texts.append("")
+        paths.append(paths.last.map { $0 + "." + name } ?? name)
         if stack == ["root", "scan_parameters"], attributes["mode"] == "acquire", !seenAcquire {
             acquireDepth = stack.count; seenAcquire = true
         }
-        for (key, value) in attributes { store(stack.joined(separator: ".") + "." + key, value) }
+        for (key, value) in attributes { store(paths[paths.count - 1] + "." + key, value) }
     }
     func parser(_ parser: XMLParser, foundCharacters string: String) { if !texts.isEmpty { texts[texts.count - 1] += string } }
     func parser(_ parser: XMLParser, didEndElement name: String, namespaceURI: String?, qualifiedName: String?) {
-        store(stack.joined(separator: "."), texts.removeLast().trimmingCharacters(in: .whitespacesAndNewlines))
+        store(paths.removeLast(), texts.removeLast().trimmingCharacters(in: .whitespacesAndNewlines))
         if stack.count == acquireDepth { acquireDepth = nil }
         stack.removeLast()
     }

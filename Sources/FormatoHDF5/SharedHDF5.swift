@@ -97,6 +97,8 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
     /// `H5P_CLS_DATASET_CREATE_ID_g`'s value: the dataset-creation property class.
     package let datasetCreateClass: hid_t
     // Link and object identity (FormatoKit 0.8.0: HDF5Reader.walk). Nil when the library lacks them.
+    package typealias H5getLibversion = @convention(c) (UnsafeMutablePointer<UInt32>?, UnsafeMutablePointer<UInt32>?,
+                                                        UnsafeMutablePointer<UInt32>?) -> herr_t
     package typealias H5LgetInfo2 = @convention(c) (hid_t, UnsafePointer<CChar>?, UnsafeMutableRawPointer?, hid_t) -> herr_t
     package typealias H5OgetInfoByName3 = @convention(c) (hid_t, UnsafePointer<CChar>?, UnsafeMutableRawPointer?, UInt32, hid_t) -> herr_t
     package let h5lgetInfo2: H5LgetInfo2?, h5ogetInfoByName3: H5OgetInfoByName3?
@@ -118,22 +120,59 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
     private nonisolated(unsafe) static var standardCache: SharedHDF5?
 
     private static func loadStandardUncached() throws -> SharedHDF5 {
-        let candidates = [ProcessInfo.processInfo.environment["FORMATO_HDF5_PATH"],
+        try load(candidates: standardCandidates())
+    }
+
+    /// The standard candidates, in order. The bare `libhdf5.dylib` (the loader's search path, which a user's environment can
+    /// point anywhere) is tried in debug builds only: a release build loads a library at a path the host or FormatoKit placed.
+    /// Whatever is loaded must also be the pinned version (`pinnedVersion`).
+    package static func standardCandidates() -> [String] {
+        var candidates = [ProcessInfo.processInfo.environment["FORMATO_HDF5_PATH"],
             Bundle.main.privateFrameworksURL?.appendingPathComponent("libhdf5.dylib").path,
             Bundle.main.executableURL?.deletingLastPathComponent().appendingPathComponent("../Frameworks/libhdf5.dylib").standardized.path,
-            FormatoHDF5Library.bundledLibraryPath, "libhdf5.dylib"].compactMap { $0 }
-        return try load(candidates: candidates)
+            FormatoHDF5Library.bundledLibraryPath].compactMap { $0 }
+        #if DEBUG
+        candidates.append("libhdf5.dylib")
+        #endif
+        return candidates
     }
+
+    /// The libhdf5 major and minor version the hand-copied struct layouts were measured on (2.1.1: `HDF5RootAttributes`,
+    /// `HDF5Reader`, `LZFFilter`). Another minor version may lay them out differently, so it is refused, never read.
+    package static let pinnedVersion = (major: UInt32(2), minor: UInt32(1))
+
+    /// Every symbol `load` resolves with `try`: checked before `H5open`, so a library that lacks one is closed again
+    /// (after `H5open` it has registered an exit handler and must stay mapped).
+    package static let requiredSymbols: [String] = [
+        "H5Aclose", "H5Acreate2", "H5Adelete", "H5Aexists", "H5Aget_space", "H5Aget_type", "H5Aiterate2", "H5Aopen", "H5Aread",
+        "H5Awrite", "H5Dclose", "H5Dcreate2", "H5Dget_create_plist", "H5Dget_space", "H5Dget_type", "H5Dopen2", "H5Dread",
+        "H5Dwrite", "H5Eset_auto2", "H5Fclose", "H5Fcreate", "H5Fopen", "H5Gcreate2", "H5Iget_type", "H5Ldelete", "H5Lexists",
+        "H5Literate2", "H5Lvisit2", "H5Oclose", "H5Ocopy", "H5Oget_native_info", "H5Oopen", "H5P_CLS_DATASET_CREATE_ID_g",
+        "H5P_CLS_FILE_ACCESS_ID_g", "H5Pclose", "H5Pcreate", "H5Pget_chunk", "H5Pget_layout", "H5Pset_chunk",
+        "H5Pset_libver_bounds", "H5Sclose", "H5Screate", "H5Screate_simple", "H5Sget_simple_extent_dims",
+        "H5Sget_simple_extent_ndims", "H5Sget_simple_extent_npoints", "H5Sselect_hyperslab", "H5T_C_S1_g",
+        "H5T_NATIVE_DOUBLE_g", "H5T_NATIVE_FLOAT_g", "H5T_NATIVE_INT16_g", "H5T_NATIVE_INT32_g", "H5T_NATIVE_INT64_g",
+        "H5T_NATIVE_INT8_g", "H5T_NATIVE_UINT16_g", "H5T_NATIVE_UINT32_g", "H5T_NATIVE_UINT64_g", "H5T_NATIVE_UINT8_g",
+        "H5Tclose", "H5Tcopy", "H5Tcreate", "H5Tenum_create", "H5Tenum_insert", "H5Tget_class", "H5Tget_sign", "H5Tget_size",
+        "H5Tinsert", "H5Tis_variable_str", "H5Tset_cset", "H5Tset_size", "H5Tset_strpad", "H5Tvlen_create", "H5free_memory",
+        "H5open", "H5get_libversion"
+    ]
 
     package static func load(candidates: [String]) throws -> SharedHDF5 {
         var failures: [String] = []
         var handle: UnsafeMutableRawPointer?
+        var loadedPath = ""
         for path in candidates where handle == nil {
             dlerror()
             handle = dlopen(path, RTLD_NOW | RTLD_LOCAL)
-            if handle == nil { failures.append("\(path): \(dlerror().map { String(cString: $0) } ?? "unknown")") }
+            if handle == nil { failures.append("\(path): \(dlerror().map { String(cString: $0) } ?? "unknown")") } else { loadedPath = path }
         }
         guard let handle else { throw HDF5DatacubeError.libraryUnavailable(failures.joined(separator: "\n")) }
+        // A library missing a symbol is closed again before anything in it runs (no exit handler is registered yet).
+        if let missing = requiredSymbols.first(where: { dlsym(handle, $0) == nil }) {
+            dlclose(handle)
+            throw HDF5DatacubeError.libraryUnavailable("\(loadedPath): missing symbol \(missing)")
+        }
         func symbol<T>(_ name: String, as: T.Type) throws -> T {
             guard let p = dlsym(handle, name) else { throw HDF5DatacubeError.libraryUnavailable("missing symbol \(name)") }
             return unsafeBitCast(p, to: T.self)
@@ -145,6 +184,14 @@ package nonisolated struct SharedHDF5: @unchecked Sendable {
         let open = try symbol("H5open", as: H5open.self)
         // After H5open, never before: it registers HDF5's atexit teardown (HDF5Types.swift).
         if open() >= 0 { HDF5Serial.installExitBarrier() }
+        // The version the struct layouts were measured on, or a refusal. The library stays mapped: `H5open` has registered its
+        // exit handler, which must find its code at exit.
+        var major: UInt32 = 0, minor: UInt32 = 0, release: UInt32 = 0
+        let version = try symbol("H5get_libversion", as: H5getLibversion.self)
+        guard version(&major, &minor, &release) >= 0, major == pinnedVersion.major, minor == pinnedVersion.minor else {
+            throw HDF5DatacubeError.libraryUnavailable(
+                "\(loadedPath) is libhdf5 \(major).\(minor).\(release); FormatoKit reads with \(pinnedVersion.major).\(pinnedVersion.minor).x only")
+        }
         // h5py's LZF filter (32000), which AZtec's .h5oina patterns use and this libhdf5 lacks: decode only (LZFFilter.swift).
         if let register = dlsym(handle, "H5Zregister") { LZFFilter.register(with: unsafeBitCast(register, to: LZFFilter.Register.self)) }
         let auto = try symbol("H5Eset_auto2", as: H5EsetAuto2.self)

@@ -99,13 +99,7 @@ private nonisolated let collectVeloxLink: @convention(c)
 package nonisolated enum VeloxHDF5Library {
     /// The default list: exactly the lookup the reader has always done.
     package static let defaultCandidates: @Sendable () -> [String] = {
-        [
-            ProcessInfo.processInfo.environment["FORMATO_HDF5_PATH"],
-            Bundle.main.privateFrameworksURL?.appendingPathComponent("libhdf5.dylib").path,
-            Bundle.main.executableURL?.deletingLastPathComponent().appendingPathComponent("../Frameworks/libhdf5.dylib").standardized.path,
-            FormatoHDF5Library.bundledLibraryPath,
-            "libhdf5.dylib"
-        ].compactMap { $0 }
+        SharedHDF5.standardCandidates()   // the one list (the bare search in debug builds only)
     }
 
     /// Owned by `HDF5Serial`: read and written only under its lock (the reader loads the library under it).

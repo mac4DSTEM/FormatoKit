@@ -138,7 +138,11 @@ extension VeloxEMDSerialized {
             let original = VeloxHDF5Library.libraryCandidates
             defer { VeloxHDF5Library.libraryCandidates = original }
             #expect(VeloxHDF5Library.libraryCandidates() == VeloxHDF5Library.defaultCandidates())
+            #if DEBUG
             #expect(VeloxHDF5Library.defaultCandidates().last == "libhdf5.dylib")
+            #else
+            #expect(!VeloxHDF5Library.defaultCandidates().contains("libhdf5.dylib"))
+            #endif
             // The override lives inside one hold of the (recursive) HDF5 lock: a reader in another suite or target running
             // side by side waits for the lock and never sees the bogus path.
             HDF5Serial.run {
