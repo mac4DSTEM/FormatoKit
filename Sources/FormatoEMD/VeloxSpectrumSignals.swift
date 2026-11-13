@@ -152,7 +152,8 @@ private nonisolated struct VeloxSpectrumRead {
         }
         var stored = [UInt8](repeating: 0, count: total)
         try stored.withUnsafeMutableBytes {
-            try file.readSlab(d, type: memory, start: d.dims.map { _ in 0 }, count: d.dims, into: $0.baseAddress!)
+            guard let base = $0.baseAddress else { return }   // bins and stack are > 0 above; never nil
+            try file.readSlab(d, type: memory, start: d.dims.map { _ in 0 }, count: d.dims, into: base)
         }
         guard stack > 1 else { return (type, bins, stack, Data(stored)) }
         let size = type.byteSize

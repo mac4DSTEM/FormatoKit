@@ -89,10 +89,25 @@ public nonisolated struct FormatoFileArray: FormatoLazyArray {
     public func read(start: [Int], count: [Int]) throws -> FormatoArray {
         try FormatoArray.validateSlab(start: start, count: count, shape: shape)
         let size = dataType.byteSize
+        // The whole array's last byte must be a file offset (a crafted shape or offset is refused, never an overflow trap); every
+        // slab element then lies below it, so the reads below cannot overflow.
+        let (arrayBytes, o1) = try FormatoArray.elementCount(shape).multipliedReportingOverflow(by: size)
+        let (_, o2) = offset.addingReportingOverflow(arrayBytes)
+        guard offset >= 0, !o1, !o2 else { throw FormatoArrayError.invalidShape(shape) }
         let total = try FormatoArray.elementCount(count) * size
         let fd = open(path, O_RDONLY)
         guard fd >= 0 else { throw FormatoReadError.cannotOpen(formatoDisplayFileName(path), String(cString: strerror(errno))) }
         defer { close(fd) }
+        // A truncated file is refused before the slab's bytes are allocated: its last byte must be in the file.
+        if total > 0 {
+            var strides = [Int](repeating: 1, count: shape.count)
+            for k in stride(from: shape.count - 2, through: 0, by: -1) { strides[k] = strides[k + 1] * shape[k + 1] }
+            let lastElement = zip(zip(start, count), strides).reduce(0) { $0 + ($1.0.0 + $1.0.1 - 1) * $1.1 }
+            var info = stat()
+            guard fstat(fd, &info) == 0, Int64(info.st_size) >= Int64(offset) + Int64(lastElement + 1) * Int64(size) else {
+                throw FormatoReadError.truncated(formatoDisplayFileName(path))
+            }
+        }
         var out = Data(count: total)
         var failure: FormatoReadError?
         out.withUnsafeMutableBytes { dst in

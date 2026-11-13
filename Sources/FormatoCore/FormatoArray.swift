@@ -128,6 +128,9 @@ public nonisolated struct FormatoArray: Sendable, Equatable {
         guard start.count == shape.count, count.count == shape.count,
               zip(zip(start, count), shape).allSatisfy({ s, n in s.0 >= 0 && s.1 >= 0 && s.0 <= n && s.1 <= n - s.0 })
         else { throw FormatoArrayError.slabOutOfBounds(start: start, count: count, shape: shape) }
+        // The strides of the runs are products of the shape: a shape whose element count overflows (a lazy array's shape comes
+        // from a file header) is refused here, before any stride is formed.
+        _ = try FormatoArray.elementCount(shape)
     }
 
     /// Calls `body(firstElement, length)` for each contiguous run of the slab, in C order: a run is one row of the last

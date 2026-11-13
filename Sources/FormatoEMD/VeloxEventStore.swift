@@ -14,7 +14,13 @@ public nonisolated struct VeloxStreamGeometry: Equatable, Sendable {
     public let ny: Int
     public let nx: Int
     public let channels: Int
-    public var pixelsPerFrame: Int { ny * nx }
+    /// `ny · nx`; 0 for a negative side and `Int.max` when the product overflows, so the reader's pixel cap refuses it (the
+    /// sides come from the file's metadata).
+    public var pixelsPerFrame: Int {
+        guard ny >= 0, nx >= 0 else { return 0 }
+        let (p, overflow) = ny.multipliedReportingOverflow(by: nx)
+        return overflow ? Int.max : p
+    }
     package init(ny: Int, nx: Int, channels: Int) {
         self.ny = ny; self.nx = nx; self.channels = channels
     }

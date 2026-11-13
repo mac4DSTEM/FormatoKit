@@ -718,7 +718,9 @@ public nonisolated struct TIFFSignals: Sendable {
         func fields(_ sep: Character) -> [Int]? {
             let parts = t.split(separator: sep, omittingEmptySubsequences: false)
             guard parts.count == 3, parts.allSatisfy({ !$0.isEmpty && $0.allSatisfy { $0.isASCII && $0.isNumber } }) else { return nil }
-            return parts.map { Int($0)! }
+            // All digits but longer than Int (a damaged date) is no date.
+            let values = parts.compactMap { Int($0) }
+            return values.count == 3 ? values : nil
         }
         // dateutil raises on a date the calendar does not hold.
         func valid(_ y: Int, _ m: Int, _ d: Int) -> String? {

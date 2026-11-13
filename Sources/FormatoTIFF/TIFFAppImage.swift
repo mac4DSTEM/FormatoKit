@@ -119,10 +119,9 @@ public nonisolated enum TIFFAppImage {
         // An ImageJ stack can sit in ONE directory (its description counts the planes, the data is contiguous): more than
         // one plane is a stack, refused like a second page, never read as its first frame.
         if let description = tags.string(byCode[270]), description.hasPrefix("ImageJ=") {
-            let planes = ["images", "slices", "frames", "channels"].reduce(1) { product, key in
-                product * max(1, Int(imageJ(description)[key] ?? "") ?? 1)
-            }
-            if planes > 1 { throw Refusal.multiPage }
+            // Any count above 1 makes it a stack; a product past Int (crafted counts) is a stack too, never an overflow trap.
+            let counts = ["images", "slices", "frames", "channels"].map { max(1, Int(imageJ(description)[$0] ?? "") ?? 1) }
+            if counts.contains(where: { $0 > 1 }) { throw Refusal.multiPage }
         }
         guard let width = tags.integer(byCode[256]), let height = tags.integer(byCode[257]), width > 0, height > 0 else {
             throw Refusal.sampleFormat("no image width or height")

@@ -195,13 +195,17 @@ nonisolated final class VeloxFile {
         let space = h5.h5dgetSpace(id)
         defer { _ = h5.h5sclose(space) }
         let rank = Int(h5.h5sgetNdims(space))
+        // -1 is HDF5's error; an extent past Int (2^63 and above) is no array this reader can hold.
+        guard rank >= 0 else { _ = h5.h5dclose(id); throw VeloxEMDError.readFailed("the shape of \(path)") }
         var dims = [hsize_t](repeating: 0, count: max(rank, 1))
         if rank > 0 { _ = h5.h5sgetDims(space, &dims, nil) }
+        let extents = dims.prefix(rank).compactMap { Int(exactly: $0) }
+        guard extents.count == rank else { _ = h5.h5dclose(id); throw VeloxEMDError.readFailed("an extent of \(path) past Int") }
         let type = h5.h5dgetType(id)
         defer { _ = h5.h5tclose(type) }
         let typeClass = h5.h5tgetClass(type)
         let isInteger = typeClass == veloxIntegerClass
-        return Dataset(id: id, dims: dims.prefix(rank).map { Int($0) }, isInteger: isInteger, typeClass: typeClass,
+        return Dataset(id: id, dims: extents, isInteger: isInteger, typeClass: typeClass,
                        byteSize: h5.h5tgetSize(type), isSigned: isInteger && h5.h5tgetSign(type) == veloxSignedTwosComplement)
     }
 
@@ -217,7 +221,7 @@ nonisolated final class VeloxFile {
         defer { close(dataset) }
         // One pointer is all the read below has room for: a dataset of several elements
         // (any other HDF5 file passes through `isVeloxEMD`) would write past it.
-        guard dataset.dims.reduce(1, *) == 1 else { return nil }
+        guard dataset.dims.allSatisfy({ $0 == 1 }) else { return nil }
         let fileType = h5.h5dgetType(dataset.id)
         defer { _ = h5.h5tclose(fileType) }
         guard h5.h5tisVariableStr(fileType) > 0 else { return nil }
@@ -270,9 +274,12 @@ nonisolated final class VeloxFile {
         guard dataset.dims[0] <= Self.maxMetadataBytes else {
             throw VeloxEMDError.readFailed("a metadata column of \(dataset.dims[0]) bytes in \(group) (the limit is \(Self.maxMetadataBytes))")
         }
+        // An empty column has no bytes (and its buffer no base address).
+        guard dataset.dims[0] > 0 else { return Data() }
         var bytes = [UInt8](repeating: 0, count: dataset.dims[0])
         try bytes.withUnsafeMutableBytes {
-            try readSlab(dataset, type: h5.uint8, start: [0, column], count: [dataset.dims[0], 1], into: $0.baseAddress!)
+            guard let base = $0.baseAddress else { return }
+            try readSlab(dataset, type: h5.uint8, start: [0, column], count: [dataset.dims[0], 1], into: base)
         }
         if let end = bytes.firstIndex(of: 0) { bytes.removeSubrange(end...) }
         return Data(bytes)
@@ -738,7 +745,8 @@ public nonisolated struct VeloxEMDReader: Sendable {
         for f in lower..<upper {
             try FormatoCancellation.check(cancelled)
             try frame.withUnsafeMutableBytes {
-                try file.readSlab(dataset, type: file.h5.uint32, start: [0, 0, f], count: [grid.ny, grid.nx, 1], into: $0.baseAddress!)
+                guard let base = $0.baseAddress else { return }   // an extent of 0 reads nothing
+                try file.readSlab(dataset, type: file.h5.uint32, start: [0, 0, f], count: [grid.ny, grid.nx, 1], into: base)
             }
             for p in 0..<pixels { sum[p] &+= frame[p] }
         }
@@ -883,7 +891,8 @@ public nonisolated struct VeloxEMDReader: Sendable {
             var out = [Float](repeating: 0, count: pixels)
             try FormatoCancellation.check(cancelled)
             try out.withUnsafeMutableBytes {
-                try file.readSlab(dataset, type: file.h5.float32, start: [0, 0, frame], count: [height, width, 1], into: $0.baseAddress!)
+                guard let base = $0.baseAddress else { return }   // an extent of 0 reads nothing
+                try file.readSlab(dataset, type: file.h5.float32, start: [0, 0, frame], count: [height, width, 1], into: base)
             }
             return out
         }
@@ -931,7 +940,8 @@ public nonisolated struct VeloxEMDReader: Sendable {
             var out = [UInt8](repeating: 0, count: pixels * size)
             try FormatoCancellation.check(cancelled)
             try out.withUnsafeMutableBytes {
-                try file.readSlab(dataset, type: memory, start: [0, 0, frame], count: [height, width, 1], into: $0.baseAddress!)
+                guard let base = $0.baseAddress else { return }   // an extent of 0 reads nothing
+                try file.readSlab(dataset, type: memory, start: [0, 0, frame], count: [height, width, 1], into: base)
             }
             return (type, out)   // native is little-endian on every platform this package builds for (arm64)
         }
@@ -957,8 +967,9 @@ public nonisolated struct VeloxEMDReader: Sendable {
             try Self.requireFrames(n, "a FrameLocationTable", group: group, file: file)
             var starts = [UInt64](repeating: 0, count: n)
             try starts.withUnsafeMutableBytes {
+                guard let base = $0.baseAddress else { return }   // an extent of 0 reads nothing
                 try file.readSlab(table, type: file.h5.uint64, start: table.dims.count == 2 ? [0, 0] : [0],
-                                  count: table.dims.count == 2 ? [n, 1] : [n], into: $0.baseAddress!)
+                                  count: table.dims.count == 2 ? [n, 1] : [n], into: base)
             }
             // Walk the stream once, counting markers between consecutive frame starts.
             var perFrame = [Int](repeating: 0, count: n)

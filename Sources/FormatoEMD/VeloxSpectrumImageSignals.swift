@@ -568,10 +568,12 @@ private nonisolated struct VeloxSpectrumImageRead {
         guard file.exists(path) else { throw raises("\(path) is missing") }
         let d = try file.open(path)
         defer { file.close(d) }
-        guard d.dims.count == 2, d.dims[1] >= 1, d.dims[0] <= VeloxFile.maxMetadataBytes else { throw raises("\(path) is not a metadata column") }
+        // An empty column (extent 0) holds no JSON and its buffer has no base address.
+        guard d.dims.count == 2, d.dims[1] >= 1, d.dims[0] >= 1, d.dims[0] <= VeloxFile.maxMetadataBytes else { throw raises("\(path) is not a metadata column") }
         var bytes = [UInt8](repeating: 0, count: d.dims[0])
         try bytes.withUnsafeMutableBytes {
-            try file.readSlab(d, type: file.h5.uint8, start: [0, 0], count: [d.dims[0], 1], into: $0.baseAddress!)
+            guard let base = $0.baseAddress else { return }
+            try file.readSlab(d, type: file.h5.uint8, start: [0, 0], count: [d.dims[0], 1], into: base)
         }
         if let end = bytes.firstIndex(of: 0) { bytes.removeSubrange(end...) }
         guard let value = try? JSONSerialization.jsonObject(with: Data(bytes), options: .fragmentsAllowed) else { throw raises("\(path) is not JSON") }
@@ -604,7 +606,8 @@ private nonisolated struct VeloxSpectrumImageRead {
         var out = Data(count: bytes)
         if count > 0 {
             try out.withUnsafeMutableBytes {
-                try file.readSlab(d, type: memory, start: [Int](repeating: 0, count: d.dims.count), count: d.dims, into: $0.baseAddress!)
+                guard let base = $0.baseAddress else { return }   // an extent of 0 reads nothing
+                try file.readSlab(d, type: memory, start: [Int](repeating: 0, count: d.dims.count), count: d.dims, into: base)
             }
         }
         return ((type, d.dims), out)
