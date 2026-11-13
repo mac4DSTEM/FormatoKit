@@ -9,8 +9,8 @@ abstract: >-
 authors:
   - family-names: Lobpreis
     given-names: Paul
-version: "0.15.0" # x-release-please-version
-date-released: "2026-11-11" # x-release-please-date
+version: "0.15.1" # x-release-please-version
+date-released: "2026-11-13" # x-release-please-date
 license: GPL-3.0-only
 repository-code: "https://github.com/macEMSuite/FormatoKit"
 keywords:
