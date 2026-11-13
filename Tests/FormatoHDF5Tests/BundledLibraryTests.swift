@@ -21,11 +21,17 @@ import FormatoEMD
         #expect(dlsym(handle, "H5Dread") != nil)
     }
 
+    /// The shipped copy comes after the host's; the bare name (any libhdf5 on the search path) only in a debug build (FormatoKit#110).
     @Test func testTheReaderLooksForTheShippedLibraryAfterTheHostsAndBeforeTheBareName() throws {
         let candidates = VeloxHDF5Library.defaultCandidates()
         let shipped = try #require(FormatoHDF5Library.bundledLibraryPath)
         let i = try #require(candidates.firstIndex(of: shipped), "the shipped libhdf5 is not a candidate: \(candidates)")
+        #if DEBUG
         #expect(candidates.last == "libhdf5.dylib")
         #expect(i == candidates.count - 2, "the shipped copy comes right before the bare name")
+        #else
+        #expect(!candidates.contains("libhdf5.dylib"), "a release build never loads a libhdf5 from the search path")
+        #expect(i == candidates.count - 1, "the shipped copy is the last candidate")
+        #endif
     }
 }
