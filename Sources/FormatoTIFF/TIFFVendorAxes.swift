@@ -265,8 +265,12 @@ nonisolated final class XMLNode {
 
     /// `ET.fromstring`: the root element, or a throw where the text is not well-formed XML.
     static func parse(_ xml: String) throws -> XMLNode {
+        // `GuardedXML`'s bounds first (size, depth, characters, no entity), as the other XML readers: a vendor tag that nests
+        // thousands deep or declares an entity is a ParseError, never built.
+        guard GuardedXML.refusal(xml) == nil else { throw TIFFError.unsupportedLayout("ParseError") }
         let builder = Builder()
         let parser = XMLParser(data: Data(xml.utf8))
+        parser.shouldResolveExternalEntities = false
         parser.delegate = builder
         guard parser.parse(), let root = builder.root else { throw TIFFError.unsupportedLayout("ParseError") }
         return root
