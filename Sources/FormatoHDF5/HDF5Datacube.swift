@@ -93,6 +93,13 @@ public nonisolated enum HDF5OriginComponent: String, Sendable, CaseIterable {
     case fittedX = "qx0", fittedY = "qy0", measuredX = "qx0_meas", measuredY = "qy0_meas"
 }
 
+extension HDF5Datacube {
+    /// One coordinate of a full dim vector against the uniform axis through its first two values (FormatoKit#104).
+    nonisolated static func isUniform(_ value: Double, expected: Double, step: Double) -> Bool {
+        value.isFinite && abs(value - expected) <= 1e-7 * max(abs(expected), abs(step))
+    }
+}
+
 private nonisolated struct CubeArray: FormatoLazyArray {
     let storage: CubeStorage
     let path: String
@@ -265,12 +272,18 @@ private nonisolated final class CubeStorage: @unchecked Sendable {
             let values = try read(path, shape: info.shape, type: info.type, start: [0], count: [min(n, 2)]).doubles()
             let scale: Double? = n > 1 ? values[1] - values[0] : nil
             if n > 2, let scale {
-                // Full coordinate vectors must be exactly representable by FormatoCore's uniform axis.
+                // A full coordinate vector must be uniform to be FormatoCore's uniform axis. py4DSTEM (emdfile
+                // `Array._dim_is_linear`) writes a vector in full whenever it is not bit-equal to `np.arange`, which is the
+                // usual case for `np.linspace` or accumulated steps: uniform to rounding (FormatoKit#104). So the test is
+                // `assert_allclose`'s float64 default, rtol 1e-7 (D12), taken against the larger of the value and the step
+                // so that a coordinate at zero is not held to the bit. A genuinely nonlinear vector is still refused.
                 // Check in bounded blocks, without loading a potentially large vector all at once.
                 for first in stride(from: 0, to: n, by: 4096) {
                     let block = try read(path, shape: info.shape, type: info.type,
                         start: [first], count: [min(4096, n - first)]).doubles()
-                    guard block.enumerated().allSatisfy({ i, value in value == values[0] + Double(first + i) * scale }) else {
+                    guard block.enumerated().allSatisfy({ i, value in
+                        HDF5Datacube.isUniform(value, expected: values[0] + Double(first + i) * scale, step: scale)
+                    }) else {
                         throw HDF5DatacubeError.unsupported("Nonuniform dimension vector: \(path)")
                     }
                 }
