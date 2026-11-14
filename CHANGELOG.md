@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.15.1](https://github.com/macEMSuite/FormatoKit/compare/0.15.0...0.15.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* guard untrusted XML, confine the EMPAD raw path and pin the HDF5 load ([#119](https://github.com/macEMSuite/FormatoKit/issues/119)) ([6715a03](https://github.com/macEMSuite/FormatoKit/commit/6715a03e16be027ce2750e0f67945a895e8bea14))
+* py4DSTEM dim vectors that are uniform to rounding read instead of being refused ([#116](https://github.com/macEMSuite/FormatoKit/issues/116)) ([4ae5dc1](https://github.com/macEMSuite/FormatoKit/commit/4ae5dc14cc18f5ff883991ade98dc33cf74e6171))
+* refuse crafted header values with a typed error instead of trapping ([#118](https://github.com/macEMSuite/FormatoKit/issues/118)) ([73f92e4](https://github.com/macEMSuite/FormatoKit/commit/73f92e478bc10a0399af030c022a6bf26b5f2485))
+
 ## [0.15.0](https://github.com/mac4DSTEM/FormatoKit/compare/0.14.0...0.15.0) (2026-11-11)
 
 
